@@ -1,0 +1,109 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm run install:all
+      
+      - name: Lint all packages
+        run: npm run lint:all
+      
+      - name: Type check all packages
+        run: npm run type-check:all
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm run install:all
+      
+      - name: Run tests
+        run: npm run test:all
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage
+          fail_ci_if_error: true
+
+  build-instructor-app:
+    name: Build Instructor App
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, test]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Setup Expo CLI
+        run: npm install -g @expo/cli
+      
+      - name: Install dependencies
+        run: npm run install:all
+      
+      - name: Build instructor app
+        run: cd academy-instructors-app && expo export --platform all
+        env:
+          EXPO_PUBLIC_API_URL: ${{ secrets.API_URL }}
+
+  build-student-app:
+    name: Build Student App
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, test]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Setup Expo CLI
+        run: npm install -g @expo/cli
+      
+      - name: Install dependencies
+        run: npm run install:all
+      
+      - name: Build student app
+        run: cd academy-students-app && expo export --platform all
+        env:
+          EXPO_PUBLIC_API_URL: ${{ secrets.API_URL }}

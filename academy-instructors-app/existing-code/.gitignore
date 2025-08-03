@@ -1,0 +1,15 @@
+node_modules/
+
+.DS_Store
+
+.expo/
+
+build/
+dist/
+
+.env
+.idea/
+.vscode/
+
+android/
+ios/

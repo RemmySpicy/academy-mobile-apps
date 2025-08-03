@@ -1,0 +1,55 @@
+name: Deploy to Expo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'App to deploy'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+        - both
+        - instructor
+        - student
+
+jobs:
+  deploy:
+    name: Deploy to Expo
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Setup Expo CLI
+        run: npm install -g @expo/cli
+      
+      - name: Install dependencies
+        run: npm run install:all
+      
+      - name: Deploy Instructor App
+        if: ${{ github.event.inputs.app == 'both' || github.event.inputs.app == 'instructor' || github.event_name == 'push' }}
+        run: |
+          cd academy-instructors-app
+          expo publish --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_API_URL: ${{ secrets.PROD_API_URL }}
+      
+      - name: Deploy Student App
+        if: ${{ github.event.inputs.app == 'both' || github.event.inputs.app == 'student' || github.event_name == 'push' }}
+        run: |
+          cd academy-students-app
+          expo publish --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_API_URL: ${{ secrets.PROD_API_URL }}

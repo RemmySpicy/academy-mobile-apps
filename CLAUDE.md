@@ -48,18 +48,18 @@ Both apps use a feature-based architecture with:
 
 The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT authentication and role-based access control.
 
-## Technology Stack (Standardized August 2025)
+## Technology Stack (Updated January 2025)
 
 - **React**: 19.1.0
 - **React Native**: 0.80.2
 - **Expo SDK**: 53.0.0
-- **TypeScript**: 5.6.2
+- **TypeScript**: 5.9.2
 - **React Navigation**: 6.x
-- **State Management**: Zustand 5.0.2
+- **State Management**: Zustand 5.0.7
 - **Forms**: React Hook Form 7.62.0
-- **Testing**: Jest 29.0.0 with React Native Testing Library
-- **Linting**: ESLint 8.0.0 with TypeScript support
-- **Formatting**: Prettier with Husky pre-commit hooks
+- **Testing**: Jest 30.0.5 with React Native Testing Library
+- **Linting**: ESLint 8.57.0 with TypeScript support
+- **Formatting**: Prettier 3.4.2 with Husky pre-commit hooks
 
 ## Development Commands
 
@@ -244,6 +244,152 @@ All data requests automatically include program context based on user role assig
 6. **Write tests for new features** - coverage thresholds are enforced
 7. **Use the pre-commit hooks** - they catch issues early
 8. **Keep environment variables in .env files** - never hardcode URLs or keys
+
+## Modern Syntax & Patterns (2025 Standards)
+
+### React 19 Features
+- **Use React Compiler optimizations** - Automatic memoization and optimization
+- **Server Components** - When applicable for web builds
+- **Enhanced Suspense** - Better loading states and error boundaries
+- **New React hooks** - `use()`, `useOptimistic()`, `useFormStatus()`
+
+### TypeScript 5.9+ Features
+- **Satisfies operator** - `const config = {...} satisfies Config`
+- **Template literal types** - For type-safe string patterns
+- **Const assertions** - `as const` for immutable arrays/objects
+- **Discriminated unions** - Advanced type narrowing
+
+### Modern JavaScript (ES2024)
+```typescript
+// Use modern async patterns
+const fetchData = async () => {
+  try {
+    const [users, posts] = await Promise.all([
+      api.getUsers(),
+      api.getPosts()
+    ]);
+    return { users, posts };
+  } catch (error) {
+    throw new Error(`Failed to fetch: ${error.message}`);
+  }
+};
+
+// Optional chaining and nullish coalescing
+const userName = user?.profile?.name ?? 'Anonymous';
+
+// Array methods over traditional loops
+const activeUsers = users
+  .filter(user => user.isActive)
+  .map(user => ({ ...user, displayName: user.name.toUpperCase() }));
+
+// Destructuring with defaults
+const { theme = 'light', locale = 'en' } = userPreferences;
+```
+
+### React Native Modern Patterns
+```typescript
+// Functional components with proper TypeScript
+interface Props {
+  user: User;
+  onPress?: () => void;
+}
+
+const UserCard: React.FC<Props> = ({ user, onPress }) => {
+  // Use modern hooks
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Custom hooks for logic separation
+  const { theme } = useTheme();
+  const { mutate: updateUser } = useMutation(updateUserApi);
+  
+  // Event handlers with useCallback
+  const handlePress = useCallback(() => {
+    onPress?.();
+  }, [onPress]);
+  
+  return (
+    <TouchableOpacity onPress={handlePress} style={[styles.card, { backgroundColor: theme.cardBg }]}>
+      <Text style={styles.name}>{user.name}</Text>
+    </TouchableOpacity>
+  );
+};
+```
+
+### Zustand Modern Patterns
+```typescript
+// Type-safe store with immer
+interface AppStore {
+  user: User | null;
+  setUser: (user: User) => void;
+  updateUser: (updates: Partial<User>) => void;
+}
+
+const useAppStore = create<AppStore>()(
+  immer((set) => ({
+    user: null,
+    setUser: (user) => set({ user }),
+    updateUser: (updates) => set((state) => {
+      if (state.user) {
+        Object.assign(state.user, updates);
+      }
+    }),
+  }))
+);
+```
+
+### React Hook Form with TypeScript
+```typescript
+interface FormData {
+  email: string;
+  password: string;
+}
+
+const LoginForm = () => {
+  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: yupResolver(loginSchema),
+    defaultValues: { email: '', password: '' }
+  });
+  
+  const onSubmit = (data: FormData) => {
+    // Handle form submission
+  };
+  
+  return (
+    <Controller
+      control={control}
+      name="email"
+      render={({ field }) => (
+        <CustomInput
+          {...field}
+          error={errors.email?.message}
+          placeholder="Email"
+        />
+      )}
+    />
+  );
+};
+```
+
+### Navigation with TypeScript
+```typescript
+// Type-safe navigation
+type RootStackParamList = {
+  Home: undefined;
+  Profile: { userId: string };
+  Settings: { section?: string };
+};
+
+const Navigation = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+```
 
 ## Working with Existing Features
 

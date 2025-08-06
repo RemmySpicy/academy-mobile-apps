@@ -1,4 +1,5 @@
 // Core Academy Types
+// Authentication types are now in ./auth.ts - import from there for auth-related types
 
 export interface User {
   id: string;
@@ -30,6 +31,9 @@ export interface AuthState {
   currentProgram: Program | null;
 }
 
+// Re-export authentication types for convenience
+export * from './auth';
+
 export interface ApiResponse<T = any> {
   data: T;
   message?: string;
@@ -45,7 +49,8 @@ export interface ApiError {
 // Form Types
 export interface FormFieldProps {
   name: string;
-  control?: any;
+  control?: any; // React Hook Form control object - properly typed in components
+  rules?: any; // React Hook Form validation rules - properly typed in components
   placeholder?: string;
   label?: string;
   error?: string;

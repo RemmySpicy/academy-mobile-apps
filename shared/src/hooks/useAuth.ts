@@ -5,7 +5,17 @@ import { User, AuthState } from '../types';
 
 const TOKEN_KEY = 'academy_auth_token';
 
-export default function useAuth() {
+interface UseAuthReturn {
+  authState: AuthState;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (userData: Record<string, any>) => Promise<boolean>;
+  logout: () => Promise<void>;
+  updateUser: (user: User) => void;
+  refreshAuth: () => Promise<boolean>;
+}
+
+export default function useAuth(): UseAuthReturn {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     token: null,
@@ -19,7 +29,7 @@ export default function useAuth() {
     initializeAuth();
   }, []);
 
-  const initializeAuth = async () => {
+  const initializeAuth = async (): Promise<void> => {
     try {
       const token = await AsyncStorage.getItem(TOKEN_KEY);
       
@@ -63,7 +73,7 @@ export default function useAuth() {
     }
   }, []);
 
-  const register = useCallback(async (userData: any): Promise<boolean> => {
+  const register = useCallback(async (userData: Record<string, any>): Promise<boolean> => {
     try {
       setIsLoading(true);
       await authService.register(userData);
@@ -76,7 +86,7 @@ export default function useAuth() {
     }
   }, []);
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (): Promise<void> => {
     try {
       setIsLoading(true);
       await authService.logout();
@@ -100,7 +110,7 @@ export default function useAuth() {
     }
   }, []);
 
-  const updateUser = useCallback((user: User) => {
+  const updateUser = useCallback((user: User): void => {
     setAuthState(prev => ({
       ...prev,
       user,

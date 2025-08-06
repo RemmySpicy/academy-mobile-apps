@@ -16,7 +16,7 @@ export const isValidPassword = (password: string): boolean => {
   return passwordRegex.test(password);
 };
 
-export const validateRequired = (value: any): string | undefined => {
+export const validateRequired = (value: unknown): string | undefined => {
   if (!value || (typeof value === 'string' && value.trim() === '')) {
     return 'This field is required';
   }

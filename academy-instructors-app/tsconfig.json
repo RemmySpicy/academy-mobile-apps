@@ -16,11 +16,10 @@
     "paths": {
       "@/*": ["src/*"],
       "@/features/*": ["src/features/*"],
-      "@/shared/*": ["src/shared/*"],
       "@/core/*": ["src/core/*"],
       "@shared/*": ["../shared/src/*"]
     },
-    "types": ["jest", "@testing-library/jest-native"]
+    "types": ["jest"]
   },
   "include": [
     "**/*.ts",

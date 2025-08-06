@@ -14,17 +14,12 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/screens/*": ["./src/screens/*"],
-      "@/navigation/*": ["./src/navigation/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/services/*": ["./src/services/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/types/*": ["./src/types/*"],
+      "@/*": ["src/*"],
+      "@/features/*": ["src/features/*"],
+      "@/core/*": ["src/core/*"],
       "@shared/*": ["../shared/src/*"]
     },
-    "types": ["jest", "@testing-library/jest-native"]
+    "types": ["jest"]
   },
   "include": [
     "**/*.ts",

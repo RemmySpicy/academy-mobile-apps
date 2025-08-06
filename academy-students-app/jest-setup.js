@@ -1,5 +1,3 @@
-import '@testing-library/jest-native/extend-expect';
-
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
@@ -29,6 +27,17 @@ jest.mock('@react-navigation/native', () => ({
   useRoute: () => ({
     params: {},
   }),
+}));
+
+// Mock react-native-paper components for student app
+jest.mock('react-native-paper', () => ({
+  Provider: ({ children }) => children,
+  Button: 'Button',
+  TextInput: 'TextInput',
+  Card: 'Card',
+  Avatar: 'Avatar',
+  Chip: 'Chip',
+  FAB: 'FAB',
 }));
 
 // Silence console warnings during tests

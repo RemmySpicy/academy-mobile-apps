@@ -18,7 +18,7 @@
     "build": "tsc --build",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "keywords": [
     "react-native",

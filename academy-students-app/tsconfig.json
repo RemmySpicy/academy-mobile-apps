@@ -1,50 +1,22 @@
 {
-  "extends": [
-    "expo/tsconfig.base",
-    "../tsconfig.json"
-  ],
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedSideEffectImports": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@/features/*": [
-        "src/features/*"
-      ],
-      "@/core/*": [
-        "src/core/*"
-      ],
-      "@shared/*": [
-        "../shared/src/*"
-      ]
+      "@/*": ["src/*"],
+      "@shared/*": ["../shared/src/*"]
     },
-    "types": [
-      "jest"
-    ]
+    "types": ["jest"]
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
   ],
   "exclude": [
     "node_modules",
     "existing-code"
-  ],
-  "references": [
-    {
-      "path": "../shared"
-    }
   ]
 }

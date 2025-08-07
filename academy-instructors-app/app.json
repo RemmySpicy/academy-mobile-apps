@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Academy Instructors",
+    "name": "Egen Academy Team",
     "slug": "academy-instructors-app",
     "version": "2.0.0",
     "orientation": "portrait",
@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.academy.instructors"
+      "bundleIdentifier": "com.elitesgen.academy.instructors"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.academy.instructors"
+      "package": "com.elitesgen.academy.instructors"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -52,7 +52,7 @@
         "projectId": "academy-instructors-app"
       }
     },
-    "owner": "academy-team",
+    "owner": "elitesgen-academy",
     "scheme": "academy-instructors"
   }
 }

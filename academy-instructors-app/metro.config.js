@@ -5,7 +5,7 @@ const config = getDefaultConfig(__dirname);
 
 // Add support for shared modules
 const projectRoot = __dirname;
-const monorepoRoot = path.resolve(projectRoot, '../..');
+const monorepoRoot = path.resolve(projectRoot, '..');
 
 config.watchFolders = [
   monorepoRoot,

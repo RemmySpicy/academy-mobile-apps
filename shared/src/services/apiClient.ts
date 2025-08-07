@@ -399,6 +399,47 @@ class ApiClient {
   }
 
   /**
+   * Set program context with persistence
+   */
+  async setProgramContext(programId: string): Promise<void> {
+    try {
+      // Import AsyncStorage dynamically to avoid issues in web environments
+      const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
+      await AsyncStorage.setItem('program_context', programId);
+    } catch (error) {
+      console.warn('Failed to persist program context:', error);
+      // Don't throw - persistence failure shouldn't break the app
+    }
+  }
+
+  /**
+   * Get stored program context
+   */
+  async getProgramContext(): Promise<string | null> {
+    try {
+      // Import AsyncStorage dynamically to avoid issues in web environments  
+      const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
+      return await AsyncStorage.getItem('program_context');
+    } catch (error) {
+      console.warn('Failed to retrieve program context:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear stored program context
+   */
+  async clearProgramContext(): Promise<void> {
+    try {
+      const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
+      await AsyncStorage.removeItem('program_context');
+    } catch (error) {
+      console.warn('Failed to clear program context:', error);
+      // Don't throw - persistence failure shouldn't break the app
+    }
+  }
+
+  /**
    * Upload file with progress tracking
    */
   async uploadFile<T = any>(

@@ -1,5 +1,8 @@
 {
-  "extends": ["expo/tsconfig.base", "../tsconfig.json"],
+  "extends": [
+    "expo/tsconfig.base",
+    "../tsconfig.json"
+  ],
   "compilerOptions": {
     "strict": true,
     "noImplicitReturns": true,
@@ -14,24 +17,34 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/features/*": ["src/features/*"],
-      "@/core/*": ["src/core/*"],
-      "@shared/*": ["../shared/src/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@/features/*": [
+        "src/features/*"
+      ],
+      "@/core/*": [
+        "src/core/*"
+      ],
+      "@shared/*": [
+        "../shared/src/*"
+      ]
     },
-    "types": ["jest"]
+    "types": [
+      "jest"
+    ]
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules",
     "existing-code"
   ],
   "references": [
-    { "path": "../shared" }
+    {
+      "path": "../shared"
+    }
   ]
 }

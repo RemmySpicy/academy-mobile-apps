@@ -24,6 +24,12 @@ export interface Program {
   updated_at: string;
 }
 
+// Enhanced program context that includes user's role in the program
+export interface ProgramContext extends Program {
+  user_role?: string; // User's role in this program
+  permissions?: string[]; // User's permissions in this program
+}
+
 export interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
@@ -60,10 +66,12 @@ export interface FormFieldProps {
 
 // Program Context Types
 export interface ProgramContextValue {
-  currentProgram: Program | null;
-  availablePrograms: Program[];
+  currentProgram: ProgramContext | null;
+  availablePrograms: ProgramContext[];
   switchProgram: (programId: string) => Promise<void>;
   isLoading: boolean;
+  refreshPrograms: () => Promise<void>;
+  error: string | null;
 }
 
 // Course Types

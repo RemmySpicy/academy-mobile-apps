@@ -1,64 +1,49 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
-
-import { AppNavigator } from './src/shared/navigation/AppNavigator';
-import { ErrorBoundary } from './src/shared/components/ErrorBoundary';
-
-// Prevent splash screen from auto-hiding
-SplashScreen.preventAutoHideAsync();
 
 /**
  * Academy Instructors App
  * 
- * Version 2.0 - Modern React Native architecture with:
- * - Zustand state management
- * - Shared component library integration
- * - Offline-first capabilities
- * - Program context awareness
- * - Production-ready error handling
- * 
- * Target Users: Instructors, Coordinators, Program Admins
+ * Minimal version for testing - will be replaced with full navigation
  */
 export default function App() {
-  const [isReady, setIsReady] = React.useState(false);
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        // Pre-load fonts (if needed)
-        await Font.loadAsync({
-          // Add custom fonts here if needed
-        });
-
-        // Artificial delay to show splash screen (remove in production)
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } catch (e) {
-        console.warn('Error during app preparation:', e);
-      } finally {
-        setIsReady(true);
-        await SplashScreen.hideAsync();
-      }
-    }
-
-    prepare();
-  }, []);
-
-  if (!isReady) {
-    return null; // Splash screen is still showing
-  }
-
   return (
-    <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <StatusBar style="auto" />
-          <AppNavigator />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    </ErrorBoundary>
+    <View style={styles.container}>
+      <StatusBar style="auto" />
+      <Text style={styles.title}>Academy Instructors App</Text>
+      <Text style={styles.subtitle}>Version 2.0 - Development Mode</Text>
+      <Text style={styles.description}>
+        Mobile app for instructors and program coordinators
+      </Text>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+});

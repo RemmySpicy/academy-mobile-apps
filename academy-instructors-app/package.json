@@ -1,7 +1,7 @@
 {
   "name": "academy-instructors-app",
   "version": "2.0.0",
-  "description": "Academy Management System - Instructors & Coordinators Mobile App",
+  "description": "Elitesgen Academy Team - Instructors & Coordinators Mobile App",
   "main": "index.js",
   "scripts": {
     "start": "expo start --dev-client",
@@ -24,17 +24,17 @@
     "postinstall": "expo install --fix"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-native": "0.80.2",
-    "expo": "53.0.0",
-    "@academy/mobile-shared": "*"
+    "@academy/mobile-shared": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
+    "babel-preset-expo": "~11.0.0",
+    "babel-plugin-module-resolver": "^5.0.0",
     "eslint-config-expo": "9.2.0",
     "tailwindcss": "3.3.2"
   },
   "keywords": [
+    "elitesgen",
     "academy",
     "instructors",
     "coordinators",
@@ -43,7 +43,7 @@
     "expo",
     "education"
   ],
-  "author": "Academy Team",
+  "author": "Elitesgen Academy Team",
   "license": "MIT",
   "repository": {
     "type": "git",

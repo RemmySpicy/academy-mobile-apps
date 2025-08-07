@@ -20,8 +20,7 @@
     "test:watch": "jest --watch --passWithNoTests",
     "test:coverage": "jest --coverage --passWithNoTests",
     "clean": "rm -rf node_modules .expo dist build",
-    "prebuild": "expo prebuild --clean",
-    "postinstall": "expo install --fix"
+    "prebuild": "expo prebuild --clean"
   },
   "dependencies": {
     "@academy/mobile-shared": "file:../shared"

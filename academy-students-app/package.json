@@ -20,8 +20,7 @@
     "test:watch": "jest --watch --passWithNoTests",
     "test:coverage": "jest --coverage --passWithNoTests",
     "clean": "rm -rf node_modules .expo dist build",
-    "prebuild": "expo prebuild --clean",
-    "postinstall": "expo install --fix"
+    "prebuild": "expo prebuild --clean"
   },
   "dependencies": {
     "@academy/mobile-shared": "file:../shared"
@@ -33,7 +32,16 @@
     "eslint-config-expo": "9.2.0",
     "tailwindcss": "3.3.2"
   },
-  "keywords": ["elitesgen", "academy", "students", "parents", "mobile", "react-native", "expo", "education"],
+  "keywords": [
+    "elitesgen",
+    "academy",
+    "students",
+    "parents",
+    "mobile",
+    "react-native",
+    "expo",
+    "education"
+  ],
   "author": "Elitesgen Academy Team",
   "license": "MIT",
   "repository": {
@@ -47,7 +55,9 @@
   "homepage": "https://github.com/RemmySpicy/academy-mobile-apps/tree/main/academy-students-app#readme",
   "expo": {
     "install": {
-      "exclude": ["react-native-safe-area-context"]
+      "exclude": [
+        "react-native-safe-area-context"
+      ]
     }
   },
   "private": true

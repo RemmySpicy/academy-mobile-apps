@@ -2,6 +2,19 @@ module.exports = function(api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
-    plugins: [],
+    plugins: [
+      'nativewind/babel',
+      [
+        'module-resolver',
+        {
+          root: ['./src'],
+          alias: {
+            '@': './src',
+            '@shared': '../shared/src',
+          },
+        },
+      ],
+      'react-native-reanimated/plugin',
+    ],
   };
 };

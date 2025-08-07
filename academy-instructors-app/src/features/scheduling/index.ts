@@ -1,0 +1,1 @@
+export { ScheduleNavigator } from './navigation/ScheduleNavigator';

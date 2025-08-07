@@ -1,27 +1,18 @@
-const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
+const { getDefaultConfig } = require('expo/metro-config');
+const { withMetroConfig } = require('react-native-monorepo-config');
 
-const config = getDefaultConfig(__dirname);
+const config = withMetroConfig(
+  getDefaultConfig(__dirname),
+  {
+    root: path.resolve(__dirname, '..'), // Monorepo root
+    dirname: __dirname, // Current directory
+  }
+);
 
-// Add support for shared modules
-const projectRoot = __dirname;
-const monorepoRoot = path.resolve(projectRoot, '..');
-
-config.watchFolders = [
-  monorepoRoot,
-  path.resolve(monorepoRoot, 'shared'),
-];
-
-config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, 'node_modules'),
-  path.resolve(monorepoRoot, 'node_modules'),
-];
-
+// Keep existing alias for @shared
 config.resolver.alias = {
-  '@shared': path.resolve(monorepoRoot, 'shared'),
+  '@shared': path.resolve(__dirname, '..', 'shared'),
 };
-
-// Support for TypeScript paths
-config.resolver.platforms = ['native', 'android', 'ios', 'web'];
 
 module.exports = config;

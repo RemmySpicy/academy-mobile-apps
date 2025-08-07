@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "description": "Academy Mobile Applications - Instructor and Student Apps",
   "private": true,
-  "workspaces": [
-    "academy-instructors-app",
-    "academy-students-app",
-    "shared"
-  ],
+  "workspaces": ["academy-instructors-app", "academy-students-app", "shared"],
   "scripts": {
     "dev": "docker-compose up",
     "dev:instructor": "cd academy-instructors-app && npm start",
@@ -71,6 +67,7 @@
     "jest": "30.0.5",
     "jest-expo": "~51.0.4",
     "@testing-library/react-native": "12.7.2",
-    "@testing-library/jest-native": "5.4.3"
+    "@testing-library/jest-native": "5.4.3",
+    "react-native-monorepo-config": "^0.1.9"
   }
 }

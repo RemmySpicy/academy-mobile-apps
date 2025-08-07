@@ -58,6 +58,7 @@
     "prettier": "3.4.2",
     "@typescript-eslint/eslint-plugin": "8.39.0",
     "@typescript-eslint/parser": "8.39.0",
+    "expo-build-properties": "~0.14.8",
     "eslint": "8.57.0",
     "eslint-plugin-import": "2.30.0",
     "eslint-plugin-react": "7.35.0",

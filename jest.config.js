@@ -18,7 +18,7 @@ module.exports = {
     '!**/node_modules/**',
     '!**/existing-code/**',
   ],
-  setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
+  setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
   moduleNameMapping: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@shared/(.*)$': '<rootDir>/shared/src/$1',

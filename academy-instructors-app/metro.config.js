@@ -1,18 +1,22 @@
 const path = require('path');
 const { getDefaultConfig } = require('expo/metro-config');
-const { withMetroConfig } = require('react-native-monorepo-config');
 
-const config = withMetroConfig(
-  getDefaultConfig(__dirname),
-  {
-    root: path.resolve(__dirname, '..'), // Monorepo root
-    dirname: __dirname, // Current directory
-  }
-);
+const projectRoot = __dirname;
+const workspaceRoot = path.resolve(projectRoot, '..');
 
-// Keep existing alias for @shared
+const config = getDefaultConfig(projectRoot);
+
+// Monorepo configuration
+config.watchFolders = [workspaceRoot];
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules'),
+];
+
+// Add alias for shared package
 config.resolver.alias = {
-  '@shared': path.resolve(__dirname, '..', 'shared'),
+  '@academy/mobile-shared': path.resolve(workspaceRoot, 'shared/src'),
+  '@shared': path.resolve(workspaceRoot, 'shared/src'),
 };
 
 module.exports = config;

@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "Academy Mobile Applications - Instructor and Student Apps",
   "private": true,
-  "workspaces": ["academy-instructors-app", "academy-students-app", "shared"],
+  "workspaces": [
+    "academy-instructors-app",
+    "academy-students-app",
+    "shared"
+  ],
   "scripts": {
     "dev": "docker-compose up",
     "dev:instructor": "cd academy-instructors-app && npm start",
@@ -41,7 +45,15 @@
     "dev:fresh": "npm run clean:all && npm run install:all && npm run dev:all",
     "reset": "npm run clean:all && rm -rf node_modules package-lock.json && npm install && npm run install:all"
   },
-  "keywords": ["academy", "mobile", "react-native", "expo", "instructor", "student", "education"],
+  "keywords": [
+    "academy",
+    "mobile",
+    "react-native",
+    "expo",
+    "instructor",
+    "student",
+    "education"
+  ],
   "author": "Academy Team",
   "license": "MIT",
   "engines": {
@@ -49,26 +61,29 @@
     "npm": ">=9.0.0"
   },
   "overrides": {
-    "glob": "^10.0.0"
+    "glob": "^10.0.0",
+    "react": "19.1.0",
+    "react-native-renderer": "19.1.0"
   },
   "devDependencies": {
-    "concurrently": "9.1.0",
-    "husky": "9.1.6",
-    "lint-staged": "16.1.4",
-    "prettier": "3.4.2",
+    "@babel/plugin-transform-template-literals": "^7.27.1",
+    "@testing-library/jest-native": "5.4.3",
+    "@testing-library/react-native": "12.7.2",
     "@typescript-eslint/eslint-plugin": "8.39.0",
     "@typescript-eslint/parser": "8.39.0",
-    "expo-build-properties": "~0.14.8",
+    "concurrently": "9.1.0",
     "eslint": "8.57.0",
     "eslint-plugin-import": "2.30.0",
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-react-native": "4.1.0",
-    "typescript": "5.9.2",
+    "expo-build-properties": "~0.14.8",
+    "husky": "9.1.6",
     "jest": "30.0.5",
     "jest-expo": "~51.0.4",
-    "@testing-library/react-native": "12.7.2",
-    "@testing-library/jest-native": "5.4.3",
-    "react-native-monorepo-config": "^0.1.9"
+    "lint-staged": "16.1.4",
+    "prettier": "3.4.2",
+    "react-native-monorepo-config": "^0.1.9",
+    "typescript": "5.9.2"
   }
 }

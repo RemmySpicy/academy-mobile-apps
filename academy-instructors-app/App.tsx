@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
-
-import { AppNavigator } from './src/shared/navigation/AppNavigator';
-import { ErrorBoundary } from './src/shared/components/ErrorBoundary';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -29,11 +26,6 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Pre-load fonts (if needed)
-        await Font.loadAsync({
-          // Add custom fonts here if needed
-        });
-
         // Artificial delay to show splash screen (remove in production)
         await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (e) {
@@ -52,13 +44,46 @@ export default function App() {
   }
 
   return (
-    <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <StatusBar style="auto" />
-          <AppNavigator />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    </ErrorBoundary>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <StatusBar style="auto" />
+        <View style={styles.container}>
+          <Text style={styles.title}>Academy Instructors App</Text>
+          <Text style={styles.subtitle}>Version 2.0 - Development Build</Text>
+          <Text style={styles.description}>
+            This is a test build to verify the app loads correctly.
+            The full navigation and features will be implemented next.
+          </Text>
+        </View>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+});

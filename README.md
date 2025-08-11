@@ -2,6 +2,16 @@
 
 Mobile applications for the Academy Management System, built with React Native and Expo.
 
+## ✅ Current Status (Latest Update)
+
+**🎉 Development Environment Ready!**
+- Both instructor and student apps load successfully in Expo Go
+- React version conflicts resolved (19.1.0 across all dependencies)
+- Metro bundler and Babel configuration optimized for monorepo
+- All development dependencies installed and working
+
+**Ready for feature implementation** - Reference `existing-code/` directories for building full navigation and features.
+
 ## 📱 Applications
 
 - **[Academy Instructors App](./academy-instructors-app/)** - Mobile app for tutors and program coordinators
@@ -12,14 +22,17 @@ Mobile applications for the Academy Management System, built with React Native a
 
 ```bash
 # Install dependencies
-npm run install:all
+npm install
 
-# Start development
+# Start individual apps (recommended)
+cd academy-instructors-app
+npx expo start --offline
+
+cd academy-students-app
+npx expo start --offline
+
+# Or start both simultaneously
 npm run dev:all
-
-# Or start individual apps
-npm run dev:instructor    # Instructor app
-npm run dev:student       # Student app
 ```
 
 ## 📚 Documentation

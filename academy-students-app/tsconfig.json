@@ -4,16 +4,20 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@shared/*": ["../shared/src/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@shared/*": [
+        "../shared/src/*"
+      ]
     },
-    "types": ["jest"]
+    "types": [
+      "jest"
+    ]
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules",

@@ -7,7 +7,7 @@ import {
   useProgramContext,
   useTheme,
   componentThemes
-} from '@shared';
+} from '@academy/mobile-shared';
 
 /**
  * Example component demonstrating program context integration

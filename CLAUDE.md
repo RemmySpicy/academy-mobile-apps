@@ -58,7 +58,7 @@ role-based access control.
 
 ## Technology Stack (Updated January 2025)
 
-- **React**: 19.1.0
+- **React**: 19.1.1
 - **React Native**: 0.80.2
 - **Expo SDK**: 53.0.0
 - **TypeScript**: 5.9.2
@@ -75,7 +75,7 @@ role-based access control.
 
 ```bash
 # Install all dependencies
-npm run install:all
+npm install
 
 # Fresh start (clean and reinstall everything)
 npm run dev:fresh
@@ -92,12 +92,15 @@ npm run install:shared
 ### Development
 
 ```bash
-# Start both apps (with dev-client)
-npm run dev:all
+# Start individual apps (recommended for testing)
+cd academy-instructors-app
+npx expo start --offline
 
-# Individual apps
-npm run dev:instructor    # Uses dev-client by default
-npm run dev:student      # Uses dev-client by default
+cd academy-students-app  
+npx expo start --offline
+
+# Start both apps simultaneously
+npm run dev:all
 
 # Docker development
 npm run docker:up
@@ -412,6 +415,24 @@ cd academy-instructors-app
 node -e "console.log(require.resolve('@academy/mobile-shared'))"
 ```
 
+**Metro Bundler & React Version Issues:**
+
+- **React version mismatch**: Use npm overrides in root package.json to force consistent versions:
+  ```json
+  "overrides": {
+    "react": "19.1.0",
+    "react-native-renderer": "19.1.0"
+  }
+  ```
+- **Babel plugin errors**: Ensure all required Babel plugins are installed:
+  ```bash
+  npm install --save-dev @babel/plugin-transform-template-literals
+  ```
+- **Network fetch errors**: Use `--offline` flag when behind firewalls:
+  ```bash
+  npx expo start --offline
+  ```
+
 ## Monorepo Structure
 
 ### Configuration File Organization
@@ -451,7 +472,7 @@ consistency and proper module resolution:
 
 **Shared Package (`shared/package.json`):**
 
-- **Runtime dependencies**: `react@19.1.0`, `react-native@0.80.2`, `expo@53.0.20`
+- **Runtime dependencies**: `react@19.1.1`, `react-native@0.80.2`, `expo@53.0.0`
 - **Core libraries**: `@react-navigation/*`, `zustand`, `react-hook-form`, `axios`
 - **UI components**: `@expo/vector-icons`, `react-native-gesture-handler`, etc.
 - **All packages both apps need**: Shared to ensure version consistency
@@ -729,7 +750,7 @@ When rebuilding features from existing-code/ into main src/ directories:
 2. **Design optimal architecture** - Plan the feature with modern patterns (Zustand, React 19,
    feature-based structure)
 3. **Extract shared components** - Put reusable logic in shared/ package for both apps
-4. **Rebuild with latest dependencies** - Use React 19.1.0, Zustand 5.0.2, React Hook Form 7.62.0
+4. **Rebuild with latest dependencies** - Use React 19.1.1, Zustand 5.0.7, React Hook Form 7.62.0
 5. **Maintain feature parity** - Ensure the rebuilt feature matches existing functionality
 6. **Test thoroughly** - Verify the rebuilt feature works as expected
 7. **Mark for removal** - Once rebuilt feature is complete and tested, existing-code/ can be removed

@@ -373,7 +373,7 @@ export const themeHelpers = {
   /**
    * Create responsive theme styles
    */
-  createResponsiveStyles: <T>(
+  createResponsiveStyles: <T extends Record<string, any>>(
     theme: Theme,
     baseStyles: T,
     darkOverrides?: Partial<T>,

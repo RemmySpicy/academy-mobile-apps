@@ -1,7 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AttendanceScreen } from '../screens/AttendanceScreen';
-import type { AttendanceStackParamList } from '@/shared/navigation/types';
+export type AttendanceStackParamList = {
+  AttendanceMain: undefined;
+};
 
 const Stack = createNativeStackNavigator<AttendanceStackParamList>();
 

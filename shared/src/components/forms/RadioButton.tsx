@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useController } from 'react-hook-form';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { FormFieldProps } from '../../types';
 
 type RadioButtonVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
@@ -201,7 +201,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
         
         {fieldState.error && (
           <View style={styles.errorContainer}>
-            <Iconify icon="ri:error-warning-line" size={16} color="#EF4444" />
+            <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
             <Text style={styles.errorText}>{fieldState.error.message}</Text>
           </View>
         )}
@@ -239,7 +239,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
       
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Iconify icon="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}

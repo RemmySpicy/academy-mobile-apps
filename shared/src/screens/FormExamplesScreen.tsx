@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 
 // Theme
 import { useTheme, createThemedStyles } from '../theme/ThemeProvider';
@@ -117,7 +117,7 @@ const FormExamplesScreen: React.FC = () => {
               onBlur={onBlur}
               keyboardType="email-address"
               autoCapitalize="none"
-              startIcon={<Iconify icon="ri:mail-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="ri:mail-line" size={20} color={theme.colors.text.tertiary} />}
               error={loginForm.formState.errors.email?.message}
             />
           )}
@@ -141,7 +141,7 @@ const FormExamplesScreen: React.FC = () => {
               onChangeText={onChange}
               onBlur={onBlur}
               secureTextEntry
-              startIcon={<Iconify icon="ri:lock-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="ri:lock-line" size={20} color={theme.colors.text.tertiary} />}
               error={loginForm.formState.errors.password?.message}
             />
           )}
@@ -166,7 +166,7 @@ const FormExamplesScreen: React.FC = () => {
             title="Sign In"
             onPress={loginForm.handleSubmit(onLoginSubmit)}
             isLoading={loginForm.formState.isSubmitting}
-            startIcon={<Iconify icon="ri:login-circle-line" size={16} color="white" />}
+            startIcon={<Ionicons name="ri:login-circle-line" size={16} color="white" />}
           />
           
           <CustomButton
@@ -244,7 +244,7 @@ const FormExamplesScreen: React.FC = () => {
               onBlur={onBlur}
               keyboardType="email-address"
               autoCapitalize="none"
-              startIcon={<Iconify icon="ri:mail-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="ri:mail-line" size={20} color={theme.colors.text.tertiary} />}
               error={profileForm.formState.errors.email?.message}
             />
           )}
@@ -261,7 +261,7 @@ const FormExamplesScreen: React.FC = () => {
               onChangeText={onChange}
               onBlur={onBlur}
               keyboardType="phone-pad"
-              startIcon={<Iconify icon="ri:phone-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="ri:phone-line" size={20} color={theme.colors.text.tertiary} />}
             />
           )}
         />
@@ -317,7 +317,7 @@ const FormExamplesScreen: React.FC = () => {
             title="Update Profile"
             onPress={profileForm.handleSubmit(onProfileSubmit)}
             isLoading={profileForm.formState.isSubmitting}
-            startIcon={<Iconify icon="ri:save-line" size={16} color="white" />}
+            startIcon={<Ionicons name="ri:save-line" size={16} color="white" />}
           />
           
           <CustomButton
@@ -418,7 +418,7 @@ const FormExamplesScreen: React.FC = () => {
             variant="orange" // Academy orange for emphasis
             onPress={feedbackForm.handleSubmit(onFeedbackSubmit)}
             isLoading={feedbackForm.formState.isSubmitting}
-            startIcon={<Iconify icon="ri:send-plane-line" size={16} color={theme.colors.interactive.themeBlack} />}
+            startIcon={<Ionicons name="ri:send-plane-line" size={16} color={theme.colors.interactive.themeBlack} />}
           />
           
           <CustomButton

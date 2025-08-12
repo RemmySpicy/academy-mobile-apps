@@ -11,8 +11,7 @@ import Animated, {
   FadeInDown,
   FadeInRight,
 } from 'react-native-reanimated';
-import type { ScreenProps } from '@/shared/navigation/types';
-import type { StudentsStackParamList } from '@/shared/navigation/types';
+import type { ScreenProps, StudentsStackParamList } from '../types';
 
 type StudentDetailScreenProps = ScreenProps<StudentsStackParamList, 'StudentDetail'>;
 

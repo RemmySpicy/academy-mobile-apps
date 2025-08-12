@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { validateEmail, validatePassword } from '@shared/utils';
+import { validateEmail, validatePassword } from '@academy/mobile-shared';
 import type { LoginFormData, RegisterFormData, ForgotPasswordFormData } from '../types';
 
 // Validation schemas

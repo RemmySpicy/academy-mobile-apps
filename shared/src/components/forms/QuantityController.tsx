@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useController } from 'react-hook-form';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { FormFieldProps } from '../../types';
 
 interface QuantityControllerProps extends FormFieldProps {
@@ -181,8 +181,8 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
           accessibilityLabel="Decrease quantity"
           accessibilityRole="button"
         >
-          <Iconify 
-            icon="ri:subtract-line" 
+          <Ionicons 
+            name="ri:subtract-line" 
             size={sizeStyles.icon} 
             color={canDecrease ? variantStyles.text.color : variantStyles.textDisabled.color}
           />
@@ -206,8 +206,8 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
           accessibilityLabel="Increase quantity"
           accessibilityRole="button"
         >
-          <Iconify 
-            icon="ri:add-line" 
+          <Ionicons 
+            name="ri:add-line" 
             size={sizeStyles.icon} 
             color={canIncrease ? variantStyles.text.color : variantStyles.textDisabled.color}
           />
@@ -216,7 +216,7 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
       
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Iconify icon="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}

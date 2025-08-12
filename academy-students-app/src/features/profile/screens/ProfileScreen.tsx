@@ -16,7 +16,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore } from '@/shared/store';
+import { useAuthStore } from '@academy/mobile-shared';
 
 interface ProfileMenuSection {
   title: string;

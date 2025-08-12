@@ -1,4 +1,6 @@
-import type { ScreenProps } from '@/shared/navigation/types';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+export type ScreenProps<T extends Record<string, any>, K extends keyof T> = NativeStackScreenProps<T, K>;
 
 // Auth Form Data Types
 export interface LoginFormData {

@@ -11,7 +11,7 @@ import {
   State,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 
@@ -175,28 +175,28 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   const getAlertConfig = () => {
     const configs = {
       success: {
-        icon: 'ri:check-line',
+        icon: 'checkmark-circle' as keyof typeof Ionicons.glyphMap,
         iconColor: theme.colors.status.success,
         backgroundColor: theme.colors.status.successBackground,
         borderColor: theme.colors.status.successBorder,
         textColor: theme.colors.text.primary,
       },
       error: {
-        icon: 'ri:close-line',
+        icon: 'close-circle' as keyof typeof Ionicons.glyphMap,
         iconColor: theme.colors.status.error,
         backgroundColor: theme.colors.status.errorBackground,
         borderColor: theme.colors.status.errorBorder,
         textColor: theme.colors.text.primary,
       },
       warning: {
-        icon: 'ri:alert-line',
+        icon: 'warning' as keyof typeof Ionicons.glyphMap,
         iconColor: theme.colors.status.warning,
         backgroundColor: theme.colors.status.warningBackground,
         borderColor: theme.colors.status.warningBorder,
         textColor: theme.colors.text.primary,
       },
       info: {
-        icon: 'ri:information-line',
+        icon: 'information-circle' as keyof typeof Ionicons.glyphMap,
         iconColor: theme.colors.status.info,
         backgroundColor: theme.colors.status.infoBackground,
         borderColor: theme.colors.status.infoBorder,
@@ -261,8 +261,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
         activeOpacity={onPress || dismissible ? 0.8 : 1}
       >
         <View style={styles.iconContainer}>
-          <Iconify
-            icon={config.icon}
+          <Ionicons
+            name={config.icon}
             size={20}
             color={config.iconColor}
           />
@@ -292,8 +292,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
             accessibilityLabel="Dismiss alert"
             accessibilityRole="button"
           >
-            <Iconify
-              icon="ri:close-line"
+            <Ionicons
+              name="close"
               size={16}
               color={config.textColor}
             />

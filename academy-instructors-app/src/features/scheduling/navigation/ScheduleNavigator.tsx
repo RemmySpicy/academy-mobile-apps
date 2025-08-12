@@ -2,7 +2,9 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { ScheduleStackParamList } from '@/shared/navigation/types';
+export type ScheduleStackParamList = {
+  ScheduleMain: undefined;
+};
 
 const Stack = createNativeStackNavigator<ScheduleStackParamList>();
 

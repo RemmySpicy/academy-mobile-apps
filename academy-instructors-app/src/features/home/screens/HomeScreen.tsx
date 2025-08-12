@@ -1,230 +1,228 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Dimensions,
-} from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Animated, {
-  FadeInDown,
-  FadeInRight,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
-import { useAuthStore } from '@/shared/store';
+import {
+  Header,
+  InstructorDashboard,
+  useTheme,
+  useProgramContext,
+  useAuthStore,
+} from '@academy/mobile-shared';
 
-const { width } = Dimensions.get('window');
+// Sample data for testing
+const sampleStudents = [
+  {
+    id: '1',
+    first_name: 'Sarah',
+    last_name: 'Johnson',
+    email: 'sarah.johnson@example.com',
+    program_id: 'swimming-1',
+    enrollment_date: '2024-01-15',
+    level: 'Beginner',
+    group: 'Group A',
+    performance_level: 'good' as const,
+    current_attendance_rate: 92,
+    today_attendance: 'present' as const,
+    last_lesson_score: 85,
+    total_lessons: 20,
+    completed_lessons: 15,
+    upcoming_assessments: 1,
+    overdue_assignments: 0,
+    parent_contact_required: false,
+  },
+  {
+    id: '2',
+    first_name: 'Mike',
+    last_name: 'Chen',
+    email: 'mike.chen@example.com',
+    program_id: 'swimming-1',
+    enrollment_date: '2024-02-01',
+    level: 'Intermediate',
+    group: 'Group B',
+    performance_level: 'excellent' as const,
+    current_attendance_rate: 98,
+    today_attendance: 'present' as const,
+    last_lesson_score: 94,
+    total_lessons: 25,
+    completed_lessons: 22,
+    upcoming_assessments: 0,
+    overdue_assignments: 0,
+    parent_contact_required: false,
+  },
+  {
+    id: '3',
+    first_name: 'Emma',
+    last_name: 'Davis',
+    email: 'emma.davis@example.com',
+    program_id: 'swimming-1',
+    enrollment_date: '2024-01-20',
+    level: 'Beginner',
+    group: 'Group A',
+    performance_level: 'needs-attention' as const,
+    current_attendance_rate: 78,
+    today_attendance: 'absent' as const,
+    last_lesson_score: 68,
+    total_lessons: 20,
+    completed_lessons: 12,
+    upcoming_assessments: 2,
+    overdue_assignments: 1,
+    parent_contact_required: true,
+  },
+];
 
-interface QuickActionProps {
-  icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  subtitle: string;
-  color: string;
-  onPress: () => void;
-  index: number;
-}
-
-const QuickActionCard: React.FC<QuickActionProps> = ({
-  icon,
-  title,
-  subtitle,
-  color,
-  onPress,
-  index,
-}) => {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Animated.View
-      entering={FadeInRight.delay(index * 100).springify()}
-      style={animatedStyle}
-    >
-      <Pressable
-        onPress={onPress}
-        onPressIn={() => {
-          scale.value = withSpring(0.95);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1);
-        }}
-        className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3"
-      >
-        <View className="flex-row items-center">
-          <View
-            className="w-12 h-12 rounded-full items-center justify-center mr-4"
-            style={{ backgroundColor: `${color}15` }}
-          >
-            <Ionicons name={icon} size={24} color={color} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-gray-900 font-semibold text-base">{title}</Text>
-            <Text className="text-gray-500 text-sm mt-1">{subtitle}</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-        </View>
-      </Pressable>
-    </Animated.View>
-  );
+const sampleChartData = {
+  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  datasets: [
+    {
+      data: [75, 80, 85, 88, 92, 87],
+      color: (opacity = 1) => `rgba(79, 46, 201, ${opacity})`,
+      strokeWidth: 2,
+    },
+  ],
 };
 
+const sampleMetrics = [
+  {
+    id: 'total_students',
+    title: 'Total Students',
+    value: 24,
+    change: 3,
+    changeType: 'increase' as const,
+    icon: 'ri:group-line',
+  },
+  {
+    id: 'attendance_rate',
+    title: 'Attendance Rate',
+    value: '94%',
+    change: 2.5,
+    changeType: 'increase' as const,
+    icon: 'ri:calendar-check-line',
+  },
+  {
+    id: 'avg_performance',
+    title: 'Avg Performance',
+    value: '87%',
+    change: -1.2,
+    changeType: 'decrease' as const,
+    icon: 'ri:bar-chart-line',
+  },
+  {
+    id: 'pending_tasks',
+    title: 'Pending Tasks',
+    value: 12,
+    icon: 'ri:task-line',
+  },
+];
+
+const sampleActivities = [
+  {
+    id: '1',
+    type: 'attendance' as const,
+    student_name: 'Sarah Johnson',
+    message: 'marked as present in Swimming Level 1',
+    timestamp: '2 hours ago',
+    priority: 'low' as const,
+  },
+  {
+    id: '2',
+    type: 'assignment' as const,
+    student_name: 'Mike Chen',
+    message: 'completed technique assessment',
+    timestamp: '3 hours ago',
+    priority: 'medium' as const,
+  },
+  {
+    id: '3',
+    type: 'alert' as const,
+    student_name: 'Emma Davis',
+    message: 'missed class - parent contact required',
+    timestamp: '5 hours ago',
+    priority: 'high' as const,
+  },
+];
+
 /**
- * Home Screen - Dashboard Overview
+ * Home Screen - Instructor Dashboard
  * 
  * Features:
- * - Welcome message with current program
- * - Quick action cards with smooth animations
- * - Recent activity overview
- * - Program switching capability
- * - Statistics overview
+ * - Enhanced header with instructor actions
+ * - Comprehensive dashboard with metrics
+ * - Performance charts and analytics
+ * - Recent students and activities
+ * - Quick actions for instructors
  */
 export const HomeScreen: React.FC = () => {
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const { user, currentProgram } = useAuthStore();
+  const [notificationCount, setNotificationCount] = useState(3);
 
-  const quickActions = [
-    {
-      icon: 'people-outline' as const,
-      title: 'My Students',
-      subtitle: 'View and manage student progress',
-      color: '#3B82F6',
-      onPress: () => console.log('Navigate to students'),
-    },
-    {
-      icon: 'calendar-outline' as const,
-      title: 'Today\'s Schedule',
-      subtitle: 'View upcoming classes and sessions',
-      color: '#10B981',
-      onPress: () => console.log('Navigate to schedule'),
-    },
-    {
-      icon: 'analytics-outline' as const,
-      title: 'Performance Insights',
-      subtitle: 'Check student progress and analytics',
-      color: '#8B5CF6',
-      onPress: () => console.log('Navigate to analytics'),
-    },
-    {
-      icon: 'add-circle-outline' as const,
-      title: 'Quick Actions',
-      subtitle: 'Add attendance, grades, or notes',
-      color: '#F59E0B',
-      onPress: () => console.log('Show quick actions'),
-    },
-  ];
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
+  const handleStudentPress = (student: any) => {
+    console.log('Student pressed:', student.first_name, student.last_name);
+  };
+
+  const handleMetricPress = (metric: any) => {
+    console.log('Metric pressed:', metric.title);
+  };
+
+  const handleViewAllStudents = () => {
+    console.log('View all students');
+  };
+
+  const handleViewAllActivities = () => {
+    console.log('View all activities');
+  };
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingTop: insets.top + 20,
-          paddingBottom: 100, // Space for tab bar
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header Section */}
-        <Animated.View
-          entering={FadeInDown.delay(100).springify()}
-          className="px-6 mb-8"
-        >
-          <Text className="text-gray-500 text-base">Welcome back,</Text>
-          <Text className="text-gray-900 text-2xl font-bold mt-1">
-            {user?.firstName || 'Instructor'}
-          </Text>
-          <View className="flex-row items-center mt-3 bg-blue-50 px-3 py-2 rounded-lg self-start">
-            <Ionicons name="business-outline" size={16} color="#3B82F6" />
-            <Text className="text-blue-600 font-medium text-sm ml-2">
-              {currentProgram?.name || 'Select Program'}
-            </Text>
-          </View>
-        </Animated.View>
+    <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+      {/* Enhanced Header */}
+      <Header
+        title="Instructor Dashboard"
+        variant="instructor"
+        onSearchPress={handleSearch}
+        onFilterPress={handleFilter}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showInstructorActions={true}
+        showNotifications={true}
+        showProfile={true}
+        style={{ paddingTop: insets.top }}
+      />
 
-        {/* Stats Overview */}
-        <Animated.View
-          entering={FadeInDown.delay(200).springify()}
-          className="px-6 mb-8"
-        >
-          <View className="flex-row justify-between">
-            <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 mr-2">
-              <Text className="text-gray-500 text-sm">Active Students</Text>
-              <Text className="text-gray-900 text-2xl font-bold mt-1">24</Text>
-              <Text className="text-green-600 text-sm mt-1">+3 this week</Text>
-            </View>
-            <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 ml-2">
-              <Text className="text-gray-500 text-sm">Today's Classes</Text>
-              <Text className="text-gray-900 text-2xl font-bold mt-1">5</Text>
-              <Text className="text-blue-600 text-sm mt-1">Next at 2:00 PM</Text>
-            </View>
-          </View>
-        </Animated.View>
-
-        {/* Quick Actions */}
-        <View className="px-6 mb-8">
-          <Animated.Text
-            entering={FadeInDown.delay(300).springify()}
-            className="text-gray-900 text-lg font-semibold mb-4"
-          >
-            Quick Actions
-          </Animated.Text>
-          {quickActions.map((action, index) => (
-            <QuickActionCard
-              key={action.title}
-              {...action}
-              index={index}
-            />
-          ))}
-        </View>
-
-        {/* Recent Activity */}
-        <Animated.View
-          entering={FadeInDown.delay(500).springify()}
-          className="px-6 mb-8"
-        >
-          <Text className="text-gray-900 text-lg font-semibold mb-4">
-            Recent Activity
-          </Text>
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 bg-green-100 rounded-full items-center justify-center mr-3">
-                <Ionicons name="checkmark" size={16} color="#10B981" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-gray-900 font-medium">Attendance marked</Text>
-                <Text className="text-gray-500 text-sm">Swimming Level 2 - 10 students present</Text>
-              </View>
-              <Text className="text-gray-400 text-xs">2h ago</Text>
-            </View>
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center mr-3">
-                <Ionicons name="star" size={16} color="#3B82F6" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-gray-900 font-medium">Progress updated</Text>
-                <Text className="text-gray-500 text-sm">Sarah Johnson completed Level 1</Text>
-              </View>
-              <Text className="text-gray-400 text-xs">4h ago</Text>
-            </View>
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 bg-yellow-100 rounded-full items-center justify-center mr-3">
-                <Ionicons name="chatbubble" size={16} color="#F59E0B" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-gray-900 font-medium">New message</Text>
-                <Text className="text-gray-500 text-sm">Parent inquiry about schedule changes</Text>
-              </View>
-              <Text className="text-gray-400 text-xs">6h ago</Text>
-            </View>
-          </View>
-        </Animated.View>
-      </ScrollView>
+      {/* Instructor Dashboard */}
+      <InstructorDashboard
+        metrics={sampleMetrics}
+        chartData={sampleChartData}
+        recentStudents={sampleStudents}
+        recentActivities={sampleActivities}
+        onMetricPress={handleMetricPress}
+        onStudentPress={handleStudentPress}
+        onViewAllStudents={handleViewAllStudents}
+        onViewAllActivities={handleViewAllActivities}
+        showChart={true}
+        showStudents={true}
+        showActivities={true}
+        maxStudentsShown={2}
+        maxActivitiesShown={3}
+      />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

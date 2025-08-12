@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { Show } from './Show';
 
 export interface ErrorMessageProps {
@@ -267,8 +267,8 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
     <View style={variantStyles.content}>
       <Show.When isTrue={showIcon}>
         <View style={styles.iconContainer}>
-          <Iconify
-            icon={config.icon}
+          <Ionicons
+            name={config.icon}
             size={sizeConfig.iconSize}
             color={config.iconColor}
           />
@@ -333,8 +333,8 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
           accessibilityRole="button"
           accessibilityLabel="Dismiss error message"
         >
-          <Iconify
-            icon="ri:close-line"
+          <Ionicons
+            name="ri:close-line"
             size={sizeConfig.iconSize - 2}
             color={config.textColor}
           />

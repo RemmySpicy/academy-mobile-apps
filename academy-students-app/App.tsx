@@ -1,49 +1,60 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  ThemeProvider,
+  ProgramContextProvider,
+  useAuthStore,
+} from '@academy/mobile-shared';
+
+import { AppNavigator } from './src/navigation/AppNavigator';
+import { LoadingScreen } from './src/components/LoadingScreen';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
+
+/**
+ * App Content Component
+ * 
+ * Handles authentication state and displays appropriate content
+ */
+const AppContent: React.FC = () => {
+  const { isInitializing } = useAuthStore();
+
+  if (isInitializing) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
+  );
+};
 
 /**
  * Academy Students App
  * 
- * Minimal version for testing - will be replaced with full navigation
+ * Enhanced React Native app for students and parents with:
+ * - Complete navigation system
+ * - Enhanced Academy-themed components
+ * - Multi-program context support
+ * - Proper theme management
+ * - Error boundaries and loading states
  */
 export default function App() {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Text style={styles.title}>Academy Students App</Text>
-      <Text style={styles.subtitle}>Version 2.0 - Development Mode</Text>
-      <Text style={styles.description}>
-        Mobile app for students and parents
-      </Text>
-    </View>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <ProgramContextProvider>
+              <StatusBar style="auto" />
+              <AppContent />
+            </ProgramContextProvider>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-});

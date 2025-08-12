@@ -30,3 +30,8 @@ export {
   useErrorMessage,
 } from './ErrorMessage';
 export type { ErrorMessageProps } from './ErrorMessage';
+
+// Enhanced UI Components
+export { default as Header } from './Header';
+export { default as StudentCard } from './StudentCard';
+export { default as InstructorDashboard } from './InstructorDashboard';

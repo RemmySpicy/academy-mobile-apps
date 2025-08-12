@@ -15,8 +15,7 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { CustomInput, CustomButton } from '@shared/components/forms';
-import { validateEmail } from '@shared/utils';
+import { CustomInput, CustomButton, validateEmail } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 const forgotPasswordSchema = yup.object({

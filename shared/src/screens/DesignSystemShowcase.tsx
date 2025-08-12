@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 
 // Theme
 import { useTheme, createThemedStyles, ExtendedThemeMode } from '../theme/ThemeProvider';
@@ -91,8 +91,8 @@ const DesignSystemShowcase: React.FC = () => {
         <CustomButton title="Loading" isLoading onPress={() => {}} />
         <CustomButton 
           title="With Icons" 
-          startIcon={<Iconify icon="ri:star-line" size={16} color="white" />}
-          endIcon={<Iconify icon="ri:arrow-right-line" size={16} color="white" />}
+          startIcon={<Ionicons name="star-outline" size={16} color="white" />}
+          endIcon={<Ionicons name="ri:arrow-right-line" size={16} color="white" />}
           onPress={() => {}} 
         />
       </View>

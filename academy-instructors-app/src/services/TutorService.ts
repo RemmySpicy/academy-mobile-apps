@@ -5,7 +5,7 @@
  * for instructor-specific operations in the mobile app.
  */
 
-import { apiClient } from '@shared/api-client';
+import { apiClient } from '@academy/mobile-shared';
 import type {
   TutorProfile,
   StudentOverview,

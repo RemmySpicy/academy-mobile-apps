@@ -141,7 +141,7 @@ const OtpField: React.FC<OtpFieldProps> = ({
 
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Iconify icon="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}

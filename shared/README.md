@@ -7,14 +7,20 @@ This package contains shared components, services, types, and utilities for the 
 ```
 shared/
 ├── src/
-│   ├── components/       # Reusable UI components
-│   │   └── forms/       # Form components with React Hook Form integration
+│   ├── components/       # Enhanced Academy-themed UI components
+│   │   ├── ui/          # Enhanced UI components (Header, StudentCard, InstructorDashboard)
+│   │   ├── charts/      # Academy-themed chart components (PerformanceChart)
+│   │   ├── forms/       # Form components with React Hook Form integration
+│   │   ├── auth/        # Authentication related components
+│   │   └── program/     # Program context and management components
 │   ├── hooks/           # Custom React hooks
 │   ├── services/        # API and service layer
 │   ├── store/           # Zustand state management stores
+│   ├── theme/           # Academy design system and theming
 │   ├── types/           # TypeScript type definitions
 │   ├── utils/           # Utility functions and constants
 │   └── index.ts         # Main export file
+├── assets/              # Shared assets (images, icons)
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -32,13 +38,151 @@ import { CustomInput, useAuthStore, UserRole } from '@shared';
 
 ### Key Features
 
+- ✅ **Enhanced Academy-Themed Components** with instructor utilities
 - ✅ **Modern Authentication System** with Zustand and SecureStore
 - ✅ **Comprehensive Form Components** with React Hook Form integration
 - ✅ **Type-Safe API Client** with automatic error handling
+- ✅ **Academy Design System** with consistent theming
+- ✅ **Instructor-Specific Tools** for performance monitoring and quick actions
 - ✅ **Notification System** for user feedback
 - ✅ **Program Context Management** for multi-program support
 - ✅ **Role-Based Access Control** with permission management
 - ✅ **Accessibility-First Design** with ARIA support
+
+## 🎨 Enhanced Academy Components
+
+The shared package includes enhanced, Academy-themed components optimized for instructor workflows:
+
+### Header Component
+Academy-themed header with instructor utilities:
+
+```typescript
+import { Header } from '@academy/mobile-shared';
+
+<Header
+  title="Student Management"
+  variant="instructor"
+  onSearchPress={handleSearch}
+  onFilterPress={handleFilter}
+  onNotificationPress={handleNotifications}
+  notificationCount={5}
+  showInstructorActions={true}
+/>
+```
+
+**Features:**
+- Multiple variants: `default`, `withBack`, `withNotification`, `withProgram`, `instructor`
+- Instructor actions: Search, filter, notifications
+- Program context display
+- Accessibility support with proper ARIA labels
+
+### StudentCard Component
+Enhanced student cards with performance indicators and quick actions:
+
+```typescript
+import { StudentCard } from '@academy/mobile-shared';
+
+<StudentCard
+  student={studentData}
+  variant="detailed"
+  enableQuickAttendance={true}
+  enableQuickGrading={true}
+  showInstructorNotes={true}
+  onAttendancePress={handleAttendance}
+  onPerformancePress={handleGrading}
+  onContactParentPress={handleParentContact}
+/>
+```
+
+**Features:**
+- Performance level indicators with color coding
+- Attendance status visualization
+- Progress tracking with completion bars
+- Quick action buttons for instructors
+- Alert system for overdue assignments and parent contact
+
+### InstructorDashboard Component
+Comprehensive dashboard for instructor overview screens:
+
+```typescript
+import { InstructorDashboard } from '@academy/mobile-shared';
+
+<InstructorDashboard
+  metrics={dashboardMetrics}
+  chartData={performanceData}
+  recentStudents={students}
+  recentActivities={activities}
+  onMetricPress={handleMetricClick}
+  onStudentPress={handleStudentClick}
+  showChart={true}
+  showStudents={true}
+  showActivities={true}
+/>
+```
+
+**Features:**
+- Key performance metrics with change indicators
+- Quick action grid for common instructor tasks
+- Integrated performance charts
+- Recent students and activity feeds
+- Customizable sections and limits
+
+### PerformanceChart Component
+Academy-themed analytics charts with interactive features:
+
+```typescript
+import { PerformanceChart } from '@academy/mobile-shared';
+
+<PerformanceChart
+  data={chartData}
+  type="line"
+  title="Student Performance Trend"
+  metrics={performanceMetrics}
+  showPeriodSelector={true}
+  onPeriodChange={handlePeriodChange}
+  primaryColor={theme.colors.academy.purple[500]}
+/>
+```
+
+**Features:**
+- Multiple chart types: line, bar, pie, progress
+- Academy theming with automatic color coordination
+- Interactive data point selection
+- Period filtering (week, month, quarter, year)
+- Goal comparison and achievement tracking
+
+### Enhanced Form Components
+All form components have been enhanced with Academy theming:
+
+```typescript
+import { CustomInput, CustomButton } from '@academy/mobile-shared';
+
+// Enhanced input with Academy theming
+<CustomInput
+  name="email"
+  control={control}
+  variant="standard"
+  placeholder="Enter email"
+  leftIcon={<Iconify icon="ri:mail-line" />}
+/>
+
+// Enhanced button with all Academy variants
+<CustomButton
+  title="Submit"
+  variant="primary"
+  onPress={handleSubmit}
+  isLoading={isLoading}
+  startIcon={<Iconify icon="ri:send-plane-line" />}
+/>
+```
+
+**Enhanced Features:**
+- Complete Academy color palette support
+- Improved accessibility with ARIA compliance
+- Better error handling and validation
+- Consistent theming across all variants
+
+For complete component documentation, see [ENHANCED_COMPONENTS.md](../ENHANCED_COMPONENTS.md).
 
 ## 🔐 Authentication System
 

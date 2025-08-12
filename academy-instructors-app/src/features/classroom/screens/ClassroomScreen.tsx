@@ -15,7 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore } from '@/shared/store';
+import { useAuthStore } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 

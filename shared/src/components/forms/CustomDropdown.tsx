@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Animated, Dimensions, Platform } from 'react-native';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { useController } from 'react-hook-form';
 import { FormFieldProps } from '../../types';
 
@@ -143,7 +143,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
           {item.label}
         </Text>
         {isSelected && showCheckmarks && (
-          <Iconify icon="ri:check-line" size={20} color="#3B82F6" />
+          <Ionicons name="ri:check-line" size={20} color="#3B82F6" />
         )}
       </TouchableOpacity>
     );
@@ -209,8 +209,8 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         >
           {getDisplayText()}
         </Text>
-        <Iconify
-          icon={isOpen ? "ri:arrow-up-s-line" : "ri:arrow-down-s-line"}
+        <Ionicons
+          name={isOpen ? "ri:arrow-up-s-line" : "ri:arrow-down-s-line"}
           size={20}
           color={disabled ? "#9CA3AF" : "#6B7280"}
         />
@@ -218,7 +218,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Iconify icon="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}
@@ -242,7 +242,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 accessibilityLabel="Close dropdown"
                 accessibilityRole="button"
               >
-                <Iconify icon="ri:close-line" size={24} color="#6B7280" />
+                <Ionicons name="ri:close-line" size={24} color="#6B7280" />
               </TouchableOpacity>
             </View>
 

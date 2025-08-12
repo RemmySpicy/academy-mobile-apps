@@ -8,7 +8,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import * as Facebook from 'expo-auth-session/providers/facebook';
@@ -300,8 +300,8 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
           style={{ marginRight: showText ? 12 : 0 }}
         />
       ) : (
-        <Iconify
-          icon={providerConfig.icon}
+        <Ionicons
+          name={providerConfig.icon}
           size={providerConfig.iconSize}
           style={{ marginRight: showText ? 12 : 0 }}
         />

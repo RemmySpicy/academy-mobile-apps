@@ -6,7 +6,7 @@
  * and error handling.
  */
 
-import { ApiClient } from '@shared/api-client';
+import { apiClient } from '@academy/mobile-shared';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // API Configuration

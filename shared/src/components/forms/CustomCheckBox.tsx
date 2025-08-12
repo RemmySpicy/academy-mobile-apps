@@ -7,7 +7,7 @@ import {
   Animated,
   ViewStyle,
 } from 'react-native';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { useController } from 'react-hook-form';
 import { FormFieldProps } from '../../types';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
@@ -179,8 +179,8 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
   const renderCheckIcon = () => {
     if (indeterminate) {
       return indeterminateIcon || (
-        <Iconify
-          icon="ri:subtract-line"
+        <Ionicons
+          name="ri:subtract-line"
           size={size === 'sm' ? 12 : size === 'md' ? 14 : 16}
           color={theme.colors.text.inverse}
         />
@@ -195,8 +195,8 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
             transform: animated ? [{ scale: scaleAnim }] : [{ scale: 1 }],
           }}
         >
-          <Iconify
-            icon="ri:check-line"
+          <Ionicons
+            name="ri:check-line"
             size={size === 'sm' ? 12 : size === 'md' ? 14 : 16}
             color={theme.colors.text.inverse}
           />
@@ -239,7 +239,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
 
     return (
       <View style={styles.errorContainer}>
-        <Iconify icon="ri:error-warning-line" size={14} color={theme.colors.status.error} />
+        <Ionicons name="ri:error-warning-line" size={14} color={theme.colors.status.error} />
         <Text style={styles.errorText} accessibilityRole="alert">
           {formField.fieldState.error.message}
         </Text>

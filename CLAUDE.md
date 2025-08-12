@@ -46,6 +46,87 @@ This is a monorepo containing mobile applications for the Academy Management Sys
 The goal is to rebuild the apps with modern architecture while maintaining feature parity with the
 existing implementations.
 
+## 🎨 CRITICAL: Theme System Usage (January 2025)
+
+**⚠️ IMPORTANT**: The Academy Apps use a specific theme structure. Always use these exact variable names:
+
+### **Academy Purple (Brand Color)**
+```typescript
+// ✅ CORRECT - Academy brand purple (#4F2EC9)
+theme.colors.interactive.primary
+
+// ❌ WRONG - These DO NOT exist:
+theme.colors.primary.main
+theme.colors.academy.purple[500]
+```
+
+### **Common Theme Variables**
+```typescript
+// Colors
+theme.colors.interactive.primary     // Academy purple #4F2EC9
+theme.colors.text.primary           // Main text
+theme.colors.text.secondary         // Secondary text
+theme.colors.background.primary     // Main background
+theme.colors.background.secondary   // Card backgrounds
+theme.colors.border.primary         // Default borders
+theme.colors.status.error           // Error states
+
+// Spacing
+theme.spacing.xs                    // 4px
+theme.spacing.sm                    // 8px  
+theme.spacing.md                    // 16px
+theme.spacing.lg                    // 24px
+
+// Typography
+theme.typography.fontSize.body      // 16px
+theme.fontConfig.fontWeight.medium  // '500'
+theme.borderRadius.lg               // 12px
+```
+
+### **Implementation Pattern**
+```typescript
+import { useTheme } from '@academy/mobile-shared';
+
+const createStyles = (theme: any) => StyleSheet.create({
+  button: {
+    backgroundColor: theme.colors.interactive.primary, // Academy purple
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+  }
+});
+
+const MyComponent = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  // ...
+};
+```
+
+**📖 Full Documentation**: See `/docs/THEME_SYSTEM.md` for complete reference.
+
+## ✅ Enhanced Components (January 2025)
+
+The shared component library has been enhanced with Academy-themed, instructor-specific components:
+
+### Enhanced UI Components
+- **Header**: Academy themed with instructor actions (search, filter, notifications)
+- **StudentCard**: Performance indicators, attendance status, quick actions for instructors
+- **InstructorDashboard**: Comprehensive dashboard with metrics, charts, and activity feeds
+- **PerformanceChart**: Academy themed analytics charts with interactive features
+
+### Enhanced Form Components
+- **CustomInput**: Refined validation, accessibility, and Academy theming
+- **CustomButton**: All 11 Academy button variants with loading states and icons
+
+### Key Features
+- **Academy Theming**: Full integration with design system colors, typography, spacing
+- **Instructor Utilities**: Quick attendance, grading, parent contact, student management
+- **Program Context**: Automatic filtering and role-based access control
+- **Accessibility**: Full ARIA support, proper touch targets, screen reader compatibility
+- **TypeScript**: Complete type safety with exported interfaces
+
+All components are exported from `@academy/mobile-shared` and maintain feature parity with existing implementations while adding modern functionality.
+
 Both apps use a feature-based architecture with:
 
 - **core/**: Base components, config, hooks, navigation, providers
@@ -62,12 +143,15 @@ role-based access control.
 - **React Native**: 0.80.2
 - **Expo SDK**: 53.0.0
 - **TypeScript**: 5.9.2
-- **React Navigation**: 6.x
+- **React Navigation**: 6.x with @react-navigation/native-stack
 - **State Management**: Zustand 5.0.7
 - **Forms**: React Hook Form 7.62.0
+- **Icons**: @expo/vector-icons (Ionicons)
+- **Charts**: react-native-chart-kit with react-native-svg
 - **Testing**: Jest 30.0.5 with React Native Testing Library
 - **Linting**: ESLint 8.57.0 with TypeScript support
 - **Formatting**: Prettier 3.4.2 with Husky pre-commit hooks
+- **Monorepo**: react-native-monorepo-config for proper module resolution
 
 ## Development Commands
 
@@ -401,6 +485,12 @@ These show practical usage patterns for both apps.
 - **Expo plugin errors**: Verify plugin is accessible with
   `node -e "console.log(require.resolve('plugin-name'))"`
 
+**Metro Configuration Issues:**
+
+- **Module resolution errors**: Ensure metro.config.js uses proper monorepo configuration
+- **Iconify errors**: Use @expo/vector-icons (Ionicons) instead of react-native-iconify
+- **Theme variables**: Use `theme.colors.interactive.primary` for Academy purple (#4F2EC9)
+
 **Common Fixes:**
 
 ```bash
@@ -409,6 +499,9 @@ npm install
 
 # Clear all caches and reinstall
 npm run reset
+
+# Clear metro cache
+npx expo start --clear
 
 # Check dependency resolution
 cd academy-instructors-app
@@ -432,6 +525,47 @@ node -e "console.log(require.resolve('@academy/mobile-shared'))"
   ```bash
   npx expo start --offline
   ```
+
+## Monorepo Configuration (Updated January 2025)
+
+The Academy Apps use a properly configured npm workspaces monorepo with react-native-monorepo-config for optimal module resolution.
+
+### Metro Configuration
+
+Both apps use identical metro configurations for consistent module resolution:
+
+```javascript
+const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+
+const projectRoot = __dirname;
+const workspaceRoot = path.resolve(projectRoot, '..');
+
+const config = getDefaultConfig(projectRoot);
+
+// 1. Watch the entire monorepo
+config.watchFolders = [workspaceRoot];
+
+// 2. Let Metro know where to resolve packages
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules'),
+];
+
+// 3. Configure extensions and platforms
+config.resolver.platforms = ['ios', 'android', 'native', 'web'];
+config.resolver.sourceExts = ['js', 'jsx', 'ts', 'tsx', 'json'];
+
+// 4. Add explicit alias for the shared package
+config.resolver.alias = {
+  '@academy/mobile-shared': path.resolve(workspaceRoot, 'shared'),
+};
+
+// 5. Ensure proper module resolution
+config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
+
+module.exports = config;
+```
 
 ## Monorepo Structure
 
@@ -558,6 +692,85 @@ GitHub Actions workflows:
 - **Parent/Guardian**: Child progress monitoring, instructor communication
 
 All data requests automatically include program context based on user role assignments.
+
+## Enhanced Component Usage
+
+The shared package now includes enhanced, Academy-themed components optimized for instructor workflows:
+
+### Using Enhanced Components
+
+```typescript
+import {
+  Header,
+  StudentCard,
+  InstructorDashboard,
+  PerformanceChart,
+  ThemeProvider,
+  ProgramContextProvider,
+} from '@academy/mobile-shared';
+
+// Wrap your app with providers
+function App() {
+  return (
+    <ThemeProvider>
+      <ProgramContextProvider>
+        <YourAppContent />
+      </ProgramContextProvider>
+    </ThemeProvider>
+  );
+}
+
+// Use enhanced header with instructor actions
+<Header
+  title="Student Management"
+  variant="instructor"
+  onSearchPress={handleSearch}
+  onFilterPress={handleFilter}
+  onNotificationPress={handleNotifications}
+  notificationCount={5}
+/>
+
+// Use enhanced student cards with quick actions
+<StudentCard
+  student={studentData}
+  variant="detailed"
+  enableQuickAttendance={true}
+  enableQuickGrading={true}
+  onAttendancePress={handleAttendance}
+  onPerformancePress={handleGrading}
+  onContactParentPress={handleParentContact}
+/>
+
+// Use instructor dashboard for overview screens
+<InstructorDashboard
+  metrics={dashboardMetrics}
+  chartData={performanceData}
+  recentStudents={students}
+  recentActivities={activities}
+  onMetricPress={handleMetricClick}
+  onStudentPress={handleStudentClick}
+/>
+```
+
+### Component Migration Guide
+
+When migrating from `existing-code/` components:
+
+1. **HeaderComponent** → `Header` with `variant="instructor"`
+2. **StudentCard** → Enhanced `StudentCard` with instructor features
+3. **Custom UI** → `InstructorDashboard` for overview screens
+4. **Charts** → `PerformanceChart` with Academy theming
+5. **Forms** → Enhanced `CustomInput` and `CustomButton`
+
+### Enhanced Features Available
+
+- **Instructor Quick Actions**: Attendance, grading, parent contact
+- **Performance Monitoring**: Visual indicators and alerts
+- **Program Context**: Automatic filtering and role-based access
+- **Academy Theming**: Consistent design system integration
+- **Accessibility**: Full ARIA support and screen reader compatibility
+
+See `ENHANCED_COMPONENTS.md` for detailed documentation and examples.
 
 ## Development Best Practices
 

@@ -1,7 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ClassroomScreen } from '../screens/ClassroomScreen';
-import type { ClassroomStackParamList } from '@/shared/navigation/types';
+export type ClassroomStackParamList = {
+  ClassroomMain: undefined;
+};
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 

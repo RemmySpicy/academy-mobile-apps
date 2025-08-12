@@ -10,7 +10,7 @@ interface ProgramContextProviderProps {
   children: ReactNode;
 }
 
-const ProgramContext = createContext<ProgramContextValue | null>(null);
+const ProgramReactContext = createContext<ProgramContextValue | null>(null);
 
 export function ProgramContextProvider({ children }: ProgramContextProviderProps) {
   const [currentProgram, setCurrentProgram] = useState<ProgramContext | null>(null);
@@ -192,18 +192,18 @@ export function ProgramContextProvider({ children }: ProgramContextProviderProps
   }
 
   return (
-    <ProgramContext.Provider value={contextValue}>
+    <ProgramReactContext.Provider value={contextValue}>
       {children}
-    </ProgramContext.Provider>
+    </ProgramReactContext.Provider>
   );
 }
 
 export function useProgramContext() {
-  const context = useContext(ProgramContext);
+  const context = useContext(ProgramReactContext);
   if (!context) {
     throw new Error('useProgramContext must be used within a ProgramContextProvider');
   }
   return context;
 }
 
-export { ProgramContext };
+export { ProgramReactContext as ProgramContext };

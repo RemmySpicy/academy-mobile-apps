@@ -15,9 +15,7 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { CustomInput, CustomButton } from '@shared/components/forms';
-import { validateEmail } from '@shared/utils';
-import { useAuthStore } from '@/shared/store';
+import { CustomInput, CustomButton, validateEmail, useAuthStore } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 // Validation schema

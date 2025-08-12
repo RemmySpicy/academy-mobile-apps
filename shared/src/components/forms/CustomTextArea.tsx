@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, KeyboardTypeOptions, StyleSheet } from 'react-native';
 import { useController } from 'react-hook-form';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { FormFieldProps } from '../../types';
 
 interface CustomTextAreaProps extends FormFieldProps {
@@ -130,7 +130,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
 
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Iconify icon="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}

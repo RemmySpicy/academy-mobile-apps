@@ -1,4 +1,7 @@
-import type { ScreenProps } from '@/shared/navigation/types';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+// Local navigation types
+export type ScreenProps<T extends Record<string, any>, K extends keyof T> = NativeStackScreenProps<T, K>;
 
 // Student Core Types
 export interface Student {

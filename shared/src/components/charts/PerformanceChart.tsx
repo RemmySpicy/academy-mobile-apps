@@ -14,9 +14,10 @@ import {
   PieChart,
   ProgressChart,
 } from 'react-native-chart-kit';
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 import { Show } from '../ui/Show';
 import ErrorMessage from '../ui/ErrorMessage';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -119,9 +120,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   showLegend = false,
   showMetrics = true,
   showPeriodSelector = true,
-  primaryColor = '#8A74DB',
-  backgroundColor = '#FFFFFF',
-  textColor = '#1F2937',
+  primaryColor,
+  backgroundColor,
+  textColor,
   loading = false,
   error,
   onPeriodChange,
@@ -136,8 +137,14 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   goalLabel,
   comparison,
 }) => {
+  const { theme } = useTheme();
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>(period);
   const [selectedDataPoint, setSelectedDataPoint] = useState<number | null>(null);
+  
+  // Use theme colors as defaults
+  const resolvedPrimaryColor = primaryColor || theme.colors.interactive.primary;
+  const resolvedBackgroundColor = backgroundColor || theme.colors.background.primary;
+  const resolvedTextColor = textColor || theme.colors.text.primary;
 
   const periods: { key: ChartPeriod; label: string }[] = [
     { key: 'week', label: 'Week' },
@@ -148,27 +155,27 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   ];
 
   const chartConfig = useMemo(() => ({
-    backgroundColor: backgroundColor,
-    backgroundGradientFrom: backgroundColor,
-    backgroundGradientTo: backgroundColor,
+    backgroundColor: resolvedBackgroundColor,
+    backgroundGradientFrom: resolvedBackgroundColor,
+    backgroundGradientTo: resolvedBackgroundColor,
     decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(138, 116, 219, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(31, 41, 55, ${opacity})`,
+    color: (opacity = 1) => resolvedPrimaryColor + Math.round(opacity * 255).toString(16).padStart(2, '0'),
+    labelColor: (opacity = 1) => resolvedTextColor + Math.round(opacity * 255).toString(16).padStart(2, '0'),
     style: {
       borderRadius: 12,
     },
     propsForDots: {
       r: '4',
       strokeWidth: '2',
-      stroke: primaryColor,
+      stroke: resolvedPrimaryColor,
     },
     propsForBackgroundLines: {
       strokeDasharray: showGrid ? '5,5' : '0,0',
-      stroke: 'rgba(0,0,0,0.1)',
+      stroke: theme.colors.border.primary,
     },
-    fillShadowGradient: primaryColor,
+    fillShadowGradient: resolvedPrimaryColor,
     fillShadowGradientOpacity: 0.3,
-  }), [backgroundColor, primaryColor, showGrid]);
+  }), [resolvedBackgroundColor, resolvedPrimaryColor, resolvedTextColor, showGrid, theme.colors.border.primary]);
 
   const handlePeriodChange = (newPeriod: ChartPeriod) => {
     setSelectedPeriod(newPeriod);
@@ -206,8 +213,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
     if (loading) {
       return (
         <View style={[styles.chartContainer, { height, justifyContent: 'center' }]}>
-          <ActivityIndicator size="large" color={primaryColor} />
-          <Text style={[styles.loadingText, { color: textColor }]}>
+          <ActivityIndicator size="large" color={resolvedPrimaryColor} />
+          <Text style={[styles.loadingText, { color: resolvedTextColor }]}>
             Loading chart data...
           </Text>
         </View>
@@ -306,8 +313,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
           <View key={index} style={styles.metricCard}>
             <View style={styles.metricHeader}>
               <Show.When isTrue={!!metric.icon}>
-                <Iconify
-                  icon={metric.icon!}
+                <Ionicons
+                  name={metric.icon!}
                   size={20}
                   color={metric.color || primaryColor}
                   style={styles.metricIcon}
@@ -328,8 +335,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
                   styles.changeContainer,
                   { backgroundColor: getChangeColor(metric.changeType) + '20' }
                 ]}>
-                  <Iconify
-                    icon={getChangeIcon(metric.changeType)}
+                  <Ionicons
+                    name={getChangeIcon(metric.changeType)}
                     size={12}
                     color={getChangeColor(metric.changeType)}
                   />
@@ -422,9 +429,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
     );
   };
 
+  const styles = useThemedStyles();
+
   return (
     <View
-      style={[styles.container, { backgroundColor, padding }]}
+      style={[styles.container, { backgroundColor: resolvedBackgroundColor, padding }]}
       accessibilityLabel={accessibilityLabel || `${title} performance chart`}
       accessibilityHint={accessibilityHint}
     >
@@ -455,130 +464,137 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 12,
-    marginVertical: 8,
-  },
-  header: {
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: '400',
-  },
-  periodSelector: {
-    marginBottom: 16,
-  },
-  periodSelectorContent: {
-    paddingHorizontal: 4,
-  },
-  periodButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginHorizontal: 4,
-    backgroundColor: 'rgba(0,0,0,0.05)',
-  },
-  periodButtonActive: {
-    backgroundColor: '#8A74DB',
-  },
-  periodButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  periodButtonTextActive: {
-    color: '#FFFFFF',
-  },
-  metricsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 16,
-    gap: 12,
-  },
-  metricCard: {
-    flex: 1,
-    minWidth: 120,
-    backgroundColor: 'rgba(0,0,0,0.02)',
-    padding: 12,
-    borderRadius: 8,
-  },
-  metricHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  metricIcon: {
-    marginRight: 6,
-  },
-  metricTitle: {
-    fontSize: 12,
-    fontWeight: '500',
-    opacity: 0.7,
-  },
-  metricContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  metricValue: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  changeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  changeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginLeft: 2,
-  },
-  chartContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chartWrapper: {
-    alignItems: 'center',
-    marginVertical: 8,
-  },
-  chart: {
-    borderRadius: 12,
-  },
-  loadingText: {
-    marginTop: 8,
-    fontSize: 14,
-    opacity: 0.7,
-  },
-  comparisonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
-  },
-  comparisonItem: {
-    alignItems: 'center',
-  },
-  comparisonLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    opacity: 0.7,
-  },
-  comparisonValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-});
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      borderRadius: theme.borderRadius.lg,
+      marginVertical: theme.spacing[2],
+      backgroundColor: theme.colors.background.elevated,
+      ...theme.elevation.sm,
+    },
+    header: {
+      marginBottom: theme.spacing[4],
+    },
+    title: {
+      ...theme.typography.heading.h4,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      marginBottom: theme.spacing[1],
+    },
+    subtitle: {
+      ...theme.typography.body.sm,
+      color: theme.colors.text.secondary,
+    },
+    periodSelector: {
+      marginBottom: theme.spacing[4],
+    },
+    periodSelectorContent: {
+      paddingHorizontal: theme.spacing[1],
+    },
+    periodButton: {
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[2],
+      borderRadius: theme.borderRadius.full,
+      marginHorizontal: theme.spacing[1],
+      backgroundColor: theme.colors.background.secondary,
+    },
+    periodButtonActive: {
+      backgroundColor: theme.colors.interactive.primary,
+    },
+    periodButtonText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    periodButtonTextActive: {
+      color: theme.colors.text.inverse,
+    },
+    metricsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginBottom: theme.spacing[4],
+      gap: theme.spacing[3],
+    },
+    metricCard: {
+      flex: 1,
+      minWidth: 120,
+      backgroundColor: theme.colors.background.secondary,
+      padding: theme.spacing[3],
+      borderRadius: theme.borderRadius.md,
+    },
+    metricHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing[2],
+    },
+    metricIcon: {
+      marginRight: theme.spacing[2],
+    },
+    metricTitle: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    metricContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    metricValue: {
+      ...theme.typography.heading.h5,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    changeContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing[2],
+      paddingVertical: theme.spacing[1],
+      borderRadius: theme.borderRadius.sm,
+    },
+    changeText: {
+      ...theme.typography.caption.small,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      marginLeft: theme.spacing[1],
+    },
+    chartContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    chartWrapper: {
+      alignItems: 'center',
+      marginVertical: theme.spacing[2],
+    },
+    chart: {
+      borderRadius: theme.borderRadius.lg,
+    },
+    loadingText: {
+      ...theme.typography.body.sm,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing[2],
+    },
+    comparisonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginTop: theme.spacing[4],
+      paddingTop: theme.spacing[4],
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border.primary,
+    },
+    comparisonItem: {
+      alignItems: 'center',
+    },
+    comparisonLabel: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    comparisonValue: {
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      marginTop: theme.spacing[1],
+    },
+  })
+);
 
 export default PerformanceChart;

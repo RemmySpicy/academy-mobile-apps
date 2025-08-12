@@ -9,7 +9,7 @@ import {
   TextStyle,
   ViewStyle,
 } from "react-native";
-import { Iconify } from "react-native-iconify";
+import { Ionicons } from "@expo/vector-icons";
 import { useController, Control, FieldValues, RegisterOptions } from "react-hook-form";
 import { FormFieldProps } from "../../types";
 import { useTheme, createThemedStyles } from "../../theme/ThemeProvider";
@@ -153,8 +153,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
         accessibilityRole="button"
         accessibilityLabel={isPasswordVisible ? "Hide password" : "Show password"}
       >
-        <Iconify
-          icon={isPasswordVisible ? "ri:eye-off-line" : "ri:eye-line"}
+        <Ionicons
+          name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
           size={20}
           color={theme.colors.text.tertiary}
         />
@@ -167,8 +167,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
     return (
       <View style={styles.errorIconContainer}>
-        <Iconify
-          icon="ri:error-warning-line"
+        <Ionicons
+          name="warning-outline"
           size={16}
           color={theme.colors.status.error}
         />

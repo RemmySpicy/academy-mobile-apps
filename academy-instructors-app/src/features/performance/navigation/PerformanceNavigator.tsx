@@ -1,7 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { PerformanceScreen } from '../screens/PerformanceScreen';
-import type { PerformanceStackParamList } from '@/shared/navigation/types';
+export type PerformanceStackParamList = {
+  PerformanceMain: undefined;
+};
 
 const Stack = createNativeStackNavigator<PerformanceStackParamList>();
 

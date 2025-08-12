@@ -4,246 +4,241 @@ import {
   Text,
   ScrollView,
   TextInput,
-  Pressable,
+  TouchableOpacity,
   FlatList,
+  StyleSheet,
+  Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, {
-  FadeInDown,
-  FadeInRight,
-  Layout,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import {
+  Header,
+  StudentCard,
+  useTheme,
+} from '@academy/mobile-shared';
 
-interface Student {
+// Enhanced student data structure to match our StudentCard component
+interface StudentData {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  program_id: string;
+  enrollment_date: string;
   level: string;
-  progress: number;
-  lastSession: string;
-  status: 'active' | 'inactive' | 'completed';
-  avatar: string;
+  group?: string;
+  performance_level: 'excellent' | 'good' | 'average' | 'needs-attention' | 'critical';
+  current_attendance_rate: number;
+  today_attendance?: 'present' | 'absent' | 'late' | 'excused';
+  last_lesson_score?: number;
+  total_lessons: number;
+  completed_lessons: number;
+  upcoming_assessments?: number;
+  overdue_assignments?: number;
+  parent_contact_required?: boolean;
+  special_notes?: string;
 }
-
-interface StudentCardProps {
-  student: Student;
-  index: number;
-  onPress: (student: Student) => void;
-}
-
-const StudentCard: React.FC<StudentCardProps> = ({ student, index, onPress }) => {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const getStatusColor = (status: Student['status']) => {
-    switch (status) {
-      case 'active':
-        return '#10B981';
-      case 'inactive':
-        return '#F59E0B';
-      case 'completed':
-        return '#3B82F6';
-      default:
-        return '#6B7280';
-    }
-  };
-
-  const getStatusText = (status: Student['status']) => {
-    switch (status) {
-      case 'active':
-        return 'Active';
-      case 'inactive':
-        return 'Inactive';
-      case 'completed':
-        return 'Completed';
-      default:
-        return 'Unknown';
-    }
-  };
-
-  return (
-    <Animated.View
-      layout={Layout.springify()}
-      entering={FadeInRight.delay(index * 50).springify()}
-      style={animatedStyle}
-    >
-      <Pressable
-        onPress={() => onPress(student)}
-        onPressIn={() => {
-          scale.value = withSpring(0.98);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1);
-        }}
-        className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3 mx-4"
-      >
-        <View className="flex-row items-center">
-          {/* Avatar */}
-          <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-4">
-            <Text className="text-blue-600 font-semibold text-lg">
-              {student.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-            </Text>
-          </View>
-
-          {/* Student Info */}
-          <View className="flex-1">
-            <View className="flex-row items-center justify-between mb-1">
-              <Text className="text-gray-900 font-semibold text-base">
-                {student.name}
-              </Text>
-              <View 
-                className="px-2 py-1 rounded-full"
-                style={{ backgroundColor: `${getStatusColor(student.status)}15` }}
-              >
-                <Text 
-                  className="text-xs font-medium"
-                  style={{ color: getStatusColor(student.status) }}
-                >
-                  {getStatusText(student.status)}
-                </Text>
-              </View>
-            </View>
-            
-            <Text className="text-gray-500 text-sm mb-2">{student.level}</Text>
-            
-            {/* Progress Bar */}
-            <View className="flex-row items-center">
-              <View className="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-                <View 
-                  className="bg-blue-500 h-2 rounded-full"
-                  style={{ width: `${student.progress}%` }}
-                />
-              </View>
-              <Text className="text-gray-500 text-xs">
-                {student.progress}%
-              </Text>
-            </View>
-            
-            <Text className="text-gray-400 text-xs mt-2">
-              Last session: {student.lastSession}
-            </Text>
-          </View>
-
-          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-        </View>
-      </Pressable>
-    </Animated.View>
-  );
-};
 
 /**
- * Students Screen - Student Management
+ * Students Screen - Enhanced Student Management
  * 
  * Features:
+ * - Enhanced StudentCard components with performance indicators
  * - Student list with search and filtering
- * - Progress overview for each student
- * - Quick actions (attendance, notes, etc.)
- * - Student status indicators
- * - Smooth animations and interactions
+ * - Quick actions for instructors (attendance, grading, parent contact)
+ * - Progress overview and alerts
+ * - Academy themed interface
  */
 export const StudentsScreen: React.FC = () => {
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'inactive' | 'completed'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'excellent' | 'good' | 'needs-attention'>('all');
+  const [notificationCount, setNotificationCount] = useState(5);
+  
+  const styles = createStyles(theme);
 
-  // Mock data - replace with real API call
-  const [students] = useState<Student[]>([
+  // Enhanced sample data matching our StudentCard interface
+  const [students] = useState<StudentData[]>([
     {
       id: '1',
-      name: 'Emma Johnson',
-      level: 'Swimming Level 2',
-      progress: 75,
-      lastSession: '2 days ago',
-      status: 'active',
-      avatar: 'EJ',
+      first_name: 'Emma',
+      last_name: 'Johnson',
+      email: 'emma.johnson@example.com',
+      program_id: 'swimming-1',
+      enrollment_date: '2024-01-15',
+      level: 'Level 2',
+      group: 'Group A',
+      performance_level: 'good',
+      current_attendance_rate: 92,
+      today_attendance: 'present',
+      last_lesson_score: 85,
+      total_lessons: 20,
+      completed_lessons: 15,
+      upcoming_assessments: 1,
+      overdue_assignments: 0,
+      parent_contact_required: false,
+      special_notes: 'Shows great improvement in backstroke technique',
     },
     {
       id: '2',
-      name: 'Michael Chen',
-      level: 'Swimming Level 1',
-      progress: 45,
-      lastSession: '1 week ago',
-      status: 'inactive',
-      avatar: 'MC',
+      first_name: 'Michael',
+      last_name: 'Chen',
+      email: 'michael.chen@example.com',
+      program_id: 'swimming-1',
+      enrollment_date: '2024-02-01',
+      level: 'Level 3',
+      group: 'Group B',
+      performance_level: 'excellent',
+      current_attendance_rate: 98,
+      today_attendance: 'present',
+      last_lesson_score: 94,
+      total_lessons: 25,
+      completed_lessons: 22,
+      upcoming_assessments: 0,
+      overdue_assignments: 0,
+      parent_contact_required: false,
     },
     {
       id: '3',
-      name: 'Sarah Williams',
-      level: 'Swimming Level 3',
-      progress: 100,
-      lastSession: '3 days ago',
-      status: 'completed',
-      avatar: 'SW',
+      first_name: 'Sarah',
+      last_name: 'Williams',
+      email: 'sarah.williams@example.com',
+      program_id: 'swimming-1',
+      enrollment_date: '2024-01-20',
+      level: 'Level 1',
+      group: 'Group A',
+      performance_level: 'needs-attention',
+      current_attendance_rate: 78,
+      today_attendance: 'absent',
+      last_lesson_score: 68,
+      total_lessons: 20,
+      completed_lessons: 12,
+      upcoming_assessments: 2,
+      overdue_assignments: 1,
+      parent_contact_required: true,
+      special_notes: 'Struggling with floating techniques',
     },
     {
       id: '4',
-      name: 'David Brown',
-      level: 'Swimming Level 1',
-      progress: 30,
-      lastSession: 'Yesterday',
-      status: 'active',
-      avatar: 'DB',
+      first_name: 'David',
+      last_name: 'Brown',
+      email: 'david.brown@example.com',
+      program_id: 'swimming-1',
+      enrollment_date: '2024-01-10',
+      level: 'Level 2',
+      group: 'Group B',
+      performance_level: 'average',
+      current_attendance_rate: 88,
+      today_attendance: 'present',
+      last_lesson_score: 76,
+      total_lessons: 18,
+      completed_lessons: 14,
+      upcoming_assessments: 1,
+      overdue_assignments: 0,
+      parent_contact_required: false,
     },
     {
       id: '5',
-      name: 'Lisa Davis',
-      level: 'Swimming Level 2',
-      progress: 60,
-      lastSession: '4 days ago',
-      status: 'active',
-      avatar: 'LD',
+      first_name: 'Lisa',
+      last_name: 'Davis',
+      email: 'lisa.davis@example.com',
+      program_id: 'swimming-1',
+      enrollment_date: '2024-02-15',
+      level: 'Level 1',
+      group: 'Group A',
+      performance_level: 'good',
+      current_attendance_rate: 95,
+      today_attendance: 'present',
+      last_lesson_score: 88,
+      total_lessons: 15,
+      completed_lessons: 10,
+      upcoming_assessments: 0,
+      overdue_assignments: 0,
+      parent_contact_required: false,
     },
   ]);
 
   const filteredStudents = students.filter(student => {
-    const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         student.level.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = selectedFilter === 'all' || student.status === selectedFilter;
+    const fullName = `${student.first_name} ${student.last_name}`;
+    const matchesSearch = fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         student.level.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (student.group && student.group.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesFilter = selectedFilter === 'all' || student.performance_level === selectedFilter;
     return matchesSearch && matchesFilter;
   });
 
   const filters = [
-    { key: 'all' as const, label: 'All', count: students.length },
-    { key: 'active' as const, label: 'Active', count: students.filter(s => s.status === 'active').length },
-    { key: 'inactive' as const, label: 'Inactive', count: students.filter(s => s.status === 'inactive').length },
-    { key: 'completed' as const, label: 'Completed', count: students.filter(s => s.status === 'completed').length },
+    { key: 'all' as const, label: 'All Students', count: students.length },
+    { key: 'excellent' as const, label: 'Excellent', count: students.filter(s => s.performance_level === 'excellent').length },
+    { key: 'good' as const, label: 'Good', count: students.filter(s => s.performance_level === 'good').length },
+    { key: 'needs-attention' as const, label: 'Needs Attention', count: students.filter(s => s.performance_level === 'needs-attention').length },
   ];
 
-  const handleStudentPress = (student: Student) => {
-    console.log('Navigate to student detail:', student.id);
+  const handleStudentPress = (student: StudentData) => {
+    console.log('Navigate to student detail:', student.first_name, student.last_name);
+  };
+
+  const handleAttendancePress = (student: StudentData) => {
+    console.log('Mark attendance for:', student.first_name, student.last_name);
+  };
+
+  const handlePerformancePress = (student: StudentData) => {
+    console.log('Grade performance for:', student.first_name, student.last_name);
+  };
+
+  const handleContactParentPress = (student: StudentData) => {
+    console.log('Contact parent for:', student.first_name, student.last_name);
+  };
+
+  const handleMoreOptionsPress = (student: StudentData) => {
+    console.log('More options for:', student.first_name, student.last_name);
+  };
+
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
-      {/* Header */}
-      <Animated.View
-        entering={FadeInDown.delay(100).springify()}
-        className="px-6 pt-4 pb-2"
-        style={{ paddingTop: insets.top + 16 }}
-      >
-        <Text className="text-gray-900 text-2xl font-bold">Students</Text>
-        <Text className="text-gray-500 text-base mt-1">
-          Manage your students and track their progress
-        </Text>
-      </Animated.View>
+    <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+      {/* Enhanced Header */}
+      <Header
+        title="Students"
+        subtitle="Manage your students and track their progress"
+        variant="instructor"
+        onSearchPress={handleSearch}
+        onFilterPress={handleFilter}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showInstructorActions={true}
+        showNotifications={true}
+        style={{ paddingTop: insets.top }}
+      />
 
       {/* Search Bar */}
       <Animated.View
         entering={FadeInDown.delay(200).springify()}
-        className="px-6 mb-4"
+        style={[styles.searchContainer, { backgroundColor: theme.colors.background.primary }]}
       >
-        <View className="bg-white rounded-xl border border-gray-200 flex-row items-center px-4 py-3">
-          <Ionicons name="search" size={20} color="#9CA3AF" />
+        <View style={[styles.searchBar, { 
+          backgroundColor: theme.colors.background.secondary,
+          borderColor: theme.colors.border.primary 
+        }]}>
+          <Ionicons name="search" size={20} color={theme.colors.text.tertiary} />
           <TextInput
-            className="flex-1 ml-3 text-gray-900 text-base"
+            style={[styles.searchInput, { color: theme.colors.text.primary }]}
             placeholder="Search students..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={theme.colors.text.tertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -253,7 +248,7 @@ export const StudentsScreen: React.FC = () => {
       {/* Filter Tabs */}
       <Animated.View
         entering={FadeInDown.delay(300).springify()}
-        className="mb-4"
+        style={styles.filterContainer}
       >
         <ScrollView
           horizontal
@@ -264,18 +259,26 @@ export const StudentsScreen: React.FC = () => {
             <Pressable
               key={filter.key}
               onPress={() => setSelectedFilter(filter.key)}
-              className={`mr-3 px-4 py-2 rounded-full ${
+              style={[
+                styles.filterTab,
                 selectedFilter === filter.key
-                  ? 'bg-blue-500'
-                  : 'bg-white border border-gray-200'
-              }`}
+                  ? { backgroundColor: theme.colors.interactive.primary }
+                  : { 
+                      backgroundColor: theme.colors.background.secondary,
+                      borderColor: theme.colors.border.primary,
+                      borderWidth: 1
+                    }
+              ]}
             >
               <Text
-                className={`font-medium ${
-                  selectedFilter === filter.key
-                    ? 'text-white'
-                    : 'text-gray-600'
-                }`}
+                style={[
+                  styles.filterTabText,
+                  { 
+                    color: selectedFilter === filter.key 
+                      ? theme.colors.text.inverse 
+                      : theme.colors.text.secondary 
+                  }
+                ]}
               >
                 {filter.label} ({filter.count})
               </Text>
@@ -293,22 +296,33 @@ export const StudentsScreen: React.FC = () => {
             student={item}
             index={index}
             onPress={handleStudentPress}
+            onAttendancePress={handleAttendancePress}
+            onPerformancePress={handlePerformancePress}
+            onContactParentPress={handleContactParentPress}
+            onMoreOptionsPress={handleMoreOptionsPress}
+            showInstructorActions={true}
+            variant="instructor"
           />
         )}
         contentContainerStyle={{
           paddingBottom: 100, // Space for tab bar
+          paddingHorizontal: 16,
         }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
-            className="items-center justify-center py-12"
+            style={styles.emptyContainer}
           >
-            <Ionicons name="people-outline" size={64} color="#D1D5DB" />
-            <Text className="text-gray-500 text-lg font-medium mt-4">
+            <Ionicons 
+              name="people-outline" 
+              size={64} 
+              color={theme.colors.text.tertiary} 
+            />
+            <Text style={[styles.emptyTitle, { color: theme.colors.text.secondary }]}>
               No students found
             </Text>
-            <Text className="text-gray-400 text-base mt-2 text-center px-8">
+            <Text style={[styles.emptyMessage, { color: theme.colors.text.tertiary }]}>
               Try adjusting your search or filter criteria
             </Text>
           </Animated.View>
@@ -317,3 +331,55 @@ export const StudentsScreen: React.FC = () => {
     </View>
   );
 };
+
+const createStyles = (theme: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  searchContainer: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingBottom: theme.spacing.md,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.lg,
+    borderWidth: 1,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: theme.spacing.sm,
+    fontSize: theme.typography.fontSize.body,
+  },
+  filterContainer: {
+    marginBottom: theme.spacing.md,
+  },
+  filterTab: {
+    marginRight: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.full,
+  },
+  filterTabText: {
+    fontSize: theme.typography.fontSize.sm,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: theme.spacing.xl * 2,
+  },
+  emptyTitle: {
+    fontSize: theme.typography.fontSize.lg,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
+    marginTop: theme.spacing.md,
+  },
+  emptyMessage: {
+    fontSize: theme.typography.fontSize.body,
+    marginTop: theme.spacing.xs,
+    textAlign: 'center',
+    paddingHorizontal: theme.spacing.xl,
+  },
+});

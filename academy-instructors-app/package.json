@@ -23,7 +23,7 @@
     "prebuild": "expo prebuild --clean"
   },
   "dependencies": {
-    "@academy/mobile-shared": "file:../shared"
+    "@academy/mobile-shared": "*"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",

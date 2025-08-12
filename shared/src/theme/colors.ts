@@ -327,7 +327,7 @@ export const darkColors = {
     danger: baseColors.error[400],                // Softer danger color
     cancel: baseColors.academy.purple[400],       // Academy purple
     gray: baseColors.neutral[800],                // Dark gray background
-    lightGray: baseColors.neutral[850],           // Even darker gray
+    lightGray: baseColors.neutral[900],           // Even darker gray
   },
 
   status: {

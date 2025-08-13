@@ -16,14 +16,16 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.elitesgen.academy.instructors"
+      "bundleIdentifier": "com.elitesgen.academy.instructors",
+      "jsEngine": "jsc"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.elitesgen.academy.instructors"
+      "package": "com.elitesgen.academy.instructors",
+      "jsEngine": "jsc"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -35,15 +37,16 @@
         "expo-build-properties",
         {
           "android": {
-            "newArchEnabled": true
+            "newArchEnabled": false,
+            "enableHermes": false
           },
           "ios": {
-            "newArchEnabled": true
+            "newArchEnabled": false,
+            "enableHermes": false
           }
         }
       ]
     ],
-    "newArchEnabled": true,
     "experiments": {
       "typedRoutes": false
     },

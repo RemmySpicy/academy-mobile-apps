@@ -63,7 +63,8 @@
   "overrides": {
     "glob": "^10.0.0",
     "react": "19.1.0",
-    "react-native-renderer": "19.1.0"
+    "use-latest-callback": "0.2.1",
+    "react-hook-form": "7.53.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-template-literals": "^7.27.1",

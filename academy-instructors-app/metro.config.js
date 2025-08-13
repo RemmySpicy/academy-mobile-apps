@@ -27,4 +27,15 @@ config.resolver.alias = {
 // 5. Ensure proper module resolution
 config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
 
+// 6. Force JSC instead of Hermes
+config.transformer = {
+  ...config.transformer,
+  minifierConfig: {
+    keep_fnames: true,
+    mangle: {
+      keep_fnames: true,
+    },
+  },
+};
+
 module.exports = config;

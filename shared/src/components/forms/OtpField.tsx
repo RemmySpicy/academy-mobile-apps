@@ -1,8 +1,10 @@
 import React, { useState, useRef, useCallback } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { useController } from "react-hook-form";
-import { Iconify } from "react-native-iconify";
+import { Ionicons } from '@expo/vector-icons';
 import { FormFieldProps } from "../../types";
+import { useTheme, createThemedStyles } from "../../theme/ThemeProvider";
+import { themeUtils } from "../../theme";
 
 interface OtpFieldProps extends FormFieldProps {
   length?: number;
@@ -28,6 +30,8 @@ const OtpField: React.FC<OtpFieldProps> = ({
   focusedCellStyle,
   filledCellStyle,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const [isFocused, setIsFocused] = useState(false);
   const [otpValue, setOtpValue] = useState("");
   const textInputRef = useRef<TextInput | null>(null);
@@ -117,6 +121,8 @@ const OtpField: React.FC<OtpFieldProps> = ({
         accessibilityLabel={`OTP input field with ${length} digits`}
         accessibilityHint="Enter your one-time password"
         accessibilityRole="none"
+        delayPressIn={0}
+        delayPressOut={0}
       >
         {boxArray.map(renderBox)}
       </Pressable>
@@ -136,12 +142,15 @@ const OtpField: React.FC<OtpFieldProps> = ({
         selectTextOnFocus
         textContentType="oneTimeCode"
         autoComplete="sms-otp"
+        autoCorrect={false}
+        autoCapitalize="none"
+        blurOnSubmit={false}
         accessibilityLabel="Hidden OTP input"
       />
 
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="warning-outline" size={16} color={theme.colors.status.error} />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}
@@ -149,83 +158,79 @@ const OtpField: React.FC<OtpFieldProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  otpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    maxWidth: 300,
-  },
-  otpBox: {
-    width: 48,
-    height: 56,
-    borderWidth: 2,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 4,
-  },
-  focusedBox: {
-    borderColor: '#3B82F6',
-    shadowColor: '#3B82F6',
-    shadowOffset: {
-      width: 0,
-      height: 0,
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      marginBottom: theme.componentSpacing.form.fieldGap,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  filledBox: {
-    borderColor: '#10B981',
-    backgroundColor: '#F0FDF4',
-  },
-  errorBox: {
-    borderColor: '#EF4444',
-    backgroundColor: '#FEF2F2',
-  },
-  disabledBox: {
-    backgroundColor: '#F3F4F6',
-    borderColor: '#E5E7EB',
-  },
-  otpText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-    textAlign: 'center',
-  },
-  secureText: {
-    fontSize: 24,
-    lineHeight: 32,
-  },
-  disabledText: {
-    color: '#9CA3AF',
-  },
-  hiddenInput: {
-    position: 'absolute',
-    opacity: 0,
-    width: 1,
-    height: 1,
-    zIndex: -1,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-    paddingHorizontal: 4,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#EF4444',
-    marginLeft: 6,
-    fontWeight: '400',
-  },
-});
+    otpContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      maxWidth: 300,
+    },
+    otpBox: {
+      width: theme.safeArea.minTouchTarget.width,
+      height: 56,
+      borderWidth: 2,
+      borderColor: theme.colors.border.primary,
+      borderRadius: theme.borderRadius.md,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background.primary,
+      marginHorizontal: theme.spacing[1],
+    },
+    focusedBox: {
+      borderColor: theme.colors.border.focused,
+      ...themeUtils.createShadow('sm', theme.colors.interactive.primary),
+    },
+    filledBox: {
+      borderColor: theme.colors.status.success,
+      backgroundColor: theme.colors.background.success,
+    },
+    errorBox: {
+      borderColor: theme.colors.border.error,
+      backgroundColor: theme.colors.background.error,
+    },
+    disabledBox: {
+      backgroundColor: theme.colors.background.secondary,
+      borderColor: theme.colors.border.primary,
+      opacity: 0.6,
+    },
+    otpText: {
+      fontSize: theme.typography.heading.h5.fontSize,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+      textAlign: 'center',
+    },
+    secureText: {
+      fontSize: theme.typography.heading.h4.fontSize,
+      lineHeight: 32,
+    },
+    disabledText: {
+      color: theme.colors.text.disabled,
+    },
+    hiddenInput: {
+      position: 'absolute',
+      opacity: 0,
+      width: 1,
+      height: 1,
+      zIndex: -1,
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing[2],
+      paddingHorizontal: theme.spacing[1],
+    },
+    errorText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.status.error,
+      marginLeft: theme.spacing[1],
+    },
+  })
+);
 
-export default React.memo(OtpField);
+const MemoizedOtpField = React.memo(OtpField);
+export { MemoizedOtpField as OtpField };

@@ -1,22 +1,9 @@
 import React, { useCallback, useEffect, useImperativeHandle, forwardRef } from 'react';
-import {
-  View,
-  Modal,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  StyleSheet,
-  Dimensions,
-  StatusBar,
-  Platform,
-  KeyboardAvoidingView,
-  ScrollView,
-  Animated,
-  BackHandler,
-} from 'react-native';
+import { View, Modal, Pressable, StyleSheet, StatusBar, Platform, KeyboardAvoidingView, ScrollView, Animated, BackHandler } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { themeUtils } from '../../theme';
+import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 
 export interface CustomModalProps {
   children: React.ReactNode;
@@ -88,6 +75,7 @@ const CustomModal = forwardRef<CustomModalRef, CustomModalProps>(({
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
+  const { width: screenWidth, height: screenHeight } = useScreenDimensions();
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   
   // Use theme colors for backdrop if not provided
@@ -170,7 +158,7 @@ const CustomModal = forwardRef<CustomModalRef, CustomModalProps>(({
       ...baseStyle,
       {
         maxHeight: typeof maxHeight === 'string' ? 
-          SCREEN_HEIGHT * (parseInt(maxHeight) / 100) : 
+          screenHeight * (parseInt(maxHeight) / 100) : 
           maxHeight
       }
     ];
@@ -207,7 +195,7 @@ const CustomModal = forwardRef<CustomModalRef, CustomModalProps>(({
 
   const modalContent = (
     <View style={[getContainerStyles(), containerStyle]}>
-      <TouchableWithoutFeedback onPress={handleBackdropPress}>
+      <Pressable onPress={handleBackdropPress}>
         <Animated.View 
           style={[
             styles.backdrop,
@@ -220,13 +208,13 @@ const CustomModal = forwardRef<CustomModalRef, CustomModalProps>(({
             }
           ]} 
         />
-      </TouchableWithoutFeedback>
+      </Pressable>
       
-      <TouchableWithoutFeedback>
+      <Pressable>
         <View style={styles.contentWrapper}>
           {renderContent()}
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </View>
   );
 
@@ -305,21 +293,8 @@ const useThemedStyles = createThemedStyles((theme) =>
       borderRadius: theme.borderRadius.lg,
       padding: theme.spacing[5],
       margin: theme.spacing[5],
-      maxWidth: SCREEN_WIDTH - (theme.spacing[5] * 2),
-      ...Platform.select({
-        ios: {
-          shadowColor: theme.colors.shadow.heavy,
-          shadowOffset: {
-            width: 0,
-            height: 4,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 12,
-        },
-        android: {
-          elevation: 8,
-        },
-      }),
+      maxWidth: screenWidth - (theme.spacing[5] * 2),
+      ...themeUtils.createShadow('lg', theme.colors.shadow.heavy),
     },
     fullscreenContent: {
       flex: 1,

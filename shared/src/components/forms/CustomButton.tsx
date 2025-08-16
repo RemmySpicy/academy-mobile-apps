@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  TouchableOpacity, 
+  Pressable, 
   Text, 
   StyleSheet, 
   ActivityIndicator, 
@@ -9,12 +9,16 @@ import {
   View,
 } from 'react-native';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { themeUtils } from '../../theme';
+
 
 // Academy-specific button variants matching existing design
 type ButtonVariant = 
   | 'primary'           // bg-theme (purple) with white text
+  | 'teal'              // bg-academy-teal (#52E2BB) with white text
   | 'outline'           // bg-[#F5F5F5] with theme-black text
   | 'outlineTheme'      // bg-white border border-theme with theme text
+  | 'outlineTeal'       // bg-white border border-teal with teal text
   | 'danger'            // bg-danger bg-opacity-10 text-danger
   | 'gray'              // bg-input-border-gray text-secondary
   | 'faded'             // bg-faded text-theme
@@ -44,12 +48,8 @@ interface CustomButtonProps {
   className?: string; // For compatibility with existing code
   textClassName?: string; // For compatibility with existing code
   
-  // Shadow support (from existing design)
+  // Shadow support (uses theme elevation system)
   shadow?: boolean;
-  shadowColor?: string;
-  shadowOpacity?: number;
-  shadowOffset?: { width: number; height: number };
-  shadowRadius?: number;
   
   // Loading
   loaderColor?: string;
@@ -74,10 +74,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   className,
   textClassName,
   shadow = false,
-  shadowColor = '#000',
-  shadowOpacity = 0.2,
-  shadowOffset = { width: 0, height: 2 },
-  shadowRadius = 4,
   loaderColor = 'white',
   accessibilityLabel,
   accessibilityHint,
@@ -99,11 +95,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
     if (shadow && !disabled) {
       baseStyles.push({
-        shadowColor,
-        shadowOffset,
-        shadowOpacity,
-        shadowRadius,
-        elevation: shadowRadius,
+        ...themeUtils.createShadow('sm', theme.colors.shadow.default),
       });
     }
 
@@ -139,7 +131,10 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         )}
         
         {/* Centered Text */}
-        <Text style={[...getTextStyles(), textStyle]}>
+        <Text 
+          style={[...getTextStyles(), textStyle]}
+          className={textClassName}
+        >
           {title}
         </Text>
         
@@ -154,19 +149,30 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       disabled={disabled || isLoading}
-      style={[...getButtonStyles(), style]}
+      style={({ pressed }) => [
+        ...getButtonStyles(), 
+        style,
+        { 
+          pointerEvents: (disabled || isLoading) ? 'none' : 'auto',
+          opacity: pressed ? 0.8 : 1,
+        }
+      ]}
+      className={className}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || title}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: disabled || isLoading }}
       testID={testID}
-      activeOpacity={0.8}
+      android_ripple={{ 
+        color: theme.colors.interactive.primaryPressed,
+        borderless: false 
+      }}
     >
       {renderContent()}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -183,13 +189,13 @@ const useThemedStyles = createThemedStyles((theme) =>
 
     // Size variants
     sm: {
-      paddingHorizontal: theme.spacing[4], // px-4
+      paddingHorizontal: theme.spacing.md, // px-4
       height: 36, // h-9 (9 * 4 = 36px)
       minHeight: 36,
     },
 
     md: {
-      paddingHorizontal: theme.spacing[4], // px-4  
+      paddingHorizontal: theme.spacing.md, // px-4  
       height: 48, // h-12 (12 * 4 = 48px)
       minHeight: 48,
     },
@@ -199,8 +205,12 @@ const useThemedStyles = createThemedStyles((theme) =>
       backgroundColor: theme.colors.interactive.primary, // #4F2EC9
     },
 
+    teal: {
+      backgroundColor: theme.colors.interactive.teal, // #52E2BB
+    },
+
     outline: {
-      backgroundColor: '#F5F5F5', // Exact match from existing
+      backgroundColor: theme.colors.background.secondary,
     },
 
     outlineTheme: {
@@ -209,12 +219,18 @@ const useThemedStyles = createThemedStyles((theme) =>
       borderColor: theme.colors.interactive.primary, // #4F2EC9
     },
 
+    outlineTeal: {
+      backgroundColor: theme.colors.background.primary, // white
+      borderWidth: 1,
+      borderColor: theme.colors.interactive.teal, // #52E2BB
+    },
+
     danger: {
       backgroundColor: theme.colors.interactive.danger + '1A', // bg-opacity-10 = 10% = 1A in hex
     },
 
     gray: {
-      backgroundColor: '#D7D7D7', // input_border_gray from existing
+      backgroundColor: theme.colors.border.primary,
     },
 
     faded: {
@@ -226,7 +242,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
 
     lightGray: {
-      backgroundColor: '#F9F9F9', // gray_bg from existing
+      backgroundColor: theme.colors.background.secondary,
     },
 
     black: {
@@ -238,7 +254,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
 
     normal: {
-      backgroundColor: '#F5F5F5' + '1A', // with 10% opacity
+      backgroundColor: theme.colors.background.secondary + '1A', // with 10% opacity
     },
 
     disabled: {
@@ -266,12 +282,20 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.inverse, // white
     },
 
+    tealText: {
+      color: theme.colors.text.inverse, // white
+    },
+
     outlineText: {
       color: theme.colors.interactive.themeBlack, // #121212
     },
 
     outlineThemeText: {
       color: theme.colors.interactive.primary, // #4F2EC9
+    },
+
+    outlineTealText: {
+      color: theme.colors.interactive.teal, // #52E2BB
     },
 
     dangerText: {
@@ -313,14 +337,14 @@ const useThemedStyles = createThemedStyles((theme) =>
     // Icon containers (matching existing absolute positioning)
     startIconContainer: {
       position: 'absolute',
-      left: theme.spacing[4], // left-4
+      left: theme.spacing.md, // left-4
     },
 
     endIconContainer: {
       position: 'absolute',
-      right: theme.spacing[4], // right-4
+      right: theme.spacing.md, // right-4
     },
   })
 );
 
-export default CustomButton;
+export { CustomButton };

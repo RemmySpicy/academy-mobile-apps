@@ -1,19 +1,10 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  Platform,
-  Animated,
-  PanGestureHandler,
-  State,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet, useWindow, useWindowDimensions, Platform, Animated, PanGestureHandler, State, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { themeUtils } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -254,12 +245,10 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
       accessibilityRole={accessibilityRole}
       accessible
     >
-      <TouchableOpacity
-        style={styles.alertContent}
+      <Pressable style={({ pressed }) => [{ opacity: pressed ? onPress || dismissible ? 0.8 : 1 : 1 }, styles.alertContent]}
         onPress={onPress || (dismissible ? handleDismiss : undefined)}
         disabled={!onPress && !dismissible}
-        activeOpacity={onPress || dismissible ? 0.8 : 1}
-      >
+        >
         <View style={styles.iconContainer}>
           <Ionicons
             name={config.icon}
@@ -286,8 +275,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
         </View>
 
         {dismissible && (
-          <TouchableOpacity
-            style={styles.closeButton}
+          <Pressable 
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.closeButton]}
             onPress={handleDismiss}
             accessibilityLabel="Dismiss alert"
             accessibilityRole="button"
@@ -297,20 +286,20 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
               size={16}
               color={config.textColor}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
-      </TouchableOpacity>
+      </Pressable>
 
       {actions.length > 0 && (
         <View style={styles.actionsContainer}>
           {actions.map((action, index) => (
-            <TouchableOpacity
+            <Pressable 
               key={index}
-              style={[
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
                 styles.actionButton,
                 action.style === 'destructive' && styles.destructiveAction,
                 action.style === 'cancel' && styles.cancelAction,
-              ]}
+              ]]}
               onPress={() => {
                 action.onPress();
                 handleDismiss();
@@ -327,7 +316,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
               >
                 {action.label}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
       )}
@@ -374,20 +363,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       borderRadius: theme.borderRadius.lg,
       borderWidth: 1,
       marginHorizontal: theme.spacing[4],
-      ...Platform.select({
-        ios: {
-          shadowColor: theme.colors.shadow.medium,
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-        },
-        android: {
-          elevation: 4,
-        },
-      }),
+      ...themeUtils.createShadow('md', theme.colors.shadow.medium),
     },
     alertContent: {
       flexDirection: 'row',

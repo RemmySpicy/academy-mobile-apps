@@ -1,18 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  KeyboardTypeOptions, 
-  StyleSheet,
-  TextStyle,
-  ViewStyle,
-} from "react-native";
+import { View, Text, TextInput, Pressable, KeyboardTypeOptions, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useController, Control, FieldValues, RegisterOptions } from "react-hook-form";
 import { FormFieldProps } from "../../types";
 import { useTheme, createThemedStyles } from "../../theme/ThemeProvider";
+import { themeUtils } from "../../theme";
+
 
 type InputVariant = 'standard' | 'outline' | 'ghost' | 'password';
 type InputSize = 'small' | 'medium' | 'large';
@@ -41,6 +34,8 @@ interface CustomInputProps extends Omit<FormFieldProps, 'control' | 'rules'> {
   style?: ViewStyle;
   inputStyle?: TextStyle;
   containerStyle?: ViewStyle;
+  className?: string; // NativeWind support
+  inputClassName?: string; // NativeWind support for input
   
   // Accessibility
   accessibilityLabel?: string;
@@ -74,6 +69,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
   style,
   inputStyle,
   containerStyle,
+  className,
+  inputClassName,
   accessibilityLabel,
   accessibilityHint,
   testID,
@@ -147,9 +144,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
     if (!showPasswordToggle || !secureTextEntry) return null;
 
     return (
-      <TouchableOpacity
+      <Pressable 
         onPress={togglePasswordVisibility}
-        style={styles.iconButton}
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.iconButton]}
         accessibilityRole="button"
         accessibilityLabel={isPasswordVisible ? "Hide password" : "Show password"}
       >
@@ -158,7 +155,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           size={20}
           color={theme.colors.text.tertiary}
         />
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -177,12 +174,13 @@ const CustomInput: React.FC<CustomInputProps> = ({
   };
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View key={`input-${name}`} style={[styles.container, containerStyle, { pointerEvents: 'auto' }]} className={className}>
       <View style={[
         styles.inputContainer,
-        ...getVariantStyles,
+        getVariantStyles,
         getSizeStyles,
-        style
+        style,
+        { pointerEvents: 'auto' }
       ]}>
         {leftIcon && (
           <View style={styles.leftIconContainer}>
@@ -191,6 +189,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
         )}
 
         <TextInput
+          key={name}
           value={value}
           onChangeText={handleChangeText}
           onFocus={handleFocus}
@@ -206,19 +205,25 @@ const CustomInput: React.FC<CustomInputProps> = ({
           editable={editable && !disabled}
           autoFocus={autoFocus}
           returnKeyType={returnKeyType}
+          blurOnSubmit={!multiline}
+          keyboardAppearance={theme.isDark ? 'dark' : 'light'}
+          autoCorrect={false}
+          autoCapitalize="none"
           style={[
             styles.textInput,
             getSizeStyles,
             inputStyle,
             disabled && styles.textInputDisabled,
+            { pointerEvents: disabled ? 'none' : 'auto' },
           ]}
+          className={inputClassName}
           accessibilityLabel={accessibilityLabel || placeholder}
           accessibilityHint={accessibilityHint}
           accessibilityState={{
             disabled,
             selected: isFocused,
           }}
-          testID={testID}
+          testID={testID || name}
         />
 
         {renderErrorIcon()}
@@ -262,7 +267,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     // Base input styles
     input: {
       backgroundColor: theme.colors.background.primary,
-      borderWidth: 1,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
       borderRadius: theme.borderRadius.md,
       minHeight: theme.safeArea.minTouchTarget.height,
@@ -270,14 +275,13 @@ const useThemedStyles = createThemedStyles((theme) =>
 
     inputFocused: {
       borderColor: theme.colors.border.focused,
-      borderWidth: 2,
-      ...theme.elevation.sm,
-      shadowColor: theme.colors.interactive.primary,
+      borderWidth: theme.borderWidth.md,
+      ...themeUtils.createShadow('sm', theme.colors.interactive.primary),
     },
 
     inputError: {
       borderColor: theme.colors.border.error,
-      borderWidth: 1,
+      borderWidth: theme.borderWidth.sm,
     },
 
     inputDisabled: {
@@ -289,14 +293,14 @@ const useThemedStyles = createThemedStyles((theme) =>
     // Variant styles
     inputOutline: {
       backgroundColor: 'transparent',
-      borderWidth: 2,
+      borderWidth: theme.borderWidth.md,
       borderColor: theme.colors.border.secondary,
     },
 
     inputGhost: {
       backgroundColor: 'transparent',
       borderWidth: 0,
-      borderBottomWidth: 1,
+      borderBottomWidth: theme.borderWidth.sm,
       borderRadius: 0,
       borderBottomColor: theme.colors.border.primary,
     },
@@ -391,4 +395,4 @@ const useThemedStyles = createThemedStyles((theme) =>
   })
 );
 
-export default CustomInput;
+export { CustomInput };

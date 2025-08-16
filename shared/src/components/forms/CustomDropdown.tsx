@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Animated, Dimensions, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Modal, FlatList, Animated, useWindow, useWindowDimensions, Platform, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useController } from 'react-hook-form';
 import { FormFieldProps } from '../../types';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { themeUtils } from '../../theme';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -38,6 +40,8 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   animationType = 'slide',
   showCheckmarks = true,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [slideAnim] = useState(new Animated.Value(0));
@@ -125,12 +129,12 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
       : field.value === item.value;
 
     return (
-      <TouchableOpacity
-        style={[
+      <Pressable 
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
           styles.option, 
           isSelected && styles.selectedOption,
           item.disabled && styles.disabledOption
-        ]}
+        ]]}
         onPress={() => handleSelection(item.value, item)}
         disabled={item.disabled}
         activeOpacity={item.disabled ? 1 : 0.7}
@@ -143,9 +147,9 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
           {item.label}
         </Text>
         {isSelected && showCheckmarks && (
-          <Ionicons name="ri:check-line" size={20} color="#3B82F6" />
+          <Ionicons name="checkmark-outline" size={20} color={theme.colors.interactive.primary} />
         )}
-      </TouchableOpacity>
+      </Pressable>
     );
   }, [field.value, multiple, handleSelection, showCheckmarks]);
 
@@ -185,13 +189,13 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={[
+      <Pressable 
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
           styles.dropdown,
           isOpen && styles.dropdownOpen,
           fieldState.error && styles.dropdownError,
           disabled && styles.dropdownDisabled,
-        ]}
+        ]]}
         onPress={() => !disabled && openModal()}
         disabled={disabled}
         activeOpacity={0.7}
@@ -210,15 +214,15 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
           {getDisplayText()}
         </Text>
         <Ionicons
-          name={isOpen ? "ri:arrow-up-s-line" : "ri:arrow-down-s-line"}
+          name={isOpen ? "chevron-up-outline" : "chevron-down-outline"}
           size={20}
-          color={disabled ? "#9CA3AF" : "#6B7280"}
+          color={disabled ? theme.colors.text.disabled : theme.colors.text.secondary}
         />
-      </TouchableOpacity>
+      </Pressable>
 
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="warning-outline" size={16} color={theme.colors.status.error} />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}
@@ -228,22 +232,20 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         {...getModalAnimationProps()}
         onRequestClose={closeModal}
       >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
+        <Pressable style={({ pressed }) => [styles.modalOverlay]}
           onPress={closeModal}
         >
           <Animated.View style={modalContentStyle}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Select Option</Text>
-              <TouchableOpacity
+              <Pressable 
                 onPress={closeModal}
-                style={styles.closeButton}
+                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.closeButton]}
                 accessibilityLabel="Close dropdown"
                 accessibilityRole="button"
               >
-                <Ionicons name="ri:close-line" size={24} color="#6B7280" />
-              </TouchableOpacity>
+                <Ionicons name="close-outline" size={24} color={theme.colors.text.secondary} />
+              </Pressable>
             </View>
 
             <FlatList
@@ -262,145 +264,129 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
               })}
             />
           </Animated.View>
-        </TouchableOpacity>
+        </Pressable>
       </Modal>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  dropdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-  },
-  dropdownOpen: {
-    borderColor: '#3B82F6',
-    borderWidth: 2,
-    shadowColor: '#3B82F6',
-    shadowOffset: {
-      width: 0,
-      height: 0,
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: theme.componentSpacing.form.fieldGap,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  dropdownError: {
-    borderColor: '#EF4444',
-    borderWidth: 2,
-  },
-  dropdownDisabled: {
-    backgroundColor: '#F3F4F6',
-    borderColor: '#E5E7EB',
-  },
-  dropdownText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#111827',
-    fontWeight: '400',
-  },
-  placeholderText: {
-    color: '#9CA3AF',
-  },
-  disabledText: {
-    color: '#9CA3AF',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    paddingHorizontal: 4,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#EF4444',
-    marginLeft: 6,
-    flex: 1,
-    fontWeight: '400',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    width: '100%',
-    maxHeight: '80%',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: -4,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  closeButton: {
-    padding: 4,
-  },
-  optionsList: {
-    paddingVertical: 8,
-  },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    height: 48,
-  },
-  selectedOption: {
-    backgroundColor: '#EFF6FF',
-  },
-  disabledOption: {
-    opacity: 0.5,
-  },
-  optionText: {
-    fontSize: 16,
-    color: '#111827',
-    flex: 1,
-    fontWeight: '400',
-  },
-  selectedOptionText: {
-    color: '#3B82F6',
-    fontWeight: '500',
-  },
-  disabledOptionText: {
-    color: '#9CA3AF',
-  },
-});
+    dropdown: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      minHeight: theme.safeArea.minTouchTarget.height,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      borderRadius: theme.borderRadius.md,
+      paddingHorizontal: theme.spacing[4],
+      backgroundColor: theme.colors.background.primary,
+    },
+    dropdownOpen: {
+      borderColor: theme.colors.border.focused,
+      borderWidth: 2,
+      ...themeUtils.createShadow('sm', theme.colors.interactive.primary),
+    },
+    dropdownError: {
+      borderColor: theme.colors.border.error,
+      borderWidth: 2,
+    },
+    dropdownDisabled: {
+      backgroundColor: theme.colors.background.secondary,
+      borderColor: theme.colors.border.primary,
+      opacity: 0.6,
+    },
+    dropdownText: {
+      flex: 1,
+      ...theme.typography.body.base,
+      color: theme.colors.text.primary,
+    },
+    placeholderText: {
+      color: theme.colors.text.tertiary,
+    },
+    disabledText: {
+      color: theme.colors.text.disabled,
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing[1],
+      paddingHorizontal: theme.spacing[1],
+    },
+    errorText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.status.error,
+      marginLeft: theme.spacing[1],
+      flex: 1,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: theme.colors.overlay.modal,
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: theme.colors.background.primary,
+      borderTopLeftRadius: theme.borderRadius.lg,
+      borderTopRightRadius: theme.borderRadius.lg,
+      width: '100%',
+      maxHeight: '80%',
+      ...theme.elevation.lg,
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: theme.spacing[4],
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border.primary,
+    },
+    modalTitle: {
+      ...theme.typography.heading.h5,
+      color: theme.colors.text.primary,
+    },
+    closeButton: {
+      padding: theme.spacing[1],
+      minWidth: theme.safeArea.minTouchTarget.width,
+      minHeight: theme.safeArea.minTouchTarget.height,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    optionsList: {
+      paddingVertical: theme.spacing[2],
+    },
+    option: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[3],
+      minHeight: theme.safeArea.minTouchTarget.height,
+    },
+    selectedOption: {
+      backgroundColor: theme.colors.background.secondary,
+    },
+    disabledOption: {
+      opacity: 0.5,
+    },
+    optionText: {
+      ...theme.typography.body.base,
+      color: theme.colors.text.primary,
+      flex: 1,
+    },
+    selectedOptionText: {
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    disabledOptionText: {
+      color: theme.colors.text.disabled,
+    },
+  })
+);
 
-export default React.memo(CustomDropdown);
+const MemoizedCustomDropdown = React.memo(CustomDropdown);
+export { MemoizedCustomDropdown as CustomDropdown };

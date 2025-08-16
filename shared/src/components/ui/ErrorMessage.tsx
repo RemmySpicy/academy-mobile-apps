@@ -1,13 +1,9 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Show } from './Show';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { themeUtils } from '../../theme';
 
 export interface ErrorMessageProps {
   message?: string | string[] | null;
@@ -56,6 +52,8 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   actionLabel,
   onActionPress,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const slideAnim = React.useRef(new Animated.Value(-10)).current;
 
@@ -112,28 +110,28 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   const getConfig = () => {
     const configs = {
       error: {
-        icon: 'ri:error-warning-line',
-        iconColor: '#EF4444',
-        backgroundColor: '#FEF2F2',
-        borderColor: '#FECACA',
-        textColor: '#991B1B',
-        titleColor: '#7F1D1D',
+        icon: 'warning-outline',
+        iconColor: theme.colors.status.error,
+        backgroundColor: theme.colors.background.error,
+        borderColor: theme.colors.border.error,
+        textColor: theme.colors.text.error,
+        titleColor: theme.colors.text.error,
       },
       warning: {
-        icon: 'ri:alert-line',
-        iconColor: '#F59E0B',
-        backgroundColor: '#FFFBEB',
-        borderColor: '#FED7AA',
-        textColor: '#92400E',
-        titleColor: '#78350F',
+        icon: 'alert-circle-outline',
+        iconColor: theme.colors.status.warning,
+        backgroundColor: theme.colors.background.warning,
+        borderColor: theme.colors.status.warning + '40',
+        textColor: theme.colors.text.warning,
+        titleColor: theme.colors.text.warning,
       },
       info: {
-        icon: 'ri:information-line',
-        iconColor: '#3B82F6',
-        backgroundColor: '#EFF6FF',
-        borderColor: '#BFDBFE',
-        textColor: '#1E40AF',
-        titleColor: '#1E3A8A',
+        icon: 'information-circle-outline',
+        iconColor: theme.colors.status.info,
+        backgroundColor: theme.colors.background.info,
+        borderColor: theme.colors.status.info + '40',
+        textColor: theme.colors.text.info,
+        titleColor: theme.colors.text.info,
       },
     };
 
@@ -143,25 +141,25 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   const getSizeConfig = () => {
     const sizes = {
       small: {
-        fontSize: 12,
-        titleFontSize: 13,
+        fontSize: theme.typography.caption.base.fontSize,
+        titleFontSize: theme.typography.caption.base.fontSize + 1,
         iconSize: 14,
-        padding: 8,
-        borderRadius: 4,
+        padding: theme.spacing[2],
+        borderRadius: theme.borderRadius.sm,
       },
       medium: {
-        fontSize: 14,
-        titleFontSize: 15,
+        fontSize: theme.typography.body.sm.fontSize,
+        titleFontSize: theme.typography.body.base.fontSize,
         iconSize: 16,
-        padding: 12,
-        borderRadius: 6,
+        padding: theme.spacing[3],
+        borderRadius: theme.borderRadius.md,
       },
       large: {
-        fontSize: 16,
-        titleFontSize: 18,
+        fontSize: theme.typography.body.base.fontSize,
+        titleFontSize: theme.typography.body.lg.fontSize,
         iconSize: 18,
-        padding: 16,
-        borderRadius: 8,
+        padding: theme.spacing[4],
+        borderRadius: theme.borderRadius.lg,
       },
     };
 
@@ -213,11 +211,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
           borderColor: config.borderColor,
           padding: sizeConfig.padding,
           borderRadius: sizeConfig.borderRadius,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 2,
-          elevation: 2,
+          ...themeUtils.createShadow('md', theme.colors.shadow.default),
         },
         content: {
           flexDirection: 'row' as const,
@@ -298,7 +292,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
             style={[
               variantStyles.text,
               textStyle,
-              index > 0 && { marginTop: 2 },
+              index > 0 && { marginTop: theme.spacing[0.5] },
             ]}
           >
             {msg}
@@ -306,8 +300,8 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
         ))}
 
         <Show.When isTrue={!!actionLabel && !!onActionPress}>
-          <TouchableOpacity
-            style={[styles.actionButton, { marginTop: 8 }]}
+          <Pressable 
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.actionButton, { marginTop: theme.spacing[2] }]}
             onPress={onActionPress}
             accessibilityRole="button"
           >
@@ -322,28 +316,28 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
             >
               {actionLabel}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </Show.When>
       </View>
 
       <Show.When isTrue={dismissible}>
-        <TouchableOpacity
-          style={styles.dismissButton}
+        <Pressable 
+          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.dismissButton]}
           onPress={handleDismiss}
           accessibilityRole="button"
           accessibilityLabel="Dismiss error message"
         >
           <Ionicons
-            name="ri:close-line"
+            name="close-outline"
             size={sizeConfig.iconSize - 2}
             color={config.textColor}
           />
-        </TouchableOpacity>
+        </Pressable>
       </Show.When>
     </View>
   );
 
-  const WrapperComponent = onPress ? TouchableOpacity : View;
+  const WrapperComponent = onPress ? Pressable : View;
 
   return (
     <Animated.View
@@ -367,33 +361,40 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-  iconContainer: {
-    marginRight: 8,
-    marginTop: 1,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  title: {
-    fontWeight: '600',
-  },
-  dismissButton: {
-    padding: 4,
-    marginLeft: 8,
-    marginTop: -2,
-  },
-  actionButton: {
-    alignSelf: 'flex-start',
-  },
-  actionText: {
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
-});
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    wrapper: {
+      flex: 1,
+    },
+    iconContainer: {
+      marginRight: theme.spacing[2],
+      marginTop: theme.spacing[0.5],
+    },
+    textContainer: {
+      flex: 1,
+    },
+    title: {
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    dismissButton: {
+      padding: theme.spacing[1],
+      marginLeft: theme.spacing[2],
+      marginTop: -theme.spacing[0.5],
+      minWidth: theme.safeArea.minTouchTarget.width,
+      minHeight: theme.safeArea.minTouchTarget.height,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    actionButton: {
+      alignSelf: 'flex-start',
+      marginTop: theme.spacing[2],
+    },
+    actionText: {
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      textDecorationLine: 'underline',
+    },
+  })
+);
 
 // Convenience components for different severities
 export const ErrorAlert: React.FC<Omit<ErrorMessageProps, 'severity'>> = (props) => (

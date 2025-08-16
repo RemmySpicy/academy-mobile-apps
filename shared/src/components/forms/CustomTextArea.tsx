@@ -3,6 +3,8 @@ import { View, Text, TextInput, KeyboardTypeOptions, StyleSheet } from 'react-na
 import { useController } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 import { FormFieldProps } from '../../types';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { themeUtils } from '../../theme';
 
 interface CustomTextAreaProps extends FormFieldProps {
   numberOfLines?: number;
@@ -30,12 +32,14 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   editable = true,
   disabled = false,
   required = false,
-  placeholderTextColor = "#9CA3AF",
+  placeholderTextColor,
   autoFocus = false,
   showCharacterCount = false,
   minHeight = 96,
   maxHeight = 200,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const [isFocused, setIsFocused] = useState(false);
   const [textHeight, setTextHeight] = useState(minHeight);
 
@@ -102,7 +106,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
           numberOfLines={numberOfLines}
           textAlignVertical="top"
           keyboardType={keyboardType}
-          placeholderTextColor={placeholderTextColor}
+          placeholderTextColor={placeholderTextColor || theme.colors.text.tertiary}
           maxLength={maxLength}
           onChangeText={handleChangeText}
           value={field.value}
@@ -130,7 +134,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
 
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="warning-outline" size={16} color={theme.colors.status.error} />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}
@@ -138,71 +142,65 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  textAreaContainer: {
-    position: 'relative',
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    backgroundColor: '#FFFFFF',
-    color: '#111827',
-    fontWeight: '400',
-    lineHeight: 22,
-  },
-  textAreaFocused: {
-    borderColor: '#3B82F6',
-    borderWidth: 2,
-    shadowColor: '#3B82F6',
-    shadowOffset: {
-      width: 0,
-      height: 0,
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: theme.componentSpacing.form.fieldGap,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  textAreaError: {
-    borderColor: '#EF4444',
-    borderWidth: 2,
-  },
-  textAreaDisabled: {
-    backgroundColor: '#F3F4F6',
-    borderColor: '#E5E7EB',
-    color: '#9CA3AF',
-  },
-  characterCountContainer: {
-    alignItems: 'flex-end',
-    marginTop: 4,
-  },
-  characterCount: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '400',
-  },
-  characterCountError: {
-    color: '#EF4444',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    paddingHorizontal: 4,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#EF4444',
-    marginLeft: 6,
-    flex: 1,
-    fontWeight: '400',
-  },
-});
+    textAreaContainer: {
+      position: 'relative',
+    },
+    textArea: {
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      borderRadius: theme.borderRadius.md,
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[3],
+      ...theme.typography.body.base,
+      backgroundColor: theme.colors.background.primary,
+      color: theme.colors.text.primary,
+      textAlignVertical: 'top',
+    },
+    textAreaFocused: {
+      borderColor: theme.colors.border.focused,
+      borderWidth: 2,
+      ...themeUtils.createShadow('sm', theme.colors.interactive.primary),
+    },
+    textAreaError: {
+      borderColor: theme.colors.border.error,
+      borderWidth: 2,
+    },
+    textAreaDisabled: {
+      backgroundColor: theme.colors.background.secondary,
+      borderColor: theme.colors.border.primary,
+      color: theme.colors.text.disabled,
+      opacity: 0.6,
+    },
+    characterCountContainer: {
+      alignItems: 'flex-end',
+      marginTop: theme.spacing[1],
+    },
+    characterCount: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+    },
+    characterCountError: {
+      color: theme.colors.status.error,
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing[1],
+      paddingHorizontal: theme.spacing[1],
+    },
+    errorText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.status.error,
+      marginLeft: theme.spacing[1],
+      flex: 1,
+    },
+  })
+);
 
-export default React.memo(CustomTextArea);
+const MemoizedCustomTextArea = React.memo(CustomTextArea);
+export { MemoizedCustomTextArea as CustomTextArea };

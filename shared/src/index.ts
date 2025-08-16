@@ -57,13 +57,13 @@ export {
   ProgramGuard,
   ProgramHeader,
   ProgramSelector,
+  useProgramContext,
 } from './components/program';
 
 // Hooks - Direct exports
 export {
   useApiClient,
   useAuth,
-  useProgramContext,
 } from './hooks';
 
 // Services - Direct exports
@@ -76,9 +76,14 @@ export {
 export type {
   User,
   AuthState,
-  AuthError,
   Program,
   ProgramAssignment,
+} from './types';
+
+// Class exports - must be direct, not type exports
+export {
+  ApiError,
+  AuthError,
 } from './types';
 
 // Utils - Direct exports  
@@ -114,3 +119,9 @@ export {
   withTheme,
   createThemedStyles,
 } from './theme/ThemeProvider';
+
+// Screens - Design System and Component Showcase
+export {
+  DesignSystemShowcase,
+  FormExamplesScreen,
+} from './screens';

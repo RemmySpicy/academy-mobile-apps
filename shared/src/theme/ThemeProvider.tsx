@@ -5,7 +5,6 @@
  * and persistent theme selection with smooth transitions.
  */
 
-// @ts-nocheck
 
 import React, {
   createContext,
@@ -72,9 +71,25 @@ const createNightTheme = (): Theme => ({
       tertiaryHover: '#1A1A1A',
       tertiaryPressed: '#2A2A2A',
       
+      faded: '#1A1A1A',
+      fadedHover: '#2A2A2A',
+      
+      orange: '#BB8844',
+      orangeHover: '#AA7733',
+      
+      teal: '#5A8A8A',
+      tealHover: '#6A9A9A',
+      tealPressed: '#4A7A7A',
+      
       destructive: '#CC4444',
       destructiveHover: '#BB3333',
       destructivePressed: '#DD5555',
+      
+      themeBlack: '#E8E8E8',
+      danger: '#CC4444',
+      cancel: '#7C9AFF',
+      gray: '#1A1A1A',
+      lightGray: '#0A0A0A',
     },
     status: {
       success: '#44AA44',
@@ -92,6 +107,19 @@ const createNightTheme = (): Theme => ({
       info: '#7C9AFF',
       infoBackground: '#000011',
       infoBorder: '#222233',
+    },
+    overlay: {
+      light: 'rgba(0, 0, 0, 0.6)',
+      medium: 'rgba(0, 0, 0, 0.8)',
+      dark: 'rgba(0, 0, 0, 0.9)',
+      heavy: 'rgba(0, 0, 0, 0.95)',
+    },
+    shadow: {
+      default: 'rgba(0, 0, 0, 0.5)',
+      light: 'rgba(0, 0, 0, 0.4)',
+      medium: 'rgba(0, 0, 0, 0.5)',
+      heavy: 'rgba(0, 0, 0, 0.7)',
+      colored: 'rgba(124, 154, 255, 0.3)',
     },
   },
 });
@@ -379,7 +407,8 @@ export const themeHelpers = {
     darkOverrides?: Partial<T>,
     nightOverrides?: Partial<T>
   ): T => {
-    if (theme === nightTheme && nightOverrides) {
+    if (theme.isDark && theme.colors.background.primary === '#000000' && nightOverrides) {
+      // Night theme check (pure black background)
       return { ...baseStyles, ...nightOverrides };
     }
     if (theme.isDark && darkOverrides) {
@@ -392,8 +421,8 @@ export const themeHelpers = {
    * Get theme mode from theme object
    */
   getThemeMode: (theme: Theme): ExtendedThemeMode => {
-    if (theme === nightTheme) return 'night';
-    if (theme === darkTheme) return 'dark';
+    if (theme.isDark && theme.colors.background.primary === '#000000') return 'night';
+    if (theme.isDark) return 'dark';
     return 'light';
   },
 };

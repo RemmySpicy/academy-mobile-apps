@@ -19,7 +19,7 @@ export function ProgramContextProvider({ children }: ProgramContextProviderProps
   const [error, setError] = useState<string | null>(null);
   
   const { user, isAuthenticated, currentProgram: authCurrentProgram, availablePrograms: authAvailablePrograms } = useAuthStore();
-  const theme = useTheme();
+  const { theme } = useTheme();
 
   // Initialize program context when auth state changes
   useEffect(() => {

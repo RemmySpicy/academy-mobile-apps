@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
-import { useProgramContext } from '../../hooks/useProgramContext';
+import { useProgramContext } from '../program/ProgramContextProvider';
 
 // Student performance levels for quick visual identification
 type PerformanceLevel =
@@ -113,7 +113,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
       case 'good':
         return theme.colors.interactive.primary;
       case 'average':
-        return theme.colors.academy.faded[600];
+        return theme.colors.interactive.faded;
       case 'needs-attention':
         return theme.colors.status.warning;
       case 'critical':
@@ -222,7 +222,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
     if (student.parent_contact_required) {
       alerts.push({
         type: 'contact',
-        icon: 'ri:phone-line',
+        icon: 'call-outline',
         text: 'Contact parent',
       });
     }
@@ -230,7 +230,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
     if (student.overdue_assignments && student.overdue_assignments > 0) {
       alerts.push({
         type: 'assignment',
-        icon: 'ri:file-warning-line',
+        icon: 'warning-outline',
         text: `${student.overdue_assignments} overdue`,
       });
     }
@@ -509,7 +509,7 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     progressText: {
-      ...theme.typography.caption.small,
+      ...theme.typography.caption.base,
       color: theme.colors.text.tertiary,
     },
 
@@ -546,7 +546,7 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     alertText: {
-      ...theme.typography.caption.small,
+      ...theme.typography.caption.base,
       color: theme.colors.status.warning,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
@@ -565,7 +565,7 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     statLabel: {
-      ...theme.typography.caption.small,
+      ...theme.typography.caption.base,
       color: theme.colors.text.tertiary,
       marginBottom: theme.spacing[1],
     },
@@ -578,7 +578,7 @@ const useThemedStyles = createThemedStyles(theme =>
     notesContainer: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      backgroundColor: theme.colors.academy.faded[100],
+      backgroundColor: theme.colors.background.secondary,
       padding: theme.spacing[2],
       borderRadius: theme.borderRadius.sm,
       marginTop: theme.spacing[2],

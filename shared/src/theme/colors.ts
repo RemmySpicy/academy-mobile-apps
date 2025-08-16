@@ -449,10 +449,94 @@ export const colorUtils = {
   },
 };
 
-// Export color schemes
-export const lightColorScheme = semanticColors;
-export const darkColorScheme = darkColors;
+// Define flexible color scheme interface
+export interface ColorScheme {
+  text: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    disabled: string;
+    inverse: string;
+    link: string;
+    linkHover: string;
+  };
+  background: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    elevated: string;
+    overlay: string;
+    backdrop: string;
+  };
+  border: {
+    primary: string;
+    secondary: string;
+    focused: string;
+    error: string;
+    success: string;
+    warning: string;
+    teal?: string;
+  };
+  interactive: {
+    primary: string;
+    primaryHover: string;
+    primaryPressed: string;
+    primaryDisabled: string;
+    secondary: string;
+    secondaryHover: string;
+    secondaryPressed: string;
+    secondaryBorder: string;
+    tertiary: string;
+    tertiaryHover: string;
+    tertiaryPressed: string;
+    faded: string;
+    fadedHover: string;
+    orange: string;
+    orangeHover: string;
+    teal?: string;
+    tealHover?: string;
+    tealPressed?: string;
+    destructive: string;
+    destructiveHover: string;
+    destructivePressed: string;
+    themeBlack: string;
+    danger: string;
+    cancel: string;
+    gray: string;
+    lightGray: string;
+  };
+  status: {
+    success: string;
+    successBackground: string;
+    successBorder: string;
+    warning: string;
+    warningBackground: string;
+    warningBorder: string;
+    error: string;
+    errorBackground: string;
+    errorBorder: string;
+    info: string;
+    infoBackground: string;
+    infoBorder: string;
+  };
+  overlay: {
+    light: string;
+    medium: string;
+    dark: string;
+    heavy: string;
+  };
+  shadow: {
+    default: string;
+    light: string;
+    medium: string;
+    heavy: string;
+    colored: string;
+  };
+}
 
-export type ColorScheme = typeof lightColorScheme;
+// Export color schemes
+export const lightColorScheme: ColorScheme = semanticColors;
+export const darkColorScheme: ColorScheme = darkColors;
+
 export type BaseColors = typeof baseColors;
 export type SemanticColors = typeof semanticColors;

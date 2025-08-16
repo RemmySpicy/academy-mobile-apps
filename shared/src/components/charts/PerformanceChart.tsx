@@ -4,8 +4,7 @@ import {
   LineChart,
   BarChart,
   PieChart,
-  ProgressChart,
-} from 'react-native-chart-kit';
+} from 'react-native-gifted-charts';
 import { Ionicons } from '@expo/vector-icons';
 import { Show } from '../ui/Show';
 import ErrorMessage from '../ui/ErrorMessage';
@@ -146,28 +145,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
     { key: 'all', label: 'All Time' },
   ];
 
-  const chartConfig = useMemo(() => ({
-    backgroundColor: resolvedBackgroundColor,
-    backgroundGradientFrom: resolvedBackgroundColor,
-    backgroundGradientTo: resolvedBackgroundColor,
-    decimalPlaces: 0,
-    color: (opacity = 1) => resolvedPrimaryColor + Math.round(opacity * 255).toString(16).padStart(2, '0'),
-    labelColor: (opacity = 1) => resolvedTextColor + Math.round(opacity * 255).toString(16).padStart(2, '0'),
-    style: {
-      borderRadius: 12,
-    },
-    propsForDots: {
-      r: '4',
-      strokeWidth: '2',
-      stroke: resolvedPrimaryColor,
-    },
-    propsForBackgroundLines: {
-      strokeDasharray: showGrid ? '5,5' : '0,0',
-      stroke: theme.colors.border.primary,
-    },
-    fillShadowGradient: resolvedPrimaryColor,
-    fillShadowGradientOpacity: 0.3,
-  }), [resolvedBackgroundColor, resolvedPrimaryColor, resolvedTextColor, showGrid, theme.colors.border.primary]);
 
   const handlePeriodChange = (newPeriod: ChartPeriod) => {
     setSelectedPeriod(newPeriod);
@@ -182,11 +159,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   const getChangeIcon = (changeType?: string) => {
     switch (changeType) {
       case 'increase':
-        return 'ri:arrow-up-line';
+        return 'arrow-up-outline';
       case 'decrease':
-        return 'ri:arrow-down-line';
+        return 'arrow-down-outline';
       default:
-        return 'ri:subtract-line';
+        return 'remove-outline';
     }
   };
 
@@ -226,69 +203,106 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
       );
     }
 
-    const commonProps = {
-      width,
-      height,
-      chartConfig,
-      style: styles.chart,
-      onDataPointClick: onDataPointPress ? handleDataPointPress : undefined,
-    };
-
+    // Modern chart rendering with react-native-gifted-charts (2025)
     switch (type) {
       case 'line':
+        // Convert old format to gifted-charts format
+        const lineData = data.datasets?.[0]?.data?.map((value, index) => ({
+          value,
+          label: data.labels?.[index] || '',
+        })) || [];
+
         return (
-          <LineChart
-            data={data as any}
-            bezier={bezier}
-            {...commonProps}
-          />
+          <View style={styles.chartWrapper}>
+            <LineChart
+              data={lineData}
+              width={width - 40}
+              height={height - 40}
+              color={resolvedPrimaryColor}
+              curved={bezier}
+              isAnimated={animated}
+              showVerticalLines={showGrid}
+              hideRules={!showGrid}
+              rulesColor={theme.colors.border.primary}
+              rulesType="solid"
+              spacing={30}
+              initialSpacing={10}
+              thickness={2}
+              adjustToWidth={true}
+            />
+          </View>
         );
       
       case 'bar':
+        // Convert old format to gifted-charts format  
+        const barData = data.datasets?.[0]?.data?.map((value, index) => ({
+          value,
+          label: data.labels?.[index] || '',
+          frontColor: resolvedPrimaryColor,
+        })) || [];
+
         return (
-          <BarChart
-            data={data as any}
-            showValuesOnTopOfBars={true}
-            fromZero={true}
-            {...commonProps}
-          />
+          <View style={styles.chartWrapper}>
+            <BarChart
+              data={barData}
+              width={width - 40}
+              height={height - 40}
+              isAnimated={animated}
+              frontColor={resolvedPrimaryColor}
+              hideRules={!showGrid}
+              rulesColor={theme.colors.border.primary}
+              rulesType="solid"
+              spacing={30}
+              initialSpacing={10}
+              barWidth={25}
+              adjustToWidth={true}
+            />
+          </View>
         );
       
       case 'pie':
+        // Convert old format to gifted-charts format
+        const pieData = data.data?.map((item, index) => ({
+          value: item.value,
+          color: item.color || `${resolvedPrimaryColor}${Math.round((1 - index * 0.2) * 255).toString(16).padStart(2, '0')}`,
+          text: item.label || '',
+        })) || [];
+
         return (
-          <PieChart
-            data={data.data || []}
-            width={width}
-            height={height}
-            chartConfig={{
-              ...chartConfig,
-              color: (opacity = 1) => theme.colors.text.primary + Math.round(opacity * 255).toString(16).padStart(2, '0'),
-            }}
-            accessor="value"
-            backgroundColor="transparent"
-            paddingLeft="15"
-            absolute
-            style={styles.chart}
-          />
+          <View style={styles.chartWrapper}>
+            <PieChart
+              data={pieData}
+              radius={Math.min(width, height) / 4}
+              showText={showLegend}
+              textColor={resolvedTextColor}
+              textSize={12}
+            />
+          </View>
         );
       
       case 'progress':
-        const progressData = data.data?.reduce((acc, item) => {
-          acc[item.label || 'progress'] = item.value / 100;
-          return acc;
-        }, {} as any) || {};
+        // For progress charts, we'll use horizontal bars
+        const progressData = data.data?.map((item, index) => ({
+          value: item.value,
+          label: item.label || `Progress ${index + 1}`,
+          frontColor: `${resolvedPrimaryColor}${Math.round((1 - index * 0.1) * 255).toString(16).padStart(2, '0')}`,
+        })) || [];
 
         return (
-          <ProgressChart
-            data={progressData}
-            width={width}
-            height={height}
-            strokeWidth={16}
-            radius={32}
-            chartConfig={chartConfig}
-            hideLegend={!showLegend}
-            style={styles.chart}
-          />
+          <View style={styles.chartWrapper}>
+            <BarChart
+              data={progressData}
+              width={width - 40}
+              height={height - 40}
+              isAnimated={animated}
+              horizontal={true}
+              frontColor={resolvedPrimaryColor}
+              hideRules={!showGrid}
+              rulesColor={theme.colors.border.primary}
+              spacing={20}
+              barWidth={20}
+            />
+          </View>
         );
       
       default:
@@ -306,7 +320,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
             <View style={styles.metricHeader}>
               <Show.When isTrue={!!metric.icon}>
                 <Ionicons
-                  name={metric.icon!}
+                  name={metric.icon! as any}
                   size={20}
                   color={metric.color || primaryColor}
                   style={styles.metricIcon}
@@ -328,7 +342,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
                   { backgroundColor: getChangeColor(metric.changeType) + '20' }
                 ]}>
                   <Ionicons
-                    name={getChangeIcon(metric.changeType)}
+                    name={getChangeIcon(metric.changeType) as any}
                     size={12}
                     color={getChangeColor(metric.changeType)}
                   />
@@ -546,7 +560,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       borderRadius: theme.borderRadius.sm,
     },
     changeText: {
-      ...theme.typography.caption.small,
+      ...theme.typography.caption.base,
       fontWeight: theme.fontConfig.fontWeight.semibold,
       marginLeft: theme.spacing.xs,
     },

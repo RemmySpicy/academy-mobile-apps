@@ -35,11 +35,15 @@ export interface ProgramAssignment {
   /** Display name of the program */
   program_name: string;
   /** User's role within this specific program */
-  role_in_program: UserRole;
+  role: UserRole;
+  /** Alternative name for backward compatibility */
+  role_in_program?: UserRole;
   /** Whether the assignment is currently active */
   is_active: boolean;
-  /** Date when the assignment was created */
-  assigned_at: string;
+  /** Date when the assignment was created (ISO string) */
+  enrolled_at: string;
+  /** Alternative name for backward compatibility */
+  assigned_at?: string;
   /** Optional date when the assignment expires */
   expires_at?: string;
 }
@@ -53,7 +57,7 @@ export interface User {
   /** User's email address (used for login) */
   email: string;
   /** User's full display name */
-  full_name: string;
+  full_name?: string;
   /** User's first name */
   first_name: string;
   /** User's last name */
@@ -65,7 +69,9 @@ export interface User {
   /** Whether the user account is active */
   is_active: boolean;
   /** Whether the user's email has been verified */
-  is_email_verified: boolean;
+  is_verified: boolean;
+  /** Alternative name for email verification */
+  is_email_verified?: boolean;
   /** List of program assignments for this user */
   program_assignments: ProgramAssignment[];
   /** Account creation timestamp */
@@ -202,20 +208,24 @@ export interface AuthState {
   isAuthenticated: boolean;
   /** Whether authentication is being checked/loaded */
   isLoading: boolean;
+  /** Whether app is initializing */
+  isInitializing: boolean;
   /** JWT access token */
   accessToken: string | null;
-  /** JWT refresh token */
+  /** JWT refresh token (stored securely) */
   refreshToken: string | null;
   /** Current authenticated user */
   user: User | null;
   /** Current program context */
-  currentProgram: Program | null;
+  currentProgram: ProgramAssignment | null;
   /** Available programs for the user */
-  availablePrograms: Program[];
+  availablePrograms: ProgramAssignment[];
   /** Last login timestamp */
   lastLoginAt: string | null;
   /** Token expiry timestamp */
   tokenExpiresAt: string | null;
+  /** Current error state */
+  error: AuthError | null;
 }
 
 /**
@@ -224,26 +234,44 @@ export interface AuthState {
 export interface AuthActions {
   /** Login action */
   login: (credentials: LoginRequest) => Promise<void>;
+  /** Social login action */
+  loginWithSocial: (provider: string, token: string, userInfo: any) => Promise<void>;
   /** Logout action */
   logout: () => Promise<void>;
-  /** Refresh token action */
-  refreshToken: () => Promise<void>;
-  /** Load user from stored token */
-  loadUser: () => Promise<void>;
+  /** Refresh token action (returns new token) */
+  refreshTokenAction: () => Promise<string>;
+  /** Refresh user data */
+  refreshUser: () => Promise<void>;
+  /** Initialize auth from storage */
+  initializeAuth: () => Promise<void>;
   /** Switch program context */
-  switchProgram: (programId: string) => Promise<void>;
+  setCurrentProgram: (program: ProgramAssignment) => void;
   /** Update user information */
   updateUser: (user: Partial<User>) => void;
-  /** Clear authentication state */
-  clearAuth: () => void;
-  /** Check if token is expired */
-  isTokenExpired: () => boolean;
+  /** Clear authentication error */
+  clearError: () => void;
+  /** Get auth headers */
+  getAuthHeaders: () => AuthHeaders;
+  /** Check if user has role */
+  hasRole: (role: UserRole) => boolean;
+  /** Check program access */
+  hasProgramAccess: (programId: string) => boolean;
+  /** Check role allowed in app */
+  isRoleAllowedInApp: (appType: 'instructor' | 'student') => boolean;
+  /** Development bypass login */
+  bypassLogin: (appType?: 'instructor' | 'student') => void;
 }
 
 /**
  * Complete authentication store interface
+ * Note: Combines state and actions but handles refreshToken property conflict
  */
-export interface AuthStore extends AuthState, AuthActions {}
+export interface AuthStore extends Omit<AuthState, 'refreshToken'>, AuthActions {
+  /** JWT refresh token (from state) */
+  refreshToken: string | null;
+  /** Alias for accessing token (legacy compatibility) */
+  token: string | null;
+}
 
 /**
  * Enhanced API Error class for comprehensive error handling

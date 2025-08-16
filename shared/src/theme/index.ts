@@ -406,9 +406,7 @@ export type ThemeMode = 'light' | 'dark';
 export type ComponentThemes = typeof componentThemes;
 export type Tokens = typeof tokens;
 
-// Default export
+// Default export (remove duplicate exports)
 export {
   lightTheme as defaultTheme,
-  lightTheme,
-  darkTheme,
 };

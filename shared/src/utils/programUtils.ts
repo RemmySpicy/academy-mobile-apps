@@ -11,9 +11,9 @@ export function programAssignmentToProgram(assignment: ProgramAssignment): Progr
     description: undefined, // Not available in ProgramAssignment
     is_active: assignment.is_active,
     organization_id: '', // Not available in ProgramAssignment  
-    created_at: assignment.assigned_at,
-    updated_at: assignment.assigned_at,
-    user_role: assignment.role_in_program,
+    created_at: assignment.enrolled_at,
+    updated_at: assignment.enrolled_at,
+    user_role: assignment.role || assignment.role_in_program,
     permissions: [], // TODO: Calculate based on role
   };
 }
@@ -25,9 +25,11 @@ export function programToProgramAssignment(program: Program, userRole: string): 
   return {
     program_id: program.id,
     program_name: program.name,
-    role_in_program: userRole as any, // Cast to UserRole enum
+    role: userRole as any, // Cast to UserRole enum
+    role_in_program: userRole as any, // Legacy compatibility
     is_active: program.is_active,
-    assigned_at: program.created_at,
+    enrolled_at: program.created_at,
+    assigned_at: program.created_at, // Legacy compatibility
   };
 }
 

@@ -3,6 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import * as SecureStore from 'expo-secure-store';
 import {
   AuthState,
+  AuthActions,
   User,
   ProgramAssignment,
   UserRole,
@@ -39,37 +40,9 @@ const AUTH_CONFIG = {
 /**
  * Enhanced AuthState interface for Zustand store
  */
-interface AuthStoreState extends Omit<AuthState, 'program_assignments'> {
-  // Core auth state
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  isInitializing: boolean;
+interface AuthStoreState extends AuthState, AuthActions {
+  // Legacy compatibility alias
   token: string | null;
-  refreshToken: string | null;
-  user: User | null;
-  error: AuthError | null;
-
-  // Program context
-  currentProgram: ProgramAssignment | null;
-  availablePrograms: ProgramAssignment[];
-
-  // Actions
-  login: (credentials: LoginRequest) => Promise<void>;
-  loginWithSocial: (provider: string, token: string, userInfo: any) => Promise<void>;
-  logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
-  setCurrentProgram: (program: ProgramAssignment) => void;
-  clearError: () => void;
-  initializeAuth: () => Promise<void>;
-  
-  // Development/testing methods
-  bypassLogin: () => void;
-
-  // Utilities
-  getAuthHeaders: () => AuthHeaders;
-  hasRole: (role: UserRole) => boolean;
-  hasProgramAccess: (programId: string) => boolean;
-  isRoleAllowedInApp: (appType: 'instructor' | 'student') => boolean;
 }
 
 /**
@@ -267,12 +240,15 @@ export const useAuthStore = create<AuthStoreState>()(
     isAuthenticated: false,
     isLoading: false,
     isInitializing: true,
-    token: null,
+    accessToken: null,
+    token: null, // Legacy compatibility alias
     refreshToken: null,
     user: null,
     error: null,
     currentProgram: null,
     availablePrograms: [],
+    lastLoginAt: null,
+    tokenExpiresAt: null,
 
     /**
      * Initialize authentication state from secure storage
@@ -306,24 +282,30 @@ export const useAuthStore = create<AuthStoreState>()(
 
             set((state) => {
               state.isAuthenticated = true;
-              state.token = token;
+              state.accessToken = token;
+              state.token = token; // Legacy compatibility
               state.refreshToken = refreshToken;
               state.user = freshUser;
               state.currentProgram = currentProgram;
               state.availablePrograms = freshUser.program_assignments || [];
               state.isInitializing = false;
+              state.lastLoginAt = new Date().toISOString();
+              state.tokenExpiresAt = new Date(Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MINUTES * 60 * 1000).toISOString();
             });
           } catch (error) {
             // Token is invalid, clear storage
             await secureStorage.clearAll();
             set((state) => {
               state.isAuthenticated = false;
-              state.token = null;
+              state.accessToken = null;
+              state.token = null; // Legacy compatibility
               state.refreshToken = null;
               state.user = null;
               state.currentProgram = null;
               state.availablePrograms = [];
               state.isInitializing = false;
+              state.lastLoginAt = null;
+              state.tokenExpiresAt = null;
             });
           }
         } else {
@@ -381,17 +363,22 @@ export const useAuthStore = create<AuthStoreState>()(
         set((state) => {
           state.isAuthenticated = true;
           state.isLoading = false;
-          state.token = access_token;
+          state.accessToken = access_token;
+          state.token = access_token; // Legacy compatibility
           state.user = user;
           state.currentProgram = defaultProgram;
           state.availablePrograms = user.program_assignments || [];
           state.error = null;
+          state.lastLoginAt = new Date().toISOString();
+          state.tokenExpiresAt = new Date(Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MINUTES * 60 * 1000).toISOString();
         });
       } catch (error) {
         set((state) => {
           state.isLoading = false;
-          state.error = error instanceof AuthError || error instanceof ApiError
+          state.error = error instanceof AuthError
             ? error
+            : error instanceof ApiError
+            ? new AuthError('LOGIN_ERROR', error.message, error.status)
             : new AuthError('LOGIN_ERROR', 'Login failed');
         });
         throw error;
@@ -434,17 +421,22 @@ export const useAuthStore = create<AuthStoreState>()(
         set((state) => {
           state.isAuthenticated = true;
           state.isLoading = false;
-          state.token = mockToken;
+          state.accessToken = mockToken;
+          state.token = mockToken; // Legacy compatibility
           state.user = mockUser;
           state.currentProgram = null;
           state.availablePrograms = [];
           state.error = null;
+          state.lastLoginAt = new Date().toISOString();
+          state.tokenExpiresAt = new Date(Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MINUTES * 60 * 1000).toISOString();
         });
       } catch (error) {
         set((state) => {
           state.isLoading = false;
-          state.error = error instanceof AuthError || error instanceof ApiError
+          state.error = error instanceof AuthError
             ? error
+            : error instanceof ApiError
+            ? new AuthError('SOCIAL_LOGIN_ERROR', error.message, error.status)
             : new AuthError('SOCIAL_LOGIN_ERROR', 'Social login failed');
         });
         throw error;
@@ -460,14 +452,14 @@ export const useAuthStore = create<AuthStoreState>()(
       });
 
       try {
-        const { token } = get();
+        const { accessToken } = get();
         
         // Attempt server logout (don't fail if this fails)
-        if (token) {
+        if (accessToken) {
           try {
             await apiClient.request(AUTH_CONFIG.ENDPOINTS.LOGOUT, {
               method: 'POST',
-              token,
+              token: accessToken,
             });
           } catch (error) {
             console.warn('Server logout failed:', error);
@@ -480,12 +472,15 @@ export const useAuthStore = create<AuthStoreState>()(
         set((state) => {
           state.isAuthenticated = false;
           state.isLoading = false;
-          state.token = null;
+          state.accessToken = null;
+          state.token = null; // Legacy compatibility
           state.refreshToken = null;
           state.user = null;
           state.currentProgram = null;
           state.availablePrograms = [];
           state.error = null;
+          state.lastLoginAt = null;
+          state.tokenExpiresAt = null;
         });
       } catch (error) {
         // Force logout even if server call fails
@@ -494,7 +489,8 @@ export const useAuthStore = create<AuthStoreState>()(
         set((state) => {
           state.isAuthenticated = false;
           state.isLoading = false;
-          state.token = null;
+          state.accessToken = null;
+          state.token = null; // Legacy compatibility
           state.refreshToken = null;
           state.user = null;
           state.currentProgram = null;
@@ -502,6 +498,8 @@ export const useAuthStore = create<AuthStoreState>()(
           state.error = error instanceof AuthError
             ? error
             : new AuthError('LOGOUT_ERROR', 'Logout failed');
+          state.lastLoginAt = null;
+          state.tokenExpiresAt = null;
         });
       }
     },
@@ -510,8 +508,8 @@ export const useAuthStore = create<AuthStoreState>()(
      * Refresh current user data
      */
     refreshUser: async () => {
-      const { token } = get();
-      if (!token) {
+      const { accessToken } = get();
+      if (!accessToken) {
         throw new AuthError('NO_TOKEN', 'No authentication token available');
       }
 
@@ -523,7 +521,7 @@ export const useAuthStore = create<AuthStoreState>()(
       try {
         const user = await apiClient.request<User>(
           AUTH_CONFIG.ENDPOINTS.ME, 
-          { token }
+          { token: accessToken }
         );
 
         await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
@@ -536,18 +534,46 @@ export const useAuthStore = create<AuthStoreState>()(
       } catch (error) {
         set((state) => {
           state.isLoading = false;
-          state.error = error instanceof AuthError || error instanceof ApiError
+          state.error = error instanceof AuthError
             ? error
+            : error instanceof ApiError
+            ? new AuthError('REFRESH_ERROR', error.message, error.status)
             : new AuthError('REFRESH_ERROR', 'Failed to refresh user data');
         });
 
         // If refresh fails with 401, logout user
         if (error instanceof ApiError && error.status === 401) {
-          await get().logout();
+          const authStore = get();
+          await authStore.logout();
         }
 
         throw error;
       }
+    },
+
+    /**
+     * Refresh token action (alias for refreshUser)
+     */
+    refreshTokenAction: async (): Promise<string> => {
+      const { accessToken } = get();
+      if (!accessToken) {
+        throw new AuthError('NO_TOKEN', 'No authentication token available');
+      }
+      
+      // In a real implementation, this would call a refresh token endpoint
+      // For now, we'll just return the current token
+      return accessToken;
+    },
+
+    /**
+     * Update user information
+     */
+    updateUser: (userData: Partial<User>) => {
+      set((state) => {
+        if (state.user) {
+          state.user = { ...state.user, ...userData };
+        }
+      });
     },
 
     /**
@@ -580,8 +606,8 @@ export const useAuthStore = create<AuthStoreState>()(
      * Get authentication headers for API requests
      */
     getAuthHeaders: (): AuthHeaders => {
-      const { token, currentProgram } = get();
-      return createAuthHeaders(token, currentProgram?.program_id || null);
+      const { accessToken, currentProgram } = get();
+      return createAuthHeaders(accessToken, currentProgram?.program_id || null);
     },
 
     /**
@@ -628,20 +654,27 @@ export const useAuthStore = create<AuthStoreState>()(
 
     /**
      * Bypass login for development/testing (creates mock authenticated state)
+     * Automatically creates the appropriate user role based on app context
      */
-    bypassLogin: () => {
+    bypassLogin: (appType?: 'instructor' | 'student') => {
+      // Detect app type from environment or use default
+      const defaultAppType = appType || 
+        (typeof window !== 'undefined' && window.location?.pathname?.includes('instructor')) ? 'instructor' : 'student';
+      
+      const isInstructorApp = defaultAppType === 'instructor';
+      
       const mockUser: User = {
-        id: 'dev_user_123',
-        email: 'dev@example.com',
-        first_name: 'Dev',
-        last_name: 'User',
-        role: UserRole.STUDENT,
+        id: `dev_user_${isInstructorApp ? 'instructor' : 'student'}_123`,
+        email: `dev.${isInstructorApp ? 'instructor' : 'student'}@academy.com`,
+        first_name: isInstructorApp ? 'Dev' : 'Student',
+        last_name: isInstructorApp ? 'Instructor' : 'User',
+        role: isInstructorApp ? UserRole.TUTOR : UserRole.STUDENT,
         is_active: true,
         is_verified: true,
         program_assignments: [{
           program_id: 'dev_program_1',
-          program_name: 'Development Program',
-          role: UserRole.STUDENT,
+          program_name: 'Development Swimming Program',
+          role: isInstructorApp ? UserRole.TUTOR : UserRole.STUDENT,
           is_active: true,
           enrolled_at: new Date().toISOString(),
         }],
@@ -653,13 +686,16 @@ export const useAuthStore = create<AuthStoreState>()(
 
       set((state) => {
         state.isAuthenticated = true;
-        state.token = mockToken;
+        state.accessToken = mockToken;
+        state.token = mockToken; // Legacy compatibility
         state.user = mockUser;
         state.currentProgram = mockUser.program_assignments[0];
         state.availablePrograms = mockUser.program_assignments;
         state.error = null;
         state.isLoading = false;
         state.isInitializing = false;
+        state.lastLoginAt = new Date().toISOString();
+        state.tokenExpiresAt = new Date(Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MINUTES * 60 * 1000).toISOString();
       });
     },
   }))
@@ -676,7 +712,7 @@ export const authSelectors = {
   currentProgram: (state: AuthStoreState) => state.currentProgram,
   availablePrograms: (state: AuthStoreState) => state.availablePrograms,
   error: (state: AuthStoreState) => state.error,
-  authHeaders: (state: AuthStoreState) => state.getAuthHeaders(),
+  authHeaders: (state: AuthStoreState) => createAuthHeaders(state.accessToken, state.currentProgram?.program_id || null),
 };
 
 export default useAuthStore;

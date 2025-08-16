@@ -30,7 +30,7 @@ export function ProgramSelector({
     refreshPrograms, 
     error 
   } = useProgramContext();
-  const theme = useTheme();
+  const { theme } = useTheme();
   const styles = useThemedStyles();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);

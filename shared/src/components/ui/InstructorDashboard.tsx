@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, useWindow, useWindowDimensions, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
-import { useProgramContext } from '../../hooks/useProgramContext';
+import { useProgramContext } from '../program/ProgramContextProvider';
 import PerformanceChart from '../charts/PerformanceChart';
 import StudentCard from './StudentCard';
 
@@ -93,7 +93,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       id: 'total_students',
       title: 'Total Students',
       value: recentStudents.length || 0,
-      icon: 'ri:group-line',
+      icon: 'people-outline',
       color: theme.colors.interactive.primary,
     },
     {
@@ -111,14 +111,14 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       value: '87%',
       change: -1.2,
       changeType: 'decrease',
-      icon: 'ri:bar-chart-line',
+      icon: 'bar-chart-outline',
       color: theme.colors.interactive.primary,
     },
     {
       id: 'pending_tasks',
       title: 'Pending Tasks',
       value: 12,
-      icon: 'ri:task-line',
+      icon: 'checkmark-circle-outline',
       color: theme.colors.status.warning,
     },
   ];
@@ -134,22 +134,22 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
     {
       id: 'grade_assignments',
       title: 'Grade Work',
-      icon: 'ri:edit-line',
+      icon: 'pencil-outline',
       color: theme.colors.interactive.primary,
       onPress: () => {},
     },
     {
       id: 'message_parents',
       title: 'Message Parents',
-      icon: 'ri:message-line',
-      color: theme.colors.academy.orange,
+      icon: 'mail-outline',
+      color: theme.colors.interactive.orange,
       onPress: () => {},
     },
     {
       id: 'create_assessment',
       title: 'New Assessment',
-      icon: 'ri:file-add-line',
-      color: theme.colors.academy.faded[600],
+      icon: 'document-text-outline',
+      color: theme.colors.interactive.faded,
       onPress: () => {},
     },
   ];
@@ -362,7 +362,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
             {activity.priority === 'high' && (
               <View style={styles.priorityIndicator}>
                 <Ionicons
-                  name='ri:alert-line'
+                  name='warning-outline'
                   size={14}
                   color={theme.colors.status.error}
                 />
@@ -388,11 +388,11 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
   const getChangeIcon = (changeType?: string) => {
     switch (changeType) {
       case 'increase':
-        return 'ri:arrow-up-line';
+        return 'arrow-up-outline';
       case 'decrease':
-        return 'ri:arrow-down-line';
+        return 'arrow-down-outline';
       default:
-        return 'ri:subtract-line';
+        return 'remove-outline';
     }
   };
 
@@ -401,13 +401,13 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       case 'attendance':
         return 'calendar-outline';
       case 'assignment':
-        return 'ri:file-text-line';
+        return 'document-text-outline';
       case 'assessment':
-        return 'ri:bar-chart-line';
+        return 'bar-chart-outline';
       case 'alert':
-        return 'ri:alert-line';
+        return 'warning-outline';
       default:
-        return 'ri:information-line';
+        return 'information-circle-outline';
     }
   };
 
@@ -418,7 +418,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       case 'assignment':
         return theme.colors.interactive.primary;
       case 'assessment':
-        return theme.colors.academy.orange;
+        return theme.colors.interactive.orange;
       case 'alert':
         return theme.colors.status.error;
       default:
@@ -550,7 +550,7 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     changeText: {
-      ...theme.typography.caption.small,
+      ...theme.typography.caption.base,
       fontWeight: theme.fontConfig.fontWeight.semibold,
     },
 
@@ -650,11 +650,11 @@ const useThemedStyles = createThemedStyles(theme =>
 
     studentName: {
       fontWeight: theme.fontConfig.fontWeight.semibold,
-      color: theme.colors.academy.purple[600],
+      color: theme.colors.interactive.primary,
     },
 
     activityTime: {
-      ...theme.typography.caption.small,
+      ...theme.typography.caption.base,
       color: theme.colors.text.tertiary,
     },
 

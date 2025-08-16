@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ApiError, AuthError } from '../types/auth';
-import { ApiResponse } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { useNotificationStore } from '../store/notificationStore';
 
@@ -163,7 +162,9 @@ class ApiClient {
       
       if (status === 401) {
         // Token expired or invalid - logout user
-        await authStore.logout();
+        if (authStore.logout) {
+          await authStore.logout();
+        }
         notificationStore.showError(
           'Your session has expired. Please log in again.',
           'Session Expired'
@@ -273,7 +274,7 @@ class ApiClient {
   async get<T = any>(
     url: string, 
     config?: AxiosRequestConfig & { silent?: boolean }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     try {
       const response = await this.client.get(url, config);
       return response.data;
@@ -291,7 +292,7 @@ class ApiClient {
     url: string, 
     data?: any, 
     config?: AxiosRequestConfig & { silent?: boolean }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     try {
       const response = await this.client.post(url, data, config);
       return response.data;
@@ -308,7 +309,7 @@ class ApiClient {
     url: string, 
     data?: any, 
     config?: AxiosRequestConfig & { silent?: boolean }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     try {
       const response = await this.client.put(url, data, config);
       return response.data;
@@ -325,7 +326,7 @@ class ApiClient {
     url: string, 
     data?: any, 
     config?: AxiosRequestConfig & { silent?: boolean }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     try {
       const response = await this.client.patch(url, data, config);
       return response.data;
@@ -341,7 +342,7 @@ class ApiClient {
   async delete<T = any>(
     url: string, 
     config?: AxiosRequestConfig & { silent?: boolean }
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     try {
       const response = await this.client.delete(url, config);
       return response.data;
@@ -379,7 +380,20 @@ class ApiClient {
    */
   getAuthHeaders(): Record<string, string> {
     const authState = useAuthStore.getState();
-    return authState.getAuthHeaders();
+    const { accessToken, currentProgram } = authState;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+    
+    if (currentProgram?.program_id) {
+      headers['X-Program-Context'] = currentProgram.program_id;
+    }
+    
+    return headers;
   }
 
   /**
@@ -447,7 +461,7 @@ class ApiClient {
     file: FormData,
     onProgress?: (progress: number) => void,
     config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const response = await this.client.post(url, file, {
       ...config,
       headers: {
@@ -501,6 +515,42 @@ class ApiClient {
       totalRequests: Array.from(this.retryCount.values()).reduce((sum, count) => sum + count, 0),
     };
   }
+
+  /**
+   * Set authentication token for subsequent requests
+   */
+  async setAuthToken(token: string): Promise<void> {
+    try {
+      this.client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // Store token securely using dynamic import to avoid web compatibility issues
+      const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
+      await AsyncStorage.setItem('auth_token', token);
+    } catch (error) {
+      console.warn('Failed to persist auth token:', error);
+      // Don't throw - persistence failure shouldn't break the app
+    }
+  }
+
+  /**
+   * Clear authentication data from client and storage
+   */
+  async clearAuthData(): Promise<void> {
+    try {
+      // Clear authorization header
+      delete this.client.defaults.headers.common['Authorization'];
+      
+      // Clear stored data using dynamic import
+      const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
+      await Promise.all([
+        AsyncStorage.removeItem('auth_token'),
+        AsyncStorage.removeItem('program_context'),
+        AsyncStorage.removeItem('user_data'),
+      ]);
+    } catch (error) {
+      console.warn('Failed to clear auth data:', error);
+      // Don't throw - cleanup failure shouldn't break the app
+    }
+  }
 }
 
 /**
@@ -508,15 +558,21 @@ class ApiClient {
  */
 const apiClient = new ApiClient();
 
-// Enhanced error types export
-export { ApiError, AuthError } from '../types/auth';
+// Enhanced error types - import only, don't re-export to avoid conflicts
+// Use the main index.ts exports instead
 
 // Type exports for better TypeScript support
 export type {
-  ApiResponse,
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
+
+// Define ApiResponse type locally since it's no longer imported
+export interface ApiResponse<T = any> {
+  data: T;
+  message?: string;
+  success?: boolean;
+}
 
 export type EnhancedRequestConfig = AxiosRequestConfig & {
   silent?: boolean;

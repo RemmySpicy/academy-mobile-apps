@@ -18,7 +18,7 @@ export function ProgramHeader({
   textAlign = 'left' 
 }: ProgramHeaderProps) {
   const { currentProgram } = useProgramContext();
-  const theme = useTheme();
+  const { theme } = useTheme();
 
   if (!currentProgram) {
     return null;

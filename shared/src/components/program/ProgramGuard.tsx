@@ -29,7 +29,7 @@ export function ProgramGuard({
   showRefresh = true,
 }: ProgramGuardProps) {
   const { currentProgram, isLoading, error, refreshPrograms } = useProgramContext();
-  const theme = useTheme();
+  const { theme } = useTheme();
 
   // Show loading state
   if (isLoading) {

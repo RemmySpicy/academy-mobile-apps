@@ -64,7 +64,7 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { showError, showSuccess } = useNotifications();
-  const { loginWithSocial } = useAuthStore();
+  const loginWithSocial = useAuthStore((state) => state.loginWithSocial);
   const { theme } = useTheme();
 
   const getProviderConfig = () => {

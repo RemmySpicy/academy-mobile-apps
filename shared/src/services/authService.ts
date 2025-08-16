@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
-import { User, AuthState, ApiResponse } from '../types';
+import { User } from '../types/auth';
+import { ApiResponse } from './apiClient';
 
 interface LoginCredentials {
   email: string;
@@ -29,14 +30,14 @@ class AuthService {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
     
-    if (response.data.access_token) {
-      await apiClient.setAuthToken(response.data.access_token);
+    if (response.access_token) {
+      await apiClient.setAuthToken(response.access_token);
     }
     
-    return response.data;
+    return response;
   }
 
-  async register(userData: RegisterData): Promise<ApiResponse<User>> {
+  async register(userData: RegisterData): Promise<User> {
     return apiClient.post<User>('/auth/register', userData);
   }
 
@@ -52,37 +53,36 @@ class AuthService {
   }
 
   async getCurrentUser(): Promise<User> {
-    const response = await apiClient.get<User>('/auth/me');
-    return response.data;
+    return apiClient.get<User>('/auth/me');
   }
 
   async refreshToken(): Promise<string> {
     const response = await apiClient.post<{ access_token: string }>('/auth/refresh');
     
-    if (response.data.access_token) {
-      await apiClient.setAuthToken(response.data.access_token);
+    if (response.access_token) {
+      await apiClient.setAuthToken(response.access_token);
     }
     
-    return response.data.access_token;
+    return response.access_token;
   }
 
-  async forgotPassword(email: string): Promise<ApiResponse> {
+  async forgotPassword(email: string): Promise<any> {
     return apiClient.post('/auth/forgot-password', { email });
   }
 
-  async resetPassword(token: string, password: string): Promise<ApiResponse> {
+  async resetPassword(token: string, password: string): Promise<any> {
     return apiClient.post('/auth/reset-password', { token, password });
   }
 
-  async verifyEmail(token: string): Promise<ApiResponse> {
+  async verifyEmail(token: string): Promise<any> {
     return apiClient.post('/auth/verify-email', { token });
   }
 
-  async resendVerification(email: string): Promise<ApiResponse> {
+  async resendVerification(email: string): Promise<any> {
     return apiClient.post('/auth/resend-verification', { email });
   }
 
-  async changePassword(currentPassword: string, newPassword: string): Promise<ApiResponse> {
+  async changePassword(currentPassword: string, newPassword: string): Promise<any> {
     return apiClient.post('/auth/change-password', {
       current_password: currentPassword,
       new_password: newPassword,
@@ -90,8 +90,7 @@ class AuthService {
   }
 
   async updateProfile(userData: Partial<User>): Promise<User> {
-    const response = await apiClient.patch<User>('/auth/profile', userData);
-    return response.data;
+    return apiClient.patch<User>('/auth/profile', userData);
   }
 }
 

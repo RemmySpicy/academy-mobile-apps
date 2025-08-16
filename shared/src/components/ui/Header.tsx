@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
-import { useProgramContext } from '../../hooks/useProgramContext';
+import { useProgramContext } from '../program/ProgramContextProvider';
 import { useAuthStore } from '../../store/authStore';
 
 // Header variants for different use cases
@@ -363,10 +363,10 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     notificationCount: {
-      ...theme.typography.caption.small,
+      ...theme.typography.caption.base,
       color: theme.colors.text.inverse,
       fontWeight: theme.fontConfig.fontWeight.bold,
-      fontSize: theme.typography.caption.small.fontSize,
+      fontSize: theme.fontSizes.xs,
     },
   })
 );

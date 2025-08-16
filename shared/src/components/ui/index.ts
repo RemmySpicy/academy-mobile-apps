@@ -36,3 +36,6 @@ export { default as Header } from './Header';
 export { default as StudentCard } from './StudentCard';
 export { default as InstructorDashboard } from './InstructorDashboard';
 export { default as ErrorBoundary } from './ErrorBoundary';
+
+// Animation Components
+export { AnimatedWrapper, FadeInWrapper } from './AnimatedWrapper';

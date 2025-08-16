@@ -21,7 +21,7 @@ const ThemedErrorFallback: React.FC<{
   error: Error;
   retry: () => void;
 }> = ({ error, retry }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const styles = useThemedStyles();
 
   return (

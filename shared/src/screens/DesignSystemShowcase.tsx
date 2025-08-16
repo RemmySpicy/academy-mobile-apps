@@ -25,10 +25,10 @@ const DesignSystemShowcase: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<'buttons' | 'inputs' | 'modals' | 'alerts'>('buttons');
 
   const themeOptions: { label: string; value: ExtendedThemeMode }[] = [
-    { label: '☀️ Light', value: 'light' },
-    { label: '🌙 Dark', value: 'dark' },
-    { label: '🌚 Night', value: 'night' },
-    { label: '⚙️ System', value: 'system' },
+    { label: 'Light', value: 'light' },
+    { label: 'Dark', value: 'dark' },
+    { label: 'Night', value: 'night' },
+    { label: 'System', value: 'system' },
   ];
 
   const renderThemeSelector = () => (

@@ -1,8 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Discussion
-    url: https://github.com/RemmySpicy/academy-mobile-apps/discussions
-    about: Ask questions and discuss ideas with the community
-  - name: Backend Issues
-    url: https://github.com/RemmySpicy/academy-admin/issues
-    about: Report issues related to the Academy backend API

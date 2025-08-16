@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Academy Instructors",
+    "slug": "academy-instructors-app",
+    "version": "2.0.0",
+    "description": "Elitesgen Academy - Instructors & Coordinators Mobile App",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "academy-instructors",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#4F2EC9"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#4F2EC9"
+        }
+      ]
+    ]
+  }
+}

@@ -1,18 +1,8 @@
 // Core Academy Types
 // Authentication types are now in ./auth.ts - import from there for auth-related types
 
-export interface User {
-  id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  full_name: string;
-  phone_number?: string;
-  profile_type: 'student' | 'parent' | 'tutor' | 'coordinator' | 'program_admin' | 'super_admin';
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+// User interface is now defined in ./auth.ts - re-export for compatibility
+export type { User } from './auth';
 
 export interface Program {
   id: string;
@@ -30,12 +20,8 @@ export interface ProgramContext extends Program {
   permissions?: string[]; // User's permissions in this program
 }
 
-export interface AuthState {
-  isAuthenticated: boolean;
-  token: string | null;
-  user: User | null;
-  currentProgram: Program | null;
-}
+// AuthState is now defined in ./auth.ts - re-export for compatibility  
+export type { AuthState } from './auth';
 
 // Re-export authentication types for convenience - Direct exports
 export {
@@ -59,7 +45,6 @@ export type {
   PasswordResetRequest,
   PasswordResetConfirmRequest,
   EmailVerificationRequest,
-  AuthState,
   AuthActions,
   AuthStore,
   ApiErrorInterface,
@@ -78,16 +63,11 @@ export type {
   UserProgramAssignment,
 } from './auth';
 
+// API response interface for legacy compatibility
 export interface ApiResponse<T = any> {
   data: T;
   message?: string;
   success: boolean;
-}
-
-export interface ApiError {
-  message: string;
-  status: number;
-  details?: any;
 }
 
 // Form Types
@@ -134,7 +114,6 @@ export interface Enrollment {
   progress_percentage: number;
 }
 
-export type { User as AuthUser };
 export type { Program as AcademyProgram };
 export type { Course as AcademyCourse };
 export type { Enrollment as CourseEnrollment };

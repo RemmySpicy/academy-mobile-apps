@@ -10,7 +10,8 @@ interface CustomTextAreaProps extends FormFieldProps {
   numberOfLines?: number;
   maxLength?: number;
   keyboardType?: KeyboardTypeOptions;
-  handleOnChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
+  handleOnChange?: (value: string) => void; // Legacy support
   defaultValue?: string;
   editable?: boolean;
   placeholderTextColor?: string;
@@ -24,7 +25,8 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   name,
   placeholder,
   control,
-  handleOnChange,
+  onValueChange,
+  handleOnChange, // Legacy support
   numberOfLines = 4,
   keyboardType = "default",
   maxLength,
@@ -51,10 +53,10 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
 
   const handleChangeText = useCallback((text: string) => {
     field.onChange(text);
-    if (handleOnChange) {
-      handleOnChange(text);
-    }
-  }, [field, handleOnChange]);
+    // Call both new and legacy handlers
+    onValueChange?.(text);
+    handleOnChange?.(text);
+  }, [field, onValueChange, handleOnChange]);
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
@@ -71,24 +73,13 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   }, [minHeight, maxHeight]);
 
   const getTextAreaStyle = () => {
-    const baseStyle = [
+    return [
       styles.textArea,
-      { height: textHeight }
-    ];
-    
-    if (isFocused) {
-      baseStyle.push(styles.textAreaFocused);
-    }
-    
-    if (fieldState.error) {
-      baseStyle.push(styles.textAreaError);
-    }
-    
-    if (disabled) {
-      baseStyle.push(styles.textAreaDisabled);
-    }
-    
-    return baseStyle;
+      { height: textHeight },
+      isFocused && styles.textAreaFocused,
+      fieldState.error && styles.textAreaError,
+      disabled && styles.textAreaDisabled,
+    ].filter(Boolean);
   };
 
   const characterCount = field.value?.length || 0;
@@ -116,7 +107,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
           scrollEnabled={textHeight >= maxHeight}
           accessibilityLabel={placeholder}
           accessibilityHint={fieldState.error ? fieldState.error.message : undefined}
-          accessibilityRequired={required}
+          accessibilityState={{ required }}
           accessibilityMultiline={true}
         />
       </View>

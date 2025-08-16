@@ -20,7 +20,8 @@ interface RadioButtonProps extends FormFieldProps {
   label?: string;
   variant?: RadioButtonVariant;
   size?: RadioButtonSize;
-  handleChange?: (value: string | number) => void;
+  onValueChange?: (value: string | number) => void;
+  handleChange?: (value: string | number) => void; // Legacy support
   orientation?: 'horizontal' | 'vertical';
   defaultValue?: string | number;
 }
@@ -46,32 +47,32 @@ export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options'> & {
       primary: {
         border: theme.colors.interactive.primary,
         background: theme.colors.interactive.primary,
-        dot: theme.colors.text.inverted,
+        dot: theme.colors.text.inverse,
       },
       secondary: {
         border: theme.colors.interactive.secondary,
         background: theme.colors.interactive.secondary,
-        dot: theme.colors.text.inverted,
+        dot: theme.colors.text.inverse,
       },
       success: {
         border: theme.colors.status.success,
         background: theme.colors.status.success,
-        dot: theme.colors.text.inverted,
+        dot: theme.colors.text.inverse,
       },
       warning: {
         border: theme.colors.status.warning,
         background: theme.colors.status.warning,
-        dot: theme.colors.text.inverted,
+        dot: theme.colors.text.inverse,
       },
       danger: {
         border: theme.colors.status.error,
         background: theme.colors.status.error,
-        dot: theme.colors.text.inverted,
+        dot: theme.colors.text.inverse,
       },
       info: {
         border: theme.colors.status.info,
         background: theme.colors.status.info,
-        dot: theme.colors.text.inverted,
+        dot: theme.colors.text.inverse,
       },
     };
     
@@ -163,7 +164,8 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   label,
   variant = 'primary',
   size = 'medium',
-  handleChange,
+  onValueChange,
+  handleChange, // Legacy support
   disabled = false,
   required = false,
   orientation = 'vertical',
@@ -182,10 +184,10 @@ const RadioButton: React.FC<RadioButtonProps> = ({
     
     field.onChange(selectedValue);
     
-    if (handleChange) {
-      handleChange(selectedValue);
-    }
-  }, [disabled, field, handleChange]);
+    // Call both new and legacy handlers
+    onValueChange?.(selectedValue);
+    handleChange?.(selectedValue);
+  }, [disabled, field, onValueChange, handleChange]);
 
   // If used as a single radio button (no options provided)
   if (options.length === 0 && value !== undefined) {

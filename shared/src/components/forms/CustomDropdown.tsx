@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal, FlatList, Animated, useWindow, useWindowDimensions, Platform, Dimensions } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Modal, FlatList, Animated, Platform, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useController } from 'react-hook-form';
 import { FormFieldProps } from '../../types';
@@ -137,7 +137,6 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         ]]}
         onPress={() => handleSelection(item.value, item)}
         disabled={item.disabled}
-        activeOpacity={item.disabled ? 1 : 0.7}
       >
         <Text style={[
           styles.optionText, 
@@ -198,7 +197,6 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         ]]}
         onPress={() => !disabled && openModal()}
         disabled={disabled}
-        activeOpacity={0.7}
         accessibilityLabel={placeholder}
         accessibilityHint="Double tap to open dropdown"
         accessibilityRole="button"
@@ -235,35 +233,37 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         <Pressable style={({ pressed }) => [styles.modalOverlay]}
           onPress={closeModal}
         >
-          <Animated.View style={modalContentStyle}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Option</Text>
-              <Pressable 
-                onPress={closeModal}
-                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.closeButton]}
-                accessibilityLabel="Close dropdown"
-                accessibilityRole="button"
-              >
-                <Ionicons name="close-outline" size={24} color={theme.colors.text.secondary} />
-              </Pressable>
-            </View>
+          <View style={styles.modalContainer}>
+            <Animated.View style={modalContentStyle}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Option</Text>
+                <Pressable 
+                  onPress={closeModal}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.closeButton]}
+                  accessibilityLabel="Close dropdown"
+                  accessibilityRole="button"
+                >
+                  <Ionicons name="close-outline" size={24} color={theme.colors.text.secondary} />
+                </Pressable>
+              </View>
 
-            <FlatList
-              data={filteredOptions}
-              renderItem={renderOption}
-              keyExtractor={(item) => item.value.toString()}
-              style={[styles.optionsList, { maxHeight }]}
-              showsVerticalScrollIndicator={false}
-              initialNumToRender={10}
-              maxToRenderPerBatch={10}
-              windowSize={10}
-              getItemLayout={(data, index) => ({
-                length: 48,
-                offset: 48 * index,
-                index,
-              })}
-            />
-          </Animated.View>
+              <FlatList
+                data={filteredOptions}
+                renderItem={renderOption}
+                keyExtractor={(item) => item.value.toString()}
+                style={[styles.optionsList, { maxHeight }]}
+                showsVerticalScrollIndicator={false}
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                windowSize={10}
+                getItemLayout={(data, index) => ({
+                  length: 48,
+                  offset: 48 * index,
+                  index,
+                })}
+              />
+            </Animated.View>
+          </View>
         </Pressable>
       </Modal>
     </View>
@@ -325,7 +325,12 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     modalOverlay: {
       flex: 1,
-      backgroundColor: theme.colors.overlay.modal,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    modalContainer: {
+      width: '100%',
       justifyContent: 'flex-end',
       alignItems: 'center',
     },

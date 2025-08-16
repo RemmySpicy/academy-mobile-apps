@@ -10,36 +10,107 @@ import { themeUtils } from "../../theme";
 type InputVariant = 'standard' | 'outline' | 'ghost' | 'password';
 type InputSize = 'small' | 'medium' | 'large';
 
-interface CustomInputProps extends Omit<FormFieldProps, 'control' | 'rules'> {
+/**
+ * Props interface for CustomInput component
+ * @interface CustomInputProps
+ */
+interface CustomInputProps extends Omit<FormFieldProps, 'control' | 'rules' | 'name'> {
+  /** Form field name - optional for standalone usage (when not using with React Hook Form) */
+  name?: string;
+  
+  /** React Hook Form control object */
   control?: Control<FieldValues>;
+  
+  /** React Hook Form validation rules */
   rules?: RegisterOptions;
+  
+  /** Visual variant of the input */
   variant?: InputVariant;
+  
+  /** Size of the input */
   size?: InputSize;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  secureTextEntry?: boolean;
-  showPasswordToggle?: boolean;
-  multiline?: boolean;
-  numberOfLines?: number;
-  keyboardType?: KeyboardTypeOptions;
-  maxLength?: number;
+  
+  // Core input props
+  /** Current input value (for controlled usage) */
+  value?: string;
+  
+  /** Default input value (for uncontrolled usage) */
   defaultValue?: string;
+  
+  /** Callback fired when the input text changes */
+  onChangeText?: (text: string) => void;
+  
+  /** Callback fired when the input loses focus */
+  onBlur?: () => void;
+  
+  // Icon props (standardized naming)
+  /** Icon displayed at the start (left) of the input */
+  startIcon?: React.ReactNode;
+  
+  /** Icon displayed at the end (right) of the input */
+  endIcon?: React.ReactNode;
+  
+  /** Legacy: Icon displayed at the left of the input */
+  leftIcon?: React.ReactNode;
+  
+  /** Legacy: Icon displayed at the right of the input */
+  rightIcon?: React.ReactNode;
+  
+  // Input behavior
+  /** Whether to obscure the text (for passwords) */
+  secureTextEntry?: boolean;
+  
+  /** Whether to show a toggle button for password visibility */
+  showPasswordToggle?: boolean;
+  
+  /** Whether the input accepts multiple lines */
+  multiline?: boolean;
+  
+  /** Number of lines for multiline inputs */
+  numberOfLines?: number;
+  
+  /** Keyboard type to display */
+  keyboardType?: KeyboardTypeOptions;
+  
+  /** Auto-capitalization behavior */
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  
+  /** Maximum number of characters allowed */
+  maxLength?: number;
+  
+  /** Whether the input is editable */
   editable?: boolean;
+  
+  /** Whether to automatically focus the input */
   autoFocus?: boolean;
+  
+  /** Type of return key to display */
   returnKeyType?: "done" | "go" | "next" | "search" | "send" | "default";
+  
+  /** Callback fired when the return key is pressed */
   onSubmitEditing?: () => void;
+  
+  /** Additional callback fired when the input value changes */
   onValueChange?: (value: string) => void;
   
   // Custom styling
+  /** Container style override */
   style?: ViewStyle;
+  
+  /** TextInput style override */
   inputStyle?: TextStyle;
+  
+  /** Outer container style override */
   containerStyle?: ViewStyle;
-  className?: string; // NativeWind support
-  inputClassName?: string; // NativeWind support for input
   
   // Accessibility
+  /** Accessibility label for screen readers */
   accessibilityLabel?: string;
+  
+  /** Accessibility hint providing additional context */
   accessibilityHint?: string;
+  
+  /** Test identifier for testing frameworks */
   testID?: string;
 }
 
@@ -49,6 +120,12 @@ const CustomInput: React.FC<CustomInputProps> = ({
   control,
   variant = 'standard',
   size = 'medium',
+  value: propValue,
+  defaultValue,
+  onChangeText: propOnChangeText,
+  onBlur: propOnBlur,
+  startIcon,
+  endIcon,
   leftIcon,
   rightIcon,
   secureTextEntry = false,
@@ -56,8 +133,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
   multiline = false,
   numberOfLines = 1,
   keyboardType = "default",
+  autoCapitalize = 'none',
   maxLength,
-  defaultValue,
   editable = true,
   autoFocus = false,
   returnKeyType = "default",
@@ -69,8 +146,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
   style,
   inputStyle,
   containerStyle,
-  className,
-  inputClassName,
   accessibilityLabel,
   accessibilityHint,
   testID,
@@ -79,15 +154,34 @@ const CustomInput: React.FC<CustomInputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry);
 
-  const {
-    field: { onChange, onBlur, value },
-    fieldState: { error, invalid },
-  } = useController({
+  // Form integration or standalone state
+  const formField = control && name ? useController({
     name,
     control,
     rules,
     defaultValue: defaultValue || "",
-  });
+  }) : null;
+
+  // Use form field values if available, otherwise use prop values
+  const value = formField ? formField.field.value : propValue || "";
+  const error = formField?.fieldState.error;
+  const invalid = formField?.fieldState.invalid || false;
+
+  const handleChangeText = (text: string) => {
+    if (formField) {
+      formField.field.onChange(text);
+    }
+    propOnChangeText?.(text);
+    onValueChange?.(text);
+  };
+
+  const handleBlur = () => {
+    if (formField) {
+      formField.field.onBlur();
+    }
+    propOnBlur?.();
+    setIsFocused(false);
+  };
 
   const styles = useThemedStyles();
 
@@ -124,16 +218,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
   const handleFocus = () => {
     setIsFocused(true);
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    onBlur();
-  };
-
-  const handleChangeText = (text: string) => {
-    onChange(text);
-    onValueChange?.(text);
   };
 
   const togglePasswordVisibility = () => {
@@ -174,17 +258,17 @@ const CustomInput: React.FC<CustomInputProps> = ({
   };
 
   return (
-    <View key={`input-${name}`} style={[styles.container, containerStyle, { pointerEvents: 'auto' }]} className={className}>
+    <View key={`input-${name}`} style={[styles.container, containerStyle, { pointerEvents: 'auto' }]}>
       <View style={[
         styles.inputContainer,
-        getVariantStyles,
+        ...getVariantStyles,
         getSizeStyles,
         style,
         { pointerEvents: 'auto' }
       ]}>
-        {leftIcon && (
+        {(startIcon || leftIcon) && (
           <View style={styles.leftIconContainer}>
-            {leftIcon}
+            {startIcon || leftIcon}
           </View>
         )}
 
@@ -208,7 +292,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           blurOnSubmit={!multiline}
           keyboardAppearance={theme.isDark ? 'dark' : 'light'}
           autoCorrect={false}
-          autoCapitalize="none"
+          autoCapitalize={autoCapitalize}
           style={[
             styles.textInput,
             getSizeStyles,
@@ -216,7 +300,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
             disabled && styles.textInputDisabled,
             { pointerEvents: disabled ? 'none' : 'auto' },
           ]}
-          className={inputClassName}
           accessibilityLabel={accessibilityLabel || placeholder}
           accessibilityHint={accessibilityHint}
           accessibilityState={{
@@ -229,9 +312,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
         {renderErrorIcon()}
         {renderPasswordToggle()}
         
-        {rightIcon && !showPasswordToggle && !invalid && (
+        {(endIcon || rightIcon) && !showPasswordToggle && !invalid && (
           <View style={styles.rightIconContainer}>
-            {rightIcon}
+            {endIcon || rightIcon}
           </View>
         )}
       </View>

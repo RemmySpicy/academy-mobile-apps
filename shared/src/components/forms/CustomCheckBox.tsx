@@ -14,36 +14,77 @@ type CheckboxVariant =
 
 type CheckboxSize = 'sm' | 'md' | 'lg';
 
-interface CustomCheckBoxProps extends Omit<FormFieldProps, 'placeholder'> {
+/**
+ * Props interface for CustomCheckBox component
+ * @interface CustomCheckBoxProps
+ */
+interface CustomCheckBoxProps extends Omit<FormFieldProps, 'placeholder' | 'name'> {
+  /** Form field name - optional for standalone usage (when not using with React Hook Form) */
+  name?: string;
+  
+  /** Visual variant of the checkbox */
   variant?: CheckboxVariant;
+  
+  /** Size of the checkbox */
   size?: CheckboxSize;
+  
+  /** Text label displayed next to the checkbox */
   label?: string;
+  
+  /** Additional description text displayed below the label */
   description?: string;
   
-  // Controlled or uncontrolled
+  // Controlled or uncontrolled state
+  /** Current checked state (for controlled usage) */
   value?: boolean;
+  
+  /** Default checked state (for uncontrolled usage) */
   defaultValue?: boolean;
+  
+  /** Callback fired when the checkbox state changes */
   onValueChange?: (value: boolean) => void;
   
   // Visual options
+  /** Whether the checkbox is in an indeterminate state */
   indeterminate?: boolean;
+  
+  /** Custom icon to display (will be used for both checked and unchecked if no specific icons provided) */
   icon?: React.ReactNode;
+  
+  /** Custom icon to display when checked */
   checkedIcon?: React.ReactNode;
+  
+  /** Custom icon to display when unchecked */
   uncheckedIcon?: React.ReactNode;
+  
+  /** Custom icon to display when in indeterminate state */
   indeterminateIcon?: React.ReactNode;
   
   // Styling
+  /** Container style override */
   style?: ViewStyle;
+  
+  /** Checkbox (square) style override */
   checkboxStyle?: ViewStyle;
+  
+  /** Label text style override */
   labelStyle?: any;
   
   // Accessibility
+  /** Accessibility label for screen readers */
   accessibilityLabel?: string;
+  
+  /** Accessibility hint providing additional context */
   accessibilityHint?: string;
+  
+  /** Test identifier for testing frameworks */
   testID?: string;
   
   // Animation
+  /** Whether to animate state changes */
   animated?: boolean;
+  
+  /** Duration of animations in milliseconds */
   animationDuration?: number;
 }
 
@@ -82,8 +123,8 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
   const opacityAnim = React.useRef(new Animated.Value(0)).current;
 
   // Form integration or standalone state
-  const formField = control ? useController({
-    name: name!,
+  const formField = control && name ? useController({
+    name,
     control,
     rules,
     defaultValue,
@@ -113,7 +154,6 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
       Animated.parallel([
         Animated.spring(scaleAnim, {
           toValue: newValue ? 1 : 0,
-          duration: animationDuration,
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
@@ -131,7 +171,6 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
       Animated.parallel([
         Animated.spring(scaleAnim, {
           toValue: isChecked ? 1 : 0,
-          duration: animationDuration,
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {

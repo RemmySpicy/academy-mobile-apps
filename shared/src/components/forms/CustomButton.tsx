@@ -45,8 +45,6 @@ interface CustomButtonProps {
   // Styling
   style?: ViewStyle;
   textStyle?: TextStyle;
-  className?: string; // For compatibility with existing code
-  textClassName?: string; // For compatibility with existing code
   
   // Shadow support (uses theme elevation system)
   shadow?: boolean;
@@ -71,8 +69,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   endIcon,
   style,
   textStyle,
-  className,
-  textClassName,
   shadow = false,
   loaderColor = 'white',
   accessibilityLabel,
@@ -94,9 +90,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     }
 
     if (shadow && !disabled) {
-      baseStyles.push({
-        ...themeUtils.createShadow('sm', theme.colors.shadow.default),
-      });
+      const shadowStyle = themeUtils.createShadow('sm', theme.colors.shadow.default);
+      baseStyles.push(shadowStyle as any);
     }
 
     return baseStyles;
@@ -118,7 +113,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
   const renderContent = () => {
     if (isLoading) {
-      return <ActivityIndicator color={loaderColor} size={size === 'sm' ? 'small' : 'default'} />;
+      return <ActivityIndicator color={loaderColor} size={size === 'sm' ? 'small' : 'large'} />;
     }
 
     return (
@@ -133,7 +128,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         {/* Centered Text */}
         <Text 
           style={[...getTextStyles(), textStyle]}
-          className={textClassName}
         >
           {title}
         </Text>
@@ -160,7 +154,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
           opacity: pressed ? 0.8 : 1,
         }
       ]}
-      className={className}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || title}
       accessibilityHint={accessibilityHint}

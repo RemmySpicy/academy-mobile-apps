@@ -86,47 +86,47 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        style={styles.keyboardView}
       >
         <ScrollView
-          className="flex-1"
+          style={styles.scrollView}
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {/* Header with Brand */}
           <LinearGradient
-            colors={['#4F2EC9', '#3B82F6']}
-            className="px-6 pt-12 pb-8 rounded-b-3xl"
+            colors={[theme.colors.interactive.primary, theme.colors.interactive.primaryPressed]}
+            style={styles.header}
           >
-            <View className="items-center">
-              <View className="bg-white/10 p-4 rounded-full mb-4">
+            <View style={styles.headerContent}>
+              <View style={styles.iconContainer}>
                 <Ionicons name="water" size={32} color="white" />
               </View>
-              <Text className="text-white text-2xl font-bold mb-2">
+              <Text style={styles.headerTitle}>
                 Academy Students
               </Text>
-              <Text className="text-white/80 text-center text-base">
+              <Text style={styles.headerSubtitle}>
                 Welcome back to your swimming journey
               </Text>
             </View>
           </LinearGradient>
 
           {/* Login Form */}
-          <View className="flex-1 px-6 pt-8">
-            <View className="mb-8">
-              <Text className="text-gray-900 text-xl font-semibold mb-2">
+          <View style={styles.formContainer}>
+            <View style={styles.welcomeSection}>
+              <Text style={styles.welcomeTitle}>
                 Sign In to Continue
               </Text>
-              <Text className="text-gray-600 text-base">
+              <Text style={styles.welcomeSubtitle}>
                 Access your courses, progress, and more
               </Text>
             </View>
 
-            <Form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <Form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
               {/* Email Input */}
               <CustomInput
                 name="email"
@@ -152,9 +152,9 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
               {/* Forgot Password Link */}
               <Pressable
                 onPress={() => navigation.navigate('ForgotPassword')}
-                className="self-end"
+                style={styles.forgotPassword}
               >
-                <Text className="text-blue-600 text-sm font-medium">
+                <Text style={styles.forgotPasswordText}>
                   Forgot Password?
                 </Text>
               </Pressable>
@@ -166,34 +166,32 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
                 isLoading={isLoading}
                 disabled={!isValid || isLoading}
                 variant="primary"
-                className="mt-6"
+                style={styles.loginButton}
               />
             </Form>
 
             {/* Social Authentication */}
-            <View className="mt-6">
-              <View className="flex-row items-center mb-4">
-                <View className="flex-1 h-px bg-gray-300" />
-                <Text className="mx-4 text-gray-500 text-sm">or continue with</Text>
-                <View className="flex-1 h-px bg-gray-300" />
-              </View>
-              
-              <SocialAuthButtons
-                onGooglePress={() => console.log('Google login')}
-                onApplePress={() => console.log('Apple login')}
-                onFacebookPress={() => console.log('Facebook login')}
-              />
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or continue with</Text>
+              <View style={styles.dividerLine} />
             </View>
+            
+            <SocialAuthButtons
+              onGooglePress={() => console.log('Google login')}
+              onApplePress={() => console.log('Apple login')}
+              onFacebookPress={() => console.log('Facebook login')}
+            />
 
             {/* Register Link */}
-            <View className="flex-row justify-center items-center mt-6">
-              <Text className="text-gray-600 text-base">
+            <View style={styles.registerSection}>
+              <Text style={styles.registerText}>
                 New to Academy?{' '}
               </Text>
               <Pressable
                 onPress={() => navigation.navigate('Register')}
               >
-                <Text className="text-blue-600 text-base font-medium">
+                <Text style={styles.registerLink}>
                   Create Account
                 </Text>
               </Pressable>
@@ -201,8 +199,8 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
           </View>
 
           {/* Footer */}
-          <View className="px-6 py-4">
-            <Text className="text-center text-gray-500 text-xs">
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
               By signing in, you agree to our Terms of Service and Privacy Policy
             </Text>
           </View>

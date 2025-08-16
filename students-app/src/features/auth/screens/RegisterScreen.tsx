@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { CustomInput, CustomButton, CustomCheckBox, SocialAuthButtons, validateEmail, useAuthStore } from '@academy/mobile-shared';
+import { CustomInput, CustomButton, CustomCheckBox, SocialAuthButtons, validateEmail, useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 // Validation schema

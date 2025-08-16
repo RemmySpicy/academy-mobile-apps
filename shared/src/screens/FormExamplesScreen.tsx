@@ -14,9 +14,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../theme/ThemeProvider';
 
 // Components
-import CustomInput from '../components/forms/CustomInput';
-import CustomButton from '../components/forms/CustomButton';
-import CustomCheckBox from '../components/forms/CustomCheckBox';
+import { CustomInput } from '../components/forms/CustomInput';
+import { CustomButton } from '../components/forms/CustomButton';
+import { CustomCheckBox } from '../components/forms/CustomCheckBox';
+import { 
+  GoogleSignInButton, 
+  AppleSignInButton, 
+  FacebookSignInButton,
+  SocialAuthGroup 
+} from '../components/auth/SocialAuthButtons';
+
+// Store
+import { useAuthStore } from '../store/authStore';
 
 // Form Types
 interface LoginForm {
@@ -45,6 +54,7 @@ interface FeedbackForm {
 const FormExamplesScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
+  const { bypassLogin, isAuthenticated, user } = useAuthStore();
 
   // Login Form
   const loginForm = useForm<LoginForm>({
@@ -82,6 +92,11 @@ const FormExamplesScreen: React.FC = () => {
     Alert.alert('Login Form', JSON.stringify(data, null, 2));
   };
 
+  const handleBypassLogin = () => {
+    bypassLogin();
+    Alert.alert('Success', 'Logged in without authentication for development!');
+  };
+
   const onProfileSubmit = (data: ProfileForm): void => {
     Alert.alert('Profile Form', JSON.stringify(data, null, 2));
   };
@@ -99,6 +114,7 @@ const FormExamplesScreen: React.FC = () => {
 
       <View style={styles.form}>
         <Controller
+          key="email"
           control={loginForm.control}
           name="email"
           rules={{
@@ -110,6 +126,7 @@ const FormExamplesScreen: React.FC = () => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <CustomInput
+              name="email"
               label="Email Address"
               placeholder="Enter your email"
               value={value}
@@ -117,13 +134,14 @@ const FormExamplesScreen: React.FC = () => {
               onBlur={onBlur}
               keyboardType="email-address"
               autoCapitalize="none"
-              startIcon={<Ionicons name="ri:mail-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
               error={loginForm.formState.errors.email?.message}
             />
           )}
         />
 
         <Controller
+          key="password"
           control={loginForm.control}
           name="password"
           rules={{
@@ -135,13 +153,14 @@ const FormExamplesScreen: React.FC = () => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <CustomInput
+              name="password"
               label="Password"
               placeholder="Enter your password"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               secureTextEntry
-              startIcon={<Ionicons name="ri:lock-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
               error={loginForm.formState.errors.password?.message}
             />
           )}
@@ -166,7 +185,7 @@ const FormExamplesScreen: React.FC = () => {
             title="Sign In"
             onPress={loginForm.handleSubmit(onLoginSubmit)}
             isLoading={loginForm.formState.isSubmitting}
-            startIcon={<Ionicons name="ri:login-circle-line" size={16} color="white" />}
+            startIcon={<Ionicons name="log-in-outline" size={16} color="white" />}
           />
           
           <CustomButton
@@ -174,7 +193,34 @@ const FormExamplesScreen: React.FC = () => {
             variant="outlineTheme"
             onPress={() => Alert.alert('Forgot Password', 'Reset password flow')}
           />
+          
+          <CustomButton
+            title="🔓 Bypass Login (Dev)"
+            variant="ghost"
+            onPress={handleBypassLogin}
+            startIcon={<Ionicons name="bug-outline" size={16} color={theme.colors.text.secondary} />}
+          />
         </View>
+
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or continue with</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <SocialAuthGroup
+          providers={['google', 'apple', 'facebook']}
+          appleEnabled={true}
+          googleClientId="demo-google-client-id"
+          facebookAppId="demo-facebook-app-id"
+          onAuthSuccess={(provider, result) => {
+            Alert.alert('Social Login Success', `Logged in with ${provider}`);
+          }}
+          onAuthError={(provider, error) => {
+            Alert.alert('Social Login Error', `Failed to login with ${provider}: ${error.message}`);
+          }}
+          onGuestLogin={handleBypassLogin}
+        />
       </View>
     </View>
   );
@@ -244,7 +290,7 @@ const FormExamplesScreen: React.FC = () => {
               onBlur={onBlur}
               keyboardType="email-address"
               autoCapitalize="none"
-              startIcon={<Ionicons name="ri:mail-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
               error={profileForm.formState.errors.email?.message}
             />
           )}
@@ -261,7 +307,7 @@ const FormExamplesScreen: React.FC = () => {
               onChangeText={onChange}
               onBlur={onBlur}
               keyboardType="phone-pad"
-              startIcon={<Ionicons name="ri:phone-line" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="call-outline" size={20} color={theme.colors.text.tertiary} />}
             />
           )}
         />
@@ -317,7 +363,7 @@ const FormExamplesScreen: React.FC = () => {
             title="Update Profile"
             onPress={profileForm.handleSubmit(onProfileSubmit)}
             isLoading={profileForm.formState.isSubmitting}
-            startIcon={<Ionicons name="ri:save-line" size={16} color="white" />}
+            startIcon={<Ionicons name="save-outline" size={16} color="white" />}
           />
           
           <CustomButton
@@ -418,7 +464,7 @@ const FormExamplesScreen: React.FC = () => {
             variant="orange" // Academy orange for emphasis
             onPress={feedbackForm.handleSubmit(onFeedbackSubmit)}
             isLoading={feedbackForm.formState.isSubmitting}
-            startIcon={<Ionicons name="ri:send-plane-line" size={16} color={theme.colors.interactive.themeBlack} />}
+            startIcon={<Ionicons name="send-outline" size={16} color={theme.colors.interactive.themeBlack} />}
           />
           
           <CustomButton
@@ -552,6 +598,25 @@ const useThemedStyles = createThemedStyles((theme) =>
       ...theme.typography.caption.base,
       color: theme.colors.status.error,
       marginTop: theme.spacing[1],
+    },
+
+    divider: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: theme.spacing[4],
+    },
+
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: theme.colors.border.primary,
+    },
+
+    dividerText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.tertiary,
+      paddingHorizontal: theme.spacing[3],
+      backgroundColor: theme.colors.background.elevated,
     },
   })
 );

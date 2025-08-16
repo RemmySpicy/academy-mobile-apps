@@ -1,0 +1,52 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "schedule:weekends"
+  ],
+  "baseBranches": ["main", "develop"],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^@types/"],
+      "groupName": "TypeScript definitions",
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["^eslint", "^@typescript-eslint/"],
+      "groupName": "ESLint packages",
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["^react", "^@react"],
+      "groupName": "React ecosystem",
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "matchPackagePatterns": ["^expo"],
+      "groupName": "Expo packages",
+      "schedule": ["before 10am on monday"]
+    },
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen",
+      "semanticCommitScope": "peer-deps"
+    }
+  ],
+  "separateMinorPatch": true,
+  "prHourlyLimit": 3,
+  "prConcurrentLimit": 5,
+  "semanticCommits": "enabled",
+  "commitMessagePrefix": "📦 ",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "to {{newVersion}}",
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "schedule": ["at any time"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**"
+  ]
+}

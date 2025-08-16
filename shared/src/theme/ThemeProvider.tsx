@@ -28,7 +28,7 @@ import { lightTheme, darkTheme, type Theme, type ThemeMode } from './index';
 import { STORAGE_KEYS } from '../utils/constants';
 
 // Night mode - enhanced dark theme with deeper blacks and reduced blue light
-const nightTheme: Theme = {
+const createNightTheme = (): Theme => ({
   ...darkTheme,
   colors: {
     ...darkTheme.colors,
@@ -94,7 +94,7 @@ const nightTheme: Theme = {
       infoBorder: '#222233',
     },
   },
-};
+});
 
 export type ExtendedThemeMode = 'light' | 'dark' | 'night' | 'system';
 
@@ -144,7 +144,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       case 'dark':
         return darkTheme;
       case 'night':
-        return nightTheme;
+        return createNightTheme();
       case 'system':
       default:
         if (systemScheme === 'dark') {
@@ -272,7 +272,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 export const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error('useTheme must be used within a ThemeProvider. Make sure your component is wrapped in <ThemeProvider>');
   }
   return context;
 };

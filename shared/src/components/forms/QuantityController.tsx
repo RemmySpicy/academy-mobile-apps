@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useController } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 import { FormFieldProps } from '../../types';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 
 interface QuantityControllerProps extends FormFieldProps {
   initialValue?: number;
@@ -33,6 +34,8 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
   size = 'medium',
   orientation = 'horizontal',
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const { field, fieldState } = useController({
     name,
     control,
@@ -66,22 +69,40 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
   const getSizeStyles = () => {
     const sizes = {
       small: {
-        button: { width: 32, height: 32 },
-        text: { fontSize: 14 },
+        button: { 
+          width: theme.safeArea.minTouchTarget.width * 0.8, 
+          height: theme.safeArea.minTouchTarget.height * 0.8 
+        },
+        text: { fontSize: theme.typography.caption.base.fontSize },
         icon: 16,
-        value: { fontSize: 16, minWidth: 40 },
+        value: { 
+          ...theme.typography.body.sm, 
+          minWidth: theme.safeArea.minTouchTarget.width * 0.9 
+        },
       },
       medium: {
-        button: { width: 40, height: 40 },
-        text: { fontSize: 16 },
+        button: { 
+          width: theme.safeArea.minTouchTarget.width, 
+          height: theme.safeArea.minTouchTarget.height 
+        },
+        text: { fontSize: theme.typography.body.base.fontSize },
         icon: 20,
-        value: { fontSize: 18, minWidth: 50 },
+        value: { 
+          ...theme.typography.body.base, 
+          minWidth: theme.safeArea.minTouchTarget.width * 1.1 
+        },
       },
       large: {
-        button: { width: 48, height: 48 },
-        text: { fontSize: 18 },
+        button: { 
+          width: theme.safeArea.minTouchTarget.width * 1.2, 
+          height: theme.safeArea.minTouchTarget.height * 1.2 
+        },
+        text: { fontSize: theme.typography.body.lg.fontSize },
         icon: 24,
-        value: { fontSize: 20, minWidth: 60 },
+        value: { 
+          ...theme.typography.body.lg, 
+          minWidth: theme.safeArea.minTouchTarget.width * 1.3 
+        },
       },
     };
     
@@ -92,27 +113,27 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
     const variants = {
       default: {
         button: {
-          backgroundColor: '#3B82F6',
-          borderColor: '#3B82F6',
+          backgroundColor: theme.colors.interactive.primary,
+          borderColor: theme.colors.interactive.primary,
         },
         buttonDisabled: {
-          backgroundColor: '#E5E7EB',
-          borderColor: '#E5E7EB',
+          backgroundColor: theme.colors.background.secondary,
+          borderColor: theme.colors.border.primary,
         },
-        text: { color: '#FFFFFF' },
-        textDisabled: { color: '#9CA3AF' },
+        text: { color: theme.colors.text.inverted },
+        textDisabled: { color: theme.colors.text.disabled },
       },
       outline: {
         button: {
           backgroundColor: 'transparent',
-          borderColor: '#3B82F6',
+          borderColor: theme.colors.interactive.primary,
         },
         buttonDisabled: {
           backgroundColor: 'transparent',
-          borderColor: '#E5E7EB',
+          borderColor: theme.colors.border.primary,
         },
-        text: { color: '#3B82F6' },
-        textDisabled: { color: '#9CA3AF' },
+        text: { color: theme.colors.interactive.primary },
+        textDisabled: { color: theme.colors.text.disabled },
       },
       ghost: {
         button: {
@@ -123,8 +144,8 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
           backgroundColor: 'transparent',
           borderColor: 'transparent',
         },
-        text: { color: '#3B82F6' },
-        textDisabled: { color: '#9CA3AF' },
+        text: { color: theme.colors.interactive.primary },
+        textDisabled: { color: theme.colors.text.disabled },
       },
     };
     
@@ -173,20 +194,18 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
       )}
 
       <View style={containerStyle}>
-        <TouchableOpacity
-          style={getButtonStyle(true)}
+        <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }, getButtonStyle(true)]}
           onPress={handleDecrease}
           disabled={!canDecrease}
-          activeOpacity={0.7}
           accessibilityLabel="Decrease quantity"
           accessibilityRole="button"
         >
           <Ionicons 
-            name="ri:subtract-line" 
+            name="remove-outline" 
             size={sizeStyles.icon} 
             color={canDecrease ? variantStyles.text.color : variantStyles.textDisabled.color}
           />
-        </TouchableOpacity>
+        </Pressable>
 
         <View style={[styles.valueContainer, sizeStyles.value]}>
           <Text style={[
@@ -198,25 +217,23 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={getButtonStyle(false)}
+        <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }, getButtonStyle(false)]}
           onPress={handleIncrease}
           disabled={!canIncrease}
-          activeOpacity={0.7}
           accessibilityLabel="Increase quantity"
           accessibilityRole="button"
         >
           <Ionicons 
-            name="ri:add-line" 
+            name="add-outline" 
             size={sizeStyles.icon} 
             color={canIncrease ? variantStyles.text.color : variantStyles.textDisabled.color}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
       
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="warning-outline" size={16} color={theme.colors.status.error} />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}
@@ -224,74 +241,77 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  horizontalContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  verticalContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  button: {
-    borderWidth: 1,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    fontWeight: '600',
-  },
-  buttonTextDisabled: {
-    // Additional disabled text styling
-  },
-  valueContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 16,
-    paddingVertical: 8,
-  },
-  value: {
-    fontWeight: '600',
-    color: '#111827',
-    textAlign: 'center',
-  },
-  disabledValue: {
-    color: '#9CA3AF',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  disabledLabel: {
-    color: '#9CA3AF',
-  },
-  required: {
-    color: '#EF4444',
-    fontWeight: '500',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    paddingHorizontal: 4,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#EF4444',
-    marginLeft: 6,
-    flex: 1,
-    fontWeight: '400',
-  },
-});
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: theme.componentSpacing.form.fieldGap,
+    },
+    horizontalContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    verticalContainer: {
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    button: {
+      borderWidth: 1,
+      borderRadius: theme.borderRadius.md,
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...theme.elevation.xs,
+    },
+    buttonDisabled: {
+      opacity: 0.5,
+    },
+    buttonText: {
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    buttonTextDisabled: {
+      // Additional disabled text styling handled by variants
+    },
+    valueContainer: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[2],
+    },
+    value: {
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+      textAlign: 'center',
+    },
+    disabledValue: {
+      color: theme.colors.text.disabled,
+    },
+    label: {
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[2],
+    },
+    disabledLabel: {
+      color: theme.colors.text.disabled,
+    },
+    required: {
+      color: theme.colors.status.error,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing[1],
+      paddingHorizontal: theme.spacing[1],
+    },
+    errorText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.status.error,
+      marginLeft: theme.spacing[1],
+      flex: 1,
+    },
+  })
+);
 
-export default React.memo(QuantityController);
+const MemoizedQuantityController = React.memo(QuantityController);
+export { MemoizedQuantityController as QuantityController };

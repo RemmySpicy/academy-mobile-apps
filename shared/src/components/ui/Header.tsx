@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-} from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 import { useProgramContext } from '../../hooks/useProgramContext';
@@ -107,9 +99,9 @@ const Header: React.FC<HeaderProps> = ({
   const renderLeftSection = () => {
     if (showBackButton && onBack) {
       return (
-        <TouchableOpacity
+        <Pressable 
           onPress={onBack}
-          style={styles.iconButton}
+          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.iconButton]}
           accessibilityRole='button'
           accessibilityLabel='Go back'
           testID={`${testID}-back-button`}
@@ -119,7 +111,7 @@ const Header: React.FC<HeaderProps> = ({
             size={24}
             color={theme.colors.text.primary}
           />
-        </TouchableOpacity>
+        </Pressable>
       );
     }
 
@@ -127,9 +119,9 @@ const Header: React.FC<HeaderProps> = ({
       return (
         <View style={styles.actionGroup}>
           {onSearchPress && (
-            <TouchableOpacity
+            <Pressable 
               onPress={onSearchPress}
-              style={styles.actionButton}
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.actionButton]}
               accessibilityRole='button'
               accessibilityLabel='Search'
             >
@@ -138,12 +130,12 @@ const Header: React.FC<HeaderProps> = ({
                 size={20}
                 color={theme.colors.text.secondary}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
           {onFilterPress && (
-            <TouchableOpacity
+            <Pressable 
               onPress={onFilterPress}
-              style={styles.actionButton}
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.actionButton]}
               accessibilityRole='button'
               accessibilityLabel='Filter'
             >
@@ -152,7 +144,7 @@ const Header: React.FC<HeaderProps> = ({
                 size={20}
                 color={theme.colors.text.secondary}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       );
@@ -185,9 +177,9 @@ const Header: React.FC<HeaderProps> = ({
     return (
       <View style={styles.rightSection}>
         {showNotifications && onNotificationPress && (
-          <TouchableOpacity
+          <Pressable 
             onPress={onNotificationPress}
-            style={styles.iconButton}
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.iconButton]}
             accessibilityRole='button'
             accessibilityLabel={`Notifications${notificationCount > 0 ? ` (${notificationCount} unread)` : ''}`}
             testID={`${testID}-notification-button`}
@@ -206,13 +198,13 @@ const Header: React.FC<HeaderProps> = ({
                 </Text>
               </View>
             )}
-          </TouchableOpacity>
+          </Pressable>
         )}
 
         {onMorePress && (
-          <TouchableOpacity
+          <Pressable 
             onPress={onMorePress}
-            style={styles.iconButton}
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.iconButton]}
             accessibilityRole='button'
             accessibilityLabel='More options'
           >
@@ -221,13 +213,13 @@ const Header: React.FC<HeaderProps> = ({
               size={24}
               color={theme.colors.text.primary}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
 
         {showProfile && (
-          <TouchableOpacity
+          <Pressable 
             onPress={onProfilePress}
-            style={styles.profileButton}
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.profileButton]}
             accessibilityRole='button'
             accessibilityLabel={`Profile${user?.first_name ? ` for ${user.first_name}` : ''}`}
             testID={`${testID}-profile-button`}
@@ -246,7 +238,7 @@ const Header: React.FC<HeaderProps> = ({
                 />
               </View>
             )}
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     );
@@ -280,7 +272,7 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     leftSpacer: {
-      width: 40, // Reserve space for symmetry
+      width: theme.safeArea.minTouchTarget.width, // Reserve space for symmetry
     },
 
     centerSection: {
@@ -340,20 +332,20 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     profileImage: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: theme.safeArea.minTouchTarget.width,
+      height: theme.safeArea.minTouchTarget.height,
+      borderRadius: theme.safeArea.minTouchTarget.width / 2,
       backgroundColor: theme.colors.background.secondary,
     },
 
     profilePlaceholder: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: theme.safeArea.minTouchTarget.width,
+      height: theme.safeArea.minTouchTarget.height,
+      borderRadius: theme.safeArea.minTouchTarget.width / 2,
       backgroundColor: theme.colors.background.secondary,
       alignItems: 'center',
       justifyContent: 'center',
-      borderWidth: 1,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
     },
 
@@ -362,9 +354,9 @@ const useThemedStyles = createThemedStyles(theme =>
       top: theme.spacing[1],
       right: theme.spacing[1],
       backgroundColor: theme.colors.status.error,
-      borderRadius: 10,
-      minWidth: 20,
-      height: 20,
+      borderRadius: theme.borderRadius.full,
+      minWidth: theme.spacing[5],
+      height: theme.spacing[5],
       alignItems: 'center',
       justifyContent: 'center',
       paddingHorizontal: theme.spacing[1],
@@ -374,7 +366,7 @@ const useThemedStyles = createThemedStyles(theme =>
       ...theme.typography.caption.small,
       color: theme.colors.text.inverse,
       fontWeight: theme.fontConfig.fontWeight.bold,
-      fontSize: 11,
+      fontSize: theme.typography.caption.small.fontSize,
     },
   })
 );

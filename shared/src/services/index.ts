@@ -2,4 +2,11 @@
 
 export { default as apiClient } from './apiClient';
 export { default as authService } from './authService';
-export * from './types';
+
+// Service types - Direct exports
+export type {
+  PaginationParams,
+  PaginatedResponse,
+  FilterParams,
+  ApiClientConfig,
+} from './types';

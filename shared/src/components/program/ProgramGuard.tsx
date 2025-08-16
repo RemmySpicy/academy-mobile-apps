@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 import { View, Text } from 'react-native';
 import { useProgramContext } from './ProgramContextProvider';
-import { useTheme, componentThemes } from '../../theme';
+import { useTheme } from '../../theme/ThemeProvider';
+import { componentThemes } from '../../theme';
 import { CustomButton } from '../forms';
 import { hasRoleInProgram, hasMinimumRoleLevel } from '../../utils/programUtils';
 

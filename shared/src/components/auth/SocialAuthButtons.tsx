@@ -1,13 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  Platform,
-} from 'react-native';
+import { Pressable, Text, View, StyleSheet, ActivityIndicator, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
@@ -15,7 +7,9 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthStore } from '../../store/authStore';
 import { useNotifications } from '../../store/notificationStore';
-import CustomButton from '../forms/CustomButton';
+import { CustomButton } from '../forms/CustomButton';
+import { useTheme } from '../../theme/ThemeProvider';
+import GuestLoginButton from './GuestLoginButton';
 
 // Complete the auth session for web browser
 WebBrowser.maybeCompleteAuthSession();
@@ -71,31 +65,32 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const { showError, showSuccess } = useNotifications();
   const { loginWithSocial } = useAuthStore();
+  const { theme } = useTheme();
 
   const getProviderConfig = () => {
     const configs = {
       google: {
-        icon: 'logos:google-icon',
+        icon: 'logo-google' as any,
         text: 'Continue with Google',
-        backgroundColor: '#FFFFFF',
-        borderColor: '#DADCE0',
-        textColor: '#3C4043',
+        backgroundColor: theme.colors.background.primary,
+        borderColor: theme.colors.border.primary,
+        textColor: theme.colors.text.primary,
         iconSize: 20,
       },
       apple: {
-        icon: 'logos:apple',
+        icon: 'logo-apple' as any,
         text: 'Continue with Apple',
-        backgroundColor: '#000000',
-        borderColor: '#000000',
-        textColor: '#FFFFFF',
+        backgroundColor: theme.colors.text.primary,
+        borderColor: theme.colors.text.primary,
+        textColor: theme.colors.background.primary,
         iconSize: 18,
       },
       facebook: {
-        icon: 'logos:facebook',
+        icon: 'logo-facebook' as any,
         text: 'Continue with Facebook',
-        backgroundColor: '#1877F2',
-        borderColor: '#1877F2',
-        textColor: '#FFFFFF',
+        backgroundColor: theme.colors.interactive.secondary,
+        borderColor: theme.colors.border.primary,
+        textColor: theme.colors.text.primary,
         iconSize: 20,
       },
     };
@@ -261,7 +256,7 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
   };
 
   const providerConfig = getProviderConfig();
-  const buttonStyles = getButtonStyles(variant, size, providerConfig);
+  const buttonStyles = getButtonStyles(variant, size, providerConfig, theme);
 
   // For Apple Sign In, use the native component on iOS
   if (provider === 'apple' && Platform.OS === 'ios' && config.appleEnabled) {
@@ -276,14 +271,13 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
         cornerRadius={8}
         style={[buttonStyles.button, style]}
         onPress={handlePress}
-        disabled={disabled || isLoading}
       />
     );
   }
 
   return (
-    <TouchableOpacity
-      style={[buttonStyles.button, disabled && buttonStyles.disabled, style]}
+    <Pressable 
+      style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [buttonStyles.button, disabled && buttonStyles.disabled, style]]}
       onPress={handlePress}
       disabled={disabled || isLoading}
       accessibilityRole="button"
@@ -297,13 +291,13 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
         <ActivityIndicator
           size="small"
           color={providerConfig.textColor}
-          style={{ marginRight: showText ? 12 : 0 }}
+          style={{ marginRight: showText ? theme.spacing[3] : 0 }}
         />
       ) : (
         <Ionicons
           name={providerConfig.icon}
           size={providerConfig.iconSize}
-          style={{ marginRight: showText ? 12 : 0 }}
+          style={{ marginRight: showText ? theme.spacing[3] : 0 }}
         />
       )}
       
@@ -312,15 +306,27 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
           {isLoading ? 'Signing in...' : providerConfig.text}
         </Text>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
-const getButtonStyles = (variant: string, size: string, config: any) => {
+const getButtonStyles = (variant: string, size: string, config: any, theme: any) => {
   const sizes = {
-    small: { height: 40, paddingHorizontal: 16, fontSize: 14 },
-    medium: { height: 48, paddingHorizontal: 20, fontSize: 16 },
-    large: { height: 56, paddingHorizontal: 24, fontSize: 18 },
+    small: { 
+      height: theme.safeArea.minTouchTarget.height * 0.9, 
+      paddingHorizontal: theme.spacing[4], 
+      fontSize: theme.typography.caption.base.fontSize 
+    },
+    medium: { 
+      height: theme.safeArea.minTouchTarget.height, 
+      paddingHorizontal: theme.spacing[5], 
+      fontSize: theme.typography.body.base.fontSize 
+    },
+    large: { 
+      height: theme.safeArea.minTouchTarget.height * 1.2, 
+      paddingHorizontal: theme.spacing[6], 
+      fontSize: theme.typography.body.lg.fontSize 
+    },
   };
 
   const sizeConfig = sizes[size as keyof typeof sizes];
@@ -332,28 +338,19 @@ const getButtonStyles = (variant: string, size: string, config: any) => {
       justifyContent: 'center',
       height: sizeConfig.height,
       paddingHorizontal: sizeConfig.paddingHorizontal,
-      borderRadius: 8,
-      borderWidth: variant === 'outline' ? 1 : 0,
+      borderRadius: theme.borderRadius.md,
+      borderWidth: variant === 'outline' ? theme.borderWidth.sm : 0,
       borderColor: variant === 'outline' ? config.borderColor : 'transparent',
       backgroundColor: 
         variant === 'filled' ? config.backgroundColor :
-        variant === 'outline' ? '#FFFFFF' : 
+        variant === 'outline' ? theme.colors.background.primary : 
         'transparent',
-      ...Platform.select({
-        ios: {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 2,
-        },
-        android: {
-          elevation: 2,
-        },
-      }),
+      ...theme.elevation.sm,
     },
     text: {
+      ...theme.typography.body.base,
       fontSize: sizeConfig.fontSize,
-      fontWeight: '600',
+      fontWeight: theme.fontConfig.fontWeight.semibold,
       color: 
         variant === 'filled' ? config.textColor :
         variant === 'outline' ? config.textColor :
@@ -386,6 +383,9 @@ export interface SocialAuthGroupProps extends SocialAuthConfig {
   style?: any;
   buttonStyle?: any;
   spacing?: number;
+  showGuestOption?: boolean;
+  onGuestLogin?: () => void;
+  guestButtonText?: string;
 }
 
 export const SocialAuthGroup: React.FC<SocialAuthGroupProps> = ({
@@ -395,6 +395,9 @@ export const SocialAuthGroup: React.FC<SocialAuthGroupProps> = ({
   style,
   buttonStyle,
   spacing = 12,
+  showGuestOption = true,
+  onGuestLogin,
+  guestButtonText = 'Continue as Guest',
   ...config
 }) => {
   const availableProviders = providers.filter(provider => {
@@ -416,6 +419,15 @@ export const SocialAuthGroup: React.FC<SocialAuthGroupProps> = ({
           onError={(error) => onAuthError?.(provider, error)}
         />
       ))}
+      
+      {showGuestOption && (
+        <GuestLoginButton
+          onPress={onGuestLogin}
+          text={guestButtonText}
+          variant="minimal"
+          style={buttonStyle}
+        />
+      )}
     </View>
   );
 };

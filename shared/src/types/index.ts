@@ -37,8 +37,46 @@ export interface AuthState {
   currentProgram: Program | null;
 }
 
-// Re-export authentication types for convenience
-export * from './auth';
+// Re-export authentication types for convenience - Direct exports
+export {
+  UserRole,
+  ApiError,
+  AuthError,
+  AuthStatus,
+  DEFAULT_AUTH_CONFIG,
+  ROLE_HIERARCHY,
+  DEFAULT_ROLE_PERMISSIONS,
+} from './auth';
+
+export type {
+  UserRoleType,
+  ProgramAssignment,
+  LoginRequest,
+  LoginResponse,
+  CurrentUserResponse,
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+  PasswordResetRequest,
+  PasswordResetConfirmRequest,
+  EmailVerificationRequest,
+  AuthState,
+  AuthActions,
+  AuthStore,
+  ApiErrorInterface,
+  AuthConfig,
+  Permission,
+  RolePermissions,
+  AuthHeaders,
+  DeviceInfo,
+  ExtendedLoginRequest,
+  SessionInfo,
+  CreateAuthHeaders,
+  TokenValidator,
+  UseAuthReturn,
+  AuthUser,
+  AuthProgram,
+  UserProgramAssignment,
+} from './auth';
 
 export interface ApiResponse<T = any> {
   data: T;

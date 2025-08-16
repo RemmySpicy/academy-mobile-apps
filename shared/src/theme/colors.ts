@@ -142,6 +142,21 @@ export const baseColors = {
       950: '#4A2805',
     },
     
+    // Academy Teal - Secondary brand color
+    teal: {
+      50: '#F0FCFA',
+      100: '#CCFBF1',
+      200: '#99F6E4',
+      300: '#5EEAD4',
+      400: '#52E2BB', // Your new Academy teal color
+      500: '#14B8A6',
+      600: '#0D9488',
+      700: '#0F766E',
+      800: '#115E59',
+      900: '#134E4A',
+      950: '#042F2E',
+    },
+    
     // Faded colors for backgrounds
     faded: {
       50: '#F8FDFD',
@@ -201,6 +216,7 @@ export const semanticColors = {
     error: baseColors.error[500],
     success: baseColors.success[500],
     warning: baseColors.warning[500],
+    teal: baseColors.academy.teal[400],        // Academy teal border
   },
 
   // Interactive Colors (Academy Brand)
@@ -225,6 +241,10 @@ export const semanticColors = {
     
     orange: baseColors.academy.orange[500],     // #FEAE24
     orangeHover: baseColors.academy.orange[600],
+    
+    teal: baseColors.academy.teal[400],         // #52E2BB - Academy secondary brand
+    tealHover: baseColors.academy.teal[500],
+    tealPressed: baseColors.academy.teal[600],
     
     destructive: baseColors.error[500],         // #EF4444
     destructiveHover: baseColors.error[600],
@@ -257,8 +277,17 @@ export const semanticColors = {
     infoBorder: baseColors.info[300],             // More visible border
   },
 
+  // Overlay Colors
+  overlay: {
+    light: 'rgba(0, 0, 0, 0.3)',
+    medium: 'rgba(0, 0, 0, 0.5)',
+    dark: 'rgba(0, 0, 0, 0.7)',
+    heavy: 'rgba(0, 0, 0, 0.8)',
+  },
+
   // Shadow Colors
   shadow: {
+    default: 'rgba(0, 0, 0, 0.1)',
     light: 'rgba(0, 0, 0, 0.05)',
     medium: 'rgba(0, 0, 0, 0.1)',
     heavy: 'rgba(0, 0, 0, 0.25)',
@@ -348,7 +377,16 @@ export const darkColors = {
     infoBorder: baseColors.info[600],
   },
 
+  // Overlay Colors
+  overlay: {
+    light: 'rgba(0, 0, 0, 0.5)',
+    medium: 'rgba(0, 0, 0, 0.7)',
+    dark: 'rgba(0, 0, 0, 0.85)',
+    heavy: 'rgba(0, 0, 0, 0.9)',
+  },
+
   shadow: {
+    default: 'rgba(0, 0, 0, 0.4)',        // Default shadow for dark mode
     light: 'rgba(0, 0, 0, 0.3)',         // Enhanced shadows for dark mode
     medium: 'rgba(0, 0, 0, 0.4)',
     heavy: 'rgba(0, 0, 0, 0.6)',

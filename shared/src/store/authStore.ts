@@ -55,11 +55,15 @@ interface AuthStoreState extends Omit<AuthState, 'program_assignments'> {
 
   // Actions
   login: (credentials: LoginRequest) => Promise<void>;
+  loginWithSocial: (provider: string, token: string, userInfo: any) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   setCurrentProgram: (program: ProgramAssignment) => void;
   clearError: () => void;
   initializeAuth: () => Promise<void>;
+  
+  // Development/testing methods
+  bypassLogin: () => void;
 
   // Utilities
   getAuthHeaders: () => AuthHeaders;
@@ -91,19 +95,71 @@ const createAuthHeaders = (
 };
 
 /**
- * Secure storage utilities
+ * Check if SecureStore is properly available
+ */
+const isSecureStoreAvailable = (): boolean => {
+  try {
+    // Check if we're on web platform
+    if (typeof window !== 'undefined') {
+      return false; // Use localStorage fallback on web
+    }
+    
+    return !!(
+      SecureStore &&
+      typeof SecureStore.getItemAsync === 'function' &&
+      typeof SecureStore.setItemAsync === 'function' &&
+      typeof SecureStore.deleteItemAsync === 'function'
+    );
+  } catch (error) {
+    console.warn('SecureStore availability check failed:', error);
+    return false;
+  }
+};
+
+/**
+ * Secure storage utilities with robust fallback handling
  */
 const secureStorage = {
   async setItem(key: string, value: string): Promise<void> {
+    if (!isSecureStoreAvailable()) {
+      // Use localStorage fallback on web
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          localStorage.setItem(key, value);
+        } catch (error) {
+          console.error(`Failed to store ${key} in localStorage:`, error);
+        }
+      } else {
+        console.warn('SecureStore not available, skipping storage operation');
+      }
+      return;
+    }
+
     try {
       await SecureStore.setItemAsync(key, value);
     } catch (error) {
       console.error(`Failed to store ${key}:`, error);
-      throw new AuthError('STORAGE_ERROR', 'Failed to store authentication data');
+      // Don't throw error to prevent app crashes during development
+      console.warn('Continuing without secure storage...');
     }
   },
 
   async getItem(key: string): Promise<string | null> {
+    if (!isSecureStoreAvailable()) {
+      // Use localStorage fallback on web
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          return localStorage.getItem(key);
+        } catch (error) {
+          console.error(`Failed to retrieve ${key} from localStorage:`, error);
+          return null;
+        }
+      } else {
+        console.warn('SecureStore not available, returning null for', key);
+        return null;
+      }
+    }
+
     try {
       return await SecureStore.getItemAsync(key);
     } catch (error) {
@@ -113,6 +169,20 @@ const secureStorage = {
   },
 
   async removeItem(key: string): Promise<void> {
+    if (!isSecureStoreAvailable()) {
+      // Use localStorage fallback on web
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          console.error(`Failed to remove ${key} from localStorage:`, error);
+        }
+      } else {
+        console.warn('SecureStore not available, skipping removal of', key);
+      }
+      return;
+    }
+
     try {
       await SecureStore.deleteItemAsync(key);
     } catch (error) {
@@ -121,6 +191,22 @@ const secureStorage = {
   },
 
   async clearAll(): Promise<void> {
+    if (!isSecureStoreAvailable()) {
+      // Use localStorage fallback on web
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          Object.values(STORAGE_KEYS).forEach(key => {
+            localStorage.removeItem(key);
+          });
+        } catch (error) {
+          console.error('Failed to clear localStorage:', error);
+        }
+      } else {
+        console.warn('SecureStore not available, skipping clear operation');
+      }
+      return;
+    }
+
     try {
       await Promise.all(
         Object.values(STORAGE_KEYS).map(key => SecureStore.deleteItemAsync(key))
@@ -313,6 +399,59 @@ export const useAuthStore = create<AuthStoreState>()(
     },
 
     /**
+     * Login with social auth provider
+     */
+    loginWithSocial: async (provider: string, token: string, userInfo: any) => {
+      set((state) => {
+        state.isLoading = true;
+        state.error = null;
+      });
+
+      try {
+        // For now, simulate social login by creating a mock user
+        // In a real app, you'd send the social token to your backend
+        const mockUser: User = {
+          id: `social_${Date.now()}`,
+          email: userInfo.email || `${provider}@example.com`,
+          first_name: userInfo.firstName || userInfo.name?.split(' ')[0] || 'Social',
+          last_name: userInfo.lastName || userInfo.name?.split(' ')[1] || 'User',
+          role: UserRole.STUDENT,
+          is_active: true,
+          is_verified: true,
+          program_assignments: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const mockToken = `social_token_${Date.now()}`;
+
+        // Store tokens and user data securely
+        await Promise.all([
+          secureStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, mockToken),
+          secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(mockUser)),
+        ]);
+
+        set((state) => {
+          state.isAuthenticated = true;
+          state.isLoading = false;
+          state.token = mockToken;
+          state.user = mockUser;
+          state.currentProgram = null;
+          state.availablePrograms = [];
+          state.error = null;
+        });
+      } catch (error) {
+        set((state) => {
+          state.isLoading = false;
+          state.error = error instanceof AuthError || error instanceof ApiError
+            ? error
+            : new AuthError('SOCIAL_LOGIN_ERROR', 'Social login failed');
+        });
+        throw error;
+      }
+    },
+
+    /**
      * Logout and clear all authentication data
      */
     logout: async () => {
@@ -485,6 +624,43 @@ export const useAuthStore = create<AuthStoreState>()(
       return appType === 'instructor' 
         ? instructorRoles.includes(user.role)
         : studentRoles.includes(user.role);
+    },
+
+    /**
+     * Bypass login for development/testing (creates mock authenticated state)
+     */
+    bypassLogin: () => {
+      const mockUser: User = {
+        id: 'dev_user_123',
+        email: 'dev@example.com',
+        first_name: 'Dev',
+        last_name: 'User',
+        role: UserRole.STUDENT,
+        is_active: true,
+        is_verified: true,
+        program_assignments: [{
+          program_id: 'dev_program_1',
+          program_name: 'Development Program',
+          role: UserRole.STUDENT,
+          is_active: true,
+          enrolled_at: new Date().toISOString(),
+        }],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const mockToken = 'dev_token_bypass';
+
+      set((state) => {
+        state.isAuthenticated = true;
+        state.token = mockToken;
+        state.user = mockUser;
+        state.currentProgram = mockUser.program_assignments[0];
+        state.availablePrograms = mockUser.program_assignments;
+        state.error = null;
+        state.isLoading = false;
+        state.isInitializing = false;
+      });
     },
   }))
 );

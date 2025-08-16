@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, useWindow, useWindowDimensions, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 import { useProgramContext } from '../../hooks/useProgramContext';
@@ -170,9 +163,9 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       <Text style={styles.sectionTitle}>Overview</Text>
       <View style={styles.metricsGrid}>
         {displayMetrics.map(metric => (
-          <TouchableOpacity
+          <Pressable 
             key={metric.id}
-            style={styles.metricCard}
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.metricCard]}
             onPress={() => onMetricPress?.(metric)}
             accessibilityRole='button'
             accessibilityLabel={`${metric.title}: ${metric.value}`}
@@ -213,7 +206,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
                 </View>
               )}
             </View>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     </View>
@@ -224,9 +217,9 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       <Text style={styles.sectionTitle}>Quick Actions</Text>
       <View style={styles.quickActionsGrid}>
         {displayQuickActions.map(action => (
-          <TouchableOpacity
+          <Pressable 
             key={action.id}
-            style={styles.quickActionCard}
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.quickActionCard]}
             onPress={action.onPress}
             accessibilityRole='button'
             accessibilityLabel={action.title}
@@ -240,7 +233,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
               <Ionicons name={action.icon} size={24} color={action.color} />
             </View>
             <Text style={styles.quickActionTitle}>{action.title}</Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     </View>
@@ -255,12 +248,12 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
           <Text style={styles.sectionTitle}>Performance Trend</Text>
           <View style={styles.periodSelector}>
             {['week', 'month', 'quarter'].map(period => (
-              <TouchableOpacity
+              <Pressable 
                 key={period}
-                style={[
+                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
                   styles.periodButton,
                   selectedPeriod === period && styles.periodButtonActive,
-                ]}
+                ]]}
                 onPress={() => setSelectedPeriod(period as any)}
               >
                 <Text
@@ -271,7 +264,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
                 >
                   {period.charAt(0).toUpperCase() + period.slice(1)}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         </View>
@@ -298,13 +291,13 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Recent Students</Text>
           {recentStudents.length > maxStudentsShown && (
-            <TouchableOpacity
+            <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
               onPress={onViewAllStudents}
               accessibilityRole='button'
               accessibilityLabel='View all students'
             >
               <Text style={styles.viewAllText}>View All</Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
 
@@ -333,13 +326,13 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Recent Activity</Text>
           {recentActivities.length > maxActivitiesShown && (
-            <TouchableOpacity
+            <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
               onPress={onViewAllActivities}
               accessibilityRole='button'
               accessibilityLabel='View all activities'
             >
               <Text style={styles.viewAllText}>View All</Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
 
@@ -463,11 +456,11 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     contentContainer: {
-      padding: theme.spacing[4],
+      padding: theme.spacing.md,
     },
 
     programHeader: {
-      marginBottom: theme.spacing[6],
+      marginBottom: theme.spacing.lg,
       alignItems: 'center',
     },
 
@@ -481,18 +474,18 @@ const useThemedStyles = createThemedStyles(theme =>
     programSubtitle: {
       ...theme.typography.body.base,
       color: theme.colors.text.secondary,
-      marginTop: theme.spacing[1],
+      marginTop: theme.spacing.xs,
     },
 
     section: {
-      marginBottom: theme.spacing[6],
+      marginBottom: theme.spacing.lg,
     },
 
     sectionHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: theme.spacing[4],
+      marginBottom: theme.spacing.md,
     },
 
     sectionTitle: {
@@ -517,7 +510,7 @@ const useThemedStyles = createThemedStyles(theme =>
     metricCard: {
       backgroundColor: theme.colors.background.elevated,
       borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing[4],
+      padding: theme.spacing.md,
       width: (SCREEN_WIDTH - theme.spacing[4] * 2 - theme.spacing[3]) / 2,
       ...theme.elevation.sm,
     },
@@ -531,7 +524,7 @@ const useThemedStyles = createThemedStyles(theme =>
     metricTitle: {
       ...theme.typography.caption.base,
       color: theme.colors.text.secondary,
-      marginLeft: theme.spacing[2],
+      marginLeft: theme.spacing.sm,
       flex: 1,
     },
 
@@ -550,10 +543,10 @@ const useThemedStyles = createThemedStyles(theme =>
     changeIndicator: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: theme.spacing[2],
-      paddingVertical: theme.spacing[1],
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
       borderRadius: theme.borderRadius.sm,
-      gap: theme.spacing[1],
+      gap: theme.spacing.xs,
     },
 
     changeText: {
@@ -571,7 +564,7 @@ const useThemedStyles = createThemedStyles(theme =>
     quickActionCard: {
       backgroundColor: theme.colors.background.elevated,
       borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing[4],
+      padding: theme.spacing.md,
       width: (SCREEN_WIDTH - theme.spacing[4] * 2 - theme.spacing[3]) / 2,
       alignItems: 'center',
       ...theme.elevation.sm,
@@ -598,12 +591,12 @@ const useThemedStyles = createThemedStyles(theme =>
       flexDirection: 'row',
       backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing[1],
+      padding: theme.spacing.xs,
     },
 
     periodButton: {
       paddingHorizontal: theme.spacing[3],
-      paddingVertical: theme.spacing[2],
+      paddingVertical: theme.spacing.sm,
       borderRadius: theme.borderRadius.md,
     },
 
@@ -623,7 +616,7 @@ const useThemedStyles = createThemedStyles(theme =>
 
     // Student Cards
     compactStudentCard: {
-      marginBottom: theme.spacing[2],
+      marginBottom: theme.spacing.sm,
     },
 
     // Activities
@@ -633,7 +626,7 @@ const useThemedStyles = createThemedStyles(theme =>
       padding: theme.spacing[3],
       backgroundColor: theme.colors.background.elevated,
       borderRadius: theme.borderRadius.md,
-      marginBottom: theme.spacing[2],
+      marginBottom: theme.spacing.sm,
       gap: theme.spacing[3],
     },
 
@@ -652,7 +645,7 @@ const useThemedStyles = createThemedStyles(theme =>
     activityMessage: {
       ...theme.typography.body.sm,
       color: theme.colors.text.primary,
-      marginBottom: theme.spacing[1],
+      marginBottom: theme.spacing.xs,
     },
 
     studentName: {

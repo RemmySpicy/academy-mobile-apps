@@ -1,0 +1,73 @@
+/* 
+ * NativeWind 4 - Available but Minimal Usage
+ * Primary styling: Academy Custom Theme System (StyleSheet + useTheme)
+ * Secondary styling: NativeWind utilities for simple layouts only
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* React 19 + NativeWind 4 compatibility fixes */
+@layer base {
+  /* Ensure proper property initialization for mobile */
+  * {
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+  }
+  
+  /* Minimal base styles to avoid StyleSheet conflicts */
+  /* Academy components use theme system, not global styles */
+}
+
+/* Academy-specific utilities (if needed for legacy components) */
+@layer utilities {
+  .academy-purple {
+    color: #4F2EC9;
+  }
+  
+  .academy-bg-purple {
+    background-color: #4F2EC9;
+  }
+  
+  .academy-teal {
+    color: #52E2BB;
+  }
+  
+  .academy-bg-teal {
+    background-color: #52E2BB;
+  }
+  
+  /* React Native safe area utilities */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* React Native elevation utilities */
+  .elevation-1 {
+    elevation: 1;
+  }
+  
+  .elevation-2 {
+    elevation: 2;
+  }
+  
+  .elevation-4 {
+    elevation: 4;
+  }
+}
+
+/* 
+ * NOTE: Academy components (CustomButton, CustomInput, etc.) 
+ * use StyleSheet + theme system, NOT these CSS classes.
+ * Only use className for simple layout utilities if needed.
+ */

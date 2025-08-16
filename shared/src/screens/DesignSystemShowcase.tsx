@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  ScrollView,
-  Text,
-  StyleSheet,
-  Switch,
-  TouchableOpacity,
-} from 'react-native';
+import { View, ScrollView, Text, StyleSheet, Switch, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -14,9 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles, ExtendedThemeMode } from '../theme/ThemeProvider';
 
 // Components
-import CustomInput from '../components/forms/CustomInput';
-import CustomButton from '../components/forms/CustomButton';
-import CustomCheckBox from '../components/forms/CustomCheckBox';
+import { CustomInput } from '../components/forms/CustomInput';
+import { CustomButton } from '../components/forms/CustomButton';
+import { CustomCheckBox } from '../components/forms/CustomCheckBox';
 import CustomModal from '../components/ui/CustomModal';
 import CustomAlert from '../components/ui/CustomAlert';
 
@@ -43,12 +36,12 @@ const DesignSystemShowcase: React.FC = () => {
       <Text style={styles.sectionTitle}>Theme Selector</Text>
       <View style={styles.themeSelector}>
         {themeOptions.map((option) => (
-          <TouchableOpacity
+          <Pressable 
             key={option.value}
-            style={[
+            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
               styles.themeOption,
               themeMode === option.value && styles.themeOptionActive,
-            ]}
+            ]]}
             onPress={() => setThemeMode(option.value)}
           >
             <Text style={[
@@ -57,7 +50,7 @@ const DesignSystemShowcase: React.FC = () => {
             ]}>
               {option.label}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     </View>
@@ -92,7 +85,7 @@ const DesignSystemShowcase: React.FC = () => {
         <CustomButton 
           title="With Icons" 
           startIcon={<Ionicons name="star-outline" size={16} color="white" />}
-          endIcon={<Ionicons name="ri:arrow-right-line" size={16} color="white" />}
+          endIcon={<Ionicons name="arrow-forward-outline" size={16} color="white" />}
           onPress={() => {}} 
         />
       </View>
@@ -105,6 +98,7 @@ const DesignSystemShowcase: React.FC = () => {
       
       <View style={styles.componentGrid}>
         <CustomInput
+          name="demo-text"
           label="Text Input"
           placeholder="Enter text..."
           value={inputValue}
@@ -112,6 +106,7 @@ const DesignSystemShowcase: React.FC = () => {
         />
         
         <CustomInput
+          name="demo-password"
           label="Password Input"
           placeholder="Enter password..."
           secureTextEntry
@@ -120,6 +115,7 @@ const DesignSystemShowcase: React.FC = () => {
         />
 
         <CustomInput
+          name="demo-email"
           label="Email Input"
           placeholder="Enter email..."
           keyboardType="email-address"
@@ -128,6 +124,7 @@ const DesignSystemShowcase: React.FC = () => {
         />
 
         <CustomInput
+          name="demo-disabled"
           label="Disabled Input"
           placeholder="Disabled..."
           disabled
@@ -136,6 +133,7 @@ const DesignSystemShowcase: React.FC = () => {
         />
 
         <CustomInput
+          name="demo-error"
           label="Error Input"
           placeholder="Has error..."
           value=""
@@ -277,12 +275,12 @@ const DesignSystemShowcase: React.FC = () => {
   const renderNavigation = () => (
     <View style={styles.navigation}>
       {(['buttons', 'inputs', 'modals', 'alerts'] as const).map((section) => (
-        <TouchableOpacity
+        <Pressable 
           key={section}
-          style={[
+          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
             styles.navItem,
             currentSection === section && styles.navItemActive,
-          ]}
+          ]]}
           onPress={() => setCurrentSection(section)}
         >
           <Text style={[
@@ -291,7 +289,7 @@ const DesignSystemShowcase: React.FC = () => {
           ]}>
             {section.charAt(0).toUpperCase() + section.slice(1)}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       ))}
     </View>
   );

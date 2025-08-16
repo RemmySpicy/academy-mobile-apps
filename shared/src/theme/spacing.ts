@@ -5,11 +5,14 @@
  * Based on 4px base unit for precise alignment across all components.
  */
 
+import { Platform } from 'react-native';
+
 // Base spacing unit (4px)
 const SPACING_UNIT = 4;
 
 // Spacing scale
 export const spacing = {
+  // Numeric indices (existing system)
   0: 0,
   px: 1,
   0.5: SPACING_UNIT * 0.5, // 2px
@@ -45,6 +48,15 @@ export const spacing = {
   72: SPACING_UNIT * 72,   // 288px
   80: SPACING_UNIT * 80,   // 320px
   96: SPACING_UNIT * 96,   // 384px
+
+  // Semantic aliases for consistent API
+  xs: SPACING_UNIT * 1,    // 4px  (spacing[1])
+  sm: SPACING_UNIT * 2,    // 8px  (spacing[2])
+  md: SPACING_UNIT * 4,    // 16px (spacing[4])
+  lg: SPACING_UNIT * 6,    // 24px (spacing[6])
+  xl: SPACING_UNIT * 8,    // 32px (spacing[8])
+  '2xl': SPACING_UNIT * 12, // 48px (spacing[12])
+  '3xl': SPACING_UNIT * 16, // 64px (spacing[16])
 } as const;
 
 // Component-specific spacing
@@ -149,50 +161,52 @@ export const borderRadius = {
   full: 9999,          // Fully rounded
 } as const;
 
+// Border width scale
+export const borderWidth = {
+  none: 0,
+  xs: 0.5,
+  sm: 1,
+  base: 1.5,
+  md: 2,
+  lg: 3,
+  xl: 4,
+  '2xl': 6,
+} as const;
+
 // Shadow and elevation spacing
+/**
+ * Create platform-appropriate shadow styles
+ */
+const createElevationStyle = (
+  offsetHeight: number,
+  opacity: number,
+  radius: number,
+  elevation: number,
+  color: string = '#000000'
+) => {
+  if (Platform.OS === 'web') {
+    return {
+      boxShadow: `0px ${offsetHeight}px ${radius}px rgba(0, 0, 0, ${opacity})`,
+    };
+  }
+  
+  return {
+    shadowOffset: { width: 0, height: offsetHeight },
+    shadowOpacity: opacity,
+    shadowRadius: radius,
+    shadowColor: color,
+    elevation,
+  };
+};
+
 export const elevation = {
-  none: {
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
-  },
-  sm: {
-    shadowOffset: { width: 0, height: spacing[0.5] },
-    shadowOpacity: 0.05,
-    shadowRadius: spacing[0.5],
-    elevation: 1,
-  },
-  base: {
-    shadowOffset: { width: 0, height: spacing[1] },
-    shadowOpacity: 0.1,
-    shadowRadius: spacing[1],
-    elevation: 2,
-  },
-  md: {
-    shadowOffset: { width: 0, height: spacing[2] },
-    shadowOpacity: 0.1,
-    shadowRadius: spacing[2],
-    elevation: 4,
-  },
-  lg: {
-    shadowOffset: { width: 0, height: spacing[3] },
-    shadowOpacity: 0.1,
-    shadowRadius: spacing[3],
-    elevation: 8,
-  },
-  xl: {
-    shadowOffset: { width: 0, height: spacing[4] },
-    shadowOpacity: 0.15,
-    shadowRadius: spacing[4],
-    elevation: 12,
-  },
-  '2xl': {
-    shadowOffset: { width: 0, height: spacing[6] },
-    shadowOpacity: 0.2,
-    shadowRadius: spacing[6],
-    elevation: 16,
-  },
+  none: createElevationStyle(0, 0, 0, 0),
+  sm: createElevationStyle(spacing[0.5], 0.05, spacing[0.5], 1),
+  base: createElevationStyle(spacing[1], 0.1, spacing[1], 2),
+  md: createElevationStyle(spacing[2], 0.1, spacing[2], 4),
+  lg: createElevationStyle(spacing[3], 0.1, spacing[3], 8),
+  xl: createElevationStyle(spacing[4], 0.15, spacing[4], 12),
+  '2xl': createElevationStyle(spacing[6], 0.2, spacing[6], 16),
 } as const;
 
 // Safe area and device-specific spacing
@@ -306,4 +320,5 @@ export const spacingUtils = {
 export type Spacing = typeof spacing;
 export type ComponentSpacing = typeof componentSpacing;
 export type BorderRadius = typeof borderRadius;
+export type BorderWidth = typeof borderWidth;
 export type Elevation = typeof elevation;

@@ -1,13 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import {
   LineChart,
   BarChart,
@@ -201,11 +193,11 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   const getChangeColor = (changeType?: string) => {
     switch (changeType) {
       case 'increase':
-        return '#10B981';
+        return theme.colors.status.success;
       case 'decrease':
-        return '#EF4444';
+        return theme.colors.status.error;
       default:
-        return '#6B7280';
+        return theme.colors.text.secondary;
     }
   };
 
@@ -270,7 +262,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
             height={height}
             chartConfig={{
               ...chartConfig,
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              color: (opacity = 1) => theme.colors.text.primary + Math.round(opacity * 255).toString(16).padStart(2, '0'),
             }}
             accessor="value"
             backgroundColor="transparent"
@@ -366,9 +358,10 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
         contentContainerStyle={styles.periodSelectorContent}
       >
         {periods.map((p) => (
-          <TouchableOpacity
+          <Pressable 
             key={p.key}
-            style={[
+            style={({ pressed }) => [
+              { opacity: pressed ? 0.8 : 1 },
               styles.periodButton,
               selectedPeriod === p.key && [
                 styles.periodButtonActive,
@@ -386,7 +379,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
             ]}>
               {p.label}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </ScrollView>
     );
@@ -416,8 +409,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
             <Text style={[
               styles.comparisonValue,
               {
-                color: comparison!.type === 'above' ? '#10B981' :
-                       comparison!.type === 'below' ? '#EF4444' : '#6B7280'
+                color: comparison!.type === 'above' ? theme.colors.status.success :
+                       comparison!.type === 'below' ? theme.colors.status.error : theme.colors.text.secondary
               }
             ]}>
               {comparison!.type === 'above' ? '+' : comparison!.type === 'below' ? '-' : ''}
@@ -468,34 +461,34 @@ const useThemedStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     container: {
       borderRadius: theme.borderRadius.lg,
-      marginVertical: theme.spacing[2],
+      marginVertical: theme.spacing.sm,
       backgroundColor: theme.colors.background.elevated,
       ...theme.elevation.sm,
     },
     header: {
-      marginBottom: theme.spacing[4],
+      marginBottom: theme.spacing.md,
     },
     title: {
       ...theme.typography.heading.h4,
       color: theme.colors.text.primary,
       fontWeight: theme.fontConfig.fontWeight.semibold,
-      marginBottom: theme.spacing[1],
+      marginBottom: theme.spacing.xs,
     },
     subtitle: {
       ...theme.typography.body.sm,
       color: theme.colors.text.secondary,
     },
     periodSelector: {
-      marginBottom: theme.spacing[4],
+      marginBottom: theme.spacing.md,
     },
     periodSelectorContent: {
-      paddingHorizontal: theme.spacing[1],
+      paddingHorizontal: theme.spacing.xs,
     },
     periodButton: {
-      paddingHorizontal: theme.spacing[4],
-      paddingVertical: theme.spacing[2],
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
       borderRadius: theme.borderRadius.full,
-      marginHorizontal: theme.spacing[1],
+      marginHorizontal: theme.spacing.xs,
       backgroundColor: theme.colors.background.secondary,
     },
     periodButtonActive: {
@@ -512,7 +505,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     metricsContainer: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      marginBottom: theme.spacing[4],
+      marginBottom: theme.spacing.md,
       gap: theme.spacing[3],
     },
     metricCard: {
@@ -525,10 +518,10 @@ const useThemedStyles = createThemedStyles((theme) =>
     metricHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: theme.spacing[2],
+      marginBottom: theme.spacing.sm,
     },
     metricIcon: {
-      marginRight: theme.spacing[2],
+      marginRight: theme.spacing.sm,
     },
     metricTitle: {
       ...theme.typography.caption.base,
@@ -548,14 +541,14 @@ const useThemedStyles = createThemedStyles((theme) =>
     changeContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: theme.spacing[2],
-      paddingVertical: theme.spacing[1],
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
       borderRadius: theme.borderRadius.sm,
     },
     changeText: {
       ...theme.typography.caption.small,
       fontWeight: theme.fontConfig.fontWeight.semibold,
-      marginLeft: theme.spacing[1],
+      marginLeft: theme.spacing.xs,
     },
     chartContainer: {
       alignItems: 'center',
@@ -563,7 +556,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     chartWrapper: {
       alignItems: 'center',
-      marginVertical: theme.spacing[2],
+      marginVertical: theme.spacing.sm,
     },
     chart: {
       borderRadius: theme.borderRadius.lg,
@@ -571,13 +564,13 @@ const useThemedStyles = createThemedStyles((theme) =>
     loadingText: {
       ...theme.typography.body.sm,
       color: theme.colors.text.secondary,
-      marginTop: theme.spacing[2],
+      marginTop: theme.spacing.sm,
     },
     comparisonContainer: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      marginTop: theme.spacing[4],
-      paddingTop: theme.spacing[4],
+      marginTop: theme.spacing.md,
+      paddingTop: theme.spacing.md,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border.primary,
     },
@@ -592,7 +585,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     comparisonValue: {
       ...theme.typography.body.base,
       fontWeight: theme.fontConfig.fontWeight.semibold,
-      marginTop: theme.spacing[1],
+      marginTop: theme.spacing.xs,
     },
   })
 );

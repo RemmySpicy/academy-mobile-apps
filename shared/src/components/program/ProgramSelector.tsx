@@ -1,16 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Modal, 
-  FlatList, 
-  StyleSheet,
-  ActivityIndicator,
-  Alert 
-} from 'react-native';
+import { View, Text, Pressable, Modal, FlatList, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useProgramContext } from './ProgramContextProvider';
-import { useTheme, componentThemes } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { componentThemes } from '../../theme';
 import { ProgramContext } from '../../types';
 
 interface ProgramSelectorProps {
@@ -39,6 +31,7 @@ export function ProgramSelector({
     error 
   } = useProgramContext();
   const theme = useTheme();
+  const styles = useThemedStyles();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
 
@@ -79,12 +72,12 @@ export function ProgramSelector({
   const renderTriggerButton = () => {
     if (variant === 'card') {
       return (
-        <TouchableOpacity
-          style={[
+        <Pressable 
+          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
             componentThemes.card.default(theme),
             styles.cardTrigger,
             style
-          ]}
+          ]]}
           onPress={() => setIsModalVisible(true)}
           disabled={isLoading || availablePrograms.length <= 1}
         >
@@ -107,17 +100,17 @@ export function ProgramSelector({
               </Text>
             )}
           </View>
-        </TouchableOpacity>
+        </Pressable>
       );
     }
 
     return (
-      <TouchableOpacity
-        style={[
+      <Pressable 
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
           componentThemes.button.secondary(theme),
           variant === 'dropdown' && styles.dropdownTrigger,
           style
-        ]}
+        ]]}
         onPress={() => setIsModalVisible(true)}
         disabled={isLoading || availablePrograms.length <= 1}
       >
@@ -134,13 +127,13 @@ export function ProgramSelector({
             ▼
           </Text>
         )}
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
   const renderProgramItem = useCallback(({ item }: { item: ProgramContext }) => (
-    <TouchableOpacity
-      style={[
+    <Pressable 
+      style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
         styles.programItem,
         {
           backgroundColor: item.id === currentProgram?.id 
@@ -154,7 +147,7 @@ export function ProgramSelector({
           padding: theme.spacing[4],
           marginVertical: theme.spacing[1],
         }
-      ]}
+      ]]}
       onPress={() => handleProgramSelect(item)}
       disabled={isSwitching}
     >
@@ -197,7 +190,7 @@ export function ProgramSelector({
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   ), [currentProgram?.id, handleProgramSelect, isSwitching, theme]);
 
   if (!currentProgram && !isLoading && !error) {
@@ -214,12 +207,10 @@ export function ProgramSelector({
         animationType="fade"
         onRequestClose={() => setIsModalVisible(false)}
       >
-        <TouchableOpacity
-          style={[
+        <Pressable style={({ pressed }) => [[
             componentThemes.modal.backdrop(theme),
             styles.modalBackdrop
-          ]}
-          activeOpacity={1}
+          ]]}
           onPress={() => setIsModalVisible(false)}
         >
           <View
@@ -237,11 +228,11 @@ export function ProgramSelector({
                 Select Program
               </Text>
               {showRefresh && (
-                <TouchableOpacity
-                  style={[
+                <Pressable 
+                  style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
                     componentThemes.button.tertiary(theme),
                     styles.refreshButton
-                  ]}
+                  ]]}
                   onPress={handleRefresh}
                 >
                   <Text style={[
@@ -250,7 +241,7 @@ export function ProgramSelector({
                   ]}>
                     Refresh
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               )}
             </View>
 
@@ -306,11 +297,11 @@ export function ProgramSelector({
               </View>
             )}
 
-            <TouchableOpacity
-              style={[
+            <Pressable 
+              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
                 componentThemes.button.secondary(theme),
                 styles.closeButton
-              ]}
+              ]]}
               onPress={() => setIsModalVisible(false)}
             >
               <Text style={[
@@ -319,15 +310,16 @@ export function ProgramSelector({
               ]}>
                 Close
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </Modal>
     </>
   );
 }
 
-const styles = StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
   cardTrigger: {
     minHeight: 80,
   },
@@ -376,7 +368,7 @@ const styles = StyleSheet.create({
     right: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.lg,
   },
   loadingOverlay: {
     position: 'absolute',
@@ -384,12 +376,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: theme.colors.overlay.dark,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.lg,
   },
   closeButton: {
     marginTop: 8,
   },
-});
+})
+);

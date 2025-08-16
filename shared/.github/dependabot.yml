@@ -1,0 +1,61 @@
+version: 2
+updates:
+  # Enable version updates for npm packages in shared module
+  - package-ecosystem: "npm"
+    directory: "/shared"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "@academy-team/mobile-reviewers"
+    assignees:
+      - "@academy-team/mobile-maintainers"
+    commit-message:
+      prefix: "📦 "
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "shared-module"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      # Ignore major React Native updates (require manual testing)
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-major"]
+      # Ignore major Expo SDK updates
+      - dependency-name: "expo*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      react-ecosystem:
+        patterns:
+          - "react*"
+          - "@react*"
+        update-types:
+          - "minor"
+          - "patch"
+      expo-packages:
+        patterns:
+          - "expo*"
+          - "@expo/*"
+        update-types:
+          - "minor"
+          - "patch"
+      typescript-types:
+        patterns:
+          - "@types/*"
+        update-types:
+          - "minor"
+          - "patch"
+      development-tools:
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint/*"
+          - "prettier*"
+          - "jest*"
+        update-types:
+          - "minor"
+          - "patch"

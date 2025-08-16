@@ -5,9 +5,60 @@
  * Provides consistent styling across all components with support for light/dark modes.
  */
 
-export * from './colors';
-export * from './typography';
-export * from './spacing';
+import { Platform } from 'react-native';
+
+// Direct exports to avoid property descriptor conflicts
+export {
+  baseColors,
+  semanticColors,
+  darkColors,
+  colorUtils,
+  lightColorScheme,
+  darkColorScheme,
+} from './colors';
+
+export type {
+  ColorScheme,
+  BaseColors,
+  SemanticColors,
+} from './colors';
+
+export {
+  fontConfig,
+  scaleFont,
+  fontSizes,
+  lineHeights,
+  letterSpacing,
+  typography,
+  accessibilityText,
+  responsiveText,
+  typographyUtils,
+} from './typography';
+
+export type {
+  Typography,
+  FontConfig,
+  FontSizes,
+} from './typography';
+
+export {
+  spacing,
+  componentSpacing,
+  responsiveSpacing,
+  borderRadius,
+  borderWidth,
+  elevation,
+  safeArea,
+  spacingUtils,
+} from './spacing';
+
+export type {
+  Spacing,
+  ComponentSpacing,
+  BorderRadius,
+  BorderWidth,
+  Elevation,
+} from './spacing';
 
 import {
   lightColorScheme,
@@ -30,10 +81,12 @@ import {
   spacing,
   componentSpacing,
   borderRadius,
+  borderWidth,
   elevation,
   safeArea,
   spacingUtils,
   type Spacing,
+  type BorderWidth,
   type Elevation,
 } from './spacing';
 
@@ -43,6 +96,7 @@ export interface Theme {
   typography: Typography;
   spacing: Spacing;
   borderRadius: typeof borderRadius;
+  borderWidth: BorderWidth;
   elevation: Elevation;
   fontConfig: typeof fontConfig;
   fontSizes: typeof fontSizes;
@@ -59,6 +113,7 @@ export const lightTheme: Theme = {
   typography,
   spacing,
   borderRadius,
+  borderWidth,
   elevation,
   fontConfig,
   fontSizes,
@@ -75,6 +130,7 @@ export const darkTheme: Theme = {
   typography,
   spacing,
   borderRadius,
+  borderWidth,
   elevation,
   fontConfig,
   fontSizes,
@@ -117,10 +173,16 @@ export const themeUtils = {
   /**
    * Create shadow style from elevation
    */
-  createShadow: (elevationLevel: keyof typeof elevation, color: string = '#000000') => ({
-    ...elevation[elevationLevel],
-    shadowColor: color,
-  }),
+  createShadow: (elevationLevel: keyof typeof elevation, color: string = '#000000') => {
+    const elevationStyle = elevation[elevationLevel];
+    if (Platform.OS === 'web') {
+      return elevationStyle; // boxShadow already includes color
+    }
+    return {
+      ...elevationStyle,
+      shadowColor: color,
+    };
+  },
 
   /**
    * Get responsive spacing

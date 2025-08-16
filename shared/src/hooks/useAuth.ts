@@ -1,141 +1,94 @@
-import { useState, useEffect, useCallback } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import authService from '../services/authService';
-import { User, AuthState } from '../types';
-
-const TOKEN_KEY = 'academy_auth_token';
+import { use, useMemo, useOptimistic, useTransition } from 'react';
+import { useAuthStore, authSelectors } from '../store/authStore';
+import { LoginRequest, User } from '../types';
 
 interface UseAuthReturn {
-  authState: AuthState;
+  // Auth state
+  isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: Record<string, any>) => Promise<boolean>;
+  isInitializing: boolean;
+  user: User | null;
+  error: string | null;
+  
+  // Optimistic state
+  optimisticUser: User | null;
+  
+  // Actions with transition support
+  login: (credentials: LoginRequest) => Promise<void>;
   logout: () => Promise<void>;
-  updateUser: (user: User) => void;
-  refreshAuth: () => Promise<boolean>;
+  updateUserOptimistic: (updates: Partial<User>) => void;
+  
+  // Transition states
+  isPending: boolean;
+  startTransition: (callback: () => void) => void;
 }
 
-export default function useAuth(): UseAuthReturn {
-  const [authState, setAuthState] = useState<AuthState>({
-    isAuthenticated: false,
-    token: null,
-    user: null,
-    currentProgram: null,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Initialize auth state from storage
-  useEffect(() => {
-    initializeAuth();
-  }, []);
-
-  const initializeAuth = async (): Promise<void> => {
-    try {
-      const token = await AsyncStorage.getItem(TOKEN_KEY);
-      
-      if (token) {
-        // Try to get current user to validate token
-        const user = await authService.getCurrentUser();
-        setAuthState({
-          isAuthenticated: true,
-          token,
-          user,
-          currentProgram: null, // Will be set by program context hook
-        });
-      }
-    } catch (error) {
-      console.warn('Failed to initialize auth:', error);
-      // Clear invalid token
-      await AsyncStorage.removeItem(TOKEN_KEY);
-    } finally {
-      setIsLoading(false);
+export function useAuth(): UseAuthReturn {
+  const [isPending, startTransition] = useTransition();
+  
+  // Subscribe to auth store with selectors for optimal re-renders
+  const isAuthenticated = useAuthStore(authSelectors.isAuthenticated);
+  const isLoading = useAuthStore(authSelectors.isLoading);
+  const isInitializing = useAuthStore(authSelectors.isInitializing);
+  const user = useAuthStore(authSelectors.user);
+  const error = useAuthStore(authSelectors.error);
+  
+  // Actions from store
+  const { login: storeLogin, logout: storeLogout } = useAuthStore();
+  
+  // Optimistic updates for user data
+  const [optimisticUser, updateOptimisticUser] = useOptimistic(
+    user,
+    (currentUser: User | null, updates: Partial<User>) => {
+      if (!currentUser) return null;
+      return { ...currentUser, ...updates };
     }
-  };
-
-  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
-    try {
-      setIsLoading(true);
-      const response = await authService.login({ email, password });
-      
-      setAuthState({
-        isAuthenticated: true,
-        token: response.access_token,
-        user: response.user,
-        currentProgram: null,
-      });
-      
-      return true;
-    } catch (error) {
-      console.error('Login failed:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const register = useCallback(async (userData: Record<string, any>): Promise<boolean> => {
-    try {
-      setIsLoading(true);
-      await authService.register(userData);
-      return true;
-    } catch (error) {
-      console.error('Registration failed:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const logout = useCallback(async (): Promise<void> => {
-    try {
-      setIsLoading(true);
-      await authService.logout();
-      setAuthState({
-        isAuthenticated: false,
-        token: null,
-        user: null,
-        currentProgram: null,
-      });
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Force local logout even if server fails
-      setAuthState({
-        isAuthenticated: false,
-        token: null,
-        user: null,
-        currentProgram: null,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const updateUser = useCallback((user: User): void => {
-    setAuthState(prev => ({
-      ...prev,
-      user,
-    }));
-  }, []);
-
-  const refreshAuth = useCallback(async (): Promise<boolean> => {
-    try {
-      const user = await authService.getCurrentUser();
-      updateUser(user);
-      return true;
-    } catch (error) {
-      console.error('Auth refresh failed:', error);
-      await logout();
-      return false;
-    }
-  }, [logout, updateUser]);
-
-  return {
-    authState,
+  );
+  
+  // Enhanced login with transition
+  const login = useMemo(() => async (credentials: LoginRequest) => {
+    startTransition(() => {
+      storeLogin(credentials);
+    });
+  }, [storeLogin, startTransition]);
+  
+  // Enhanced logout with transition
+  const logout = useMemo(() => async () => {
+    startTransition(() => {
+      storeLogout();
+    });
+  }, [storeLogout, startTransition]);
+  
+  // Optimistic user updates
+  const updateUserOptimistic = useMemo(() => (updates: Partial<User>) => {
+    updateOptimisticUser(updates);
+  }, [updateOptimisticUser]);
+  
+  return useMemo(() => ({
+    isAuthenticated,
     isLoading,
+    isInitializing,
+    user,
+    optimisticUser,
+    error: error?.message || null,
     login,
-    register,
     logout,
-    updateUser,
-    refreshAuth,
-  };
+    updateUserOptimistic,
+    isPending,
+    startTransition,
+  }), [
+    isAuthenticated,
+    isLoading,
+    isInitializing,
+    user,
+    optimisticUser,
+    error,
+    login,
+    logout,
+    updateUserOptimistic,
+    isPending,
+    startTransition,
+  ]);
 }
+
+export default useAuth;

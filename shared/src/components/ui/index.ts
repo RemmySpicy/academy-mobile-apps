@@ -35,3 +35,4 @@ export type { ErrorMessageProps } from './ErrorMessage';
 export { default as Header } from './Header';
 export { default as StudentCard } from './StudentCard';
 export { default as InstructorDashboard } from './InstructorDashboard';
+export { default as ErrorBoundary } from './ErrorBoundary';

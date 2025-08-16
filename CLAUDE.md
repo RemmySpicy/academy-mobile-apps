@@ -526,6 +526,207 @@ node -e "console.log(require.resolve('@academy/mobile-shared'))"
   npx expo start --offline
   ```
 
+## Styling Architecture: Custom Theme System (Updated January 2025)
+
+The Academy Apps use a **custom theme system** built on React Native StyleSheet for consistent, branded components with dynamic theme switching capabilities.
+
+### **Architecture Decision:**
+
+✅ **Primary Approach: Custom Academy Theme System**
+- **All shared components** use StyleSheet + `useTheme()` hook
+- **Academy-specific design tokens** (#4F2EC9 purple, spacing, typography)
+- **Dynamic theme switching** (light/dark/night modes)
+- **Type-safe theme access** with full IDE support
+- **Component variants** tailored to Academy use cases
+
+❌ **Deprecated: NativeWind/Tailwind CSS**
+- Removed to prevent conflicts with StyleSheet components
+- Caused mixed styling approaches and global CSS interference
+- Not aligned with Academy's custom design system needs
+
+### **Core Theme Components:**
+
+All UI components are built with the Academy theme system:
+
+```tsx
+// ✅ Academy Theme Pattern
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
+
+const MyComponent = () => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
+  
+  return (
+    <CustomButton
+      variant="primary"  // Uses Academy purple #4F2EC9
+      style={styles.button}
+    />
+  );
+};
+
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    button: {
+      marginTop: theme.spacing.lg,
+      backgroundColor: theme.colors.interactive.primary,
+    },
+  })
+);
+```
+
+### **Academy Theme Features:**
+
+1. **Dynamic Theme Switching:**
+   ```tsx
+   const { theme, themeMode, setThemeMode } = useTheme();
+   // Supports: 'light', 'dark', 'night', 'system'
+   ```
+
+2. **Academy Brand Colors:**
+   ```tsx
+   theme.colors.interactive.primary     // Academy purple #4F2EC9
+   theme.colors.interactive.teal        // Academy teal #52E2BB
+   theme.colors.interactive.orange     // Academy orange #FEAE24
+   theme.colors.interactive.themeBlack // Academy black #121212
+   ```
+
+3. **Consistent Spacing & Typography:**
+   ```tsx
+   theme.spacing.lg                    // 24px
+   theme.typography.heading.lg         // Academy heading styles
+   theme.borderRadius.xl               // Academy border radius
+   ```
+
+4. **Component Variants:**
+   ```tsx
+   <CustomButton variant="primary" />       // Academy purple button
+   <CustomButton variant="teal" />          // Academy teal button
+   <CustomButton variant="outlineTeal" />   // Academy teal outline button
+   <CustomButton variant="outline" />       // Academy outline button
+   <CustomInput variant="standard" />       // Academy input styling
+   ```
+
+### **Component Development Guidelines:**
+
+1. **Always Use Theme Hook:**
+   ```tsx
+   // ✅ CORRECT
+   import { useTheme, createThemedStyles } from '@academy/mobile-shared';
+   
+   const { theme } = useTheme();
+   const styles = useThemedStyles();
+   ```
+
+2. **Use Academy Design Tokens:**
+   ```tsx
+   // ✅ GOOD: Use theme tokens
+   backgroundColor: theme.colors.interactive.primary,
+   padding: theme.spacing.md,
+   
+   // ❌ AVOID: Hardcoded values
+   backgroundColor: '#4F2EC9',
+   padding: 16,
+   ```
+
+3. **Create Themed StyleSheets:**
+   ```tsx
+   const useThemedStyles = createThemedStyles((theme) =>
+     StyleSheet.create({
+       container: {
+         backgroundColor: theme.colors.background.primary,
+         padding: theme.spacing.lg,
+       },
+     })
+   );
+   ```
+
+4. **Never Mix Styling Approaches:**
+   ```tsx
+   // ❌ WRONG: Don't use className with Academy components
+   <CustomButton className="mt-6" />
+   
+   // ✅ CORRECT: Use style prop with theme
+   <CustomButton style={{ marginTop: theme.spacing.lg }} />
+   ```
+
+### **Migration from NativeWind/Tailwind:**
+
+If you encounter legacy components with `className` usage:
+
+1. **Remove Tailwind imports and configs**
+2. **Convert className to StyleSheet:**
+   ```tsx
+   // Before
+   <View className="flex-1 bg-white px-6">
+   
+   // After
+   <View style={styles.container}>
+   
+   // Add to StyleSheet
+   container: {
+     flex: 1,
+     backgroundColor: theme.colors.background.primary,
+     paddingHorizontal: theme.spacing.lg,
+   }
+   ```
+
+3. **Use Academy theme tokens** instead of Tailwind colors
+4. **Clear Metro cache** after changes: `npx expo start --clear`
+
+### **Benefits of Custom Theme System:**
+
+- **🎨 Brand Consistency**: Academy-specific colors, spacing, typography
+- **🌓 Theme Switching**: Built-in light/dark/night mode support  
+- **📱 Mobile Optimized**: React Native StyleSheet performance
+- **🔧 Type Safety**: Full TypeScript support with theme intellisense
+- **🎯 Component Variants**: Pre-built Academy component variations
+- **🚀 Performance**: No CSS-in-JS overhead, native StyleSheet performance
+
+### **When to Use NativeWind (Minimal Usage):**
+
+NativeWind is kept available but should only be used for:
+
+✅ **Simple Layout Utilities** (when StyleSheet would be overkill):
+```tsx
+// OK: Simple layout utilities
+<View className="flex-1 items-center justify-center">
+  <CustomButton variant="primary" /> {/* Academy theme */}
+</View>
+```
+
+✅ **Quick Prototyping** (before converting to Academy theme):
+```tsx
+// Temporary: For rapid prototyping
+<View className="p-4 bg-gray-100">
+  {/* Convert to Academy theme later */}
+</View>
+```
+
+❌ **Never Use NativeWind For**:
+- Academy branded components (buttons, inputs, cards)
+- Colors that should match Academy theme
+- Components that need theme switching
+- Production components (convert to Academy theme)
+
+### **Decision Matrix:**
+
+| Use Case | Approach | Example |
+|----------|----------|---------|
+| **Academy Button** | ✅ Custom Theme | `<CustomButton variant="primary" />` or `variant="teal"` |
+| **Academy Colors** | ✅ Custom Theme | `backgroundColor: theme.colors.interactive.teal` |
+| **Complex Component** | ✅ Custom Theme | `const styles = useThemedStyles()` |
+| **Simple Layout** | ⚠️ NativeWind OK | `className="flex-1 items-center"` |
+| **Quick Prototype** | ⚠️ NativeWind OK | `className="p-4"` (convert later) |
+
+### **Compliance Checker:**
+
+Run the Academy theme compliance checker:
+```bash
+./scripts/check-styling-conflicts.sh
+```
+
+This will identify components that should be converted to the Academy theme system.
+
 ## Monorepo Configuration (Updated January 2025)
 
 The Academy Apps use a properly configured npm workspaces monorepo with react-native-monorepo-config for optimal module resolution.

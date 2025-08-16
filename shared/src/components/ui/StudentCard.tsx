@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 import { useProgramContext } from '../../hooks/useProgramContext';
@@ -274,7 +267,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
     return (
       <View style={styles.quickActions}>
         {enableQuickAttendance && onAttendancePress && (
-          <TouchableOpacity
+          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
             onPress={() => onAttendancePress(student)}
             style={styles.quickActionButton}
             accessibilityRole='button'
@@ -285,11 +278,11 @@ const StudentCard: React.FC<StudentCardProps> = ({
               size={16}
               color={theme.colors.interactive.primary}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
 
         {enableQuickGrading && onPerformancePress && (
-          <TouchableOpacity
+          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
             onPress={() => onPerformancePress(student)}
             style={styles.quickActionButton}
             accessibilityRole='button'
@@ -300,11 +293,11 @@ const StudentCard: React.FC<StudentCardProps> = ({
               size={16}
               color={theme.colors.interactive.primary}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
 
         {onContactParentPress && (
-          <TouchableOpacity
+          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
             onPress={() => onContactParentPress(student)}
             style={styles.quickActionButton}
             accessibilityRole='button'
@@ -315,11 +308,11 @@ const StudentCard: React.FC<StudentCardProps> = ({
               size={16}
               color={theme.colors.interactive.primary}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
 
         {onMoreOptionsPress && (
-          <TouchableOpacity
+          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
             onPress={() => onMoreOptionsPress(student)}
             style={styles.quickActionButton}
             accessibilityRole='button'
@@ -330,7 +323,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
               size={16}
               color={theme.colors.text.secondary}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     );
@@ -384,8 +377,8 @@ const StudentCard: React.FC<StudentCardProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      style={[styles.card, style]}
+    <Pressable 
+      style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [styles.card, style]]}
       onPress={() => onPress?.(student)}
       accessibilityRole='button'
       accessibilityLabel={`Student card for ${student.first_name} ${student.last_name}`}
@@ -412,7 +405,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
           </Text>
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -424,7 +417,7 @@ const useThemedStyles = createThemedStyles(theme =>
       padding: theme.spacing[4],
       marginBottom: theme.spacing[3],
       ...theme.elevation.sm,
-      borderWidth: 1,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
     },
 
@@ -440,42 +433,42 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     avatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: theme.spacing[12],
+      height: theme.spacing[12],
+      borderRadius: theme.spacing[6],
       backgroundColor: theme.colors.background.secondary,
     },
 
     avatarPlaceholder: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: theme.spacing[12],
+      height: theme.spacing[12],
+      borderRadius: theme.spacing[6],
       backgroundColor: theme.colors.background.secondary,
       alignItems: 'center',
       justifyContent: 'center',
-      borderWidth: 1,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
     },
 
     performanceIndicator: {
       position: 'absolute',
-      top: -2,
-      right: -2,
-      width: 16,
-      height: 16,
-      borderRadius: 8,
-      borderWidth: 2,
+      top: -theme.spacing[0.5],
+      right: -theme.spacing[0.5],
+      width: theme.spacing[4],
+      height: theme.spacing[4],
+      borderRadius: theme.spacing[2],
+      borderWidth: theme.borderWidth.md,
       borderColor: theme.colors.background.elevated,
     },
 
     attendanceIndicator: {
       position: 'absolute',
-      bottom: -2,
-      right: -2,
-      width: 16,
-      height: 16,
-      borderRadius: 8,
-      borderWidth: 2,
+      bottom: -theme.spacing[0.5],
+      right: -theme.spacing[0.5],
+      width: theme.spacing[4],
+      height: theme.spacing[4],
+      borderRadius: theme.spacing[2],
+      borderWidth: theme.borderWidth.md,
       borderColor: theme.colors.background.elevated,
     },
 

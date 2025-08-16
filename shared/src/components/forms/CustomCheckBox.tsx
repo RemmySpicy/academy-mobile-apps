@@ -1,12 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { 
-  View, 
-  TouchableOpacity, 
-  Text, 
-  StyleSheet, 
-  Animated,
-  ViewStyle,
-} from 'react-native';
+import { View, Pressable, Text, StyleSheet, Animated, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useController } from 'react-hook-form';
 import { FormFieldProps } from '../../types';
@@ -180,7 +173,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
     if (indeterminate) {
       return indeterminateIcon || (
         <Ionicons
-          name="ri:subtract-line"
+          name="remove-outline"
           size={size === 'sm' ? 12 : size === 'md' ? 14 : 16}
           color={theme.colors.text.inverse}
         />
@@ -196,7 +189,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
           }}
         >
           <Ionicons
-            name="ri:check-line"
+            name="checkmark-outline"
             size={size === 'sm' ? 12 : size === 'md' ? 14 : 16}
             color={theme.colors.text.inverse}
           />
@@ -239,7 +232,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
 
     return (
       <View style={styles.errorContainer}>
-        <Ionicons name="ri:error-warning-line" size={14} color={theme.colors.status.error} />
+        <Ionicons name="warning-outline" size={14} color={theme.colors.status.error} />
         <Text style={styles.errorText} accessibilityRole="alert">
           {formField.fieldState.error.message}
         </Text>
@@ -249,10 +242,9 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      <TouchableOpacity
-        onPress={handleToggle}
+      <Pressable onPress={handleToggle}
         disabled={disabled}
-        style={styles.touchable}
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.touchable]}
         accessibilityRole="checkbox"
         accessibilityLabel={accessibilityLabel || label}
         accessibilityHint={accessibilityHint}
@@ -261,14 +253,13 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
           disabled,
         }}
         testID={testID}
-        activeOpacity={0.8}
-      >
+        >
         <View style={[...getCheckboxStyles(), checkboxStyle]}>
           {renderCheckIcon()}
         </View>
         
         {renderLabel()}
-      </TouchableOpacity>
+      </Pressable>
       
       {renderError()}
     </View>
@@ -289,7 +280,7 @@ const useThemedStyles = createThemedStyles((theme) =>
 
     // Base checkbox styles
     checkbox: {
-      borderWidth: 2,
+      borderWidth: theme.borderWidth.md,
       borderRadius: theme.borderRadius.sm,
       alignItems: 'center',
       justifyContent: 'center',
@@ -299,18 +290,18 @@ const useThemedStyles = createThemedStyles((theme) =>
 
     // Size variants
     sm: {
-      width: 16,
-      height: 16,
+      width: theme.spacing[4],
+      height: theme.spacing[4],
     },
 
     md: {
-      width: 20,
-      height: 20,
+      width: theme.spacing[5],
+      height: theme.spacing[5],
     },
 
     lg: {
-      width: 24,
-      height: 24,
+      width: theme.spacing[6],
+      height: theme.spacing[6],
     },
 
     // Variant styles (unchecked state)
@@ -368,7 +359,7 @@ const useThemedStyles = createThemedStyles((theme) =>
 
     error: {
       borderColor: theme.colors.border.error,
-      borderWidth: 2,
+      borderWidth: theme.borderWidth.lg,
     },
 
     disabled: {
@@ -441,4 +432,4 @@ const useThemedStyles = createThemedStyles((theme) =>
   })
 );
 
-export default CustomCheckBox;
+export { CustomCheckBox };

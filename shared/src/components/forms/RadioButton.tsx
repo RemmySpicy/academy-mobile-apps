@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { useController } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 import { FormFieldProps } from '../../types';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 
 type RadioButtonVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
 type RadioButtonSize = 'small' | 'medium' | 'large';
@@ -37,37 +38,40 @@ export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options'> & {
   isSelected,
   onPress,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
+  
   const getVariantStyles = () => {
     const variants = {
       primary: {
-        border: '#3B82F6',
-        background: '#3B82F6',
-        dot: '#FFFFFF',
+        border: theme.colors.interactive.primary,
+        background: theme.colors.interactive.primary,
+        dot: theme.colors.text.inverted,
       },
       secondary: {
-        border: '#64748B',
-        background: '#64748B',
-        dot: '#FFFFFF',
+        border: theme.colors.interactive.secondary,
+        background: theme.colors.interactive.secondary,
+        dot: theme.colors.text.inverted,
       },
       success: {
-        border: '#10B981',
-        background: '#10B981',
-        dot: '#FFFFFF',
+        border: theme.colors.status.success,
+        background: theme.colors.status.success,
+        dot: theme.colors.text.inverted,
       },
       warning: {
-        border: '#F59E0B',
-        background: '#F59E0B',
-        dot: '#FFFFFF',
+        border: theme.colors.status.warning,
+        background: theme.colors.status.warning,
+        dot: theme.colors.text.inverted,
       },
       danger: {
-        border: '#EF4444',
-        background: '#EF4444',
-        dot: '#FFFFFF',
+        border: theme.colors.status.error,
+        background: theme.colors.status.error,
+        dot: theme.colors.text.inverted,
       },
       info: {
-        border: '#06B6D4',
-        background: '#06B6D4',
-        dot: '#FFFFFF',
+        border: theme.colors.status.info,
+        background: theme.colors.status.info,
+        dot: theme.colors.text.inverted,
       },
     };
     
@@ -79,17 +83,17 @@ export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options'> & {
       small: {
         container: { width: 16, height: 16 },
         dot: { width: 6, height: 6 },
-        text: 14,
+        text: theme.typography.caption.base.fontSize,
       },
       medium: {
         container: { width: 20, height: 20 },
         dot: { width: 8, height: 8 },
-        text: 16,
+        text: theme.typography.body.base.fontSize,
       },
       large: {
         container: { width: 24, height: 24 },
         dot: { width: 10, height: 10 },
-        text: 18,
+        text: theme.typography.body.lg.fontSize,
       },
     };
     
@@ -104,7 +108,7 @@ export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options'> & {
       styles.radio,
       {
         ...sizeStyles.container,
-        borderColor: isSelected ? variantStyles.border : '#D1D5DB',
+        borderColor: isSelected ? variantStyles.border : theme.colors.border.primary,
       },
       disabled && styles.disabledRadio,
     ];
@@ -121,11 +125,9 @@ export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options'> & {
   };
 
   return (
-    <TouchableOpacity
-      style={styles.radioContainer}
+    <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }, styles.radioContainer]}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.7}
       accessibilityRole="radio"
       accessibilityState={{
         selected: isSelected,
@@ -148,7 +150,7 @@ export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options'> & {
           {label}
         </Text>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -167,6 +169,8 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   orientation = 'vertical',
   defaultValue,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const { field, fieldState } = useController({
     name,
     control,
@@ -201,7 +205,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
         
         {fieldState.error && (
           <View style={styles.errorContainer}>
-            <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
+            <Ionicons name="warning-outline" size={16} color={theme.colors.status.error} />
             <Text style={styles.errorText}>{fieldState.error.message}</Text>
           </View>
         )}
@@ -239,7 +243,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
       
       {fieldState.error && (
         <View style={styles.errorContainer}>
-          <Ionicons name="ri:error-warning-line" size={16} color="#EF4444" />
+          <Ionicons name="warning-outline" size={16} color={theme.colors.status.error} />
           <Text style={styles.errorText}>{fieldState.error.message}</Text>
         </View>
       )}
@@ -247,70 +251,73 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  radioContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    marginBottom: 4,
-  },
-  radio: {
-    borderWidth: 2,
-    borderRadius: 999, // Circle
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  disabledRadio: {
-    borderColor: '#E5E7EB',
-    opacity: 0.6,
-  },
-  radioDot: {
-    borderRadius: 999, // Circle
-  },
-  radioLabel: {
-    color: '#111827',
-    fontWeight: '400',
-    flex: 1,
-    marginLeft: 4,
-  },
-  disabledLabel: {
-    color: '#9CA3AF',
-  },
-  groupLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
-    marginBottom: 12,
-  },
-  required: {
-    color: '#EF4444',
-    fontWeight: '500',
-  },
-  optionsContainer: {
-    marginBottom: 8,
-  },
-  horizontalContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    paddingHorizontal: 4,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#EF4444',
-    marginLeft: 6,
-    flex: 1,
-    fontWeight: '400',
-  },
-});
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: theme.componentSpacing.form.fieldGap,
+    },
+    radioContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: theme.spacing[2],
+      marginBottom: theme.spacing[1],
+      minHeight: theme.safeArea.minTouchTarget.height,
+    },
+    radio: {
+      borderWidth: 2,
+      borderRadius: 999, // Circle
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: theme.spacing[2],
+    },
+    disabledRadio: {
+      borderColor: theme.colors.border.primary,
+      opacity: 0.6,
+    },
+    radioDot: {
+      borderRadius: 999, // Circle
+    },
+    radioLabel: {
+      ...theme.typography.body.base,
+      color: theme.colors.text.primary,
+      flex: 1,
+      marginLeft: theme.spacing[1],
+    },
+    disabledLabel: {
+      color: theme.colors.text.disabled,
+    },
+    groupLabel: {
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing[3],
+    },
+    required: {
+      color: theme.colors.status.error,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    optionsContainer: {
+      marginBottom: theme.spacing[2],
+    },
+    horizontalContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing[4],
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing[1],
+      paddingHorizontal: theme.spacing[1],
+    },
+    errorText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.status.error,
+      marginLeft: theme.spacing[1],
+      flex: 1,
+    },
+  })
+);
 
-export default React.memo(RadioButton);
+const MemoizedRadioButton = React.memo(RadioButton);
+export { MemoizedRadioButton as RadioButton };

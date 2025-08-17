@@ -224,9 +224,9 @@ const Header: React.FC<HeaderProps> = ({
             accessibilityLabel={`Profile${user?.first_name ? ` for ${user.first_name}` : ''}`}
             testID={`${testID}-profile-button`}
           >
-            {userImageUri || user?.avatar_url ? (
+            {userImageUri || user?.profile_image_url ? (
               <Image
-                source={{ uri: userImageUri || user?.avatar_url }}
+                source={{ uri: userImageUri || user?.profile_image_url }}
                 style={styles.profileImage}
               />
             ) : (

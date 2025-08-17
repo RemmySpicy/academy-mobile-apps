@@ -14,7 +14,7 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Form, CustomInput, CustomButton, validateEmail, useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { Form, CustomInput, CustomButton, SocialAuthButtons, validateEmail, useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 // Validation schema
@@ -85,6 +85,12 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
         [{ text: 'OK' }]
       );
     }
+  };
+
+  const handleGuestLogin = () => {
+    const { bypassLogin } = useAuthStore.getState();
+    bypassLogin('instructor');
+    Alert.alert('Success', 'Logged in as instructor for development!');
   };
 
   return (
@@ -177,9 +183,17 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
             {/* Divider */}
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or</Text>
+              <Text style={styles.dividerText}>or continue with</Text>
               <View style={styles.dividerLine} />
             </View>
+
+            {/* Social Authentication with Guest Login */}
+            <SocialAuthButtons
+              onGooglePress={() => console.log('Google login')}
+              onApplePress={() => console.log('Apple login')}
+              onFacebookPress={() => console.log('Facebook login')}
+              onGuestLogin={handleGuestLogin}
+            />
 
             {/* Register Link */}
             <View style={styles.registerSection}>

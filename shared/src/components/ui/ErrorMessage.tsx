@@ -112,26 +112,26 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
       error: {
         icon: 'warning-outline',
         iconColor: theme.colors.status.error,
-        backgroundColor: theme.colors.background.error,
+        backgroundColor: theme.colors.status.errorBackground,
         borderColor: theme.colors.border.error,
-        textColor: theme.colors.text.error,
-        titleColor: theme.colors.text.error,
+        textColor: theme.colors.text.primary,
+        titleColor: theme.colors.status.error,
       },
       warning: {
         icon: 'alert-circle-outline',
         iconColor: theme.colors.status.warning,
-        backgroundColor: theme.colors.background.warning,
-        borderColor: theme.colors.status.warning + '40',
-        textColor: theme.colors.text.warning,
-        titleColor: theme.colors.text.warning,
+        backgroundColor: theme.colors.status.warningBackground,
+        borderColor: theme.colors.status.warningBorder,
+        textColor: theme.colors.text.primary,
+        titleColor: theme.colors.status.warning,
       },
       info: {
         icon: 'information-circle-outline',
         iconColor: theme.colors.status.info,
-        backgroundColor: theme.colors.background.info,
-        borderColor: theme.colors.status.info + '40',
-        textColor: theme.colors.text.info,
-        titleColor: theme.colors.text.info,
+        backgroundColor: theme.colors.status.infoBackground,
+        borderColor: theme.colors.status.infoBorder,
+        textColor: theme.colors.text.primary,
+        titleColor: theme.colors.status.info,
       },
     };
 
@@ -262,7 +262,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
       <Show.When isTrue={showIcon}>
         <View style={styles.iconContainer}>
           <Ionicons
-            name={config.icon}
+            name={config.icon as any}
             size={sizeConfig.iconSize}
             color={config.iconColor}
           />

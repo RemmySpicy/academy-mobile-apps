@@ -267,9 +267,9 @@ const StudentCard: React.FC<StudentCardProps> = ({
     return (
       <View style={styles.quickActions}>
         {enableQuickAttendance && onAttendancePress && (
-          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
+          <Pressable 
             onPress={() => onAttendancePress(student)}
-            style={styles.quickActionButton}
+            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
             accessibilityRole='button'
             accessibilityLabel='Mark attendance'
           >
@@ -282,9 +282,9 @@ const StudentCard: React.FC<StudentCardProps> = ({
         )}
 
         {enableQuickGrading && onPerformancePress && (
-          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
+          <Pressable 
             onPress={() => onPerformancePress(student)}
-            style={styles.quickActionButton}
+            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
             accessibilityRole='button'
             accessibilityLabel='Grade performance'
           >
@@ -297,9 +297,9 @@ const StudentCard: React.FC<StudentCardProps> = ({
         )}
 
         {onContactParentPress && (
-          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
+          <Pressable 
             onPress={() => onContactParentPress(student)}
-            style={styles.quickActionButton}
+            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
             accessibilityRole='button'
             accessibilityLabel='Contact parent'
           >
@@ -312,9 +312,9 @@ const StudentCard: React.FC<StudentCardProps> = ({
         )}
 
         {onMoreOptionsPress && (
-          <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
+          <Pressable 
             onPress={() => onMoreOptionsPress(student)}
-            style={styles.quickActionButton}
+            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
             accessibilityRole='button'
             accessibilityLabel='More options'
           >

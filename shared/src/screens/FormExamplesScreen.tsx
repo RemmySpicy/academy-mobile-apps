@@ -196,7 +196,7 @@ const FormExamplesScreen: React.FC = () => {
           
           <CustomButton
             title="Bypass Login (Dev)"
-            variant="ghost"
+            variant="gray"
             onPress={handleBypassLogin}
             startIcon={<Ionicons name="bug-outline" size={16} color={theme.colors.text.secondary} />}
           />

@@ -21,6 +21,7 @@
     "@expo/cli": "^0.24.20",
     "@expo/metro-config": "^0.20.17",
     "@expo/metro-runtime": "~5.0.4",
-    "expo": "~53.0.20"
+    "expo": "~53.0.20",
+    "react-native-gifted-charts": "^1.4.63"
   }
 }

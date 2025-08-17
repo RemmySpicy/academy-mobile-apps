@@ -10,7 +10,7 @@ import {
 
 interface PressableProps extends Omit<RNPressableProps, 'style'> {
   children: ReactNode;
-  style?: ViewStyle | TextStyle | ((state: { pressed: boolean }) => ViewStyle | TextStyle);
+  style?: ViewStyle | TextStyle | (ViewStyle | TextStyle)[] | ((state: { pressed: boolean }) => ViewStyle | TextStyle | (ViewStyle | TextStyle)[]);
   pressedStyle?: ViewStyle | TextStyle;
   disabledStyle?: ViewStyle | TextStyle;
   android_ripple?: {
@@ -32,19 +32,19 @@ const Pressable = forwardRef<View, PressableProps>(({
   android_ripple,
   ...props
 }, ref) => {
-  const getStyle = ({ pressed }: { pressed: boolean }) => {
+  const getStyle = ({ pressed }: { pressed: boolean }): ViewStyle | TextStyle | (ViewStyle | TextStyle)[] => {
     if (typeof style === 'function') {
       return style({ pressed });
     }
     
-    let combinedStyle = style;
+    let combinedStyle: ViewStyle | TextStyle | (ViewStyle | TextStyle)[] = style || {};
     
     if (pressed && pressedStyle) {
-      combinedStyle = [style, pressedStyle];
+      combinedStyle = Array.isArray(style) ? [...style, pressedStyle] : [style || {}, pressedStyle];
     }
     
     if (disabled && disabledStyle) {
-      combinedStyle = [combinedStyle, disabledStyle];
+      combinedStyle = Array.isArray(combinedStyle) ? [...combinedStyle, disabledStyle] : [combinedStyle, disabledStyle];
     }
     
     return combinedStyle;

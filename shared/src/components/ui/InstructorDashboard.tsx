@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, useWindow, useWindowDimensions, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, useWindowDimensions, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 import { useProgramContext } from '../program/ProgramContextProvider';
@@ -172,7 +172,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
           >
             <View style={styles.metricHeader}>
               <Ionicons
-                name={metric.icon}
+                name={metric.icon as any}
                 size={20}
                 color={metric.color || theme.colors.interactive.primary}
               />
@@ -230,7 +230,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
                 { backgroundColor: action.color + '20' },
               ]}
             >
-              <Ionicons name={action.icon} size={24} color={action.color} />
+              <Ionicons name={action.icon as any} size={24} color={action.color} />
             </View>
             <Text style={styles.quickActionTitle}>{action.title}</Text>
           </Pressable>

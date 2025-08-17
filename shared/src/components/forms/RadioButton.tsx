@@ -27,7 +27,7 @@ interface RadioButtonProps extends FormFieldProps {
 }
 
 // Single Radio Button Component
-export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options'> & { 
+export const SingleRadioButton: React.FC<Omit<RadioButtonProps, 'options' | 'name' | 'control'> & { 
   isSelected: boolean; 
   onPress: () => void;
 }> = ({

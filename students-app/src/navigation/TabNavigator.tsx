@@ -9,12 +9,17 @@ import { BookingsNavigator } from '../features/bookings/navigation/BookingsNavig
 import { ProgressNavigator } from '../features/progress/navigation/ProgressNavigator';
 import { ProfileNavigator } from '../features/profile/navigation/ProfileNavigator';
 
+// Development-only imports
+import { DesignSystemShowcase, FormExamplesScreen } from '@academy/mobile-shared';
+
 export type TabParamList = {
   HomeTab: undefined;
   CoursesTab: undefined;
   BookingsTab: undefined;
   ProgressTab: undefined;
   ProfileTab: undefined;
+  DesignSystemTab?: undefined; // Development only
+  FormsTab?: undefined; // Development only
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -45,6 +50,12 @@ export const TabNavigator: React.FC = () => {
             case 'ProfileTab':
               iconName = focused ? 'person' : 'person-outline';
               break;
+            case 'DesignSystemTab':
+              iconName = focused ? 'color-palette' : 'color-palette-outline';
+              break;
+            case 'FormsTab':
+              iconName = focused ? 'document-text' : 'document-text-outline';
+              break;
             default:
               iconName = 'help-outline';
           }
@@ -60,8 +71,8 @@ export const TabNavigator: React.FC = () => {
           paddingBottom: theme.spacing.xs,
         },
         tabBarLabelStyle: {
-          fontSize: theme.typography.fontSize.sm,
-          fontFamily: theme.fontConfig.fontFamily.base,
+          fontSize: theme.fontSizes.sm,
+          fontFamily: theme.fontConfig.fontFamily.primary,
         },
       })}
     >
@@ -90,6 +101,27 @@ export const TabNavigator: React.FC = () => {
         component={ProfileNavigator}
         options={{ tabBarLabel: 'Profile' }}
       />
+
+      {/* Development-only Design System tabs */}
+      {__DEV__ && (
+        <>
+          <Tab.Screen
+            name="DesignSystemTab"
+            component={DesignSystemShowcase}
+            options={{
+              tabBarLabel: 'Design',
+            }}
+          />
+          
+          <Tab.Screen
+            name="FormsTab"
+            component={FormExamplesScreen}
+            options={{
+              tabBarLabel: 'Forms',
+            }}
+          />
+        </>
+      )}
     </Tab.Navigator>
   );
 };

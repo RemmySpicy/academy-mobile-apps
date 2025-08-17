@@ -1,4 +1,4 @@
-import { useWindow, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useMemo } from 'react';
 
 /**

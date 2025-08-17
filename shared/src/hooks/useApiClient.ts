@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import apiClient from '../services/apiClient';
 import { ApiResponse } from '../types';
+import { AxiosResponse } from 'axios';
 
 interface RequestConfig {
   headers?: Record<string, string>;
@@ -17,31 +18,32 @@ interface ApiClientHook {
   setBaseURL: (url: string) => void;
   setProgramContext: (programId: string) => Promise<void>;
   getProgramContext: () => Promise<string | null>;
+  client: typeof apiClient;
 }
 
 export default function useApiClient(): ApiClientHook {
   const get = useCallback(async <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
-    const response = await apiClient.get<T>(url, config);
+    const response = await apiClient.get<AxiosResponse<T>>(url, config);
     return response.data;
   }, []);
 
   const post = useCallback(async <T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> => {
-    const response = await apiClient.post<T>(url, data, config);
+    const response = await apiClient.post<AxiosResponse<T>>(url, data, config);
     return response.data;
   }, []);
 
   const put = useCallback(async <T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> => {
-    const response = await apiClient.put<T>(url, data, config);
+    const response = await apiClient.put<AxiosResponse<T>>(url, data, config);
     return response.data;
   }, []);
 
   const patch = useCallback(async <T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> => {
-    const response = await apiClient.patch<T>(url, data, config);
+    const response = await apiClient.patch<AxiosResponse<T>>(url, data, config);
     return response.data;
   }, []);
 
   const del = useCallback(async <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
-    const response = await apiClient.delete<T>(url, config);
+    const response = await apiClient.delete<AxiosResponse<T>>(url, config);
     return response.data;
   }, []);
 
@@ -62,7 +64,7 @@ export default function useApiClient(): ApiClientHook {
     post,
     put,
     patch,
-    delete: del,
+    del,
     setBaseURL,
     setProgramContext,
     getProgramContext,

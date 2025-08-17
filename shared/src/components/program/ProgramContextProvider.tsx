@@ -150,7 +150,7 @@ export function ProgramContextProvider({ children }: ProgramContextProviderProps
           style={{ marginBottom: theme.spacing[4] }} 
         />
         <Text style={[
-          theme.typography.body.large,
+          theme.typography.body.lg,
           { color: theme.colors.text.secondary, textAlign: 'center' }
         ]}>
           Loading programs...

@@ -81,7 +81,7 @@ const Show: FC<ShowProps> & {
     
     // Handle Show.Else components
     if (child.type === ShowElse) {
-      elseContent = child.props.children;
+      elseContent = (child.props as ShowElseProps).children;
     }
 
     // Handle Show.Unless components
@@ -146,7 +146,7 @@ const ShowSwitch: FC<ShowSwitchProps> & {
     }
 
     if (child.type === ShowDefault) {
-      defaultCase = child.props.children;
+      defaultCase = (child.props as ShowDefaultProps).children;
     }
   });
 
@@ -250,7 +250,8 @@ export const switchRender = (
   cases: Record<string | number, ReactNode>,
   defaultCase: ReactNode = null
 ): ReactNode => {
-  return cases[value] || defaultCase;
+  const key = value.toString();
+  return cases[key] || defaultCase;
 };
 
 export {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authService from '../services/authService';
-import { User, AuthState } from '../types';
+import { User, AuthState, LoginResponse } from '../types';
 
 const TOKEN_KEY = 'academy_auth_token';
 
@@ -9,7 +9,7 @@ interface UseAuthReturn {
   authState: AuthState;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: Record<string, any>) => Promise<boolean>;
+  register: (userData: any) => Promise<boolean>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
   refreshAuth: () => Promise<boolean>;
@@ -18,9 +18,16 @@ interface UseAuthReturn {
 export default function useAuth(): UseAuthReturn {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
-    token: null,
+    isLoading: false,
+    isInitializing: false,
+    accessToken: null,
+    refreshToken: null,
     user: null,
     currentProgram: null,
+    availablePrograms: [],
+    lastLoginAt: null,
+    tokenExpiresAt: null,
+    error: null,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,9 +45,16 @@ export default function useAuth(): UseAuthReturn {
         const user = await authService.getCurrentUser();
         setAuthState({
           isAuthenticated: true,
-          token,
+          isLoading: false,
+          isInitializing: false,
+          accessToken: token,
+          refreshToken: null,
           user,
           currentProgram: null, // Will be set by program context hook
+          availablePrograms: user.program_assignments || [],
+          lastLoginAt: new Date().toISOString(),
+          tokenExpiresAt: null,
+          error: null,
         });
       }
     } catch (error) {
@@ -55,13 +69,20 @@ export default function useAuth(): UseAuthReturn {
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
-      const response = await authService.login({ email, password });
+      const response = await authService.login({ email, password }) as LoginResponse;
       
       setAuthState({
         isAuthenticated: true,
-        token: response.access_token,
+        isLoading: false,
+        isInitializing: false,
+        accessToken: response.access_token,
+        refreshToken: response.refresh_token || null,
         user: response.user,
         currentProgram: null,
+        availablePrograms: response.user.program_assignments || [],
+        lastLoginAt: new Date().toISOString(),
+        tokenExpiresAt: new Date(Date.now() + response.expires_in * 1000).toISOString(),
+        error: null,
       });
       
       return true;
@@ -76,7 +97,7 @@ export default function useAuth(): UseAuthReturn {
   const register = useCallback(async (userData: Record<string, any>): Promise<boolean> => {
     try {
       setIsLoading(true);
-      await authService.register(userData);
+      await authService.register(userData as any);
       return true;
     } catch (error) {
       console.error('Registration failed:', error);
@@ -92,18 +113,32 @@ export default function useAuth(): UseAuthReturn {
       await authService.logout();
       setAuthState({
         isAuthenticated: false,
-        token: null,
+        isLoading: false,
+        isInitializing: false,
+        accessToken: null,
+        refreshToken: null,
         user: null,
         currentProgram: null,
+        availablePrograms: [],
+        lastLoginAt: null,
+        tokenExpiresAt: null,
+        error: null,
       });
     } catch (error) {
       console.error('Logout failed:', error);
       // Force local logout even if server fails
       setAuthState({
         isAuthenticated: false,
-        token: null,
+        isLoading: false,
+        isInitializing: false,
+        accessToken: null,
+        refreshToken: null,
         user: null,
         currentProgram: null,
+        availablePrograms: [],
+        lastLoginAt: null,
+        tokenExpiresAt: null,
+        error: null,
       });
     } finally {
       setIsLoading(false);

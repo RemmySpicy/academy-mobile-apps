@@ -9,8 +9,7 @@ import { View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Header, StudentCard, useTheme } from '@academy/mobile-shared';
+import { Header, StudentCard, useTheme, FadeInWrapper } from '@academy/mobile-shared';
 
 // Enhanced student data structure to match our StudentCard component
 interface StudentData {
@@ -220,8 +219,9 @@ export const StudentsScreen: React.FC = () => {
       />
 
       {/* Search Bar */}
-      <Animated.View
-        entering={FadeInDown.delay(200).springify()}
+      <FadeInWrapper
+        delay={200}
+        springify={true}
         style={[styles.searchContainer, { backgroundColor: theme.colors.background.primary }]}
       >
         <View style={[styles.searchBar, { 
@@ -237,11 +237,12 @@ export const StudentsScreen: React.FC = () => {
             onChangeText={setSearchQuery}
           />
         </View>
-      </Animated.View>
+      </FadeInWrapper>
 
       {/* Filter Tabs */}
-      <Animated.View
-        entering={FadeInDown.delay(300).springify()}
+      <FadeInWrapper
+        delay={300}
+        springify={true}
         style={styles.filterContainer}
       >
         <ScrollView
@@ -279,7 +280,7 @@ export const StudentsScreen: React.FC = () => {
             </Pressable>
           ))}
         </ScrollView>
-      </Animated.View>
+      </FadeInWrapper>
 
       {/* Students List */}
       <FlatList
@@ -304,8 +305,9 @@ export const StudentsScreen: React.FC = () => {
         }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
-          <Animated.View
-            entering={FadeInDown.delay(400).springify()}
+          <FadeInWrapper
+            delay={400}
+            springify={true}
             style={styles.emptyContainer}
           >
             <Ionicons 
@@ -319,7 +321,7 @@ export const StudentsScreen: React.FC = () => {
             <Text style={[styles.emptyMessage, { color: theme.colors.text.tertiary }]}>
               Try adjusting your search or filter criteria
             </Text>
-          </Animated.View>
+          </FadeInWrapper>
         )}
       />
     </View>
@@ -345,7 +347,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: theme.spacing.sm,
-    fontSize: theme.typography.fontSize.body,
+    fontSize: theme.typography.body.base.fontSize,
   },
   filterContainer: {
     marginBottom: theme.spacing.md,
@@ -371,7 +373,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginTop: theme.spacing.md,
   },
   emptyMessage: {
-    fontSize: theme.typography.fontSize.body,
+    fontSize: theme.typography.body.base.fontSize,
     marginTop: theme.spacing.xs,
     textAlign: 'center',
     paddingHorizontal: theme.spacing.xl,

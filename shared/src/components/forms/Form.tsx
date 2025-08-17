@@ -1,16 +1,16 @@
 import React, { 
-  useActionState, 
-  useOptimistic, 
   useTransition, 
   useMemo,
   ReactNode,
   FormEvent,
-  useRef
+  useRef,
+  useState,
+  useCallback
 } from 'react';
 import { View, ViewProps, Platform } from 'react-native';
 
 interface FormAction<T = any> {
-  (prevState: T, formData: FormData): Promise<T> | T;
+  (formData: FormData): Promise<T> | T;
 }
 
 interface FormProps<T = any> extends Omit<ViewProps, 'onSubmit'> {
@@ -19,7 +19,8 @@ interface FormProps<T = any> extends Omit<ViewProps, 'onSubmit'> {
   onSubmit?: (formData: FormData) => void | Promise<void>;
   children: ReactNode;
   resetOnSuccess?: boolean;
-  optimisticUpdate?: (formData: FormData) => Partial<T>;
+  onSuccess?: (result: T) => void;
+  onError?: (error: any) => void;
 }
 
 export function Form<T = any>({
@@ -28,63 +29,55 @@ export function Form<T = any>({
   onSubmit,
   children,
   resetOnSuccess = false,
-  optimisticUpdate,
+  onSuccess,
+  onError,
   style,
   ...props
 }: FormProps<T>) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
-  
-  // Use React 19's useActionState for form handling
-  const [state, formAction, isFormPending] = useActionState(
-    action || (async (prevState: T, formData: FormData) => prevState),
-    initialState as T
-  );
+  const [formState, setFormState] = useState<T | null>(initialState || null);
+  const [error, setError] = useState<any>(null);
 
-  // Optimistic updates for better UX
-  const [optimisticState, updateOptimisticState] = useOptimistic(
-    state,
-    (currentState: T, update: Partial<T>) => ({ ...currentState, ...update })
-  );
+  const handleFormSubmit = useCallback(async (formData: FormData) => {
+    setError(null);
+    
+    try {
+      if (action) {
+        const result = await action(formData);
+        setFormState(result);
+        onSuccess?.(result);
+      } else if (onSubmit) {
+        await onSubmit(formData);
+      }
+      
+      if (resetOnSuccess && formRef.current) {
+        formRef.current.reset();
+      }
+    } catch (err) {
+      setError(err);
+      onError?.(err);
+    }
+  }, [action, onSubmit, onSuccess, onError, resetOnSuccess]);
 
   const handleSubmit = useMemo(() => {
     if (Platform.OS === 'web') {
       return (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const form = e.currentTarget;
+        const formData = new FormData(form);
         
-        if (action) {
-          // Let useActionState handle the form submission
-          const form = e.currentTarget;
-          const formData = new FormData(form);
-          
-          if (optimisticUpdate) {
-            const update = optimisticUpdate(formData);
-            updateOptimisticState(update);
-          }
-          
-          startTransition(() => {
-            formAction(formData);
-          });
-        } else if (onSubmit) {
-          const form = e.currentTarget;
-          const formData = new FormData(form);
-          
-          startTransition(async () => {
-            await onSubmit(formData);
-            
-            if (resetOnSuccess) {
-              form.reset();
-            }
-          });
-        }
+        startTransition(() => {
+          handleFormSubmit(formData);
+        });
       };
     }
     
     // For native platforms, we'll handle form submission differently
     return undefined;
-  }, [action, onSubmit, optimisticUpdate, updateOptimisticState, formAction, resetOnSuccess, startTransition]);
+  }, [handleFormSubmit, startTransition]);
 
-  const isLoading = isPending || isFormPending;
+  const isLoading = isPending;
 
   if (Platform.OS === 'web') {
     return React.createElement(
@@ -98,8 +91,9 @@ export function Form<T = any>({
       React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child as React.ReactElement<any>, {
-            formState: optimisticState,
+            formState,
             isSubmitting: isLoading,
+            error,
           });
         }
         return child;
@@ -113,8 +107,10 @@ export function Form<T = any>({
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child as React.ReactElement<any>, {
-            formState: optimisticState,
+            formState,
             isSubmitting: isLoading,
+            error,
+            onSubmit: handleFormSubmit,
           });
         }
         return child;
@@ -129,6 +125,7 @@ export function useFormContext<T = any>() {
     isPending: false, // This would be provided by context in a full implementation
     formState: null as T | null,
     isSubmitting: false,
+    error: null,
   };
 }
 

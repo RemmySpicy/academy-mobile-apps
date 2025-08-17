@@ -82,7 +82,7 @@ export function ProgramSelector({
           disabled={isLoading || availablePrograms.length <= 1}
         >
           <View style={styles.cardContent}>
-            <Text style={[theme.typography.body.small, { color: theme.colors.text.tertiary }]}>
+            <Text style={[theme.typography.body.sm, { color: theme.colors.text.tertiary }]}>
               Current Program
             </Text>
             <Text style={[
@@ -93,7 +93,7 @@ export function ProgramSelector({
             </Text>
             {availablePrograms.length > 1 && (
               <Text style={[
-                theme.typography.body.small, 
+                theme.typography.body.sm, 
                 { color: theme.colors.interactive.primary, marginTop: theme.spacing[2] }
               ]}>
                 Tap to switch programs
@@ -137,7 +137,7 @@ export function ProgramSelector({
         styles.programItem,
         {
           backgroundColor: item.id === currentProgram?.id 
-            ? theme.colors.interactive.primaryBackground 
+            ? theme.colors.background.elevated 
             : theme.colors.background.primary,
           borderColor: item.id === currentProgram?.id 
             ? theme.colors.interactive.primary 
@@ -165,10 +165,10 @@ export function ProgramSelector({
         </Text>
         {item.description && (
           <Text style={[
-            theme.typography.body.small,
+            theme.typography.body.sm,
             { 
               color: item.id === currentProgram?.id 
-                ? theme.colors.interactive.primaryText 
+                ? theme.colors.interactive.primary 
                 : theme.colors.text.secondary,
               marginTop: theme.spacing[1],
             }
@@ -182,7 +182,7 @@ export function ProgramSelector({
             { backgroundColor: theme.colors.interactive.primary }
           ]}>
             <Text style={[
-              theme.typography.body.small,
+              theme.typography.body.sm,
               { color: theme.colors.text.inverse, fontWeight: '600' }
             ]}>
               Current
@@ -236,7 +236,7 @@ export function ProgramSelector({
                   onPress={handleRefresh}
                 >
                   <Text style={[
-                    theme.typography.button.small,
+                    theme.typography.button.sm,
                     { color: theme.colors.interactive.primary }
                   ]}>
                     Refresh
@@ -251,7 +251,7 @@ export function ProgramSelector({
                 { marginBottom: theme.spacing[4] }
               ]}>
                 <Text style={[
-                  theme.typography.body.small,
+                  theme.typography.body.sm,
                   { color: theme.colors.status.error }
                 ]}>
                   {error}

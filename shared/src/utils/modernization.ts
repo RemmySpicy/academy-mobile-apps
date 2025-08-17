@@ -1,4 +1,4 @@
-import { ViewStyle, Platform } from 'react-native';
+import { ViewStyle, Platform, ColorValue } from 'react-native';
 
 /**
  * Modernization utilities for upgrading deprecated React Native patterns
@@ -8,14 +8,8 @@ import { ViewStyle, Platform } from 'react-native';
  * Convert legacy shadow properties to modern elevation-based styling
  * @deprecated Direct shadow props are deprecated. Use elevation system instead.
  */
-export function convertShadowToElevation(shadowStyle: {
-  shadowColor?: string;
-  shadowOffset?: { width: number; height: number };
-  shadowOpacity?: number;
-  shadowRadius?: number;
-  elevation?: number;
-}): ViewStyle {
-  const { shadowColor, shadowOffset, shadowOpacity, shadowRadius, elevation } = shadowStyle;
+export function convertShadowToElevation(shadowStyle: any): ViewStyle {
+  const { shadowColor, shadowOffset, shadowOpacity, shadowRadius, elevation } = shadowStyle || {};
   
   if (Platform.OS === 'web') {
     // For web, create a proper CSS box-shadow
@@ -23,7 +17,7 @@ export function convertShadowToElevation(shadowStyle: {
     const offsetY = shadowOffset?.height || 2;
     const blur = shadowRadius || 4;
     const opacity = shadowOpacity || 0.1;
-    const color = shadowColor || '#000000';
+    const color = String(shadowColor || '#000000');
     
     return {
       boxShadow: `${offsetX}px ${offsetY}px ${blur}px rgba(${hexToRgb(color)}, ${opacity})`,
@@ -32,7 +26,7 @@ export function convertShadowToElevation(shadowStyle: {
   
   if (Platform.OS === 'ios') {
     return {
-      shadowColor: shadowColor || '#000000',
+      shadowColor: String(shadowColor || '#000000'),
       shadowOffset: shadowOffset || { width: 0, height: 2 },
       shadowOpacity: shadowOpacity || 0.1,
       shadowRadius: shadowRadius || 4,

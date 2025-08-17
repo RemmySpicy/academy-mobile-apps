@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useImperativeHandle, forwardRef } from 'react';
-import { View, Modal, Pressable, StyleSheet, StatusBar, Platform, KeyboardAvoidingView, ScrollView, Animated, BackHandler } from 'react-native';
+import { View, Modal, Pressable, StyleSheet, StatusBar, Platform, KeyboardAvoidingView, ScrollView, Animated, BackHandler, AccessibilityRole } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 import { themeUtils } from '../../theme';
@@ -34,7 +34,7 @@ export interface CustomModalProps {
   // Accessibility
   accessibilityLabel?: string;
   accessibilityHint?: string;
-  accessibilityRole?: string;
+  accessibilityRole?: AccessibilityRole;
   
   // Callbacks
   onShow?: () => void;
@@ -67,7 +67,7 @@ const CustomModal = forwardRef<CustomModalRef, CustomModalProps>(({
   maxHeight = '80%',
   accessibilityLabel,
   accessibilityHint,
-  accessibilityRole = 'dialog',
+  accessibilityRole = 'alert',
   onShow,
   onDismiss,
   onRequestClose,
@@ -171,7 +171,6 @@ const CustomModal = forwardRef<CustomModalRef, CustomModalProps>(({
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
         accessibilityRole={accessibilityRole}
-        accessibilityModal={isVisible}
       >
         {children}
       </View>
@@ -285,15 +284,15 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     contentWrapper: {
       flex: 1,
-      justifyContent: 'inherit',
-      alignItems: 'inherit',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     content: {
       backgroundColor: theme.colors.background.elevated,
       borderRadius: theme.borderRadius.lg,
       padding: theme.spacing[5],
       margin: theme.spacing[5],
-      maxWidth: screenWidth - (theme.spacing[5] * 2),
+      maxWidth: '90%',
       ...themeUtils.createShadow('lg', theme.colors.shadow.heavy),
     },
     fullscreenContent: {

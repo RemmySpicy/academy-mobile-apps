@@ -120,7 +120,7 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
           backgroundColor: theme.colors.background.secondary,
           borderColor: theme.colors.border.primary,
         },
-        text: { color: theme.colors.text.inverted },
+        text: { color: theme.colors.text.inverse },
         textDisabled: { color: theme.colors.text.disabled },
       },
       outline: {
@@ -260,7 +260,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       borderRadius: theme.borderRadius.md,
       justifyContent: 'center',
       alignItems: 'center',
-      ...theme.elevation.xs,
+      ...theme.elevation.sm,
     },
     buttonDisabled: {
       opacity: 0.5,

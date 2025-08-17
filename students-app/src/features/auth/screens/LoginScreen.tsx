@@ -85,6 +85,12 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
     }
   };
 
+  const handleGuestLogin = () => {
+    const { bypassLogin } = useAuthStore.getState();
+    bypassLogin('student');
+    Alert.alert('Success', 'Logged in as student for development!');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -181,6 +187,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
               onGooglePress={() => console.log('Google login')}
               onApplePress={() => console.log('Apple login')}
               onFacebookPress={() => console.log('Facebook login')}
+              onGuestLogin={handleGuestLogin}
             />
 
             {/* Register Link */}

@@ -336,10 +336,14 @@ export const useThemeMode = () => {
 export function withTheme<P extends object>(
   Component: React.ComponentType<P & { theme: Theme }>
 ): React.ComponentType<P> {
-  return React.forwardRef<any, P>((props, ref) => {
+  const WrappedComponent = React.forwardRef<any, P>((props, ref) => {
     const { theme } = useTheme();
-    return <Component {...props} theme={theme} ref={ref} />;
+    return <Component {...(props as P & { theme: Theme })} theme={theme} ref={ref} />;
   });
+  
+  WrappedComponent.displayName = `withTheme(${Component.displayName || Component.name || 'Component'})`;
+  
+  return WrappedComponent as React.ComponentType<P>;
 }
 
 // Theme-aware styled component helper

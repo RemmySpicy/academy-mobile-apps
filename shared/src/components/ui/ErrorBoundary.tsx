@@ -71,7 +71,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     }
   }
 
-  componentDidUpdate(prevProps: ModernErrorBoundaryProps) {
+  componentDidUpdate(prevProps: ErrorBoundaryProps) {
     const { resetKeys, resetOnPropsChange } = this.props;
     const { hasError } = this.state;
 
@@ -130,22 +130,22 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 const useThemedStyles = createThemedStyles((theme) => ({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     padding: theme.spacing.lg,
     backgroundColor: theme.colors.background.primary,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     color: theme.colors.status.error,
     marginBottom: theme.spacing.md,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   message: {
     fontSize: 16,
     color: theme.colors.text.secondary,
-    textAlign: 'center',
+    textAlign: 'center' as const,
     marginBottom: theme.spacing.xl,
     lineHeight: 24,
   },
@@ -159,7 +159,7 @@ const useThemedStyles = createThemedStyles((theme) => ({
   retryButtonText: {
     color: theme.colors.text.inverse,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '600' as const,
   },
 }));
 

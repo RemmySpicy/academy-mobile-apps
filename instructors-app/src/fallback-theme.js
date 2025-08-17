@@ -17,9 +17,26 @@ const fallbackTheme = {
   borderRadius: { sm: 4, md: 8, lg: 12, full: 9999 },
   elevation: { sm: { elevation: 2 }, md: { elevation: 4 } },
   typography: {
-    heading: { h4: { fontSize: 18, fontWeight: '600' }, h5: { fontSize: 16, fontWeight: '600' } },
-    body: { base: { fontSize: 16 }, sm: { fontSize: 14 } },
-    caption: { base: { fontSize: 12 }, small: { fontSize: 10 } }
+    heading: { 
+      h4: { fontSize: 18, fontWeight: '600', lineHeight: 24 }, 
+      h5: { fontSize: 16, fontWeight: '600', lineHeight: 22 } 
+    },
+    body: { 
+      base: { fontSize: 16, lineHeight: 24, fontWeight: '400' }, 
+      sm: { fontSize: 14, lineHeight: 20, fontWeight: '400' },
+      lg: { fontSize: 18, lineHeight: 26, fontWeight: '400' },
+      xs: { fontSize: 12, lineHeight: 18, fontWeight: '400' }
+    },
+    caption: { 
+      base: { fontSize: 12, lineHeight: 16 }, 
+      small: { fontSize: 10, lineHeight: 14 } 
+    },
+    fontSize: {
+      body: 16,
+      sm: 14,
+      base: 16,
+      lg: 18
+    }
   },
   fontConfig: { fontWeight: { medium: '500', semibold: '600' } }
 };
@@ -32,7 +49,15 @@ export const useTheme = () => {
   if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider. Make sure your component is wrapped in <ThemeProvider>');
   }
-  return context;
+  return { 
+    theme: context,
+    themeMode: 'light',
+    isDark: false,
+    isNight: false,
+    setThemeMode: () => {},
+    toggleTheme: () => {},
+    systemColorScheme: 'light'
+  };
 };
 
 // Function that creates themed styles (mimics shared library API)

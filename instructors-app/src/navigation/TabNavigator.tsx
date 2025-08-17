@@ -16,12 +16,17 @@ import { AttendanceNavigator } from '../features/attendance/navigation/Attendanc
 import { PerformanceNavigator } from '../features/performance/navigation/PerformanceNavigator';
 import { ClassroomNavigator } from '../features/classroom/navigation/ClassroomNavigator';
 
+// Development-only imports
+import { DesignSystemShowcase, FormExamplesScreen } from '@academy/mobile-shared';
+
 export type TabParamList = {
   HomeTab: undefined;
   StudentsTab: undefined;
   AttendanceTab: undefined;
   PerformanceTab: undefined;
   ClassroomTab: undefined;
+  DesignSystemTab?: undefined; // Development only
+  FormsTab?: undefined; // Development only
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -59,7 +64,7 @@ const AnimatedTabIcon: React.FC<AnimatedTabIconProps> = ({ name, color, size, fo
   }));
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={[{ alignItems: 'center', justifyContent: 'center' }, animatedStyle]}>
       <Ionicons name={name} size={size} color={color} />
     </Animated.View>
   );
@@ -107,7 +112,7 @@ export const TabNavigator: React.FC = () => {
         tabBarActiveTintColor: theme.colors.interactive.primary,
         tabBarInactiveTintColor: theme.colors.text.tertiary,
         tabBarLabelStyle: {
-          fontSize: theme.typography.fontSize.xs,
+          fontSize: theme.fontSizes.xs,
           fontWeight: theme.fontConfig.fontWeight.medium,
           marginTop: theme.spacing.xs,
         },
@@ -132,6 +137,12 @@ export const TabNavigator: React.FC = () => {
               break;
             case 'ClassroomTab':
               iconName = focused ? 'school' : 'school-outline';
+              break;
+            case 'DesignSystemTab':
+              iconName = focused ? 'color-palette' : 'color-palette-outline';
+              break;
+            case 'FormsTab':
+              iconName = focused ? 'document-text' : 'document-text-outline';
               break;
             default:
               iconName = 'help-outline';
@@ -187,6 +198,27 @@ export const TabNavigator: React.FC = () => {
           tabBarLabel: 'Classroom',
         }}
       />
+      
+      {/* Development-only Design System tabs */}
+      {__DEV__ && (
+        <>
+          <Tab.Screen
+            name="DesignSystemTab"
+            component={DesignSystemShowcase}
+            options={{
+              tabBarLabel: 'Design',
+            }}
+          />
+          
+          <Tab.Screen
+            name="FormsTab"
+            component={FormExamplesScreen}
+            options={{
+              tabBarLabel: 'Forms',
+            }}
+          />
+        </>
+      )}
     </Tab.Navigator>
   );
 };

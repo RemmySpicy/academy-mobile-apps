@@ -107,8 +107,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
           scrollEnabled={textHeight >= maxHeight}
           accessibilityLabel={placeholder}
           accessibilityHint={fieldState.error ? fieldState.error.message : undefined}
-          accessibilityState={{ required }}
-          accessibilityMultiline={true}
+          accessibilityState={{ disabled: !editable || disabled }}
         />
       </View>
 

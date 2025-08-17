@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, useWindow, useWindowDimensions, Platform, Animated, PanGestureHandler, State, Dimensions } from 'react-native';
+import { View, Text, Pressable, StyleSheet, useWindowDimensions, Platform, Animated, Dimensions, AccessibilityRole } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotificationStore } from '../../store/notificationStore';
@@ -33,7 +34,7 @@ export interface CustomAlertProps {
   // Accessibility
   accessibilityLabel?: string;
   accessibilityHint?: string;
-  accessibilityRole?: string;
+  accessibilityRole?: AccessibilityRole;
   
   // Animation
   animationDuration?: number;

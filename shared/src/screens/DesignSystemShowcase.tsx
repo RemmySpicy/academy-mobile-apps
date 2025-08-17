@@ -226,7 +226,7 @@ const DesignSystemShowcase: React.FC = () => {
       <View style={styles.componentGrid}>
         <CustomButton 
           title="Show Success Alert" 
-          variant="success"
+          variant="teal"
           onPress={() => {
             // In a real app, you'd use the notification store
             console.log('Show success alert');

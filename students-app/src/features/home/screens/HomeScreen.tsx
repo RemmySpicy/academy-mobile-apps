@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Header,
-  StudentDashboard,
+  InstructorDashboard,
   useTheme,
   useProgramContext,
   useAuthStore,
@@ -44,7 +44,7 @@ const sampleMetrics = [
     value: 2,
     change: 1,
     changeType: 'increase' as const,
-    icon: 'ri:book-line',
+    icon: 'book-outline',
   },
   {
     id: 'sessions_completed',
@@ -52,7 +52,7 @@ const sampleMetrics = [
     value: 19,
     change: 3,
     changeType: 'increase' as const,
-    icon: 'ri:calendar-check-line',
+    icon: 'checkmark-circle-outline',
   },
   {
     id: 'avg_progress',
@@ -60,13 +60,13 @@ const sampleMetrics = [
     value: '48%',
     change: 5.2,
     changeType: 'increase' as const,
-    icon: 'ri:line-chart-line',
+    icon: 'trending-up-outline',
   },
   {
     id: 'next_session',
     title: 'Next Session',
     value: 'Tomorrow',
-    icon: 'ri:time-line',
+    icon: 'time-outline',
   },
 ];
 
@@ -157,20 +157,23 @@ export const HomeScreen: React.FC = () => {
         style={{ paddingTop: insets.top }}
       />
 
-      {/* Student Dashboard */}
-      <StudentDashboard
+      {/* Student Dashboard - Using InstructorDashboard as base */}
+      <InstructorDashboard
         metrics={sampleMetrics}
-        currentCourses={sampleCourses}
+        recentStudents={sampleCourses.map(course => ({
+          id: course.id,
+          name: course.title,
+          level: course.level,
+          instructor: course.instructor,
+          progress: course.progress,
+          status: course.status,
+          nextSession: course.nextSession,
+          enrollment_date: course.enrollment_date,
+        }))}
         recentActivities={sampleActivities}
         onMetricPress={handleMetricPress}
-        onCoursePress={handleCoursePress}
-        onViewAllCourses={handleViewAllCourses}
-        onViewAllActivities={handleViewAllActivities}
-        showMetrics={true}
-        showCourses={true}
-        showActivities={true}
-        maxCoursesShown={2}
-        maxActivitiesShown={3}
+        onStudentPress={(student) => handleCoursePress(student)}
+        style={{ flex: 1 }}
       />
     </View>
   );

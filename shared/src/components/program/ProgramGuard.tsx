@@ -103,8 +103,8 @@ export function ProgramGuard({
           <CustomButton
             title="Retry"
             onPress={refreshPrograms}
-            variant="secondary"
-            size="medium"
+            variant="outline"
+            size="md"
           />
         )}
       </View>

@@ -121,8 +121,6 @@ const OtpField: React.FC<OtpFieldProps> = ({
         accessibilityLabel={`OTP input field with ${length} digits`}
         accessibilityHint="Enter your one-time password"
         accessibilityRole="none"
-        delayPressIn={0}
-        delayPressOut={0}
       >
         {boxArray.map(renderBox)}
       </Pressable>
@@ -187,11 +185,11 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     filledBox: {
       borderColor: theme.colors.status.success,
-      backgroundColor: theme.colors.background.success,
+      backgroundColor: theme.colors.status.successBackground,
     },
     errorBox: {
       borderColor: theme.colors.border.error,
-      backgroundColor: theme.colors.background.error,
+      backgroundColor: theme.colors.status.errorBackground,
     },
     disabledBox: {
       backgroundColor: theme.colors.background.secondary,

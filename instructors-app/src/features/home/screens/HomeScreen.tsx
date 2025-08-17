@@ -82,7 +82,7 @@ const sampleMetrics = [
     value: 24,
     change: 3,
     changeType: 'increase' as const,
-    icon: 'ri:group-line',
+    icon: 'people-outline',
   },
   {
     id: 'attendance_rate',
@@ -90,7 +90,7 @@ const sampleMetrics = [
     value: '94%',
     change: 2.5,
     changeType: 'increase' as const,
-    icon: 'ri:calendar-check-line',
+    icon: 'checkmark-circle-outline',
   },
   {
     id: 'avg_performance',
@@ -98,13 +98,13 @@ const sampleMetrics = [
     value: '87%',
     change: -1.2,
     changeType: 'decrease' as const,
-    icon: 'ri:bar-chart-line',
+    icon: 'bar-chart-outline',
   },
   {
     id: 'pending_tasks',
     title: 'Pending Tasks',
     value: 12,
-    icon: 'ri:task-line',
+    icon: 'checkmark-circle-outline',
   },
 ];
 

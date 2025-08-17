@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { View, Text, TextInput, Pressable, KeyboardTypeOptions, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useController, Control, FieldValues, RegisterOptions } from "react-hook-form";
@@ -167,21 +167,29 @@ const CustomInput: React.FC<CustomInputProps> = ({
   const error = formField?.fieldState.error;
   const invalid = formField?.fieldState.invalid || false;
 
-  const handleChangeText = (text: string) => {
+  const handleChangeText = useCallback((text: string) => {
     if (formField) {
       formField.field.onChange(text);
     }
     propOnChangeText?.(text);
     onValueChange?.(text);
-  };
+  }, [formField, propOnChangeText, onValueChange]);
 
-  const handleBlur = () => {
+  const handleBlur = useCallback(() => {
     if (formField) {
       formField.field.onBlur();
     }
     propOnBlur?.();
     setIsFocused(false);
-  };
+  }, [formField, propOnBlur]);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
+
+  const togglePasswordVisibility = useCallback(() => {
+    setIsPasswordVisible(prev => !prev);
+  }, []);
 
   const styles = useThemedStyles();
 
@@ -215,14 +223,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
         return styles.sizeMedium;
     }
   }, [size, styles]);
-
-  const handleFocus = () => {
-    setIsFocused(true);
-  };
-
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
 
   const renderPasswordToggle = () => {
     if (!showPasswordToggle || !secureTextEntry) return null;
@@ -258,13 +258,12 @@ const CustomInput: React.FC<CustomInputProps> = ({
   };
 
   return (
-    <View key={`input-${name}`} style={[styles.container, containerStyle, { pointerEvents: 'auto' }]}>
+    <View style={[styles.container, containerStyle]}>
       <View style={[
         styles.inputContainer,
         ...getVariantStyles,
         getSizeStyles,
         style,
-        { pointerEvents: 'auto' }
       ]}>
         {(startIcon || leftIcon) && (
           <View style={styles.leftIconContainer}>
@@ -273,7 +272,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
         )}
 
         <TextInput
-          key={name}
           value={value}
           onChangeText={handleChangeText}
           onFocus={handleFocus}

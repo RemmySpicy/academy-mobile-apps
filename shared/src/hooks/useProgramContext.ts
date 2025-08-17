@@ -18,7 +18,7 @@ export default function useProgramContext(): ProgramContextValue {
       
       // Get available programs for current user
       const programsResponse = await apiClient.get<Program[]>('/programs/my-programs');
-      const programs = programsResponse.data;
+      const programs = Array.isArray(programsResponse) ? programsResponse : (programsResponse as any)?.data || programsResponse;
       setAvailablePrograms(programs);
 
       // Get stored program context
@@ -70,7 +70,8 @@ export default function useProgramContext(): ProgramContextValue {
     try {
       setIsLoading(true);
       const programsResponse = await apiClient.get<Program[]>('/programs/my-programs');
-      setAvailablePrograms(programsResponse.data);
+      const programsData = Array.isArray(programsResponse) ? programsResponse : (programsResponse as any)?.data || programsResponse;
+      setAvailablePrograms(programsData);
     } catch (error) {
       console.error('Failed to refresh programs:', error);
     } finally {

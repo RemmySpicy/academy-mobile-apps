@@ -11,7 +11,6 @@ export { StudentDetailScreen } from './screens/StudentDetailScreen';
 export { StudentCard } from './components/StudentCard';
 export { StudentList } from './components/StudentList';
 export { StudentFilters } from './components/StudentFilters';
-export { StudentProgressChart } from './components/StudentProgressChart';
 
 // Hooks
 export { useStudents } from './hooks/useStudents';

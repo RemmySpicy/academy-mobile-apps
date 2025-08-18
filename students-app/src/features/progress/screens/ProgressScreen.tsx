@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View,
   Text,
   ScrollView,
   Pressable,
   useWindowDimensions,
-  Dimensions } from 'react-native';
+  Dimensions,
+  StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -14,6 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { useTheme } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -51,137 +53,342 @@ interface SkillCardProps {
   index: number;
 }
 
+const createSkillCardStyles = (theme: any) => StyleSheet.create({
+  container: {
+    width: width * 0.7,
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: theme.borderRadius.xl,
+    padding: theme.spacing.md,
+    marginRight: theme.spacing.md,
+    ...theme.elevation.sm,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.sm,
+  },
+  content: {
+    flex: 1,
+  },
+  skillName: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
+    fontSize: theme.fontSizes.base,
+  },
+  skillDescription: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.sm,
+    marginTop: theme.spacing.xs,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressContainer: {
+    marginBottom: theme.spacing.sm,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.xs,
+  },
+  progressLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.xs,
+  },
+  progressLevel: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.xs,
+  },
+  progressBar: {
+    backgroundColor: theme.colors.border.primary,
+    borderRadius: theme.borderRadius.full,
+    height: 8,
+  },
+  progressFill: {
+    height: 8,
+    borderRadius: theme.borderRadius.full,
+  },
+  lastUpdated: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.fontSizes.xs,
+  },
+});
+
 const SkillCard: React.FC<SkillCardProps> = ({ skill, index }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createSkillCardStyles(theme), [theme]);
   const progress = (skill.level / skill.maxLevel) * 100;
   
   return (
     <Animated.View
       entering={FadeInRight.delay(index * 100).springify()}
-      className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mr-4"
-      style={{ width: width * 0.7 }}
+      style={styles.container}
     >
-      <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-1">
-          <Text className="text-gray-900 font-semibold text-base">{skill.name}</Text>
-          <Text className="text-gray-500 text-sm mt-1">{skill.description}</Text>
+      <View style={styles.header}>
+        <View style={styles.content}>
+          <Text style={styles.skillName}>{skill.name}</Text>
+          <Text style={styles.skillDescription}>{skill.description}</Text>
         </View>
         <View
-          className="w-10 h-10 rounded-full items-center justify-center"
-          style={{ backgroundColor: `${skill.color}15` }}
+          style={[
+            styles.iconContainer,
+            { backgroundColor: `${skill.color}15` }
+          ]}
         >
           <Ionicons name={skill.icon} size={20} color={skill.color} />
         </View>
       </View>
       
-      <View className="mb-3">
-        <View className="flex-row items-center justify-between mb-2">
-          <Text className="text-gray-500 text-xs">Level Progress</Text>
-          <Text className="text-gray-600 text-xs">
+      <View style={styles.progressContainer}>
+        <View style={styles.progressHeader}>
+          <Text style={styles.progressLabel}>Level Progress</Text>
+          <Text style={styles.progressLevel}>
             Level {skill.level} of {skill.maxLevel}
           </Text>
         </View>
-        <View className="bg-gray-200 rounded-full h-2">
+        <View style={styles.progressBar}>
           <View
-            className="h-2 rounded-full"
-            style={{
-              width: `${progress}%`,
-              backgroundColor: skill.color,
-            }}
+            style={[
+              styles.progressFill,
+              {
+                width: `${progress}%`,
+                backgroundColor: skill.color,
+              }
+            ]}
           />
         </View>
       </View>
       
-      <Text className="text-gray-400 text-xs">
+      <Text style={styles.lastUpdated}>
         Updated {skill.lastUpdated}
       </Text>
     </Animated.View>
   );
 };
 
+const createProgressCardStyles = (theme: any) => StyleSheet.create({
+  container: {
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: theme.borderRadius.xl,
+    padding: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.md,
+    ...theme.elevation.sm,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.md,
+  },
+  content: {
+    flex: 1,
+  },
+  title: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.fontConfig.fontWeight.bold,
+    fontSize: theme.fontSizes.lg,
+    marginBottom: theme.spacing.xs,
+  },
+  level: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.sm,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressSection: {
+    marginBottom: theme.spacing.md,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.xs,
+  },
+  progressLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.sm,
+  },
+  progressValue: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
+    fontSize: theme.fontSizes.sm,
+  },
+  progressBar: {
+    backgroundColor: theme.colors.border.primary,
+    borderRadius: theme.borderRadius.full,
+    height: 12,
+  },
+  progressFill: {
+    height: 12,
+    borderRadius: theme.borderRadius.full,
+  },
+  sessionProgress: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.md,
+  },
+  sessionInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sessionText: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.sm,
+    marginLeft: theme.spacing.xs,
+  },
+  skillsPreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.md,
+  },
+  skillsText: {
+    color: theme.colors.text.primary,
+    fontSize: theme.fontSizes.sm,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+  },
+  skillIcons: {
+    flexDirection: 'row',
+  },
+  skillIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -4,
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+  milestone: {
+    backgroundColor: theme.colors.status.infoBackground,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.sm,
+  },
+  milestoneContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  milestoneText: {
+    color: theme.colors.interactive.accent,
+    fontSize: theme.fontSizes.sm,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+    marginLeft: theme.spacing.xs,
+  },
+});
+
 const ProgressCard: React.FC<ProgressCardProps> = ({ course, index, onPress }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createProgressCardStyles(theme), [theme]);
   const scale = useSharedValue(1);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  // Simplified for web compatibility
+  const handlePressIn = () => {
+    scale.value = withSpring(0.95);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
 
   return (
     <Animated.View
       entering={FadeInDown.delay(index * 100).springify()}
-      style={animatedStyle}
     >
       <Pressable
         onPress={() => onPress(course)}
-        onPressIn={() => {
-          scale.value = withSpring(0.98);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1);
-        }}
-        className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-4 mx-4"
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={styles.container}
       >
-        <View className="flex-row items-start justify-between mb-4">
-          <View className="flex-1">
-            <Text className="text-gray-900 font-bold text-lg mb-1">
+        <View style={styles.header}>
+          <View style={styles.content}>
+            <Text style={styles.title}>
               {course.title}
             </Text>
-            <Text className="text-gray-600 text-sm">{course.level}</Text>
+            <Text style={styles.level}>{course.level}</Text>
           </View>
           <View
-            className="w-12 h-12 rounded-full items-center justify-center"
-            style={{ backgroundColor: `${course.color}15` }}
+            style={[
+              styles.iconContainer,
+              { backgroundColor: `${course.color}15` }
+            ]}
           >
             <Ionicons name="water" size={24} color={course.color} />
           </View>
         </View>
 
         {/* Overall Progress */}
-        <View className="mb-4">
-          <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-gray-500 text-sm">Overall Progress</Text>
-            <Text className="text-gray-900 font-semibold text-sm">
+        <View style={styles.progressSection}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>Overall Progress</Text>
+            <Text style={styles.progressValue}>
               {course.overallProgress}%
             </Text>
           </View>
-          <View className="bg-gray-200 rounded-full h-3">
+          <View style={styles.progressBar}>
             <View
-              className="h-3 rounded-full"
-              style={{
-                width: `${course.overallProgress}%`,
-                backgroundColor: course.color,
-              }}
+              style={[
+                styles.progressFill,
+                {
+                  width: `${course.overallProgress}%`,
+                  backgroundColor: course.color,
+                }
+              ]}
             />
           </View>
         </View>
 
         {/* Session Progress */}
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center">
-            <Ionicons name="calendar-outline" size={16} color="#6B7280" />
-            <Text className="text-gray-600 text-sm ml-2">
+        <View style={styles.sessionProgress}>
+          <View style={styles.sessionInfo}>
+            <Ionicons name="calendar-outline" size={16} color={theme.colors.icon.secondary} />
+            <Text style={styles.sessionText}>
               {course.completedSessions}/{course.totalSessions} sessions completed
             </Text>
           </View>
         </View>
 
         {/* Skills Preview */}
-        <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-gray-700 text-sm font-medium">
+        <View style={styles.skillsPreview}>
+          <Text style={styles.skillsText}>
             {course.skills.length} skills tracked
           </Text>
-          <View className="flex-row">
+          <View style={styles.skillIcons}>
             {course.skills.slice(0, 3).map((skill, idx) => (
               <View
                 key={idx}
-                className="w-6 h-6 rounded-full items-center justify-center -ml-1 border-2 border-white"
-                style={{ backgroundColor: skill.color }}
+                style={[
+                  styles.skillIcon,
+                  { backgroundColor: skill.color }
+                ]}
               >
                 <Ionicons name={skill.icon} size={12} color="white" />
               </View>
             ))}
             {course.skills.length > 3 && (
-              <View className="w-6 h-6 rounded-full items-center justify-center -ml-1 border-2 border-white bg-gray-400">
-                <Text className="text-white text-xs font-bold">
+              <View style={[
+                styles.skillIcon,
+                { backgroundColor: theme.colors.icon.tertiary }
+              ]}>
+                <Text style={{
+                  color: 'white',
+                  fontSize: theme.fontSizes.xs,
+                  fontWeight: theme.fontConfig.fontWeight.bold,
+                }}>
                   +{course.skills.length - 3}
                 </Text>
               </View>
@@ -190,10 +397,10 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ course, index, onPress }) =
         </View>
 
         {/* Next Milestone */}
-        <View className="bg-blue-50 rounded-lg p-3">
-          <View className="flex-row items-center">
-            <Ionicons name="flag-outline" size={16} color="#3B82F6" />
-            <Text className="text-blue-700 text-sm font-medium ml-2">
+        <View style={styles.milestone}>
+          <View style={styles.milestoneContent}>
+            <Ionicons name="flag-outline" size={16} color={theme.colors.interactive.accent} />
+            <Text style={styles.milestoneText}>
               Next: {course.nextMilestone}
             </Text>
           </View>
@@ -202,6 +409,154 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ course, index, onPress }) =
     </Animated.View>
   );
 };
+
+const createScreenStyles = (theme: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background.secondary,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing[12],
+  },
+  title: {
+    color: theme.colors.text.primary,
+    fontSize: theme.fontSizes['2xl'],
+    fontWeight: theme.fontConfig.fontWeight.bold,
+  },
+  subtitle: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.base,
+    marginTop: theme.spacing.xs,
+  },
+  periodSelector: {
+    paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing.lg,
+  },
+  periodButton: {
+    marginRight: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.full,
+  },
+  periodButtonInactive: {
+    backgroundColor: theme.colors.background.primary,
+    borderWidth: 1,
+    borderColor: theme.colors.border.primary,
+  },
+  periodButtonText: {
+    fontWeight: theme.fontConfig.fontWeight.medium,
+  },
+  statsOverview: {
+    paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing[12],
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statCard: {
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: theme.borderRadius.xl,
+    padding: theme.spacing.md,
+    flex: 1,
+    ...theme.elevation.sm,
+  },
+  statCardLeft: {
+    marginRight: theme.spacing.xs,
+  },
+  statCardRight: {
+    marginLeft: theme.spacing.xs,
+  },
+  statHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.xs,
+  },
+  statLabel: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.sm,
+  },
+  statValue: {
+    color: theme.colors.text.primary,
+    fontSize: theme.fontSizes['2xl'],
+    fontWeight: theme.fontConfig.fontWeight.bold,
+  },
+  statChange: {
+    color: theme.colors.status.success,
+    fontSize: theme.fontSizes.sm,
+    marginTop: theme.spacing.xs,
+  },
+  sectionHeader: {
+    paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
+  },
+  sectionHeaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    color: theme.colors.text.primary,
+    fontSize: theme.fontSizes.lg,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
+  },
+  viewAllButton: {
+    color: theme.colors.interactive.accent,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+    fontSize: theme.fontSizes.sm,
+  },
+  courseProgressTitle: {
+    color: theme.colors.text.primary,
+    fontSize: theme.fontSizes.lg,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
+    marginBottom: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  quickActions: {
+    paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing[12],
+  },
+  quickActionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  actionButton: {
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: theme.borderRadius.xl,
+    padding: theme.spacing.md,
+    flex: 1,
+    alignItems: 'center',
+    ...theme.elevation.sm,
+  },
+  actionButtonLeft: {
+    marginRight: theme.spacing.xs,
+  },
+  actionButtonCenter: {
+    marginHorizontal: theme.spacing.xs,
+  },
+  actionButtonRight: {
+    marginLeft: theme.spacing.xs,
+  },
+  actionIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.xs,
+  },
+  actionText: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+    fontSize: theme.fontSizes.sm,
+    textAlign: 'center',
+  },
+});
 
 /**
  * Progress Screen - Student Progress Tracking (Simplified)
@@ -215,6 +570,8 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ course, index, onPress }) =
  * - Instructor feedback
  */
 export const ProgressScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createScreenStyles(theme), [theme]);
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'all'>('month');
 
@@ -227,7 +584,7 @@ export const ProgressScreen: React.FC = () => {
       overallProgress: 65,
       completedSessions: 5,
       totalSessions: 8,
-      color: '#3B82F6',
+      color: theme.colors.interactive.accent,
       nextMilestone: 'Master freestyle breathing',
       skills: [
         {
@@ -236,7 +593,7 @@ export const ProgressScreen: React.FC = () => {
           level: 4,
           maxLevel: 5,
           description: 'Front and back floating',
-          color: '#10B981',
+          color: theme.colors.status.success,
           icon: 'leaf-outline',
           lastUpdated: '2 days ago',
         },
@@ -246,7 +603,7 @@ export const ProgressScreen: React.FC = () => {
           level: 3,
           maxLevel: 5,
           description: 'Rhythmic breathing technique',
-          color: '#3B82F6',
+          color: theme.colors.interactive.accent,
           icon: 'refresh-outline',
           lastUpdated: '1 week ago',
         },
@@ -256,7 +613,7 @@ export const ProgressScreen: React.FC = () => {
           level: 2,
           maxLevel: 5,
           description: 'Basic stroke coordination',
-          color: '#F59E0B',
+          color: theme.colors.status.warning,
           icon: 'fitness-outline',
           lastUpdated: '3 days ago',
         },
@@ -266,7 +623,7 @@ export const ProgressScreen: React.FC = () => {
           level: 5,
           maxLevel: 5,
           description: 'Pool safety and rescue basics',
-          color: '#EF4444',
+          color: theme.colors.status.error,
           icon: 'shield-outline',
           lastUpdated: '1 day ago',
         },
@@ -279,7 +636,7 @@ export const ProgressScreen: React.FC = () => {
       overallProgress: 30,
       completedSessions: 2,
       totalSessions: 12,
-      color: '#10B981',
+      color: theme.colors.status.success,
       nextMilestone: 'Complete first time trial',
       skills: [
         {
@@ -288,7 +645,7 @@ export const ProgressScreen: React.FC = () => {
           level: 2,
           maxLevel: 5,
           description: 'Swimming distance and stamina',
-          color: '#10B981',
+          color: theme.colors.status.success,
           icon: 'fitness-outline',
           lastUpdated: '3 days ago',
         },
@@ -298,7 +655,7 @@ export const ProgressScreen: React.FC = () => {
           level: 3,
           maxLevel: 5,
           description: 'Stroke refinement',
-          color: '#8B5CF6',
+          color: theme.colors.interactive.purple,
           icon: 'sparkles-outline',
           lastUpdated: '5 days ago',
         },
@@ -325,22 +682,22 @@ export const ProgressScreen: React.FC = () => {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       <ScrollView
-        className="flex-1"
+        style={styles.scrollView}
         contentContainerStyle={{
-          paddingTop: insets.top + 20,
-          paddingBottom: 100, // Space for tab bar
+          paddingTop: insets.top + theme.spacing.lg,
+          paddingBottom: theme.spacing['3xl'], // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
-          className="px-6 mb-8"
+          style={styles.header}
         >
-          <Text className="text-gray-900 text-2xl font-bold">My Progress</Text>
-          <Text className="text-gray-500 text-base mt-1">
+          <Text style={styles.title}>My Progress</Text>
+          <Text style={styles.subtitle}>
             Track your swimming journey and achievements
           </Text>
         </Animated.View>
@@ -348,7 +705,7 @@ export const ProgressScreen: React.FC = () => {
         {/* Period Selector */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          className="px-6 mb-6"
+          style={styles.periodSelector}
         >
           <ScrollView
             horizontal
@@ -359,18 +716,23 @@ export const ProgressScreen: React.FC = () => {
               <Pressable
                 key={period.key}
                 onPress={() => setSelectedPeriod(period.key)}
-                className={`mr-3 px-4 py-2 rounded-full ${
-                  selectedPeriod === period.key
-                    ? 'bg-blue-500'
-                    : 'bg-white border border-gray-200'
-                }`}
+                style={[
+                  styles.periodButton,
+                  selectedPeriod !== period.key && styles.periodButtonInactive,
+                ]}
+                style={{
+                  backgroundColor: selectedPeriod === period.key ? theme.colors.interactive.accent : undefined
+                }}
               >
                 <Text
-                  className={`font-medium ${
-                    selectedPeriod === period.key
-                      ? 'text-white'
-                      : 'text-gray-600'
-                  }`}
+                  style={[
+                    styles.periodButtonText,
+                    {
+                      color: selectedPeriod === period.key
+                        ? 'white'
+                        : theme.colors.text.secondary,
+                    }
+                  ]}
                 >
                   {period.label}
                 </Text>
@@ -382,41 +744,41 @@ export const ProgressScreen: React.FC = () => {
         {/* Stats Overview */}
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
-          className="px-6 mb-8"
+          style={styles.statsOverview}
         >
-          <View className="flex-row justify-between">
-            <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 mr-2">
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-gray-500 text-sm">Avg Progress</Text>
-                <Ionicons name="trending-up" size={16} color="#10B981" />
+          <View style={styles.statsContainer}>
+            <View style={[styles.statCard, styles.statCardLeft]}>
+              <View style={styles.statHeader}>
+                <Text style={styles.statLabel}>Avg Progress</Text>
+                <Ionicons name="trending-up" size={16} color={theme.colors.status.success} />
               </View>
-              <Text className="text-gray-900 text-2xl font-bold">{avgProgress}%</Text>
-              <Text className="text-green-600 text-sm mt-1">+12% this month</Text>
+              <Text style={styles.statValue}>{avgProgress}%</Text>
+              <Text style={styles.statChange}>+12% this month</Text>
             </View>
 
-            <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 ml-2">
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-gray-500 text-sm">Skills Mastered</Text>
-                <Ionicons name="trophy" size={16} color="#F59E0B" />
+            <View style={[styles.statCard, styles.statCardRight]}>
+              <View style={styles.statHeader}>
+                <Text style={styles.statLabel}>Skills Mastered</Text>
+                <Ionicons name="trophy" size={16} color={theme.colors.status.warning} />
               </View>
-              <Text className="text-gray-900 text-2xl font-bold">{masterSkills}</Text>
-              <Text className="text-gray-600 text-sm mt-1">of {totalSkills} skills</Text>
+              <Text style={styles.statValue}>{masterSkills}</Text>
+              <Text style={[styles.statChange, { color: theme.colors.text.secondary }]}>of {totalSkills} skills</Text>
             </View>
           </View>
         </Animated.View>
 
         {/* Featured Skills */}
-        <View className="mb-8">
+        <View style="mb-8">
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
-            className="px-6 mb-4"
+            style={styles.sectionHeader}
           >
-            <View className="flex-row items-center justify-between">
-              <Text className="text-gray-900 text-lg font-semibold">
+            <View style={styles.sectionHeaderContainer}>
+              <Text style={styles.sectionTitle}>
                 Recent Skill Updates
               </Text>
               <Pressable>
-                <Text className="text-blue-600 font-medium text-sm">View All</Text>
+                <Text style={styles.viewAllButton}>View All</Text>
               </Pressable>
             </View>
           </Animated.View>
@@ -424,7 +786,7 @@ export const ProgressScreen: React.FC = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24 }}
+            contentContainerStyle={{ paddingHorizontal: theme.spacing.lg }}
           >
             {courseProgress[0]?.skills.map((skill, index) => (
               <SkillCard key={skill.id} skill={skill} index={index} />
@@ -433,10 +795,10 @@ export const ProgressScreen: React.FC = () => {
         </View>
 
         {/* Course Progress */}
-        <View className="mb-8">
+        <View style="mb-8">
           <Animated.Text
             entering={FadeInDown.delay(500).springify()}
-            className="text-gray-900 text-lg font-semibold mb-4 px-6"
+            style={styles.courseProgressTitle}
           >
             Course Progress
           </Animated.Text>
@@ -454,37 +816,40 @@ export const ProgressScreen: React.FC = () => {
         {/* Quick Actions */}
         <Animated.View
           entering={FadeInDown.delay(600).springify()}
-          className="px-6 mb-8"
+          style={styles.quickActions}
         >
-          <Text className="text-gray-900 text-lg font-semibold mb-4">
+          <Text style={styles.sectionTitle}>
             Quick Actions
           </Text>
-          <View className="flex-row justify-between">
-            <Pressable className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 mr-2">
-              <View className="items-center">
-                <View className="w-12 h-12 bg-purple-100 rounded-full items-center justify-center mb-2">
-                  <Ionicons name="trophy" size={24} color="#8B5CF6" />
-                </View>
-                <Text className="text-gray-900 font-medium text-sm">View Achievements</Text>
+          <View style={styles.quickActionsContainer}>
+            <Pressable style={[styles.actionButton, styles.actionButtonLeft]}>
+              <View style={[
+                styles.actionIconContainer,
+                { backgroundColor: `${theme.colors.interactive.purple}15` }
+              ]}>
+                <Ionicons name="trophy" size={24} color={theme.colors.interactive.purple} />
               </View>
+              <Text style={styles.actionText}>View Achievements</Text>
             </Pressable>
             
-            <Pressable className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 mx-1">
-              <View className="items-center">
-                <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mb-2">
-                  <Ionicons name="flag" size={24} color="#3B82F6" />
-                </View>
-                <Text className="text-gray-900 font-medium text-sm">Set Goals</Text>
+            <Pressable style={[styles.actionButton, styles.actionButtonCenter]}>
+              <View style={[
+                styles.actionIconContainer,
+                { backgroundColor: `${theme.colors.interactive.accent}15` }
+              ]}>
+                <Ionicons name="flag" size={24} color={theme.colors.interactive.accent} />
               </View>
+              <Text style={styles.actionText}>Set Goals</Text>
             </Pressable>
             
-            <Pressable className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 ml-2">
-              <View className="items-center">
-                <View className="w-12 h-12 bg-green-100 rounded-full items-center justify-center mb-2">
-                  <Ionicons name="bar-chart" size={24} color="#10B981" />
-                </View>
-                <Text className="text-gray-900 font-medium text-sm">Progress Report</Text>
+            <Pressable style={[styles.actionButton, styles.actionButtonRight]}>
+              <View style={[
+                styles.actionIconContainer,
+                { backgroundColor: `${theme.colors.status.success}15` }
+              ]}>
+                <Ionicons name="bar-chart" size={24} color={theme.colors.status.success} />
               </View>
+              <Text style={styles.actionText}>Progress Report</Text>
             </Pressable>
           </View>
         </Animated.View>

@@ -88,4 +88,8 @@ export const FadeInWrapper: React.FC<Omit<AnimatedWrapperProps, 'entering'>> = (
   <AnimatedWrapper {...props} entering={FadeInDown} />
 );
 
+// Add displayName for debugging
+AnimatedWrapper.displayName = 'AnimatedWrapper';
+FadeInWrapper.displayName = 'FadeInWrapper';
+
 export default AnimatedWrapper;

@@ -24,7 +24,7 @@ export class TutorService {
    */
   static async getMyProfile(): Promise<TutorProfile> {
     try {
-      const response = await apiClient.auth.getCurrentUser();
+      const response = await apiClient.get('/auth/me');
       return response.data;
     } catch (error) {
       console.error('Error fetching instructor profile:', error);
@@ -41,14 +41,15 @@ export class TutorService {
     status?: string
   ): Promise<StudentOverview[]> {
     try {
-      const response = await apiClient.students.list({
-        program_id: programId,
-        search,
-        status,
-      });
-      return response.data.items;
+      const params = new URLSearchParams();
+      if (programId) params.append('program_id', programId);
+      if (search) params.append('search', search);
+      if (status) params.append('status', status);
+      
+      const response = await apiClient.get(`/students?${params.toString()}`);
+      return response.data.items || response.data;
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.error('Error fetching assigned students:', error);
       throw error;
     }
   }
@@ -58,7 +59,7 @@ export class TutorService {
    */
   static async getStudentDetails(studentId: string): Promise<StudentOverview> {
     try {
-      const response = await apiClient.students.getById(studentId);
+      const response = await apiClient.get(`/students/${studentId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching student details:', error);
@@ -67,47 +68,79 @@ export class TutorService {
   }
 
   /**
-   * Get student progress
+   * Update student information
    */
-  static async getStudentProgress(studentId: string): Promise<StudentProgress> {
+  static async updateStudent(
+    studentId: string,
+    updates: Partial<StudentOverview>
+  ): Promise<StudentOverview> {
     try {
-      const response = await apiClient.students.getProgress(studentId);
+      const response = await apiClient.put(`/students/${studentId}`, updates);
       return response.data;
     } catch (error) {
-      console.error('Error fetching student progress:', error);
+      console.error('Error updating student:', error);
       throw error;
     }
   }
 
   /**
-   * Get class schedule
+   * Get class schedule for instructor
    */
   static async getMySchedule(
-    date?: string,
+    startDate?: string,
+    endDate?: string,
     programId?: string
   ): Promise<ClassSchedule[]> {
     try {
-      const response = await apiClient.courses.getSchedule({
-        date,
-        program_id: programId,
-      });
-      return response.data;
+      const params = new URLSearchParams();
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+      if (programId) params.append('program_id', programId);
+      
+      const response = await apiClient.get(`/courses/schedule?${params.toString()}`);
+      return response.data.items || response.data;
     } catch (error) {
-      console.error('Error fetching schedule:', error);
+      console.error('Error fetching class schedule:', error);
       throw error;
     }
   }
 
   /**
-   * Record attendance for a class session
+   * Start attendance session
+   */
+  static async startAttendanceSession(
+    classId: string,
+    sessionData: {
+      date: string;
+      notes?: string;
+    }
+  ): Promise<AttendanceSession> {
+    try {
+      const response = await apiClient.post('/attendance/sessions', {
+        class_id: classId,
+        ...sessionData,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error starting attendance session:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Record student attendance
    */
   static async recordAttendance(
     sessionId: string,
-    attendanceData: StudentAttendance[]
-  ): Promise<AttendanceSession> {
+    attendanceData: {
+      student_id: string;
+      status: 'present' | 'absent' | 'late' | 'excused';
+      notes?: string;
+    }[]
+  ): Promise<StudentAttendance[]> {
     try {
-      const response = await apiClient.attendance.recordSession(sessionId, {
-        student_attendance: attendanceData,
+      const response = await apiClient.post(`/attendance/sessions/${sessionId}/record`, {
+        attendance: attendanceData,
       });
       return response.data;
     } catch (error) {
@@ -117,31 +150,22 @@ export class TutorService {
   }
 
   /**
-   * Get attendance session
+   * Send message to parent/student
    */
-  static async getAttendanceSession(sessionId: string): Promise<AttendanceSession> {
-    try {
-      const response = await apiClient.attendance.getSession(sessionId);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching attendance session:', error);
-      throw error;
+  static async sendMessage(
+    recipientId: string,
+    messageData: {
+      subject: string;
+      content: string;
+      priority?: 'low' | 'normal' | 'high';
+      type?: 'general' | 'progress' | 'attendance' | 'behavioral';
     }
-  }
-
-  /**
-   * Send communication/message
-   */
-  static async sendMessage(messageData: {
-    subject: string;
-    content: string;
-    recipientType: string;
-    recipientIds: string[];
-    priority?: string;
-    courseId?: string;
-  }): Promise<CommunicationMessage> {
+  ): Promise<CommunicationMessage> {
     try {
-      const response = await apiClient.communications.send(messageData);
+      const response = await apiClient.post('/communications/messages', {
+        recipient_id: recipientId,
+        ...messageData,
+      });
       return response.data;
     } catch (error) {
       console.error('Error sending message:', error);
@@ -150,41 +174,43 @@ export class TutorService {
   }
 
   /**
-   * Get communications/messages
+   * Get communication history
    */
-  static async getMessages(
+  static async getCommunicationHistory(
+    studentId?: string,
     type?: string,
-    status?: string
+    limit: number = 20
   ): Promise<CommunicationMessage[]> {
     try {
-      const response = await apiClient.communications.list({
-        type,
-        status,
-      });
-      return response.data.items;
+      const params = new URLSearchParams();
+      if (studentId) params.append('student_id', studentId);
+      if (type) params.append('type', type);
+      params.append('limit', limit.toString());
+      
+      const response = await apiClient.get(`/communications/messages?${params.toString()}`);
+      return response.data.items || response.data;
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('Error fetching communication history:', error);
       throw error;
     }
   }
 
   /**
-   * Get tasks
+   * Create task for student
    */
-  static async getMyTasks(
-    type?: string,
-    priority?: string,
-    status?: string
-  ): Promise<TaskItem[]> {
+  static async createTask(taskData: {
+    student_id: string;
+    title: string;
+    description?: string;
+    due_date?: string;
+    priority?: 'low' | 'normal' | 'high';
+    type?: 'homework' | 'practice' | 'assessment' | 'goal';
+  }): Promise<TaskItem> {
     try {
-      const response = await apiClient.tasks.list({
-        type,
-        priority,
-        status,
-      });
-      return response.data.items;
+      const response = await apiClient.post('/tasks', taskData);
+      return response.data;
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error('Error creating task:', error);
       throw error;
     }
   }
@@ -192,58 +218,59 @@ export class TutorService {
   /**
    * Update task status
    */
-  static async updateTask(
+  static async updateTaskStatus(
     taskId: string,
-    updates: Partial<TaskItem>
+    status: 'pending' | 'in_progress' | 'completed' | 'cancelled',
+    notes?: string
   ): Promise<TaskItem> {
     try {
-      const response = await apiClient.tasks.update(taskId, updates);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating task:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get performance analytics for students
-   */
-  static async getStudentAnalytics(
-    studentIds: string[],
-    programId?: string
-  ): Promise<PerformanceAnalytics[]> {
-    try {
-      const response = await apiClient.analytics.getStudentPerformance({
-        student_ids: studentIds,
-        program_id: programId,
+      const response = await apiClient.put(`/tasks/${taskId}`, {
+        status,
+        notes,
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      console.error('Error updating task status:', error);
       throw error;
     }
   }
 
   /**
-   * Create or update assessment
+   * Get performance analytics
    */
-  static async recordAssessment(assessmentData: {
-    studentId: string;
-    courseId: string;
-    assessmentType: string;
-    title: string;
-    score: number;
-    maxScore: number;
-    feedback?: string;
-  }): Promise<any> {
+  static async getPerformanceAnalytics(
+    programId?: string,
+    timeRange?: '7d' | '30d' | '90d' | '1y'
+  ): Promise<PerformanceAnalytics> {
     try {
-      const response = await apiClient.assessments.create(assessmentData);
+      const params = new URLSearchParams();
+      if (programId) params.append('program_id', programId);
+      if (timeRange) params.append('time_range', timeRange);
+      
+      const response = await apiClient.get(`/analytics/performance?${params.toString()}`);
       return response.data;
     } catch (error) {
-      console.error('Error recording assessment:', error);
+      console.error('Error fetching performance analytics:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Submit student assessment
+   */
+  static async submitAssessment(assessmentData: {
+    student_id: string;
+    assessment_type: string;
+    scores: Record<string, number>;
+    notes?: string;
+    date?: string;
+  }): Promise<any> {
+    try {
+      const response = await apiClient.post('/assessments', assessmentData);
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
       throw error;
     }
   }
 }
-
-export default TutorService;

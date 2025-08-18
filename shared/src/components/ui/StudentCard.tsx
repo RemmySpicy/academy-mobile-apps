@@ -594,4 +594,7 @@ const useThemedStyles = createThemedStyles(theme =>
   })
 );
 
+// Add displayName for debugging
+StudentCard.displayName = 'StudentCard';
+
 export default StudentCard;

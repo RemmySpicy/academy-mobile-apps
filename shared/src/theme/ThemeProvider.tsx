@@ -23,8 +23,80 @@ import {
   Animated,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { lightTheme, darkTheme, type Theme, type ThemeMode } from './index';
+import { lightColorScheme, darkColorScheme, type ColorScheme } from './colors';
+import { typography, type Typography } from './typography';
+import { spacing, borderRadius, borderWidth, elevation, componentSpacing, safeArea, type Spacing, type BorderWidth, type Elevation } from './spacing';
+import { fontConfig, fontSizes, lineHeights, letterSpacing } from './typography';
 import { STORAGE_KEYS } from '../utils/constants';
+
+// Icon sizes for consistent UI
+const iconSize = {
+  xs: 12,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+} as const;
+
+// Theme interface
+export interface Theme {
+  colors: ColorScheme;
+  typography: Typography;
+  spacing: Spacing;
+  borderRadius: typeof borderRadius;
+  borderWidth: BorderWidth;
+  elevation: Elevation;
+  fontConfig: typeof fontConfig;
+  fontSizes: typeof fontSizes;
+  lineHeights: typeof lineHeights;
+  letterSpacing: typeof letterSpacing;
+  componentSpacing: typeof componentSpacing;
+  safeArea: typeof safeArea;
+  iconSize: typeof iconSize;
+  isDark: boolean;
+}
+
+// Light theme
+const lightTheme: Theme = {
+  colors: lightColorScheme,
+  typography,
+  spacing,
+  borderRadius,
+  borderWidth,
+  elevation,
+  fontConfig,
+  fontSizes,
+  lineHeights,
+  letterSpacing,
+  componentSpacing,
+  safeArea,
+  iconSize,
+  isDark: false,
+};
+
+// Dark theme
+const darkTheme: Theme = {
+  colors: darkColorScheme,
+  typography,
+  spacing,
+  borderRadius,
+  borderWidth,
+  elevation,
+  fontConfig,
+  fontSizes,
+  lineHeights,
+  letterSpacing,
+  componentSpacing,
+  safeArea,
+  iconSize,
+  isDark: true,
+};
+
+export type ThemeMode = 'light' | 'dark';
+
+// Export the theme objects
+export { lightTheme, darkTheme };
 
 // Night mode - enhanced dark theme with deeper blacks and reduced blue light
 const createNightTheme = (): Theme => ({
@@ -36,6 +108,7 @@ const createNightTheme = (): Theme => ({
       secondary: '#0A0A0A',      // Very dark gray
       tertiary: '#121212',       // Slightly lighter
       elevated: '#0F0F0F',       // Elevated surfaces
+      accent: '#1A1A2E',         // Night mode accent
       overlay: 'rgba(0, 0, 0, 0.8)',
       backdrop: 'rgba(0, 0, 0, 0.6)',
     },
@@ -134,6 +207,28 @@ export interface ThemeContextValue {
   setThemeMode: (mode: ExtendedThemeMode) => void;
   toggleTheme: () => void;
   systemColorScheme: ColorSchemeName;
+  screenDimensions: {
+    width: number;
+    height: number;
+    scale: number;
+    fontScale: number;
+    isXSmall: boolean;
+    isSmall: boolean;
+    isMedium: boolean;
+    isLarge: boolean;
+    isXLarge: boolean;
+    isPortrait: boolean;
+    isLandscape: boolean;
+    isPhone: boolean;
+    isTablet: boolean;
+    isDesktop: boolean;
+    aspectRatio: number;
+    isWideScreen: boolean;
+    isUltraWide: boolean;
+    responsiveWidth: (percentage: number) => number;
+    responsiveHeight: (percentage: number) => number;
+    responsiveSize: (size: number) => number;
+  };
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -163,6 +258,30 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   
   // Animation value for smooth transitions
   const transitionValue = useMemo(() => new Animated.Value(0), []);
+  
+  // Simple screen dimensions fallback to avoid circular dependency
+  const screenDimensions = useMemo(() => ({
+    width: 375, // Default mobile width
+    height: 667, // Default mobile height
+    scale: 1,
+    fontScale: 1,
+    isXSmall: false,
+    isSmall: true,
+    isMedium: false,
+    isLarge: false,
+    isXLarge: false,
+    isPortrait: true,
+    isLandscape: false,
+    isPhone: true,
+    isTablet: false,
+    isDesktop: false,
+    aspectRatio: 0.56,
+    isWideScreen: false,
+    isUltraWide: false,
+    responsiveWidth: (percentage: number) => (375 * percentage) / 100,
+    responsiveHeight: (percentage: number) => (667 * percentage) / 100,
+    responsiveSize: (size: number) => Math.min(375, 667) * (size / 100),
+  }), []);
 
   // Get the actual theme based on mode and system preference
   const getTheme = useCallback((mode: ExtendedThemeMode, systemScheme: ColorSchemeName): Theme => {
@@ -197,20 +316,29 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Load persisted theme on mount
   useEffect(() => {
     if (!persistTheme) {
+      console.log('🚀 Theme persistence disabled, using default');
       setIsLoading(false);
       return;
     }
 
     const loadPersistedTheme = async () => {
       try {
+        console.log('🔄 Loading persisted theme...');
         const savedTheme = await AsyncStorage.getItem(STORAGE_KEYS.THEME);
         if (savedTheme && ['light', 'dark', 'night', 'system'].includes(savedTheme)) {
+          console.log('✅ Loaded theme:', savedTheme);
           setThemeModeState(savedTheme as ExtendedThemeMode);
+        } else {
+          console.log('ℹ️ No saved theme found, using default');
         }
       } catch (error) {
-        console.warn('Failed to load persisted theme:', error);
+        console.warn('❌ Failed to load persisted theme:', error);
       } finally {
-        setIsLoading(false);
+        console.log('🏁 Theme loading complete');
+        // Reduce loading delay for mobile
+        setTimeout(() => {
+          setIsLoading(false);
+        }, Platform.OS === 'web' ? 100 : 50);
       }
     };
 
@@ -274,21 +402,31 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     setThemeMode(themeSequence[nextIndex]);
   }, [themeMode, setThemeMode]);
 
-  // Show loading state while theme is being loaded
-  if (isLoading) {
-    return null; // Or a loading component
-  }
+  // Debug logging for theme changes
+  useEffect(() => {
+    console.log('🎨 Theme context updated:', {
+      mode: themeMode,
+      isDark,
+      isNight,
+      primaryColor: currentTheme.colors.interactive.primary,
+      backgroundColor: currentTheme.colors.background.primary,
+      textColor: currentTheme.colors.text.primary,
+    });
+  }, [themeMode, isDark, isNight, currentTheme]);
 
+  // Create context value - always create this regardless of loading state
   const contextValue: ThemeContextValue = {
-    theme: currentTheme,
-    themeMode,
-    isDark,
-    isNight,
-    setThemeMode,
-    toggleTheme,
+    theme: isLoading ? lightTheme : currentTheme, // Use fallback theme while loading
+    themeMode: isLoading ? 'light' : themeMode,
+    isDark: isLoading ? false : isDark,
+    isNight: isLoading ? false : isNight,
+    setThemeMode: isLoading ? (() => {}) : setThemeMode, // No-op while loading
+    toggleTheme: isLoading ? (() => {}) : toggleTheme, // No-op while loading
     systemColorScheme,
+    screenDimensions,
   };
 
+  // Always render the provider, never return null or conditional components
   return (
     <ThemeContext.Provider value={contextValue}>
       {children}

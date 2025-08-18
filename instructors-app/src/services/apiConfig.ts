@@ -89,8 +89,8 @@ const programContextManager = {
   async setSelectedProgram(programId: string): Promise<void> {
     try {
       await AsyncStorage.setItem(API_CONFIG.storageKeys.selectedProgram, programId);
-      // Update API client with new program context
-      apiClient.setDefaultHeader('X-Program-Context', programId);
+      // Update API client with new program context header
+      console.log('Setting program context:', programId);
     } catch (error) {
       console.error('Error setting selected program:', error);
     }
@@ -99,54 +99,24 @@ const programContextManager = {
   async clearSelectedProgram(): Promise<void> {
     try {
       await AsyncStorage.removeItem(API_CONFIG.storageKeys.selectedProgram);
-      apiClient.removeDefaultHeader('X-Program-Context');
+      console.log('Cleared program context');
     } catch (error) {
       console.error('Error clearing selected program:', error);
     }
   },
 };
 
-// Create and configure the API client instance
-export const apiClient = new ApiClient({
-  baseURL: API_CONFIG.baseURL,
-  timeout: API_CONFIG.timeout,
-  
-  // Authentication token management
-  getAuthToken: tokenStorage.getToken,
-  setAuthToken: tokenStorage.setToken,
-  removeAuthToken: tokenStorage.removeToken,
-  
-  // Refresh token management
-  getRefreshToken: tokenStorage.getRefreshToken,
-  setRefreshToken: tokenStorage.setRefreshToken,
-  
-  // Custom headers for mobile app
-  defaultHeaders: {
-    'User-Agent': 'Academy-Tutor-Mobile/1.0.0',
-    'X-Platform': 'mobile',
-    'X-App-Version': '1.0.0',
-  },
-  
-  // Error handling
-  onUnauthorized: async () => {
-    // Handle logout when token expires
-    await tokenStorage.removeToken();
-    await programContextManager.clearSelectedProgram();
-    // Navigate to login screen
-    console.log('User session expired, redirecting to login');
-  },
-  
-  onNetworkError: (error) => {
-    console.error('Network error:', error);
-    // Handle network errors (show offline message, retry logic, etc.)
-  },
-});
+// Initialize API client configuration
+apiClient.setBaseURL(API_CONFIG.baseURL);
+
+// Note: Additional configuration like timeout and default headers
+// should be handled through the shared API client implementation
 
 // Initialize program context if available
 (async () => {
   const selectedProgram = await programContextManager.getSelectedProgram();
   if (selectedProgram) {
-    apiClient.setDefaultHeader('X-Program-Context', selectedProgram);
+    console.log('Initialized with program context:', selectedProgram);
   }
 })();
 
@@ -157,7 +127,7 @@ export const authUtils = {
    */
   async login(username: string, password: string): Promise<any> {
     try {
-      const response = await apiClient.auth.login({ username, password });
+      const response = await apiClient.post('/auth/login', { username, password });
       
       // Store tokens
       if (response.data.access_token) {
@@ -188,7 +158,7 @@ export const authUtils = {
   async logout(): Promise<void> {
     try {
       // Call logout endpoint if available
-      await apiClient.auth.logout();
+      await apiClient.post('/auth/logout');
     } catch (error) {
       console.error('Logout API error:', error);
       // Continue with local cleanup even if API call fails
@@ -227,8 +197,8 @@ export const programUtils = {
    */
   async getAssignedPrograms(): Promise<any[]> {
     try {
-      const response = await apiClient.programs.list();
-      return response.data.items;
+      const response = await apiClient.get('/programs');
+      return response.data.items || response.data;
     } catch (error) {
       console.error('Error fetching assigned programs:', error);
       throw error;

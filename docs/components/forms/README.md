@@ -1,13 +1,13 @@
 # Form Components
 
-The Academy Mobile Apps include a comprehensive set of form components built with React Hook Form integration, accessibility support, and consistent styling.
+The Academy Mobile Apps include a comprehensive set of form components built with React Hook Form integration, accessibility support, and consistent Academy theming.
 
 ## 🎯 Overview
 
 All form components are designed with:
 - **React Hook Form Integration** - Built-in validation and error handling
+- **Academy Theming** - Consistent Academy purple (#4F2EC9) branding
 - **Accessibility First** - Screen reader support, proper focus management
-- **Consistent Styling** - Unified design system across all components
 - **TypeScript Support** - Full type safety with comprehensive interfaces
 - **Performance Optimized** - React.memo and efficient re-rendering
 - **Cross-Platform** - Works seamlessly on iOS and Android
@@ -15,17 +15,22 @@ All form components are designed with:
 ## 📋 Available Components
 
 ### Core Input Components
-- [**CustomInput**](./CUSTOM_INPUT.md) - Text input with variants and validation
-- [**CustomDropdown**](./CUSTOM_DROPDOWN.md) - Dropdown/select with modal interface
-- [**CustomTextArea**](./CUSTOM_TEXTAREA.md) - Multi-line text input with character counting
+- **[CustomInput](./CUSTOM_INPUT.md)** - Text input with variants and validation
+- **CustomTextArea** - Multi-line text input with character counting
+- **CustomDropdown** - Dropdown/select with modal interface
 
 ### Specialized Input Components
-- [**OtpField**](./OTP_FIELD.md) - One-time password input with visual boxes
-- [**QuantityController**](./QUANTITY_CONTROLLER.md) - Numeric input with increment/decrement
+- **OtpField** - One-time password input with visual boxes
+- **QuantityController** - Numeric input with increment/decrement buttons
 
 ### Selection Components
-- [**CustomCheckBox**](./CUSTOM_CHECKBOX.md) - Checkbox with multiple variants
-- [**RadioButton**](./RADIO_BUTTON.md) - Radio button and radio group components
+- **CustomCheckBox** - Checkbox with Academy theming and multiple variants
+- **RadioButton** - Radio button and radio group components
+
+### Form Utilities
+- **CustomButton** - Academy-themed buttons with loading states
+- **Form** - Main form wrapper with validation and submission handling
+- **LegacyForm** - Compatibility form wrapper for existing code
 
 ## 🚀 Quick Start
 
@@ -38,8 +43,9 @@ import {
   CustomInput, 
   CustomDropdown, 
   CustomCheckBox,
-  SubmitButton 
-} from '@shared';
+  CustomButton,
+  Form
+} from '@academy/mobile-shared';
 
 interface UserForm {
   name: string;
@@ -49,14 +55,14 @@ interface UserForm {
 }
 
 export default function UserFormExample() {
-  const { control, handleSubmit, watch } = useForm<UserForm>();
+  const { control, handleSubmit, formState: { errors } } = useForm<UserForm>();
   
   const onSubmit = (data: UserForm) => {
     console.log('Form data:', data);
   };
   
   return (
-    <View style={styles.container}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <CustomInput
         name="name"
         control={control}
@@ -97,24 +103,26 @@ export default function UserFormExample() {
         rules={{ required: 'You must agree to the terms' }}
       />
       
-      <SubmitButton
+      <CustomButton
         title="Submit"
         onPress={handleSubmit(onSubmit)}
+        variant="primary"
+        loading={false}
       />
-    </View>
+    </Form>
   );
 }
 ```
 
-## 🎨 Design System
+## 🎨 Academy Design System Integration
 
 ### Color Variants
 
-All form components support consistent color variants:
+All form components support Academy's design system colors:
 
 ```typescript
 type ComponentVariant = 
-  | 'primary'    // Academy purple theme
+  | 'primary'    // Academy purple (#4F2EC9)
   | 'secondary'  // Gray theme
   | 'success'    // Green theme
   | 'warning'    // Orange theme
@@ -126,7 +134,7 @@ type ComponentVariant =
 
 ### Size Options
 
-Components support three standard sizes:
+Components support consistent sizing:
 
 ```typescript
 type ComponentSize = 'small' | 'medium' | 'large';
@@ -140,30 +148,25 @@ type ComponentSize = 'small' | 'medium' | 'large';
 />
 ```
 
-### Theme Colors
+### Academy Theme Colors
 
 ```typescript
-const theme = {
-  colors: {
-    primary: '#4F2EC9',      // Academy purple
-    secondary: '#5B5F5F',    // Gray
-    success: '#10B981',      // Green
-    warning: '#F59E0B',      // Orange
-    danger: '#EF4444',       // Red
-    info: '#3B82F6',         // Blue
-    
-    // Neutrals
-    gray100: '#F3F4F6',
-    gray200: '#E5E7EB',
-    gray300: '#D1D5DB',
-    gray400: '#9CA3AF',
-    gray500: '#6B7280',
-    gray600: '#4B5563',
-    gray700: '#374151',
-    gray800: '#1F2937',
-    gray900: '#111827',
-  }
-};
+// Use Academy theme variables
+import { useTheme } from '@academy/mobile-shared';
+
+const { theme } = useTheme();
+
+// Academy brand colors
+theme.colors.interactive.primary    // #4F2EC9 Academy purple
+theme.colors.interactive.teal       // #52E2BB Academy teal
+theme.colors.interactive.orange     // #FEAE24 Academy orange
+theme.colors.interactive.themeBlack // #121212 Academy black
+
+// Status colors
+theme.colors.status.success         // Green
+theme.colors.status.warning         // Orange
+theme.colors.status.error           // Red
+theme.colors.status.info            // Blue
 ```
 
 ## ♿ Accessibility Features
@@ -189,14 +192,14 @@ All components include:
 ### Keyboard Navigation
 
 - **Tab order** properly managed
-- **Focus indicators** clearly visible
+- **Focus indicators** clearly visible with Academy theming
 - **Keyboard shortcuts** for common actions
 - **Enter key handling** for form submission
 
 ### Color Accessibility
 
-- **High contrast** color combinations
-- **Color blind friendly** palette
+- **High contrast** color combinations meeting WCAG 2.1 AA
+- **Color blind friendly** Academy palette
 - **Focus indicators** that don't rely solely on color
 - **Error states** with icons and text, not just color
 
@@ -207,7 +210,7 @@ All components include:
 ```typescript
 import { useForm } from 'react-hook-form';
 
-const { control } = useForm({
+const { control, watch } = useForm({
   mode: 'onChange', // Validate on change
   defaultValues: {
     password: '',
@@ -253,7 +256,7 @@ const { control } = useForm({
 ```typescript
 import { useFieldArray } from 'react-hook-form';
 
-function DynamicForm() {
+function DynamicStudentForm() {
   const { control } = useForm();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -261,7 +264,7 @@ function DynamicForm() {
   });
   
   return (
-    <View>
+    <Form>
       {fields.map((field, index) => (
         <View key={field.id} style={styles.fieldGroup}>
           <CustomInput
@@ -279,33 +282,37 @@ function DynamicForm() {
             rules={{ required: 'Age is required' }}
           />
           
-          <Button
-            title="Remove"
+          <CustomButton
+            title="Remove Student"
             onPress={() => remove(index)}
             variant="danger"
+            size="small"
           />
         </View>
       ))}
       
-      <Button
+      <CustomButton
         title="Add Student"
         onPress={() => append({ name: '', age: '' })}
         variant="outline"
       />
-    </View>
+    </Form>
   );
 }
 ```
 
-### Conditional Fields
+### Conditional Fields with Program Context
 
 ```typescript
+import { useProgramContext } from '@academy/mobile-shared';
+
 function ConditionalForm() {
   const { control, watch } = useForm();
+  const { currentProgram } = useProgramContext();
   const userType = watch('userType');
   
   return (
-    <View>
+    <Form>
       <CustomDropdown
         name="userType"
         control={control}
@@ -332,14 +339,11 @@ function ConditionalForm() {
           name="specialization"
           control={control}
           placeholder="Specialization"
-          options={[
-            { label: 'Swimming', value: 'swimming' },
-            { label: 'Tennis', value: 'tennis' },
-          ]}
+          options={currentProgram?.availableSpecializations || []}
           rules={{ required: 'Specialization is required' }}
         />
       )}
-    </View>
+    </Form>
   );
 }
 ```
@@ -349,9 +353,9 @@ function ConditionalForm() {
 ### Unit Testing
 
 ```typescript
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { useForm } from 'react-hook-form';
-import { CustomInput } from '@shared';
+import { CustomInput } from '@academy/mobile-shared';
 
 function TestForm() {
   const { control } = useForm();
@@ -385,11 +389,14 @@ test('shows validation error for required field', async () => {
 
 ```typescript
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { ThemeProvider } from '@academy/mobile-shared';
 
-test('form submission with validation', async () => {
+test('form submission with Academy theming', async () => {
   const onSubmit = jest.fn();
   const { getByPlaceholderText, getByText } = render(
-    <UserForm onSubmit={onSubmit} />
+    <ThemeProvider>
+      <UserForm onSubmit={onSubmit} />
+    </ThemeProvider>
   );
   
   // Fill form fields
@@ -410,7 +417,32 @@ test('form submission with validation', async () => {
 
 ## 🔄 Migration from Existing Components
 
-### From basic TextInput
+### From existing-code/ Components
+
+```typescript
+// Old approach (from existing-code/)
+import { customInput } from '../existing-code/src/components/form/customInput';
+
+// New approach with Academy theming
+import { CustomInput } from '@academy/mobile-shared';
+
+<CustomInput
+  name="email"
+  control={control}
+  placeholder="Email"
+  keyboardType="email-address"
+  variant="primary" // Academy purple styling
+  rules={{
+    required: 'Email is required',
+    pattern: {
+      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+      message: 'Invalid email address'
+    }
+  }}
+/>
+```
+
+### From basic React Native components
 
 ```typescript
 // Old approach
@@ -422,7 +454,7 @@ test('form submission with validation', async () => {
   style={styles.input}
 />
 
-// New approach with validation
+// New approach with validation and Academy theming
 <CustomInput
   name="email"
   control={control}
@@ -438,68 +470,60 @@ test('form submission with validation', async () => {
 />
 ```
 
-### From Picker components
-
-```typescript
-// Old approach
-<Picker
-  selectedValue={course}
-  onValueChange={setCourse}
-  style={styles.picker}
->
-  <Picker.Item label="Swimming" value="swimming" />
-  <Picker.Item label="Tennis" value="tennis" />
-</Picker>
-
-// New approach
-<CustomDropdown
-  name="course"
-  control={control}
-  placeholder="Select course"
-  options={[
-    { label: 'Swimming', value: 'swimming' },
-    { label: 'Tennis', value: 'tennis' },
-  ]}
-  rules={{ required: 'Please select a course' }}
-/>
-```
-
 ## 📱 Platform Considerations
 
 ### iOS Specific Features
-- **Native feel** with proper iOS styling
+- **Native feel** with Academy-themed iOS styling
 - **Keyboard handling** with proper return key behavior
-- **Focus management** following iOS patterns
+- **Focus management** following iOS accessibility patterns
 
 ### Android Specific Features
-- **Material Design** elements where appropriate
+- **Material Design** elements with Academy branding
 - **Android keyboard** handling and behavior
 - **Focus indicators** following Android accessibility guidelines
 
 ## 🎯 Best Practices
 
 ### Performance
-
 1. **Use React.memo** for components that don't need frequent re-renders
 2. **Optimize re-renders** with proper dependency arrays
-3. **Lazy load** heavy components when possible
+3. **Use Form wrapper** for complex forms to optimize validation
 
 ### Accessibility
-
 1. **Always provide** accessibility labels and hints
 2. **Test with screen readers** on both platforms
 3. **Ensure proper focus order** for keyboard navigation
+4. **Use Academy high-contrast colors** for better visibility
 
 ### Validation
-
 1. **Validate on appropriate events** (onChange, onBlur, onSubmit)
 2. **Provide clear error messages** that help users fix issues
-3. **Use consistent validation patterns** across the app
+3. **Use consistent validation patterns** across the Academy apps
 
-### Styling
+### Academy Theming
+1. **Use Academy color variants** (`primary`, `secondary`, etc.)
+2. **Follow Academy spacing** with theme tokens
+3. **Maintain consistency** across instructor and student apps
+4. **Test in all theme modes** (light, dark, night)
 
-1. **Use the design system** colors and spacing
-2. **Maintain consistency** across all forms
-3. **Test on different screen sizes** and orientations
+## 📚 Related Documentation
 
-For detailed documentation on specific components, see the individual component documentation files in this directory.
+- **[Custom Input Details](./CUSTOM_INPUT.md)** - Comprehensive CustomInput documentation
+- **[Academy Theme System](../../THEME_SYSTEM.md)** - Complete theming guide
+- **[Enhanced Components](../ENHANCED_COMPONENTS.md)** - Academy-specific component features
+- **[Authentication Integration](../../authentication/README.md)** - Using forms with auth
+
+## 📋 Component Development Checklist
+
+When creating or updating form components:
+
+- [ ] Use Academy theme system (`useTheme` hook)
+- [ ] Implement React Hook Form integration
+- [ ] Add comprehensive accessibility support
+- [ ] Include TypeScript interfaces and prop documentation
+- [ ] Test with all Academy theme variants
+- [ ] Verify keyboard navigation works properly
+- [ ] Add unit and integration tests
+- [ ] Document usage examples and best practices
+
+The Academy form components provide a robust, accessible, and beautifully themed foundation for building user interfaces across both instructor and student mobile applications.

@@ -1,15 +1,16 @@
-import { useWindowDimensions } from 'react-native';
-import { useMemo } from 'react';
+import { useWindowDimensions, Dimensions } from 'react-native';
+import { useMemo, useState, useEffect } from 'react';
 
 /**
- * Modern hook for screen dimensions with responsive breakpoints
- * Replaces deprecated Dimensions.get() usage
+ * Enhanced hook for screen dimensions with responsive breakpoints
+ * Combines modern useWindowDimensions with legacy Dimensions support
+ * Replaces deprecated Dimensions.get() usage while maintaining compatibility
  */
 export function useScreenDimensions() {
   const { width, height, scale, fontScale } = useWindowDimensions();
 
   const breakpoints = useMemo(() => ({
-    // Mobile breakpoints
+    // Modern breakpoints
     isXSmall: width < 360,
     isSmall: width >= 360 && width < 768,
     isMedium: width >= 768 && width < 1024,
@@ -22,12 +23,18 @@ export function useScreenDimensions() {
     
     // Device type approximations
     isPhone: width < 768,
-    isTablet: width >= 768 && width < 1024,
-    isDesktop: width >= 1024,
+    isTablet: width >= 768 && width < 1200,
+    isDesktop: width >= 1200,
     
     // Common aspect ratios
     aspectRatio: width / height,
     isWideScreen: (width / height) > 1.5,
+    isUltraWide: (width / height) > 2.0,
+    
+    // Responsive sizing helpers
+    responsiveWidth: (percentage: number) => (width * percentage) / 100,
+    responsiveHeight: (percentage: number) => (height * percentage) / 100,
+    responsiveSize: (size: number) => Math.min(width, height) * (size / 100),
   }), [width, height]);
 
   return {
@@ -38,6 +45,12 @@ export function useScreenDimensions() {
     ...breakpoints,
   };
 }
+
+/**
+ * Alias for useScreenDimensions for backward compatibility
+ * @deprecated Use useScreenDimensions instead
+ */
+export const useResponsiveDimensions = useScreenDimensions;
 
 /**
  * Hook for getting responsive values based on screen size

@@ -4,7 +4,8 @@ import { View,
   ScrollView,
   Pressable,
   useWindowDimensions,
-  Dimensions } from 'react-native';
+  Dimensions,
+  StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -14,6 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -36,6 +38,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
   color, 
   index 
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -45,11 +49,11 @@ const MetricCard: React.FC<MetricCardProps> = ({
   const getTrendColor = () => {
     switch (trend) {
       case 'up':
-        return '#10B981';
+        return theme.colors.status.success;
       case 'down':
-        return '#EF4444';
+        return theme.colors.status.error;
       default:
-        return '#6B7280';
+        return theme.colors.text.secondary;
     }
   };
 
@@ -76,12 +80,14 @@ const MetricCard: React.FC<MetricCardProps> = ({
         onPressOut={() => {
           scale.value = withSpring(1);
         }}
-        className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3"
+        style={styles.metricCard}
       >
-        <View className="flex-row items-center justify-between mb-2">
+        <View style={styles.metricCardHeader}>
           <View 
-            className="w-10 h-10 rounded-full items-center justify-center"
-            style={{ backgroundColor: `${color}15` }}
+            style={[
+              styles.metricIcon,
+              { backgroundColor: `${color}15` }
+            ]}
           >
             <Ionicons name={icon} size={20} color={color} />
           </View>
@@ -91,11 +97,13 @@ const MetricCard: React.FC<MetricCardProps> = ({
             color={getTrendColor()} 
           />
         </View>
-        <Text className="text-gray-900 text-2xl font-bold">{value}</Text>
-        <Text className="text-gray-500 text-sm mt-1">{title}</Text>
+        <Text style={styles.metricValue}>{value}</Text>
+        <Text style={styles.metricTitle}>{title}</Text>
         <Text 
-          className="text-xs font-medium mt-1"
-          style={{ color: getTrendColor() }}
+          style={[
+            styles.metricChange,
+            { color: getTrendColor() }
+          ]}
         >
           {change}
         </Text>
@@ -117,46 +125,55 @@ interface StudentPerformanceProps {
 }
 
 const StudentPerformanceCard: React.FC<StudentPerformanceProps> = ({ student, index }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
+  
   return (
     <Animated.View
       entering={FadeInRight.delay(index * 50).springify()}
-      className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3"
+      style={styles.studentCard}
     >
-      <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-row items-center flex-1">
-          <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-3">
-            <Text className="text-blue-600 font-semibold text-sm">
+      <View style={styles.studentCardHeader}>
+        <View style={styles.studentInfoRow}>
+          <View style={styles.studentAvatar}>
+            <Text style={styles.studentAvatarText}>
               {student.name.split(' ').map(n => n[0]).join('').toUpperCase()}
             </Text>
           </View>
-          <View className="flex-1">
-            <Text className="text-gray-900 font-semibold text-base">{student.name}</Text>
-            <Text className="text-gray-500 text-sm">{student.level}</Text>
+          <View style={styles.studentDetails}>
+            <Text style={styles.studentName}>{student.name}</Text>
+            <Text style={styles.studentLevel}>{student.level}</Text>
           </View>
         </View>
-        <Text className="text-gray-400 text-xs">{student.lastUpdate}</Text>
+        <Text style={styles.lastUpdateText}>{student.lastUpdate}</Text>
       </View>
 
-      <View className="flex-row justify-between">
-        <View className="flex-1 mr-2">
-          <Text className="text-gray-500 text-xs mb-1">Progress</Text>
-          <View className="bg-gray-200 rounded-full h-2">
+      <View style={styles.progressRow}>
+        <View style={styles.progressSection}>
+          <Text style={styles.progressLabel}>Progress</Text>
+          <View style={styles.progressBarBackground}>
             <View 
-              className="bg-blue-500 h-2 rounded-full"
-              style={{ width: `${student.progress}%` }}
+              style={[
+                styles.progressBarFill,
+                styles.progressBarPrimary,
+                { width: `${student.progress}%` }
+              ]}
             />
           </View>
-          <Text className="text-gray-600 text-xs mt-1">{student.progress}%</Text>
+          <Text style={styles.progressPercentage}>{student.progress}%</Text>
         </View>
-        <View className="flex-1 ml-2">
-          <Text className="text-gray-500 text-xs mb-1">Attendance</Text>
-          <View className="bg-gray-200 rounded-full h-2">
+        <View style={styles.attendanceSection}>
+          <Text style={styles.progressLabel}>Attendance</Text>
+          <View style={styles.progressBarBackground}>
             <View 
-              className="bg-green-500 h-2 rounded-full"
-              style={{ width: `${student.attendance}%` }}
+              style={[
+                styles.progressBarFill,
+                styles.progressBarSuccess,
+                { width: `${student.attendance}%` }
+              ]}
             />
           </View>
-          <Text className="text-gray-600 text-xs mt-1">{student.attendance}%</Text>
+          <Text style={styles.progressPercentage}>{student.attendance}%</Text>
         </View>
       </View>
     </Animated.View>
@@ -174,6 +191,8 @@ const StudentPerformanceCard: React.FC<StudentPerformanceProps> = ({ student, in
  * - Progress trends and comparisons
  */
 export const PerformanceScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter'>('month');
 
@@ -254,9 +273,9 @@ export const PerformanceScreen: React.FC = () => {
   ];
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       <ScrollView
-        className="flex-1"
+        style={styles.scrollView}
         contentContainerStyle={{
           paddingTop: insets.top + 20,
           paddingBottom: 100, // Space for tab bar
@@ -266,10 +285,10 @@ export const PerformanceScreen: React.FC = () => {
         {/* Header */}
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
-          className="px-6 mb-6"
+          style={styles.headerSection}
         >
-          <Text className="text-gray-900 text-2xl font-bold">Performance</Text>
-          <Text className="text-gray-500 text-base mt-1">
+          <Text style={styles.headerTitle}>Performance</Text>
+          <Text style={styles.headerSubtitle}>
             Analytics and student progress insights
           </Text>
         </Animated.View>
@@ -277,7 +296,7 @@ export const PerformanceScreen: React.FC = () => {
         {/* Period Selector */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          className="px-6 mb-6"
+          style={styles.periodSelectorSection}
         >
           <ScrollView
             horizontal
@@ -288,18 +307,20 @@ export const PerformanceScreen: React.FC = () => {
               <Pressable
                 key={period.key}
                 onPress={() => setSelectedPeriod(period.key)}
-                className={`mr-3 px-4 py-2 rounded-full ${
+                style={[
+                  styles.periodButton,
                   selectedPeriod === period.key
-                    ? 'bg-blue-500'
-                    : 'bg-white border border-gray-200'
-                }`}
+                    ? styles.periodButtonActive
+                    : styles.periodButtonInactive
+                ]}
               >
                 <Text
-                  className={`font-medium ${
+                  style={[
+                    styles.periodButtonText,
                     selectedPeriod === period.key
-                      ? 'text-white'
-                      : 'text-gray-600'
-                  }`}
+                      ? styles.periodButtonTextActive
+                      : styles.periodButtonTextInactive
+                  ]}
                 >
                   {period.label}
                 </Text>
@@ -311,9 +332,9 @@ export const PerformanceScreen: React.FC = () => {
         {/* Metrics Grid */}
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
-          className="px-6 mb-6"
+          style={styles.metricsSection}
         >
-          <View className="flex-row flex-wrap justify-between">
+          <View style={styles.metricsGrid}>
             {metrics.map((metric, index) => (
               <MetricCard
                 key={metric.title}
@@ -327,21 +348,21 @@ export const PerformanceScreen: React.FC = () => {
         {/* Chart Placeholder */}
         <Animated.View
           entering={FadeInDown.delay(400).springify()}
-          className="px-6 mb-6"
+          style={styles.chartSection}
         >
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-gray-900 font-semibold text-lg">Progress Trends</Text>
-              <Pressable className="flex-row items-center">
-                <Ionicons name="bar-chart-outline" size={16} color="#3B82F6" />
-                <Text className="text-blue-600 font-medium text-sm ml-2">View Details</Text>
+          <View style={styles.chartCard}>
+            <View style={styles.chartHeader}>
+              <Text style={styles.chartTitle}>Progress Trends</Text>
+              <Pressable style={styles.viewDetailsButton}>
+                <Ionicons name="bar-chart-outline" size={16} color={theme.colors.interactive.accent} />
+                <Text style={styles.viewDetailsText}>View Details</Text>
               </Pressable>
             </View>
             
             {/* Simple chart placeholder */}
-            <View className="h-32 bg-gray-50 rounded-lg items-center justify-center">
-              <Ionicons name="bar-chart-outline" size={48} color="#D1D5DB" />
-              <Text className="text-gray-400 text-sm mt-2">Chart will appear here</Text>
+            <View style={styles.chartPlaceholder}>
+              <Ionicons name="bar-chart-outline" size={48} color={theme.colors.icon.disabled} />
+              <Text style={styles.chartPlaceholderText}>Chart will appear here</Text>
             </View>
           </View>
         </Animated.View>
@@ -349,14 +370,14 @@ export const PerformanceScreen: React.FC = () => {
         {/* Top Performing Students */}
         <Animated.View
           entering={FadeInDown.delay(500).springify()}
-          className="px-6 mb-6"
+          style={styles.studentsSection}
         >
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-gray-900 text-lg font-semibold">
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>
               Top Performing Students
             </Text>
             <Pressable>
-              <Text className="text-blue-600 font-medium text-sm">View All</Text>
+              <Text style={styles.viewAllText}>View All</Text>
             </Pressable>
           </View>
           
@@ -372,34 +393,34 @@ export const PerformanceScreen: React.FC = () => {
         {/* Quick Actions */}
         <Animated.View
           entering={FadeInDown.delay(600).springify()}
-          className="px-6 mb-8"
+          style={styles.quickActionsSection}
         >
-          <Text className="text-gray-900 text-lg font-semibold mb-4">
+          <Text style={styles.sectionTitle}>
             Quick Actions
           </Text>
-          <View className="flex-row justify-between">
-            <Pressable className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 mr-2">
-              <View className="items-center">
-                <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mb-2">
-                  <Ionicons name="document-text" size={24} color="#3B82F6" />
+          <View style={styles.quickActionsRow}>
+            <Pressable style={styles.quickActionCard}>
+              <View style={styles.quickActionContent}>
+                <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.status.infoBackground }]}>
+                  <Ionicons name="document-text" size={24} color={theme.colors.interactive.accent} />
                 </View>
-                <Text className="text-gray-900 font-medium text-sm">Generate Report</Text>
+                <Text style={styles.quickActionText}>Generate Report</Text>
               </View>
             </Pressable>
-            <Pressable className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 mx-1">
-              <View className="items-center">
-                <View className="w-12 h-12 bg-green-100 rounded-full items-center justify-center mb-2">
-                  <Ionicons name="share" size={24} color="#10B981" />
+            <Pressable style={styles.quickActionCard}>
+              <View style={styles.quickActionContent}>
+                <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.status.successBackground }]}>
+                  <Ionicons name="share" size={24} color={theme.colors.status.success} />
                 </View>
-                <Text className="text-gray-900 font-medium text-sm">Share Insights</Text>
+                <Text style={styles.quickActionText}>Share Insights</Text>
               </View>
             </Pressable>
-            <Pressable className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 ml-2">
-              <View className="items-center">
-                <View className="w-12 h-12 bg-purple-100 rounded-full items-center justify-center mb-2">
-                  <Ionicons name="settings" size={24} color="#8B5CF6" />
+            <Pressable style={styles.quickActionCard}>
+              <View style={styles.quickActionContent}>
+                <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.status.warningBackground }]}>
+                  <Ionicons name="settings" size={24} color={theme.colors.status.warning} />
                 </View>
-                <Text className="text-gray-900 font-medium text-sm">Analytics Settings</Text>
+                <Text style={styles.quickActionText}>Analytics Settings</Text>
               </View>
             </Pressable>
           </View>
@@ -408,3 +429,316 @@ export const PerformanceScreen: React.FC = () => {
     </View>
   );
 };
+
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.secondary,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    headerSection: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    headerTitle: {
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+    },
+    headerSubtitle: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+    periodSelectorSection: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    periodButton: {
+      marginRight: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      borderRadius: theme.borderRadius.full,
+    },
+    periodButtonActive: {
+      backgroundColor: theme.colors.interactive.accent,
+    },
+    periodButtonInactive: {
+      backgroundColor: theme.colors.background.primary,
+      borderWidth: 1,
+      borderColor: theme.colors.border.secondary,
+    },
+    periodButtonText: {
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    periodButtonTextActive: {
+      color: theme.colors.text.inverse,
+    },
+    periodButtonTextInactive: {
+      color: theme.colors.text.secondary,
+    },
+    metricsSection: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    metricsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    metricCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.sm,
+    },
+    metricCardHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    metricIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    metricValue: {
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+    },
+    metricTitle: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+    metricChange: {
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginTop: theme.spacing.xs,
+    },
+    chartSection: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    chartCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    chartHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    chartTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+    },
+    viewDetailsButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    viewDetailsText: {
+      color: theme.colors.interactive.accent,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginLeft: theme.spacing.sm,
+    },
+    chartPlaceholder: {
+      height: 128,
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.lg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    chartPlaceholderText: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+      marginTop: theme.spacing.sm,
+    },
+    studentsSection: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    sectionTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+    },
+    viewAllText: {
+      color: theme.colors.interactive.accent,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    studentCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.sm,
+    },
+    studentCardHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    studentInfoRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    studentAvatar: {
+      width: 40,
+      height: 40,
+      backgroundColor: theme.colors.status.infoBackground,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.spacing.sm,
+    },
+    studentAvatarText: {
+      color: theme.colors.interactive.accent,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    studentDetails: {
+      flex: 1,
+    },
+    studentName: {
+      fontSize: theme.fontSizes.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+    },
+    studentLevel: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    lastUpdateText: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.text.tertiary,
+    },
+    progressRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    progressSection: {
+      flex: 1,
+      marginRight: theme.spacing.sm,
+    },
+    attendanceSection: {
+      flex: 1,
+      marginLeft: theme.spacing.sm,
+    },
+    progressLabel: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing.xs,
+    },
+    progressBarBackground: {
+      backgroundColor: theme.colors.border.secondary,
+      borderRadius: theme.borderRadius.full,
+      height: 8,
+    },
+    progressBarFill: {
+      height: 8,
+      borderRadius: theme.borderRadius.full,
+    },
+    progressBarPrimary: {
+      backgroundColor: theme.colors.interactive.accent,
+    },
+    progressBarSuccess: {
+      backgroundColor: theme.colors.status.success,
+    },
+    progressPercentage: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+    quickActionsSection: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing['2xl'],
+    },
+    quickActionsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    quickActionCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      flex: 1,
+      marginHorizontal: theme.spacing.xs,
+    },
+    quickActionContent: {
+      alignItems: 'center',
+    },
+    quickActionIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: theme.spacing.sm,
+    },
+    quickActionText: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.text.primary,
+    },
+  })
+);

@@ -18,7 +18,7 @@
     "modernize:dry": "node scripts/modernization-suite.js --dry-run",
     "modernize:verbose": "node scripts/modernization-suite.js --verbose",
     "modernize:touchables": "node scripts/modernization-suite.js touchables",
-    "modernize:shadows": "node scripts/modernization-suite.js shadows", 
+    "modernize:shadows": "node scripts/modernization-suite.js shadows",
     "modernize:dimensions": "node scripts/modernization-suite.js dimensions",
     "modernize:deprecations": "node scripts/modernization-suite.js deprecations",
     "migrate:nativewind4": "node scripts/nativewind-4-migration.js",
@@ -60,10 +60,15 @@
     "expo-web-browser": "^14.0.0",
     "react-native-iconify": "^2.0.0",
     "@react-navigation/native-stack": "^7.3.0",
-    "immer": "^10.0.0"
+    "immer": "^10.0.0",
+    "@react-native-community/datetimepicker": "^8.0.0"
   },
   "devDependencies": {
     "@types/react": "~19.1.10",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.13",
+    "react-native-calendars": "^1.1313.0"
   }
 }

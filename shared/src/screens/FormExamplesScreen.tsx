@@ -136,6 +136,7 @@ const FormExamplesScreen: React.FC = () => {
               autoCapitalize="none"
               startIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
               error={loginForm.formState.errors.email?.message}
+              containerStyle={styles.inputNoMargin}
             />
           )}
         />
@@ -162,6 +163,7 @@ const FormExamplesScreen: React.FC = () => {
               secureTextEntry
               startIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
               error={loginForm.formState.errors.password?.message}
+              containerStyle={styles.inputNoMargin}
             />
           )}
         />
@@ -247,6 +249,7 @@ const FormExamplesScreen: React.FC = () => {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   error={profileForm.formState.errors.firstName?.message}
+                  containerStyle={styles.inputNoMargin}
                 />
               )}
             />
@@ -265,6 +268,7 @@ const FormExamplesScreen: React.FC = () => {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   error={profileForm.formState.errors.lastName?.message}
+                  containerStyle={styles.inputNoMargin}
                 />
               )}
             />
@@ -292,6 +296,7 @@ const FormExamplesScreen: React.FC = () => {
               autoCapitalize="none"
               startIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
               error={profileForm.formState.errors.email?.message}
+              containerStyle={styles.inputNoMargin}
             />
           )}
         />
@@ -308,6 +313,7 @@ const FormExamplesScreen: React.FC = () => {
               onBlur={onBlur}
               keyboardType="phone-pad"
               startIcon={<Ionicons name="call-outline" size={20} color={theme.colors.text.tertiary} />}
+              containerStyle={styles.inputNoMargin}
             />
           )}
         />
@@ -324,6 +330,7 @@ const FormExamplesScreen: React.FC = () => {
               onBlur={onBlur}
               multiline
               numberOfLines={4}
+              containerStyle={styles.inputNoMargin}
             />
           )}
         />
@@ -426,6 +433,7 @@ const FormExamplesScreen: React.FC = () => {
               multiline
               numberOfLines={5}
               error={feedbackForm.formState.errors.feedback?.message}
+              containerStyle={styles.inputNoMargin}
             />
           )}
         />
@@ -617,6 +625,10 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.tertiary,
       paddingHorizontal: theme.spacing[3],
       backgroundColor: theme.colors.background.elevated,
+    },
+
+    inputNoMargin: {
+      marginBottom: 0,
     },
   })
 );

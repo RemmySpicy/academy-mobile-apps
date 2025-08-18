@@ -17,7 +17,7 @@ import { PerformanceNavigator } from '../features/performance/navigation/Perform
 import { ClassroomNavigator } from '../features/classroom/navigation/ClassroomNavigator';
 
 // Development-only imports
-import { DesignSystemShowcase, FormExamplesScreen } from '@academy/mobile-shared';
+import { DesignSystemShowcase, FormExamplesScreen, ExtractedComponentsShowcase } from '@academy/mobile-shared';
 
 export type TabParamList = {
   HomeTab: undefined;
@@ -27,6 +27,7 @@ export type TabParamList = {
   ClassroomTab: undefined;
   DesignSystemTab?: undefined; // Development only
   FormsTab?: undefined; // Development only
+  ExtractedTab?: undefined; // Development only
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -102,9 +103,9 @@ export const TabNavigator: React.FC = () => {
           borderTopWidth: 1,
           borderTopColor: theme.colors.border.primary,
           elevation: 4,
-          shadowColor: theme.colors.shadow.color,
-          // shadowOffset replaced with elevation,
-          shadowOpacity: theme.colors.shadow.opacity,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
           shadowRadius: theme.borderRadius.lg,
           paddingTop: theme.spacing.xs,
           paddingBottom: Platform.OS === 'ios' ? insets.bottom + theme.spacing.xs : theme.spacing.xs,
@@ -143,6 +144,9 @@ export const TabNavigator: React.FC = () => {
               break;
             case 'FormsTab':
               iconName = focused ? 'document-text' : 'document-text-outline';
+              break;
+            case 'ExtractedTab':
+              iconName = focused ? 'cube' : 'cube-outline';
               break;
             default:
               iconName = 'help-outline';
@@ -215,6 +219,14 @@ export const TabNavigator: React.FC = () => {
             component={FormExamplesScreen}
             options={{
               tabBarLabel: 'Forms',
+            }}
+          />
+          
+          <Tab.Screen
+            name="ExtractedTab"
+            component={ExtractedComponentsShowcase}
+            options={{
+              tabBarLabel: 'Extracted',
             }}
           />
         </>

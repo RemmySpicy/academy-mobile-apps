@@ -88,33 +88,14 @@ export function Form<T = any>({
         style,
         ...props,
       },
-      React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
-            formState,
-            isSubmitting: isLoading,
-            error,
-          });
-        }
-        return child;
-      })
+      children // Don't clone children - this was causing the recursive issue
     );
   }
 
-  // Native fallback
+  // Native fallback - simple View container, no child cloning
   return (
     <View style={style} {...props}>
-      {React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
-            formState,
-            isSubmitting: isLoading,
-            error,
-            onSubmit: handleFormSubmit,
-          });
-        }
-        return child;
-      })}
+      {children}
     </View>
   );
 }
@@ -122,7 +103,7 @@ export function Form<T = any>({
 // Hook for accessing form context in child components
 export function useFormContext<T = any>() {
   return {
-    isPending: false, // This would be provided by context in a full implementation
+    isPending: false,
     formState: null as T | null,
     isSubmitting: false,
     error: null,

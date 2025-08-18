@@ -1,5 +1,29 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTheme } from '@academy/mobile-shared';
+
+const createStyles = (theme: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.background.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: theme.fontSizes.xl,
+    fontWeight: theme.fontConfig.fontWeight.bold,
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
+    color: theme.colors.text.primary,
+  },
+  description: {
+    fontSize: theme.fontSizes.base,
+    color: theme.colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: theme.fontSizes.base * 1.375,
+  },
+});
 
 /**
  * Example component demonstrating program context integration for student app
@@ -7,6 +31,9 @@ import { View, Text, StyleSheet } from 'react-native';
  * TODO: Re-implement when shared package types are fully resolved
  */
 export function ProgramIntegrationExample() {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
   // Temporary placeholder component
   return (
     <View style={styles.container}>
@@ -17,27 +44,5 @@ export function ProgramIntegrationExample() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-});
 
 export default ProgramIntegrationExample;

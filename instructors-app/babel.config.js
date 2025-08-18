@@ -12,6 +12,7 @@ module.exports = function (api) {
           root: ['./'],
           alias: {
             '@shared': '../shared/src',
+            '@academy/mobile-shared': '../shared/src',
           },
         },
       ],

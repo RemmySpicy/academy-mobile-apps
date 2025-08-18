@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 /**
@@ -15,19 +16,54 @@ import type { AuthNavigationProps } from '../types';
 export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
   navigation,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
+  
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 items-center justify-center p-6">
-        <Text className="text-xl font-semibold text-gray-900 mb-4">
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>
           Register Screen
         </Text>
-        <Text className="text-gray-600 text-center mb-6">
+        <Text style={styles.description}>
           This screen will contain the user registration form.
         </Text>
-        <Text className="text-sm text-gray-500 text-center">
+        <Text style={styles.todoText}>
           TODO: Implement registration functionality
         </Text>
       </View>
     </SafeAreaView>
   );
 };
+
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+    },
+    content: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: theme.spacing.lg,
+    },
+    title: {
+      fontSize: theme.fontSizes.xl,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing.md,
+    },
+    description: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.secondary,
+      textAlign: 'center',
+      marginBottom: theme.spacing.lg,
+    },
+    todoText: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.tertiary,
+      textAlign: 'center',
+    },
+  })
+);

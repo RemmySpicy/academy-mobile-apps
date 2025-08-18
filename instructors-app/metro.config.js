@@ -11,7 +11,7 @@ const config = getDefaultConfig(projectRoot);
 config.watchFolders = [workspaceRoot];
 
 config.resolver.alias = {
-  '@shared': path.resolve(workspaceRoot, 'shared/src'),
+  '@academy/mobile-shared': path.resolve(workspaceRoot, 'shared/src'),
 };
 
 // React 19 + New Architecture compatibility fixes

@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { lightTheme } from '@academy/mobile-shared';
+import { useTheme } from '@academy/mobile-shared';
 
 interface Props {
   children: ReactNode;
@@ -18,34 +18,35 @@ const ErrorDisplay: React.FC<{
   error?: Error;
   onReset: () => void;
 }> = ({ error, onReset }) => {
-  const theme = lightTheme; // Use theme directly since we can't use hooks in class component
-
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+    <View style={styles.container}>
       <View style={styles.content}>
         <Ionicons 
           name="warning-outline" 
           size={64} 
           color={theme.colors.status.error} 
         />
-        <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+        <Text style={styles.title}>
           Oops! Something went wrong
         </Text>
-        <Text style={[styles.message, { color: theme.colors.text.secondary }]}>
+        <Text style={styles.message}>
           The student app encountered an unexpected error. Please try restarting.
         </Text>
         
         {__DEV__ && error && (
-          <Text style={[styles.error, { color: theme.colors.status.error }]}>
+          <Text style={styles.error}>
             {error.toString()}
           </Text>
         )}
         
         <Pressable 
-          style={[styles.button, { backgroundColor: theme.colors.interactive.primary }]} 
+          style={styles.button} 
           onPress={onReset}
         >
-          <Text style={[styles.buttonText, { color: theme.colors.text.inverse }]}>
+          <Text style={styles.buttonText}>
             Try Again
           </Text>
         </Pressable>
@@ -87,43 +88,51 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: theme.spacing.lg,
+    backgroundColor: theme.colors.background.primary,
   },
   content: {
     alignItems: 'center',
     maxWidth: 300,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 16,
-    marginBottom: 8,
+    fontSize: theme.fontSizes.xl,
+    fontWeight: theme.fontConfig.fontWeight.bold,
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.xs,
     textAlign: 'center',
+    color: theme.colors.text.primary,
   },
   message: {
-    fontSize: 16,
+    fontSize: theme.fontSizes.base,
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 24,
+    lineHeight: theme.fontSizes.base * 1.5,
+    marginBottom: theme.spacing.lg,
+    color: theme.colors.text.secondary,
   },
   error: {
-    fontSize: 12,
+    fontSize: theme.fontSizes.xs,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: theme.spacing.md,
     fontFamily: 'monospace',
+    color: theme.colors.status.error,
   },
   button: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.interactive.primary,
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: theme.fontSizes.base,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
+    color: theme.colors.text.inverse,
   },
 });
+
+// Styles are now created dynamically using theme hook

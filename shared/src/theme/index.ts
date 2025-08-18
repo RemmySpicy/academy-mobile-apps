@@ -60,86 +60,19 @@ export type {
   Elevation,
 } from './spacing';
 
-import {
-  lightColorScheme,
-  darkColorScheme,
-  baseColors,
-  colorUtils,
-  type ColorScheme,
-} from './colors';
-import {
-  typography,
-  fontConfig,
-  fontSizes,
-  lineHeights,
-  letterSpacing,
-  accessibilityText,
-  typographyUtils,
-  type Typography,
-} from './typography';
-import {
-  spacing,
-  componentSpacing,
-  borderRadius,
-  borderWidth,
-  elevation,
-  safeArea,
-  spacingUtils,
-  type Spacing,
-  type BorderWidth,
-  type Elevation,
-} from './spacing';
+// Internal imports for theme utilities
+import { baseColors, colorUtils } from './colors';
+import { accessibilityText, typographyUtils } from './typography';
+import { spacingUtils, borderRadius, elevation } from './spacing';
 
-// Complete theme interface
-export interface Theme {
-  colors: ColorScheme;
-  typography: Typography;
-  spacing: Spacing;
-  borderRadius: typeof borderRadius;
-  borderWidth: BorderWidth;
-  elevation: Elevation;
-  fontConfig: typeof fontConfig;
-  fontSizes: typeof fontSizes;
-  lineHeights: typeof lineHeights;
-  letterSpacing: typeof letterSpacing;
-  componentSpacing: typeof componentSpacing;
-  safeArea: typeof safeArea;
-  isDark: boolean;
-}
+// Import theme objects and types from ThemeProvider to avoid circular dependency
+import { lightTheme, darkTheme, type Theme, type ThemeMode } from './ThemeProvider';
 
-// Light theme
-export const lightTheme: Theme = {
-  colors: lightColorScheme,
-  typography,
-  spacing,
-  borderRadius,
-  borderWidth,
-  elevation,
-  fontConfig,
-  fontSizes,
-  lineHeights,
-  letterSpacing,
-  componentSpacing,
-  safeArea,
-  isDark: false,
-};
+// Re-export theme objects
+export { lightTheme, darkTheme, type Theme, type ThemeMode };
 
-// Dark theme
-export const darkTheme: Theme = {
-  colors: darkColorScheme,
-  typography,
-  spacing,
-  borderRadius,
-  borderWidth,
-  elevation,
-  fontConfig,
-  fontSizes,
-  lineHeights,
-  letterSpacing,
-  componentSpacing,
-  safeArea,
-  isDark: true,
-};
+// Icon sizes for consistent UI (re-exported from themes)
+export const iconSize = lightTheme.iconSize;
 
 // Theme utilities
 export const themeUtils = {
@@ -401,12 +334,29 @@ export const tokens = {
   },
 } as const;
 
+// Re-export ThemeProvider and hooks for convenience
+export { 
+  ThemeProvider, 
+  useTheme, 
+  useThemeColors, 
+  useThemeSpacing, 
+  useThemeTypography,
+  useThemeMode,
+  withTheme,
+  createThemedStyles,
+  ThemeModeSelector,
+  themeHelpers,
+  type ThemeContextValue,
+  type ThemeProviderProps,
+  type ExtendedThemeMode,
+} from './ThemeProvider';
+
 // Export theme types
-export type ThemeMode = 'light' | 'dark';
 export type ComponentThemes = typeof componentThemes;
 export type Tokens = typeof tokens;
 
-// Default export (remove duplicate exports)
-export {
-  lightTheme as defaultTheme,
-};
+// Theme Provider and Hooks are exported directly from './ThemeProvider'
+// Import them directly from there to avoid circular dependency
+
+// Default export
+export { lightTheme as defaultTheme };

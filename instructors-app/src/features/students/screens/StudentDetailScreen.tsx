@@ -4,6 +4,7 @@ import {
   Text,
   ScrollView,
   Pressable,
+  StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +12,7 @@ import Animated, {
   FadeInDown,
   FadeInRight,
 } from 'react-native-reanimated';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { ScreenProps, StudentsStackParamList } from '../types';
 
 type StudentDetailScreenProps = ScreenProps<StudentsStackParamList, 'StudentDetail'>;
@@ -27,6 +29,8 @@ type StudentDetailScreenProps = ScreenProps<StudentsStackParamList, 'StudentDeta
  */
 export const StudentDetailScreen: React.FC<StudentDetailScreenProps> = ({ route, navigation }) => {
   const { studentId, studentName } = route.params;
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
 
   // Mock student data - replace with real API call
@@ -48,94 +52,89 @@ export const StudentDetailScreen: React.FC<StudentDetailScreenProps> = ({ route,
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       {/* Header */}
       <Animated.View
         entering={FadeInDown.delay(100).springify()}
-        className="bg-white px-6 pt-4 pb-4 shadow-sm"
-        style={{ paddingTop: insets.top + 16 }}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}
       >
-        <View className="flex-row items-center">
+        <View style={styles.headerContent}>
           <Pressable 
             onPress={() => navigation.goBack()}
-            className="mr-4 p-2"
+            style={styles.backButton}
           >
-            <Ionicons name="arrow-back" size={24} color="#374151" />
+            <Ionicons name="arrow-back" size={24} color={theme.colors.text.secondary} />
           </Pressable>
-          <View className="flex-1">
-            <Text className="text-gray-900 text-xl font-bold">{student.name}</Text>
-            <Text className="text-gray-500 text-sm">{student.level}</Text>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>{student.name}</Text>
+            <Text style={styles.headerSubtitle}>{student.level}</Text>
           </View>
         </View>
       </Animated.View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingBottom: 100, // Space for tab bar
-        }}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Student Avatar & Basic Info */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          className="px-6 py-6"
+          style={styles.sectionContainer}
         >
-          <View className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 items-center">
-            <View className="w-20 h-20 bg-blue-100 rounded-full items-center justify-center mb-4">
-              <Text className="text-blue-600 font-bold text-2xl">
+          <View style={styles.avatarCard}>
+            <View style={styles.avatarContainer}>
+              <Text style={styles.avatarText}>
                 {student.name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </Text>
             </View>
-            <Text className="text-gray-900 text-xl font-bold">{student.name}</Text>
-            <Text className="text-gray-500 text-base mt-1">{student.level}</Text>
-            <Text className="text-gray-400 text-sm mt-1">Age: {student.age}</Text>
+            <Text style={styles.studentName}>{student.name}</Text>
+            <Text style={styles.studentLevel}>{student.level}</Text>
+            <Text style={styles.studentAge}>Age: {student.age}</Text>
           </View>
         </Animated.View>
 
         {/* Progress & Stats */}
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
-          className="px-6 mb-6"
+          style={styles.progressContainer}
         >
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <Text className="text-gray-900 font-semibold text-lg mb-4">Progress Overview</Text>
+          <View style={styles.progressCard}>
+            <Text style={styles.sectionTitle}>Progress Overview</Text>
             
-            <View className="flex-row justify-between mb-4">
-              <View className="flex-1 mr-2">
-                <Text className="text-gray-500 text-sm mb-2">Overall Progress</Text>
-                <View className="bg-gray-200 rounded-full h-3">
+            <View style={styles.progressBarsContainer}>
+              <View style={styles.progressBarSection}>
+                <Text style={styles.progressLabel}>Overall Progress</Text>
+                <View style={styles.progressBarBackground}>
                   <View 
-                    className="bg-blue-500 h-3 rounded-full"
-                    style={{ width: `${student.progress}%` }}
+                    style={[styles.progressBarFill, styles.progressBarPrimary, { width: `${student.progress}%` }]}
                   />
                 </View>
-                <Text className="text-gray-600 text-sm mt-1">{student.progress}%</Text>
+                <Text style={styles.progressPercentage}>{student.progress}%</Text>
               </View>
-              <View className="flex-1 ml-2">
-                <Text className="text-gray-500 text-sm mb-2">Attendance Rate</Text>
-                <View className="bg-gray-200 rounded-full h-3">
+              <View style={styles.progressBarSection}>
+                <Text style={styles.progressLabel}>Attendance Rate</Text>
+                <View style={styles.progressBarBackground}>
                   <View 
-                    className="bg-green-500 h-3 rounded-full"
-                    style={{ width: `${student.attendance}%` }}
+                    style={[styles.progressBarFill, styles.progressBarSuccess, { width: `${student.attendance}%` }]}
                   />
                 </View>
-                <Text className="text-gray-600 text-sm mt-1">{student.attendance}%</Text>
+                <Text style={styles.progressPercentage}>{student.attendance}%</Text>
               </View>
             </View>
 
-            <View className="flex-row justify-between">
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-gray-900">{student.completedSessions}</Text>
-                <Text className="text-gray-500 text-sm">Sessions Completed</Text>
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{student.completedSessions}</Text>
+                <Text style={styles.statLabel}>Sessions Completed</Text>
               </View>
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-gray-900">{student.totalSessions}</Text>
-                <Text className="text-gray-500 text-sm">Total Sessions</Text>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{student.totalSessions}</Text>
+                <Text style={styles.statLabel}>Total Sessions</Text>
               </View>
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-gray-900">{student.totalSessions - student.completedSessions}</Text>
-                <Text className="text-gray-500 text-sm">Remaining</Text>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{student.totalSessions - student.completedSessions}</Text>
+                <Text style={styles.statLabel}>Remaining</Text>
               </View>
             </View>
           </View>
@@ -144,23 +143,23 @@ export const StudentDetailScreen: React.FC<StudentDetailScreenProps> = ({ route,
         {/* Parent Information */}
         <Animated.View
           entering={FadeInDown.delay(400).springify()}
-          className="px-6 mb-6"
+          style={styles.progressContainer}
         >
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <Text className="text-gray-900 font-semibold text-lg mb-4">Parent Information</Text>
+          <View style={styles.progressCard}>
+            <Text style={styles.sectionTitle}>Parent Information</Text>
             
-            <View className="space-y-3">
-              <View className="flex-row items-center">
-                <Ionicons name="person-outline" size={20} color="#6B7280" />
-                <Text className="text-gray-600 ml-3">{student.parentName}</Text>
+            <View style={styles.parentInfoContainer}>
+              <View style={styles.parentInfoItem}>
+                <Ionicons name="person-outline" size={20} color={theme.colors.text.tertiary} />
+                <Text style={styles.parentInfoText}>{student.parentName}</Text>
               </View>
-              <View className="flex-row items-center">
-                <Ionicons name="call-outline" size={20} color="#6B7280" />
-                <Text className="text-gray-600 ml-3">{student.parentPhone}</Text>
+              <View style={styles.parentInfoItem}>
+                <Ionicons name="call-outline" size={20} color={theme.colors.text.tertiary} />
+                <Text style={styles.parentInfoText}>{student.parentPhone}</Text>
               </View>
-              <View className="flex-row items-center">
-                <Ionicons name="mail-outline" size={20} color="#6B7280" />
-                <Text className="text-gray-600 ml-3">{student.parentEmail}</Text>
+              <View style={styles.parentInfoItem}>
+                <Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />
+                <Text style={styles.parentInfoText}>{student.parentEmail}</Text>
               </View>
             </View>
           </View>
@@ -169,19 +168,19 @@ export const StudentDetailScreen: React.FC<StudentDetailScreenProps> = ({ route,
         {/* Notes & Assessments */}
         <Animated.View
           entering={FadeInDown.delay(500).springify()}
-          className="px-6 mb-6"
+          style={styles.progressContainer}
         >
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-gray-900 font-semibold text-lg">Notes & Assessments</Text>
-              <Pressable>
-                <Ionicons name="add" size={24} color="#3B82F6" />
+          <View style={styles.progressCard}>
+            <View style={styles.notesHeader}>
+              <Text style={styles.sectionTitle}>Notes & Assessments</Text>
+              <Pressable style={styles.addButton}>
+                <Ionicons name="add" size={24} color={theme.colors.interactive.accent} />
               </Pressable>
             </View>
             
-            <View className="bg-gray-50 rounded-lg p-3">
-              <Text className="text-gray-600 text-sm">{student.notes}</Text>
-              <Text className="text-gray-400 text-xs mt-2">Last updated: 3 days ago</Text>
+            <View style={styles.notesContainer}>
+              <Text style={styles.notesText}>{student.notes}</Text>
+              <Text style={styles.notesTimestamp}>Last updated: 3 days ago</Text>
             </View>
           </View>
         </Animated.View>
@@ -189,27 +188,27 @@ export const StudentDetailScreen: React.FC<StudentDetailScreenProps> = ({ route,
         {/* Action Buttons */}
         <Animated.View
           entering={FadeInDown.delay(600).springify()}
-          className="px-6 mb-8"
+          style={styles.actionsContainer}
         >
-          <View className="space-y-3">
-            <Pressable className="bg-blue-500 rounded-xl py-4">
-              <View className="flex-row items-center justify-center">
-                <Ionicons name="checkmark-circle" size={20} color="white" />
-                <Text className="text-white font-semibold text-base ml-2">Mark Attendance</Text>
+          <View style={styles.actionsWrapper}>
+            <Pressable style={styles.primaryActionButton}>
+              <View style={styles.actionButtonContent}>
+                <Ionicons name="checkmark-circle" size={20} color={theme.colors.text.inverse} />
+                <Text style={styles.primaryActionText}>Mark Attendance</Text>
               </View>
             </Pressable>
             
-            <View className="flex-row space-x-3">
-              <Pressable className="flex-1 bg-white rounded-xl py-4 border border-gray-200">
-                <View className="items-center">
-                  <Ionicons name="clipboard-outline" size={20} color="#374151" />
-                  <Text className="text-gray-700 font-medium text-sm mt-1">Add Note</Text>
+            <View style={styles.secondaryActionsRow}>
+              <Pressable style={styles.secondaryActionButton}>
+                <View style={styles.secondaryActionContent}>
+                  <Ionicons name="clipboard-outline" size={20} color={theme.colors.text.secondary} />
+                  <Text style={styles.secondaryActionText}>Add Note</Text>
                 </View>
               </Pressable>
-              <Pressable className="flex-1 bg-white rounded-xl py-4 border border-gray-200">
-                <View className="items-center">
-                  <Ionicons name="call-outline" size={20} color="#374151" />
-                  <Text className="text-gray-700 font-medium text-sm mt-1">Contact Parent</Text>
+              <Pressable style={styles.secondaryActionButton}>
+                <View style={styles.secondaryActionContent}>
+                  <Ionicons name="call-outline" size={20} color={theme.colors.text.secondary} />
+                  <Text style={styles.secondaryActionText}>Contact Parent</Text>
                 </View>
               </Pressable>
             </View>
@@ -219,3 +218,255 @@ export const StudentDetailScreen: React.FC<StudentDetailScreenProps> = ({ route,
     </View>
   );
 };
+
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.secondary,
+    },
+    header: {
+      backgroundColor: theme.colors.background.primary,
+      paddingHorizontal: theme.spacing.lg,
+      paddingBottom: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    headerContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    backButton: {
+      marginRight: theme.spacing.md,
+      padding: theme.spacing.sm,
+    },
+    headerTextContainer: {
+      flex: 1,
+    },
+    headerTitle: {
+      fontSize: theme.fontSizes.xl,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+    },
+    headerSubtitle: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingBottom: 100, // Space for tab bar
+    },
+    sectionContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.lg,
+    },
+    avatarCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.lg,
+      alignItems: 'center',
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    avatarContainer: {
+      width: 80,
+      height: 80,
+      backgroundColor: theme.colors.status.infoBackground,
+      borderRadius: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: theme.spacing.md,
+    },
+    avatarText: {
+      color: theme.colors.interactive.accent,
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+    studentName: {
+      fontSize: theme.fontSizes.xl,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+    },
+    studentLevel: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+    studentAge: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.tertiary,
+      marginTop: theme.spacing.xs,
+    },
+    progressContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    progressCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    sectionTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing.md,
+    },
+    progressBarsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    progressBarSection: {
+      flex: 1,
+      marginHorizontal: theme.spacing.sm,
+    },
+    progressLabel: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing.sm,
+    },
+    progressBarBackground: {
+      backgroundColor: theme.colors.border.primary,
+      borderRadius: theme.borderRadius.full,
+      height: 12,
+    },
+    progressBarFill: {
+      height: 12,
+      borderRadius: theme.borderRadius.full,
+    },
+    progressBarPrimary: {
+      backgroundColor: theme.colors.interactive.accent,
+    },
+    progressBarSuccess: {
+      backgroundColor: theme.colors.status.success,
+    },
+    progressPercentage: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    statItem: {
+      alignItems: 'center',
+    },
+    statNumber: {
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+    },
+    statLabel: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    parentInfoContainer: {
+      gap: theme.spacing.md,
+    },
+    parentInfoItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    parentInfoText: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.secondary,
+      marginLeft: theme.spacing.md,
+    },
+    notesHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    addButton: {
+      padding: theme.spacing.sm,
+    },
+    notesContainer: {
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.md,
+    },
+    notesText: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    notesTimestamp: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.text.tertiary,
+      marginTop: theme.spacing.sm,
+    },
+    actionsContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing['2xl'],
+    },
+    actionsWrapper: {
+      gap: theme.spacing.md,
+    },
+    primaryActionButton: {
+      backgroundColor: theme.colors.interactive.accent,
+      borderRadius: theme.borderRadius.xl,
+      paddingVertical: theme.spacing.md,
+    },
+    actionButtonContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    primaryActionText: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.fontSizes.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      marginLeft: theme.spacing.sm,
+    },
+    secondaryActionsRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.md,
+    },
+    secondaryActionButton: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      paddingVertical: theme.spacing.md,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    secondaryActionContent: {
+      alignItems: 'center',
+    },
+    secondaryActionText: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginTop: theme.spacing.xs,
+    },
+  })
+);

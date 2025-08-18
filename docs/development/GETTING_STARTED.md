@@ -40,31 +40,29 @@ The project uses npm workspaces for dependency management:
 
 ```bash
 # Install all dependencies for the entire monorepo
-npm run install:all
+npm install
 
-# Or install individually
-npm install              # Root dependencies
-npm run install:shared   # Shared package
-npm run install:instructor # Instructor app
-npm run install:student  # Student app
+# Dependencies are automatically installed for:
+# - Root workspace
+# - students-app/
+# - instructors-app/
+# - shared/
 ```
 
 ### 3. Start Development
 
-Start both apps simultaneously:
+Start individual apps (recommended approach):
 
 ```bash
-npm run dev:all
-```
+# Instructor app
+npm run start:instructors
+# or
+cd instructors-app && npx expo start --offline
 
-Or start individual apps:
-
-```bash
-# Instructor app (port 19006)
-npm run dev:instructor
-
-# Student app (port 19007) 
-npm run dev:student
+# Student app  
+npm run start:students
+# or
+cd students-app && npx expo start --offline
 ```
 
 ### 4. Open on Device/Simulator
@@ -77,38 +75,57 @@ npm run dev:student
 
 ```
 academy-apps/
-├── academy-instructors-app/    # Instructor mobile app
+├── instructors-app/               # Instructor mobile app
 │   ├── src/
-│   │   ├── features/          # Feature-based modules
-│   │   ├── core/              # Core app functionality
-│   │   ├── services/          # API services
-│   │   └── types/             # TypeScript types
-│   ├── assets/                # App-specific assets
-│   ├── existing-code/         # Reference implementation
+│   │   ├── features/             # Feature-based modules
+│   │   │   ├── auth/             # Authentication screens
+│   │   │   ├── attendance/       # Attendance tracking
+│   │   │   ├── classroom/        # Classroom management
+│   │   │   ├── home/             # Dashboard
+│   │   │   ├── performance/      # Performance analytics
+│   │   │   ├── scheduling/       # Schedule management
+│   │   │   └── students/         # Student management
+│   │   ├── navigation/           # App navigation
+│   │   ├── services/             # API services
+│   │   └── types/                # TypeScript types
+│   ├── assets/                   # App-specific assets
+│   ├── existing-code/            # Reference implementation
 │   └── package.json
 │
-├── academy-students-app/       # Student mobile app
+├── students-app/                 # Student mobile app
 │   ├── src/
-│   │   ├── features/          # Feature-based modules
-│   │   ├── core/              # Core app functionality
-│   │   ├── services/          # API services
-│   │   └── types/             # TypeScript types
-│   ├── assets/                # App-specific assets
-│   ├── existing-code/         # Reference implementation
+│   │   ├── features/             # Feature-based modules
+│   │   │   ├── auth/             # Authentication screens
+│   │   │   ├── bookings/         # Course booking
+│   │   │   ├── courses/          # Course catalog
+│   │   │   ├── home/             # Student dashboard
+│   │   │   ├── profile/          # Profile management
+│   │   │   └── progress/         # Progress tracking
+│   │   ├── navigation/           # App navigation
+│   │   ├── services/             # API services
+│   │   └── types/                # TypeScript types
+│   ├── assets/                   # App-specific assets
+│   ├── existing-code/            # Reference implementation
 │   └── package.json
 │
-├── shared/                     # Shared components & services
+├── shared/                       # Shared components & services
 │   ├── src/
-│   │   ├── components/        # Reusable UI components
-│   │   ├── store/             # Zustand stores
-│   │   ├── services/          # API client & services
-│   │   ├── types/             # Shared TypeScript types
-│   │   └── utils/             # Utility functions
+│   │   ├── components/          # Reusable UI components
+│   │   │   ├── auth/            # Auth components
+│   │   │   ├── charts/          # Chart components
+│   │   │   ├── forms/           # Form components
+│   │   │   ├── program/         # Program context components
+│   │   │   └── ui/              # UI components
+│   │   ├── hooks/               # Shared React hooks
+│   │   ├── services/            # API client & services
+│   │   ├── store/               # Zustand stores
+│   │   ├── theme/               # Academy theme system
+│   │   ├── types/               # Shared TypeScript types
+│   │   └── utils/               # Utility functions
 │   └── package.json
 │
-├── docs/                       # Documentation
-├── docker-compose.yml          # Docker development setup
-└── package.json               # Root package configuration
+├── docs/                         # Documentation
+└── package.json                 # Root package configuration
 ```
 
 ## 🛠️ Development Workflow
@@ -119,27 +136,28 @@ academy-apps/
 graph LR
     A[Study existing-code] --> B[Plan feature]
     B --> C[Create shared components]
-    C --> D[Implement in both apps]
+    C --> D[Implement in apps]
     D --> E[Test & validate]
     E --> F[Document changes]
 ```
 
 ### 2. Code Quality Checks
 
-Before committing, run:
+Before committing, run these commands from the root directory:
 
 ```bash
-# Type check all packages
-npm run type-check:all
+# Test both apps
+npm run test
 
-# Lint all packages
-npm run lint:all
+# Or test individually
+npm run test:students
+npm run test:instructors
 
-# Run tests
-npm run test:all
+# Run tests with coverage
+npm run test:coverage
 
-# Format code
-npm run format
+# Test in watch mode (for development)
+npm run test:watch
 ```
 
 ### 3. Git Workflow
@@ -195,11 +213,12 @@ Backend should be available at: `http://localhost:8000`
 
 ### Essential VS Code Extensions
 
+Install these extensions for the best development experience:
+
 ```json
 {
   "recommendations": [
     "ms-vscode.vscode-typescript-next",
-    "bradlc.vscode-tailwindcss",
     "esbenp.prettier-vscode",
     "ms-vscode.vscode-eslint",
     "expo.vscode-expo-tools",
@@ -229,11 +248,22 @@ Create `.vscode/launch.json`:
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Expo",
+      "name": "Debug Instructor App",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/@expo/cli/bin/cli",
       "args": ["start"],
+      "cwd": "${workspaceFolder}/instructors-app",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug Student App",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/@expo/cli/bin/cli",
+      "args": ["start"],
+      "cwd": "${workspaceFolder}/students-app",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }
@@ -247,33 +277,37 @@ Create `.vscode/launch.json`:
 
 ```bash
 # Run all tests
-npm run test:all
+npm run test
 
 # Run tests with coverage
-npm run test:all -- --coverage
+npm run test:coverage
 
 # Run tests in watch mode
-npm run test:all -- --watch
+npm run test:watch
 
-# Run specific test file
-npm test -- --testPathPattern="CustomInput"
+# Test specific app
+npm run test:students
+npm run test:instructors
 ```
 
 ### Test Structure
 
 ```bash
 src/
-├── components/
-│   ├── CustomInput.tsx
-│   └── __tests__/
-│       └── CustomInput.test.tsx
-├── services/
-│   ├── apiClient.ts
-│   └── __tests__/
-│       └── apiClient.test.ts
-└── utils/
+├── features/
+│   ├── auth/
+│   │   ├── screens/
+│   │   │   ├── LoginScreen.tsx
+│   │   │   └── __tests__/
+│   │   │       └── LoginScreen.test.tsx
+│   │   └── hooks/
+│   │       ├── useAuthForm.ts
+│   │       └── __tests__/
+│   │           └── useAuthForm.test.ts
+└── components/
+    ├── ErrorBoundary.tsx
     └── __tests__/
-        └── validators.test.ts
+        └── ErrorBoundary.test.tsx
 ```
 
 ## 📊 Common Development Tasks
@@ -282,13 +316,13 @@ src/
 
 ```bash
 # Create component file
-touch shared/src/components/forms/NewComponent.tsx
+touch shared/src/components/ui/NewComponent.tsx
 
-# Add to exports
-echo "export { default as NewComponent } from './NewComponent';" >> shared/src/components/forms/index.ts
+# Add to exports in shared/src/components/ui/index.ts
+echo "export { default as NewComponent } from './NewComponent';" >> shared/src/components/ui/index.ts
 
 # Use in apps
-import { NewComponent } from '@shared';
+import { NewComponent } from '@academy/mobile-shared';
 ```
 
 ### 2. Adding New API Endpoints
@@ -308,21 +342,31 @@ export const studentApi = {
 ### 3. Creating New Screens
 
 ```typescript
-// src/features/students/screens/StudentListScreen.tsx
+// instructors-app/src/features/students/screens/StudentListScreen.tsx
 import React from 'react';
 import { View, Text, FlatList } from 'react-native';
-import { useAuthStore, CustomInput, useNotifications } from '@shared';
+import { 
+  useAuthStore, 
+  CustomInput, 
+  Header, 
+  StudentCard,
+  ProgramGuard 
+} from '@academy/mobile-shared';
 
 export default function StudentListScreen() {
   const { user, hasRole } = useAuthStore();
-  const { showError } = useNotifications();
   
-  // Implementation
   return (
-    <View>
-      <Text>Student List</Text>
-      {/* Screen content */}
-    </View>
+    <ProgramGuard minimumRoleLevel="tutor">
+      <View>
+        <Header 
+          title="Students" 
+          variant="instructor"
+          onSearchPress={handleSearch}
+        />
+        {/* Screen content */}
+      </View>
+    </ProgramGuard>
   );
 }
 ```
@@ -330,7 +374,7 @@ export default function StudentListScreen() {
 ### 4. Adding Navigation
 
 ```typescript
-// src/navigation/StudentsNavigator.tsx
+// instructors-app/src/navigation/StudentsNavigator.tsx
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import StudentListScreen from '../features/students/screens/StudentListScreen';
 import StudentDetailScreen from '../features/students/screens/StudentDetailScreen';
@@ -355,17 +399,17 @@ The `existing-code/` directories contain working implementations that serve as r
 
 ```bash
 # Examine existing implementations
-ls academy-instructors-app/existing-code/src/
-ls academy-students-app/existing-code/src/
+ls instructors-app/existing-code/src/
+ls students-app/existing-code/src/
 
 # Study component patterns
-cat academy-instructors-app/existing-code/src/components/form/customInput.tsx
+cat instructors-app/existing-code/src/components/form/customInput.tsx
 ```
 
 ### Migration Strategy
 
 1. **Analyze**: Study the existing implementation
-2. **Plan**: Design the modern equivalent
+2. **Plan**: Design the modern equivalent with Academy theming
 3. **Build**: Create with latest dependencies and patterns
 4. **Test**: Ensure feature parity
 5. **Document**: Update docs with new patterns
@@ -378,31 +422,35 @@ cat academy-instructors-app/existing-code/src/components/form/customInput.tsx
 
 ```bash
 # Clear Metro cache
-npm start -- --clear
+npx expo start --clear
 
-# Reset everything
-npm run dev:fresh
+# From specific app directory
+cd instructors-app
+npx expo start --clear
 ```
 
 #### Dependency Issues
 
 ```bash
 # Clean install
-npm run clean:all
-npm run install:all
+rm -rf node_modules package-lock.json
+npm install
 
-# Nuclear option - complete reset
-npm run reset
+# Clean specific app
+cd instructors-app
+rm -rf node_modules
+cd ../
+npm install
 ```
 
 #### iOS Build Issues
 
 ```bash
 # Clean iOS build
-cd academy-instructors-app
+cd instructors-app
 npx expo run:ios --clear
 
-# Update CocoaPods
+# Update CocoaPods (if using development build)
 cd ios && pod install && cd ..
 ```
 
@@ -410,10 +458,10 @@ cd ios && pod install && cd ..
 
 ```bash
 # Clean Android build
-cd academy-instructors-app
+cd instructors-app
 npx expo run:android --clear
 
-# Clean Gradle cache
+# Clean Gradle cache (if using development build)
 cd android && ./gradlew clean && cd ..
 ```
 
@@ -427,14 +475,29 @@ cp -r /mnt/c/Users/username/academy-apps ~/academy-apps
 cd ~/academy-apps
 ```
 
+### Module Resolution Issues
+
+```bash
+# Verify workspace links are correct
+npm ls @academy/mobile-shared
+
+# Recreate workspace symlinks
+npm install
+
+# Check that shared package is accessible
+cd instructors-app
+node -e "console.log(require.resolve('@academy/mobile-shared'))"
+```
+
 ## 📚 Next Steps
 
 After setup, explore these areas:
 
-1. **[Authentication System](../authentication/README.md)** - User management and security
-2. **[Form Components](../components/forms/README.md)** - Building user interfaces
-3. **[API Client](../api/API_CLIENT.md)** - Backend integration
-4. **[System Overview](../architecture/SYSTEM_OVERVIEW.md)** - Understanding the architecture
+1. **[Academy Theme System](../THEME_SYSTEM.md)** - Academy branding and theming
+2. **[Authentication System](../authentication/README.md)** - User management and security
+3. **[Form Components](../components/forms/README.md)** - Building user interfaces
+4. **[Multi-Program Context](../architecture/MULTI_PROGRAM_CONTEXT.md)** - Program switching
+5. **[API Client](../api/API_CLIENT.md)** - Backend integration
 
 ## 🤝 Getting Help
 
@@ -448,10 +511,19 @@ After setup, explore these areas:
 Before starting feature development:
 
 - [ ] Environment set up and running
-- [ ] Both apps start successfully
-- [ ] Backend API is accessible
-- [ ] Code quality tools are working
-- [ ] Tests are passing
+- [ ] Both apps start successfully (`npm run start:instructors` and `npm run start:students`)
+- [ ] Backend API is accessible at `http://localhost:8000`
+- [ ] Tests are passing (`npm run test`)
+- [ ] Can import from shared package (`@academy/mobile-shared`)
+- [ ] Academy theme system is working
 - [ ] Documentation is accessible
+
+## 🎯 Key Academy Features to Understand
+
+- **Academy Theming**: Purple (#4F2EC9) brand color with light/dark/night modes
+- **Multi-Program Support**: Handle multiple academy programs with context switching
+- **Component Library**: 45+ Academy-themed components in `@academy/mobile-shared`
+- **Feature-Based Architecture**: Organize code by features, not file types
+- **Type Safety**: Full TypeScript support with zero compilation errors
 
 You're now ready to start building amazing features for the Academy Mobile Apps! 🚀

@@ -1,8 +1,8 @@
 // Components - Direct exports to avoid property descriptor conflicts
 export {
   Form,
+  CustomButton, // Primary button component for Academy apps
   CustomInput,
-  CustomButton,
   CustomDropdown,
   CustomTextArea,
   CustomCheckBox,
@@ -36,6 +36,17 @@ export {
   Header,
   StudentCard,
   InstructorDashboard,
+  // Newly extracted UI components
+  ToggleCard,
+  EmptySearchResult,
+  SelectOptions,
+  HeaderComponent,
+  ControlCard,
+  FilterComponent,
+  OptionMenu,
+  TimesTab,
+  StrokeTab,
+  CustomModalWithDot,
 } from './components/ui';
 
 export {
@@ -60,10 +71,77 @@ export {
   useProgramContext,
 } from './components/program';
 
+// Search System Components
+export {
+  SearchInput,
+  FilterChip,
+  QuickFilterBar,
+  SearchBar,
+  SimpleSearchBar,
+  useQuickFilters,
+} from './components/search';
+
+// Calendar Components
+export {
+  Calendar,
+  DatePicker,
+  ClassroomCalendar,
+  StudentProfileCalendar,
+} from './components/calendar';
+
+// Performance Components
+export {
+  WorkoutCard,
+  ClassroomCard,
+  Performance,
+  PerformanceTimes,
+  ClassroomProgressCard,
+} from './components/performance';
+
+// Scheduling Components
+export {
+  ScheduleInput,
+  ScheduleList,
+  Schedules,
+} from './components/scheduling';
+
+// Student Components
+export {
+  StudentProfile,
+} from './components/student';
+
+// Phase 2: Enhanced UI Components
+export {
+  Alert,
+  MenuList,
+  MetricPool,
+  Stations,
+} from './components/ui';
+
+// Phase 3: Academy-Specific Components
+export {
+  ClassroomGrading,
+  MyClassroom,
+  CourseProgression,
+} from './components/academy';
+
+// Phase 4: Enhanced UI Components
+export {
+  Button,
+  FilterBar,
+  StudentListCard,
+  Lessons,
+} from './components/ui';
+
 // Hooks - Direct exports
 export {
   useApiClient,
   useAuth,
+  // Newly extracted hooks
+  useDebounce,
+  useDebouncedCallback,
+  useScreenDimensions,
+  useLocationPermission,
 } from './hooks';
 
 // Services - Direct exports
@@ -79,6 +157,16 @@ export type {
   Program,
   ProgramAssignment,
 } from './types';
+
+export type {
+  CalendarProps,
+  CalendarEvent,
+  DatePickerProps,
+  ClassroomCalendarProps,
+  ClassroomEvent,
+  StudentProfileCalendarProps,
+  StudentEvent,
+} from './components/calendar';
 
 // Class exports - must be direct, not type exports
 export {
@@ -131,24 +219,22 @@ export { useAuthStore, authSelectors } from './store/authStore';
 export { useNotificationStore, notificationSelectors, useNotifications } from './store/notificationStore';
 export type { Notification, NotificationType } from './store/notificationStore';
 
-// Theme - Direct exports
+// Theme - All theme exports
 export {
+  // Core theme objects
   lightTheme,
   darkTheme,
+  defaultTheme,
+  
+  // Colors
   baseColors,
   semanticColors,
   darkColors,
   colorUtils,
   lightColorScheme,
   darkColorScheme,
-  spacing,
-  componentSpacing,
-  responsiveSpacing,
-  borderRadius,
-  borderWidth,
-  elevation,
-  safeArea,
-  spacingUtils,
+  
+  // Typography
   fontConfig,
   scaleFont,
   fontSizes,
@@ -158,21 +244,61 @@ export {
   accessibilityText,
   responsiveText,
   typographyUtils,
-} from './theme';
-
-export { 
-  ThemeProvider, 
-  useTheme, 
-  useThemeColors, 
-  useThemeSpacing, 
+  
+  // Spacing & Layout
+  spacing,
+  componentSpacing,
+  responsiveSpacing,
+  borderRadius,
+  borderWidth,
+  elevation,
+  safeArea,
+  spacingUtils,
+  
+  // Theme utilities
+  themeUtils,
+  componentThemes,
+  tokens,
+  iconSize,
+  
+  // Theme Provider hooks (from theme/index.ts re-exports)
+  useTheme,
+  useThemeColors,
+  useThemeSpacing,
   useThemeTypography,
   useThemeMode,
   withTheme,
   createThemedStyles,
-} from './theme/ThemeProvider';
+  ThemeProvider,
+  ThemeModeSelector,
+  themeHelpers,
+} from './theme';
+
+// Theme types (all types from theme/index.ts re-exports)
+export type {
+  Theme,
+  ThemeMode,
+  ComponentThemes,
+  Tokens,
+  ColorScheme,
+  Typography,
+  FontConfig,
+  FontSizes,
+  Spacing,
+  ComponentSpacing,
+  BorderRadius,
+  BorderWidth,
+  Elevation,
+  BaseColors,
+  SemanticColors,
+  ExtendedThemeMode,
+  ThemeContextValue,
+  ThemeProviderProps,
+} from './theme';
 
 // Screens - Design System and Component Showcase
 export {
   DesignSystemShowcase,
   FormExamplesScreen,
+  ExtractedComponentsShowcase,
 } from './screens';

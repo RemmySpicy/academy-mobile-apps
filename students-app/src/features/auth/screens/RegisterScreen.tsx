@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View,
   Text,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
   Alert,
-  Pressable } from 'react-native';
+  Pressable,
+  StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -13,7 +14,7 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { CustomInput, CustomButton, CustomCheckBox, SocialAuthButtons, validateEmail, useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { CustomInput, CustomButton, CustomCheckBox, SocialAuthButtons, validateEmail, useAuthStore, useTheme } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 // Validation schema
@@ -53,6 +54,100 @@ const registerSchema = yup.object({
 
 type RegisterFormData = yup.InferType<typeof registerSchema>;
 
+const createStyles = (theme: any) => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    gradient: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingTop: theme.spacing['3xl'],
+      paddingBottom: theme.spacing.xl,
+      borderBottomLeftRadius: theme.borderRadius['3xl'],
+      borderBottomRightRadius: theme.borderRadius['3xl'],
+    },
+    backButton: {
+      marginBottom: theme.spacing.md,
+    },
+    headerContainer: {
+      alignItems: 'center',
+    },
+    iconContainer: {
+      backgroundColor: theme.colors.overlay.light,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.full,
+      marginBottom: theme.spacing.md,
+    },
+    headerTitle: {
+      color: 'white',
+      fontSize: theme.fontSizes.xl,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      marginBottom: theme.spacing.xs,
+    },
+    headerSubtitle: {
+      color: theme.colors.text.inverse,
+      textAlign: 'center',
+      fontSize: theme.fontSizes.base,
+    },
+    formContainer: {
+      flex: 1,
+      paddingHorizontal: theme.spacing.lg,
+      paddingTop: theme.spacing.xl,
+    },
+    formContent: {
+      gap: theme.spacing.lg,
+    },
+    nameRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.md,
+    },
+    nameField: {
+      flex: 1,
+    },
+    submitButton: {
+      marginTop: theme.spacing.md,
+    },
+    socialContainer: {
+      marginTop: theme.spacing.lg,
+    },
+    dividerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing.md,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: theme.colors.border.primary,
+    },
+    dividerText: {
+      marginHorizontal: theme.spacing.md,
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+    },
+    loginLinkContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: theme.spacing.lg,
+    },
+    loginText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.base,
+    },
+    loginLink: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+});
+
 /**
  * Student Registration Screen
  * 
@@ -69,6 +164,8 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register, isLoading } = useAuthStore();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const {
     control,
@@ -118,48 +215,48 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        style={styles.keyboardView}
       >
         <ScrollView
-          className="flex-1"
+          style={styles.scrollView}
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
           <LinearGradient
-            colors={['#4F2EC9', '#3B82F6']}
-            className="px-6 pt-12 pb-8 rounded-b-3xl"
+            colors={[theme.colors.interactive.primary, theme.colors.interactive.accent]}
+            style={styles.gradient}
           >
             <Pressable
               onPress={() => navigation.goBack()}
-              className="mb-4"
+              style={styles.backButton}
             >
               <Ionicons name="arrow-back" size={24} color="white" />
             </Pressable>
             
-            <View className="items-center">
-              <View className="bg-white/10 p-4 rounded-full mb-4">
+            <View style={styles.headerContainer}>
+              <View style={styles.iconContainer}>
                 <Ionicons name="person-add" size={32} color="white" />
               </View>
-              <Text className="text-white text-2xl font-bold mb-2">
+              <Text style={styles.headerTitle}>
                 Join Academy
               </Text>
-              <Text className="text-white/80 text-center text-base">
+              <Text style={styles.headerSubtitle}>
                 Start your swimming journey today
               </Text>
             </View>
           </LinearGradient>
 
           {/* Registration Form */}
-          <View className="flex-1 px-6 pt-8">
-            <View className="space-y-6">
+          <View style={styles.formContainer}>
+            <View style={styles.formContent}>
               {/* Name Fields */}
-              <View className="flex-row space-x-4">
-                <View className="flex-1">
+              <View style={styles.nameRow}>
+                <View style={styles.nameField}>
                   <CustomInput
                     name="firstName"
                     control={control}
@@ -169,7 +266,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                     size="medium"
                   />
                 </View>
-                <View className="flex-1">
+                <View style={styles.nameField}>
                   <CustomInput
                     name="lastName"
                     control={control}
@@ -188,7 +285,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 placeholder="Email address"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                leftIcon={<Ionicons name="mail-outline" size={20} color="#9CA3AF" />}
+                leftIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -198,7 +295,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 control={control}
                 placeholder="Phone number"
                 keyboardType="phone-pad"
-                leftIcon={<Ionicons name="call-outline" size={20} color="#9CA3AF" />}
+                leftIcon={<Ionicons name="call-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -209,7 +306,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 placeholder="Create password"
                 secureTextEntry={!showPassword}
                 showPasswordToggle
-                leftIcon={<Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" />}
+                leftIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -220,7 +317,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 placeholder="Confirm password"
                 secureTextEntry={!showConfirmPassword}
                 showPasswordToggle
-                leftIcon={<Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" />}
+                leftIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -238,15 +335,15 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 isLoading={isLoading}
                 disabled={!isValid || isLoading}
                 variant="primary"
-                className="mt-4"
+                style={styles.submitButton}
               />
 
               {/* Social Registration */}
-              <View className="mt-6">
-                <View className="flex-row items-center mb-4">
-                  <View className="flex-1 h-px bg-gray-300" />
-                  <Text className="mx-4 text-gray-500 text-sm">or sign up with</Text>
-                  <View className="flex-1 h-px bg-gray-300" />
+              <View style={styles.socialContainer}>
+                <View style={styles.dividerContainer}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>or sign up with</Text>
+                  <View style={styles.dividerLine} />
                 </View>
                 
                 <SocialAuthButtons
@@ -257,14 +354,14 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
               </View>
 
               {/* Login Link */}
-              <View className="flex-row justify-center items-center mt-6">
-                <Text className="text-gray-600 text-base">
+              <View style={styles.loginLinkContainer}>
+                <Text style={styles.loginText}>
                   Already have an account?{' '}
                 </Text>
                 <Pressable
                   onPress={() => navigation.navigate('Login')}
                 >
-                  <Text className="text-blue-600 text-base font-medium">
+                  <Text style={styles.loginLink}>
                     Sign In
                   </Text>
                 </Pressable>

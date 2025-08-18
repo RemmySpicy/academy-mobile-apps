@@ -1,11 +1,35 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
+
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.colors.background.secondary,
+    },
+    title: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.xl,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    subtitle: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.base,
+      marginTop: theme.spacing.xs,
+    },
+  })
+);
 
 export const AchievementsScreen: React.FC = () => {
+  const styles = useThemedStyles();
+  
   return (
-    <View className="flex-1 items-center justify-center bg-gray-50">
-      <Text className="text-gray-900 text-xl font-semibold">Achievements Screen</Text>
-      <Text className="text-gray-600 text-base mt-2">Coming soon...</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Achievements Screen</Text>
+      <Text style={styles.subtitle}>Coming soon...</Text>
     </View>
   );
 };

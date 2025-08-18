@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTheme } from '@academy/mobile-shared';
 
 interface PasswordStrength {
   score: number; // 0-5
@@ -14,12 +15,14 @@ interface PasswordStrength {
  * Provides real-time password strength analysis and validation
  */
 export const usePasswordValidation = () => {
+  const { theme } = useTheme();
+  
   const [strength, setStrength] = useState<PasswordStrength>({
     score: 0,
     feedback: [],
     isValid: false,
     label: 'Very Weak',
-    color: '#EF4444',
+    color: theme.colors.status.error,
   });
 
   const validatePassword = useCallback((password: string): PasswordStrength => {
@@ -72,12 +75,12 @@ export const usePasswordValidation = () => {
     ];
 
     const colors = [
-      '#EF4444', // Red
-      '#F59E0B', // Orange
-      '#F59E0B', // Orange
-      '#10B981', // Green
-      '#059669', // Dark Green
-      '#047857', // Darker Green
+      theme.colors.status.error,    // Red
+      theme.colors.status.warning,  // Orange
+      theme.colors.status.warning,  // Orange
+      theme.colors.status.success,  // Green
+      theme.colors.icon.success,    // Dark Green
+      theme.colors.icon.success,    // Darker Green
     ];
 
     const result: PasswordStrength = {
@@ -85,12 +88,12 @@ export const usePasswordValidation = () => {
       feedback,
       isValid: score >= 4, // Require at least 4/5 criteria
       label: labels[score] || 'Very Weak',
-      color: colors[score] || '#EF4444',
+      color: colors[score] || theme.colors.status.error,
     };
 
     setStrength(result);
     return result;
-  }, []);
+  }, [theme]);
 
   const checkPasswordMatch = useCallback((password: string, confirmPassword: string) => {
     return {

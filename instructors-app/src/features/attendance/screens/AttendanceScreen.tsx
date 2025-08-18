@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   FlatList,
+  StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 
 interface Student {
   id: string;
@@ -41,6 +43,8 @@ interface ClassCardProps {
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({ classInfo, index, onPress }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -54,73 +58,76 @@ const ClassCard: React.FC<ClassCardProps> = ({ classInfo, index, onPress }) => {
     <Animated.View
       layout={Layout.springify()}
       entering={FadeInRight.delay(index * 50).springify()}
-      style={animatedStyle}
     >
-      <Pressable
-        onPress={() => onPress(classInfo)}
-        onPressIn={() => {
-          scale.value = withSpring(0.98);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1);
-        }}
-        className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3 mx-4"
+      <Animated.View style={animatedStyle}>
+        <Pressable
+          onPress={() => onPress(classInfo)}
+          onPressIn={() => {
+            scale.value = withSpring(0.98);
+          }}
+          onPressOut={() => {
+            scale.value = withSpring(1);
+          }}
+        style={styles.classCard}
       >
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-1">
-            <Text className="text-gray-900 font-semibold text-base">
+        <View style={styles.classHeader}>
+          <View style={styles.classInfoContainer}>
+            <Text style={styles.className}>
               {classInfo.name}
             </Text>
-            <Text className="text-gray-500 text-sm">{classInfo.level}</Text>
-            <Text className="text-gray-400 text-xs mt-1">{classInfo.time}</Text>
+            <Text style={styles.classLevel}>{classInfo.level}</Text>
+            <Text style={styles.classTime}>{classInfo.time}</Text>
           </View>
           
           {classInfo.attendanceMarked ? (
-            <View className="bg-green-50 px-3 py-1 rounded-full">
-              <Text className="text-green-600 font-medium text-xs">Completed</Text>
+            <View style={styles.completedBadge}>
+              <Text style={styles.completedBadgeText}>Completed</Text>
             </View>
           ) : (
-            <View className="bg-orange-50 px-3 py-1 rounded-full">
-              <Text className="text-orange-600 font-medium text-xs">Pending</Text>
+            <View style={styles.pendingBadge}>
+              <Text style={styles.pendingBadgeText}>Pending</Text>
             </View>
           )}
         </View>
 
         {/* Attendance Summary */}
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center">
-            <View className="flex-row items-center mr-4">
-              <View className="w-3 h-3 bg-green-500 rounded-full mr-2" />
-              <Text className="text-gray-600 text-sm">Present: {presentCount}</Text>
+        <View style={styles.attendanceSummary}>
+          <View style={styles.attendanceStatsContainer}>
+            <View style={styles.attendanceStatItem}>
+              <View style={styles.presentIndicator} />
+              <Text style={styles.attendanceStatText}>Present: {presentCount}</Text>
             </View>
-            <View className="flex-row items-center">
-              <View className="w-3 h-3 bg-red-500 rounded-full mr-2" />
-              <Text className="text-gray-600 text-sm">Absent: {absentCount}</Text>
+            <View style={styles.attendanceStatItem}>
+              <View style={styles.absentIndicator} />
+              <Text style={styles.attendanceStatText}>Absent: {absentCount}</Text>
             </View>
           </View>
-          <Text className="text-gray-500 text-sm">
+          <Text style={styles.totalStudentsText}>
             Total: {classInfo.studentsCount}
           </Text>
         </View>
 
         {/* Action Button */}
         <Pressable 
-          className={`flex-row items-center justify-center py-2 px-4 rounded-lg ${
-            classInfo.attendanceMarked ? 'bg-blue-50' : 'bg-green-50'
-          }`}
+          style={[
+            styles.actionButton,
+            classInfo.attendanceMarked ? styles.viewAttendanceButton : styles.markAttendanceButton
+          ]}
         >
           <Ionicons 
             name={classInfo.attendanceMarked ? "eye-outline" : "checkmark-circle-outline"} 
             size={16} 
-            color={classInfo.attendanceMarked ? "#3B82F6" : "#10B981"} 
+            color={classInfo.attendanceMarked ? theme.colors.interactive.accent : theme.colors.status.success} 
           />
-          <Text className={`font-medium text-sm ml-2 ${
-            classInfo.attendanceMarked ? 'text-blue-600' : 'text-green-600'
-          }`}>
+          <Text style={[
+            styles.actionButtonText,
+            classInfo.attendanceMarked ? styles.viewAttendanceText : styles.markAttendanceText
+          ]}>
             {classInfo.attendanceMarked ? 'View Attendance' : 'Mark Attendance'}
           </Text>
         </Pressable>
       </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 };
@@ -136,6 +143,8 @@ const ClassCard: React.FC<ClassCardProps> = ({ classInfo, index, onPress }) => {
  * - Bulk attendance actions
  */
 export const AttendanceScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -199,15 +208,14 @@ export const AttendanceScreen: React.FC = () => {
   const pendingCount = classes.length - completedCount;
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       {/* Header */}
       <Animated.View
         entering={FadeInDown.delay(100).springify()}
-        className="px-6 pt-4 pb-2"
-        style={{ paddingTop: insets.top + 16 }}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}
       >
-        <Text className="text-gray-900 text-2xl font-bold">Attendance</Text>
-        <Text className="text-gray-500 text-base mt-1">
+        <Text style={styles.headerTitle}>Attendance</Text>
+        <Text style={styles.headerSubtitle}>
           Mark and track student attendance
         </Text>
       </Animated.View>
@@ -215,29 +223,35 @@ export const AttendanceScreen: React.FC = () => {
       {/* Date Selector & Stats */}
       <Animated.View
         entering={FadeInDown.delay(200).springify()}
-        className="px-6 mb-4"
+        style={styles.overviewContainer}
       >
-        <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-gray-900 font-semibold text-base">Today's Overview</Text>
-            <Pressable className="flex-row items-center bg-blue-50 px-3 py-1 rounded-lg">
-              <Ionicons name="calendar-outline" size={16} color="#3B82F6" />
-              <Text className="text-blue-600 font-medium text-sm ml-2">Change Date</Text>
+        <View style={styles.overviewCard}>
+          <View style={styles.overviewHeader}>
+            <Text style={styles.overviewTitle}>Today's Overview</Text>
+            <Pressable 
+              style={[styles.changeDateButton, { backgroundColor: theme.colors.status.infoBackground }]}
+            >
+              <Ionicons name="calendar-outline" size={16} color={theme.colors.interactive.accent} />
+              <Text 
+                style={[styles.changeDateText, { color: theme.colors.interactive.accent }]}
+              >
+                Change Date
+              </Text>
             </Pressable>
           </View>
           
-          <View className="flex-row justify-between">
-            <View className="items-center">
-              <Text className="text-2xl font-bold text-gray-900">{classes.length}</Text>
-              <Text className="text-gray-500 text-sm">Total Classes</Text>
+          <View style={styles.statsRow}>
+            <View style={styles.statColumn}>
+              <Text style={styles.statNumber}>{classes.length}</Text>
+              <Text style={styles.statLabel}>Total Classes</Text>
             </View>
-            <View className="items-center">
-              <Text className="text-2xl font-bold text-green-600">{completedCount}</Text>
-              <Text className="text-gray-500 text-sm">Completed</Text>
+            <View style={styles.statColumn}>
+              <Text style={[styles.statNumber, { color: theme.colors.status.success }]}>{completedCount}</Text>
+              <Text style={styles.statLabel}>Completed</Text>
             </View>
-            <View className="items-center">
-              <Text className="text-2xl font-bold text-orange-600">{pendingCount}</Text>
-              <Text className="text-gray-500 text-sm">Pending</Text>
+            <View style={styles.statColumn}>
+              <Text style={[styles.statNumber, { color: theme.colors.status.warning }]}>{pendingCount}</Text>
+              <Text style={styles.statLabel}>Pending</Text>
             </View>
           </View>
         </View>
@@ -246,19 +260,23 @@ export const AttendanceScreen: React.FC = () => {
       {/* Quick Actions */}
       <Animated.View
         entering={FadeInDown.delay(300).springify()}
-        className="px-6 mb-4"
+        style={styles.quickActionsContainer}
       >
-        <View className="flex-row space-x-3">
-          <Pressable className="flex-1 bg-green-500 rounded-lg py-3">
-            <View className="items-center">
-              <Ionicons name="checkmark-circle" size={20} color="white" />
-              <Text className="text-white font-medium text-sm mt-1">Mark All Present</Text>
+        <View style={styles.quickActionsRow}>
+          <Pressable 
+            style={[styles.quickActionButton, { backgroundColor: theme.colors.status.success }]}
+          >
+            <View style={styles.quickActionContent}>
+              <Ionicons name="checkmark-circle" size={20} color={theme.colors.text.inverse} />
+              <Text style={styles.quickActionText}>Mark All Present</Text>
             </View>
           </Pressable>
-          <Pressable className="flex-1 bg-blue-500 rounded-lg py-3">
-            <View className="items-center">
-              <Ionicons name="bar-chart" size={20} color="white" />
-              <Text className="text-white font-medium text-sm mt-1">View Reports</Text>
+          <Pressable 
+            style={[styles.quickActionButton, { backgroundColor: theme.colors.interactive.accent }]}
+          >
+            <View style={styles.quickActionContent}>
+              <Ionicons name="bar-chart" size={20} color={theme.colors.text.inverse} />
+              <Text style={styles.quickActionText}>View Reports</Text>
             </View>
           </Pressable>
         </View>
@@ -282,13 +300,13 @@ export const AttendanceScreen: React.FC = () => {
         ListEmptyComponent={() => (
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
-            className="items-center justify-center py-12"
+            style={styles.emptyStateContainer}
           >
-            <Ionicons name="calendar-outline" size={64} color="#D1D5DB" />
-            <Text className="text-gray-500 text-lg font-medium mt-4">
+            <Ionicons name="calendar-outline" size={64} color={theme.colors.icon.disabled} />
+            <Text style={styles.emptyStateTitle}>
               No classes scheduled
             </Text>
-            <Text className="text-gray-400 text-base mt-2 text-center px-8">
+            <Text style={styles.emptyStateSubtitle}>
               No classes found for the selected date
             </Text>
           </Animated.View>
@@ -297,3 +315,249 @@ export const AttendanceScreen: React.FC = () => {
     </View>
   );
 };
+
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.secondary,
+    },
+    header: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingTop: theme.spacing.md,
+      paddingBottom: theme.spacing.sm,
+    },
+    headerTitle: {
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+    },
+    headerSubtitle: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+    overviewContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.md,
+    },
+    overviewCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    overviewHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    overviewTitle: {
+      fontSize: theme.fontSizes.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+    },
+    changeDateButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.lg,
+    },
+    changeDateText: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginLeft: theme.spacing.sm,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    statColumn: {
+      alignItems: 'center',
+    },
+    statNumber: {
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+    },
+    statLabel: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    quickActionsContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.md,
+    },
+    quickActionsRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+    },
+    quickActionButton: {
+      flex: 1,
+      borderRadius: theme.borderRadius.lg,
+      paddingVertical: theme.spacing.sm,
+    },
+    quickActionContent: {
+      alignItems: 'center',
+    },
+    quickActionText: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginTop: theme.spacing.xs,
+    },
+    classCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.sm,
+      marginHorizontal: theme.spacing.md,
+    },
+    classHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    classInfoContainer: {
+      flex: 1,
+    },
+    className: {
+      fontSize: theme.fontSizes.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+    },
+    classLevel: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    classTime: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.text.tertiary,
+      marginTop: theme.spacing.xs,
+    },
+    completedBadge: {
+      backgroundColor: theme.colors.status.successBackground,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.full,
+    },
+    completedBadgeText: {
+      color: theme.colors.status.success,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    pendingBadge: {
+      backgroundColor: theme.colors.status.warningBackground,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.full,
+    },
+    pendingBadgeText: {
+      color: theme.colors.status.warning,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    attendanceSummary: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    attendanceStatsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    attendanceStatItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginRight: theme.spacing.md,
+    },
+    presentIndicator: {
+      width: 12,
+      height: 12,
+      backgroundColor: theme.colors.status.success,
+      borderRadius: theme.borderRadius.full,
+      marginRight: theme.spacing.sm,
+    },
+    absentIndicator: {
+      width: 12,
+      height: 12,
+      backgroundColor: theme.colors.status.error,
+      borderRadius: theme.borderRadius.full,
+      marginRight: theme.spacing.sm,
+    },
+    attendanceStatText: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    totalStudentsText: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
+      borderRadius: theme.borderRadius.lg,
+    },
+    viewAttendanceButton: {
+      backgroundColor: theme.colors.status.infoBackground,
+    },
+    markAttendanceButton: {
+      backgroundColor: theme.colors.status.successBackground,
+    },
+    actionButtonText: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginLeft: theme.spacing.sm,
+    },
+    viewAttendanceText: {
+      color: theme.colors.interactive.accent,
+    },
+    markAttendanceText: {
+      color: theme.colors.status.success,
+    },
+    emptyStateContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: theme.spacing['3xl'],
+    },
+    emptyStateTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.md,
+    },
+    emptyStateSubtitle: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.tertiary,
+      marginTop: theme.spacing.sm,
+      textAlign: 'center',
+      paddingHorizontal: theme.spacing['2xl'],
+    },
+  })
+);

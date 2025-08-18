@@ -68,15 +68,18 @@ export const PAYMENT_STATUS = {
   CANCELLED: 'cancelled',
 } as const;
 
+// NOTE: These color constants are deprecated in favor of the theme system.
+// Use useTheme() hook and theme.colors.* instead.
+// Keeping for backwards compatibility only.
 export const THEME_COLORS = {
-  PRIMARY: '#3B82F6',
-  SECONDARY: '#6B7280',
-  SUCCESS: '#10B981',
-  WARNING: '#F59E0B',
-  DANGER: '#EF4444',
-  INFO: '#3B82F6',
-  LIGHT: '#F8FAFC',
-  DARK: '#1F2937',
+  PRIMARY: '#3B82F6',      // Use theme.colors.interactive.accent instead
+  SECONDARY: '#6B7280',    // Use theme.colors.text.secondary instead
+  SUCCESS: '#10B981',      // Use theme.colors.status.success instead
+  WARNING: '#F59E0B',      // Use theme.colors.status.warning instead
+  DANGER: '#EF4444',       // Use theme.colors.status.error instead
+  INFO: '#3B82F6',         // Use theme.colors.status.info instead
+  LIGHT: '#F8FAFC',        // Use theme.colors.background.secondary instead
+  DARK: '#1F2937',         // Use theme.colors.text.primary instead
 } as const;
 
 export const GENDER_OPTIONS = [

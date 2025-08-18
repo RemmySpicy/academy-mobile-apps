@@ -7,10 +7,10 @@ A comprehensive design system for the Academy Mobile Apps with consistent colors
 The Academy Design System provides:
 
 - **🌈 Theme System** - Light, Dark, and Night modes with seamless switching
-- **🎯 Semantic Colors** - Meaningful color tokens that adapt to different themes
+- **🎯 Academy Branding** - Consistent purple (#4F2EC9) brand colors across all themes
 - **📝 Typography Scale** - Consistent text styles with accessibility considerations
 - **📏 Spacing System** - Harmonious spacing based on 4px grid system
-- **🧩 Component Library** - Themed components that work across all apps
+- **🧩 Component Library** - 45+ Academy-themed components
 - **♿ Accessibility First** - WCAG 2.1 AA compliant design tokens
 
 ## 🚀 Quick Start
@@ -20,15 +20,11 @@ The Academy Design System provides:
 Wrap your app with the `ThemeProvider`:
 
 ```tsx
-import { ThemeProvider } from '@shared';
+import { ThemeProvider } from '@academy/mobile-shared';
 
 export default function App() {
   return (
-    <ThemeProvider 
-      initialTheme="system" 
-      enableSystemTheme={true}
-      persistTheme={true}
-    >
+    <ThemeProvider>
       <YourAppContent />
     </ThemeProvider>
   );
@@ -38,49 +34,52 @@ export default function App() {
 ### 2. Using Theme in Components
 
 ```tsx
-import { useTheme, createThemedStyles } from '@shared';
+import { useTheme } from '@academy/mobile-shared';
+import { StyleSheet } from 'react-native';
 
 function MyComponent() {
   const { theme } = useTheme();
-  const styles = useThemedStyles();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Hello World</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+      <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+        Academy App
+      </Text>
     </View>
   );
 }
 
-const useThemedStyles = createThemedStyles((theme) => 
-  StyleSheet.create({
-    container: {
-      backgroundColor: theme.colors.background.primary,
-      padding: theme.spacing[4],
-      borderRadius: theme.borderRadius.md,
-    },
-    title: {
-      ...theme.typography.heading.h2,
-      color: theme.colors.text.primary,
-    },
-  })
-);
+const styles = StyleSheet.create({
+  container: {
+    padding: 16, // Or use theme.spacing.lg
+    borderRadius: 12, // Or use theme.borderRadius.lg
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+});
 ```
 
 ### 3. Theme Switching
 
 ```tsx
-import { useThemeMode } from '@shared';
+import { useTheme } from '@academy/mobile-shared';
 
 function ThemeToggle() {
-  const { mode, setMode, toggle, isDark, isNight } = useThemeMode();
+  const { theme, themeMode, setThemeMode } = useTheme();
 
   return (
     <View>
-      <Button title="Light" onPress={() => setMode('light')} />
-      <Button title="Dark" onPress={() => setMode('dark')} />
-      <Button title="Night" onPress={() => setMode('night')} />
-      <Button title="System" onPress={() => setMode('system')} />
-      <Button title="Toggle" onPress={toggle} />
+      <TouchableOpacity onPress={() => setThemeMode('light')}>
+        <Text>Light Mode</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => setThemeMode('dark')}>
+        <Text>Dark Mode</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => setThemeMode('night')}>
+        <Text>Night Mode</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -96,123 +95,133 @@ The design system supports three distinct themes:
 - **Use Case**: Default daytime usage
 - **Background**: Clean whites and light grays
 - **Text**: Dark colors for maximum readability
-- **Accent**: Vibrant brand colors
+- **Accent**: Vibrant Academy brand colors
 
 #### Dark Theme  
 - **Use Case**: Low-light environments
 - **Background**: Dark grays (#1F2937, #374151)
 - **Text**: Light colors with good contrast
-- **Accent**: Softer, less intense colors
+- **Accent**: Academy purple maintained across themes
 
 #### Night Theme
 - **Use Case**: Late night usage, OLED screens
 - **Background**: Pure blacks (#000000) for OLED efficiency
 - **Text**: Muted colors to reduce eye strain
-- **Accent**: Reduced blue light emission
+- **Accent**: Reduced intensity while maintaining Academy branding
 
-### Semantic Color Tokens
+### Academy Color Tokens
 
 ```tsx
-// Text colors
-theme.colors.text.primary    // Main text
-theme.colors.text.secondary  // Secondary text
-theme.colors.text.tertiary   // Muted text
-theme.colors.text.disabled   // Disabled text
-theme.colors.text.inverse    // Text on dark backgrounds
+import { useTheme } from '@academy/mobile-shared';
 
-// Interactive colors  
-theme.colors.interactive.primary       // Primary buttons
-theme.colors.interactive.primaryHover  // Hover states
-theme.colors.interactive.secondary     // Secondary buttons
-theme.colors.interactive.destructive   // Delete/danger actions
+const { theme } = useTheme();
+
+// Academy Brand Colors (consistent across all themes)
+theme.colors.interactive.primary      // #4F2EC9 Academy purple
+theme.colors.interactive.teal         // #52E2BB Academy teal
+theme.colors.interactive.orange       // #FEAE24 Academy orange
+theme.colors.interactive.themeBlack   // #121212 Academy black
+
+// Text colors (adapt to theme)
+theme.colors.text.primary             // Main text
+theme.colors.text.secondary           // Secondary text
+theme.colors.text.tertiary            // Muted text
+theme.colors.text.disabled            // Disabled text
+
+// Background colors (adapt to theme)
+theme.colors.background.primary       // Main backgrounds
+theme.colors.background.secondary     // Card backgrounds
+theme.colors.border.primary           // Default borders
 
 // Status colors
-theme.colors.status.success  // Success states
-theme.colors.status.warning  // Warning states  
-theme.colors.status.error    // Error states
-theme.colors.status.info     // Info states
-
-// Background colors
-theme.colors.background.primary    // Main backgrounds
-theme.colors.background.secondary  // Secondary backgrounds
-theme.colors.background.elevated   // Cards, modals
-theme.colors.background.overlay    // Modal backdrops
+theme.colors.status.success           // Green success states
+theme.colors.status.warning           // Orange warning states  
+theme.colors.status.error             // Red error states
+theme.colors.status.info              // Blue info states
 ```
 
 ### Using Colors
 
 ```tsx
-// ✅ Good - Using semantic tokens
-backgroundColor: theme.colors.background.primary,
-color: theme.colors.text.primary,
-borderColor: theme.colors.border.focused,
+// ✅ Good - Using Academy theme tokens
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: theme.colors.interactive.primary, // Academy purple
+    borderColor: theme.colors.border.primary,
+  },
+  text: {
+    color: theme.colors.text.primary,
+  },
+});
 
 // ❌ Bad - Using hardcoded colors
-backgroundColor: '#FFFFFF',
-color: '#000000', 
-borderColor: '#3B82F6',
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: '#4F2EC9', // Hardcoded, won't adapt to themes
+    borderColor: '#E5E7EB',
+  },
+  text: {
+    color: '#000000',
+  },
+});
 ```
 
 ## 📝 Typography
 
-### Type Scale
+### Academy Typography Scale
 
 The typography system provides consistent text styles:
 
 ```tsx
-// Display text (heroes, large headings)
-theme.typography.display.lg
-theme.typography.display.xl
+import { useTheme } from '@academy/mobile-shared';
+
+const { theme } = useTheme();
 
 // Headings
-theme.typography.heading.h1  // 36px, bold
-theme.typography.heading.h2  // 30px, bold  
-theme.typography.heading.h3  // 24px, semibold
-theme.typography.heading.h4  // 20px, semibold
-theme.typography.heading.h5  // 18px, medium
-theme.typography.heading.h6  // 16px, medium
+theme.fontSizes.h1          // 32px
+theme.fontSizes.h2          // 28px  
+theme.fontSizes.h3          // 24px
+theme.fontSizes.h4          // 20px
 
 // Body text
-theme.typography.body.xl     // 20px, regular
-theme.typography.body.lg     // 18px, regular
-theme.typography.body.base   // 16px, regular (default)
-theme.typography.body.sm     // 14px, regular
-theme.typography.body.xs     // 12px, regular
+theme.fontSizes.body        // 16px (default)
+theme.fontSizes.bodyLarge   // 18px
+theme.fontSizes.bodySmall   // 14px
+theme.fontSizes.caption     // 12px
 
-// UI text
-theme.typography.button.lg   // Button text large
-theme.typography.button.base // Button text default
-theme.typography.label.lg    // Form labels
-theme.typography.caption.base // Captions, metadata
-```
-
-### Font Weights
-
-```tsx
-theme.fontConfig.fontWeight.light     // 300
-theme.fontConfig.fontWeight.regular   // 400
-theme.fontConfig.fontWeight.medium    // 500
-theme.fontConfig.fontWeight.semibold  // 600
-theme.fontConfig.fontWeight.bold      // 700
+// Font weights
+theme.fontConfig.fontWeight.light     // '300'
+theme.fontConfig.fontWeight.regular   // '400'
+theme.fontConfig.fontWeight.medium    // '500'
+theme.fontConfig.fontWeight.semibold  // '600'
+theme.fontConfig.fontWeight.bold      // '700'
 ```
 
 ### Usage Examples
 
 ```tsx
-// ✅ Good - Using typography tokens
-<Text style={theme.typography.heading.h2}>Page Title</Text>
-<Text style={theme.typography.body.base}>Body content</Text>
+// ✅ Good - Using Academy typography tokens
+const styles = StyleSheet.create({
+  title: {
+    fontSize: theme.fontSizes.h2,
+    fontWeight: theme.fontConfig.fontWeight.bold,
+    color: theme.colors.text.primary,
+  },
+  body: {
+    fontSize: theme.fontSizes.body,
+    fontWeight: theme.fontConfig.fontWeight.regular,
+    color: theme.colors.text.secondary,
+  },
+});
 
-// ✅ Good - Combining with colors
-<Text style={[
-  theme.typography.heading.h3,
-  { color: theme.colors.text.primary }
-]}>
-  Section Header
-</Text>
-
-// ❌ Bad - Hardcoded font properties
-<Text style={{ fontSize: 18, fontWeight: '600' }}>Title</Text>
+// ❌ Bad - Hardcoded typography
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#000000',
+  },
+});
 ```
 
 ## 📏 Spacing System
@@ -220,252 +229,299 @@ theme.fontConfig.fontWeight.bold      // 700
 Based on a 4px grid system for consistent alignment:
 
 ```tsx
-theme.spacing[0]   // 0px
-theme.spacing[1]   // 4px
-theme.spacing[2]   // 8px
-theme.spacing[3]   // 12px
-theme.spacing[4]   // 16px
-theme.spacing[6]   // 24px
-theme.spacing[8]   // 32px
-theme.spacing[12]  // 48px
-theme.spacing[16]  // 64px
-theme.spacing[20]  // 80px
-```
+import { useTheme } from '@academy/mobile-shared';
 
-### Component Spacing
+const { theme } = useTheme();
 
-Pre-defined spacing for common component patterns:
+// Spacing tokens
+theme.spacing.xs      // 4px
+theme.spacing.sm      // 8px
+theme.spacing.md      // 16px
+theme.spacing.lg      // 24px
+theme.spacing.xl      // 32px
+theme.spacing.xxl     // 48px
 
-```tsx
-// Form spacing
-theme.componentSpacing.form.fieldGap    // 16px between form fields
-theme.componentSpacing.form.labelGap    // 8px between label and input
-theme.componentSpacing.form.sectionGap  // 24px between form sections
-
-// Layout spacing  
-theme.componentSpacing.layout.screenPadding  // 16px screen edges
-theme.componentSpacing.layout.sectionGap     // 32px between sections
-theme.componentSpacing.layout.cardGap        // 16px between cards
-
-// Button spacing
-theme.componentSpacing.button.paddingX  // 16px horizontal padding
-theme.componentSpacing.button.paddingY  // 12px vertical padding
+// Border radius
+theme.borderRadius.sm  // 4px
+theme.borderRadius.md  // 8px
+theme.borderRadius.lg  // 12px
+theme.borderRadius.xl  // 16px
 ```
 
 ### Usage Examples
 
 ```tsx
-// ✅ Good - Using spacing tokens
-marginBottom: theme.spacing[4],
-padding: theme.spacing[6],
-gap: theme.spacing[2],
-
-// ✅ Good - Using component spacing
-padding: theme.componentSpacing.layout.screenPadding,
-marginBottom: theme.componentSpacing.form.fieldGap,
+// ✅ Good - Using Academy spacing tokens
+const styles = StyleSheet.create({
+  container: {
+    padding: theme.spacing.lg,        // 24px
+    marginBottom: theme.spacing.md,   // 16px
+    borderRadius: theme.borderRadius.lg, // 12px
+  },
+  button: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+});
 
 // ❌ Bad - Hardcoded spacing
-marginBottom: 16,
-padding: 24,
+const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+    marginBottom: 16,
+    borderRadius: 12,
+  },
+});
 ```
 
 ## 🎨 Component Theming
 
-### Pre-built Component Themes
+### Using Academy Components
 
-The design system includes pre-configured component themes:
+All Academy components automatically use the theme system:
 
 ```tsx
-import { componentThemes } from '@shared';
+import { 
+  CustomButton, 
+  CustomInput, 
+  Header, 
+  StudentCard 
+} from '@academy/mobile-shared';
 
-// Button themes
-const primaryButtonStyle = componentThemes.button.primary(theme);
-const secondaryButtonStyle = componentThemes.button.secondary(theme);
+// Components automatically use Academy theming
+<CustomButton 
+  variant="primary"    // Academy purple styling
+  title="Submit" 
+/>
 
-// Input themes  
-const inputStyle = componentThemes.input.default(theme);
-const focusedInputStyle = componentThemes.input.focused(theme);
+<CustomInput 
+  variant="primary"    // Academy purple focus states
+  placeholder="Email" 
+/>
 
-// Card themes
-const cardStyle = componentThemes.card.default(theme);
-const elevatedCardStyle = componentThemes.card.elevated(theme);
+<Header 
+  variant="instructor" // Academy instructor theming
+  title="Students" 
+/>
 ```
 
-### Creating Custom Component Themes
+### Creating Custom Themed Components
 
 ```tsx
-const useCustomButtonStyles = createThemedStyles((theme) => ({
-  button: {
-    ...componentThemes.button.primary(theme),
-    borderRadius: theme.borderRadius.lg,
-    ...theme.elevation.md,
-  },
+import { useTheme } from '@academy/mobile-shared';
+
+function CustomCard({ children, variant = 'default' }) {
+  const { theme } = useTheme();
   
-  text: {
-    ...theme.typography.button.base,
-    color: theme.colors.text.inverse,
-  },
-}));
+  const cardStyles = StyleSheet.create({
+    default: {
+      backgroundColor: theme.colors.background.secondary,
+      borderColor: theme.colors.border.primary,
+      borderWidth: 1,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.lg,
+    },
+    academy: {
+      backgroundColor: theme.colors.background.secondary,
+      borderColor: theme.colors.interactive.primary, // Academy purple border
+      borderWidth: 2,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.lg,
+    },
+  });
+
+  return (
+    <View style={cardStyles[variant]}>
+      {children}
+    </View>
+  );
+}
 ```
 
 ## 🔧 Advanced Usage
 
-### Responsive Theming
+### Theme-Aware Conditional Styling
 
 ```tsx
-const useResponsiveStyles = createThemedStyles((theme) => ({
-  container: {
-    padding: theme.spacing[4],
-    // Add responsive overrides
-    ...(theme.breakpoints.md && {
-      padding: theme.spacing[6],
-    }),
-  },
-}));
-```
+import { useTheme } from '@academy/mobile-shared';
 
-### Theme Utilities
-
-```tsx
-import { themeUtils } from '@shared';
-
-// Add opacity to colors
-const transparentBlue = themeUtils.withOpacity(theme.colors.interactive.primary, 0.5);
-
-// Get contrasting text color
-const textColor = themeUtils.getContrastText(backgroundColor);
-
-// Create shadows
-const shadowStyle = themeUtils.createShadow('md', theme.colors.interactive.primary);
+function AdaptiveComponent() {
+  const { theme, themeMode } = useTheme();
+  
+  const isDark = themeMode === 'dark' || themeMode === 'night';
+  
+  return (
+    <View style={[
+      styles.container,
+      {
+        backgroundColor: theme.colors.background.primary,
+        // Add extra shadow in light mode
+        ...(isDark ? {} : {
+          shadowColor: theme.colors.interactive.primary,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 3,
+        }),
+      }
+    ]}>
+      <Text style={{ color: theme.colors.text.primary }}>
+        Academy Content
+      </Text>
+    </View>
+  );
+}
 ```
 
 ### Performance Optimization
 
 ```tsx
-// ✅ Good - Memoized styles
-const useOptimizedStyles = createThemedStyles((theme) => 
-  StyleSheet.create({
-    // styles here are automatically memoized
-  })
-);
+import { useTheme } from '@academy/mobile-shared';
+import { useMemo } from 'react';
 
-// ✅ Good - Selective theme subscriptions
-const colors = useThemeColors(); // Only re-renders on color changes
-const spacing = useThemeSpacing(); // Only re-renders on spacing changes
+function OptimizedComponent() {
+  const { theme } = useTheme();
+  
+  // Memoize styles to prevent recreation on every render
+  const styles = useMemo(() => StyleSheet.create({
+    container: {
+      backgroundColor: theme.colors.background.primary,
+      padding: theme.spacing.lg,
+      borderRadius: theme.borderRadius.md,
+    },
+    text: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.body,
+    },
+  }), [theme]);
 
-// ❌ Bad - Full theme subscription
-const { theme } = useTheme(); // Re-renders on any theme change
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Academy App</Text>
+    </View>
+  );
+}
 ```
 
 ## ♿ Accessibility
 
 ### Color Contrast
 
-All color combinations meet WCAG 2.1 AA standards:
+All Academy color combinations meet WCAG 2.1 AA standards:
+
+- Academy purple (#4F2EC9) on white backgrounds: ✅ 4.5:1+
+- Text colors on Academy backgrounds: ✅ 4.5:1+
+- All theme variations maintain proper contrast ratios
+
+### Academy Accessibility Features
 
 ```tsx
-// Colors are automatically tested for contrast
-theme.colors.text.primary on theme.colors.background.primary ✅ 4.5:1+
-theme.colors.text.secondary on theme.colors.background.primary ✅ 4.5:1+
-```
+// Academy components include built-in accessibility
+<CustomButton
+  title="Submit"
+  variant="primary"
+  accessibilityLabel="Submit form"
+  accessibilityHint="Submits the student enrollment form"
+/>
 
-### Touch Targets
-
-Minimum touch target sizes are enforced:
-
-```tsx
-theme.safeArea.minTouchTarget.width   // 44px minimum
-theme.safeArea.minTouchTarget.height  // 44px minimum
-```
-
-### Typography Accessibility
-
-```tsx
-// Minimum font sizes for readability
-theme.typography.body.xs  // 12px minimum
-theme.typography.body.sm  // 14px recommended for body text
-
-// Adequate line heights for readability
-lineHeight: fontSize * 1.5  // Automatic in typography tokens
+<CustomInput
+  placeholder="Student Name"
+  accessibilityLabel="Student name input field"
+  accessibilityRole="text"
+/>
 ```
 
 ## 🎯 Best Practices
 
 ### Do's ✅
 
-- Use semantic color tokens (`theme.colors.text.primary`)
-- Use typography tokens (`theme.typography.heading.h2`)
-- Use spacing tokens (`theme.spacing[4]`)
-- Create themed styles with `createThemedStyles`
-- Use component-specific spacing (`theme.componentSpacing.form.fieldGap`)
-- Test your components in all three theme modes
+- Use Academy theme tokens (`theme.colors.interactive.primary`)
+- Use Academy typography tokens (`theme.fontSizes.body`)
+- Use Academy spacing tokens (`theme.spacing.lg`)
+- Test components in all three theme modes (light, dark, night)
+- Use Academy components when available (`CustomButton`, `CustomInput`)
+- Maintain Academy brand consistency across instructor and student apps
 
 ### Don'ts ❌
 
-- Hardcode colors (`'#FF0000'`)
+- Hardcode Academy purple (`'#4F2EC9'`)
 - Hardcode font sizes (`fontSize: 16`)
 - Hardcode spacing (`margin: 10`)
-- Create inline styles that don't use theme
-- Assume colors work in all themes
-- Forget to test accessibility contrast
+- Create inline styles without theme tokens
+- Forget to test theme switching functionality
+- Break Academy brand consistency
 
 ### Migration from Hardcoded Styles
 
 ```tsx
-// Before ❌
+// Before ❌ - Hardcoded Academy styling
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 8,
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: '#4F2EC9', // Hardcoded Academy purple
     marginBottom: 8,
+  },
+  button: {
+    backgroundColor: '#4F2EC9',
+    padding: 12,
+    borderRadius: 6,
   },
 });
 
-// After ✅
-const useThemedStyles = createThemedStyles((theme) =>
-  StyleSheet.create({
+// After ✅ - Academy theme system
+function ThemedComponent() {
+  const { theme } = useTheme();
+  
+  const styles = useMemo(() => StyleSheet.create({
     container: {
-      backgroundColor: theme.colors.background.elevated,
-      padding: theme.spacing[4],
+      backgroundColor: theme.colors.background.primary,
+      padding: theme.spacing.lg,
       borderRadius: theme.borderRadius.md,
-      ...theme.elevation.sm,
     },
     title: {
-      ...theme.typography.heading.h4,
-      color: theme.colors.text.primary,
-      marginBottom: theme.spacing[2],
+      fontSize: theme.fontSizes.h4,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.interactive.primary, // Academy purple, theme-aware
+      marginBottom: theme.spacing.sm,
     },
-  })
-);
+  }), [theme]);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Academy Title</Text>
+      <CustomButton 
+        variant="primary" 
+        title="Academy Button" 
+      />
+    </View>
+  );
+}
 ```
 
 ## 📚 Related Documentation
 
-- **[Colors](./COLORS.md)** - Complete color system documentation
-- **[Typography](./TYPOGRAPHY.md)** - Typography scale and usage
-- **[Spacing](./SPACING.md)** - Spacing system and layout patterns
-- **[Components](../components/)** - Individual component documentation
-- **[Migration Guide](./MIGRATION.md)** - Migrating from hardcoded styles
+- **[Academy Theme System](../THEME_SYSTEM.md)** - Complete theming reference
+- **[Form Components](../components/forms/README.md)** - Academy form component usage
+- **[Enhanced Components](../components/ENHANCED_COMPONENTS.md)** - Academy-specific features
+- **[Multi-Program Context](../architecture/MULTI_PROGRAM_CONTEXT.md)** - Program theming integration
 
-## 🔄 Theme Migration Checklist
+## 🔄 Academy Theme Migration Checklist
 
-When converting components to use the theme system:
+When converting components to use the Academy theme system:
 
-- [ ] Replace hardcoded colors with semantic tokens
-- [ ] Replace hardcoded fonts with typography tokens  
-- [ ] Replace hardcoded spacing with spacing tokens
-- [ ] Use `createThemedStyles` for component styles
+- [ ] Replace hardcoded Academy purple with `theme.colors.interactive.primary`
+- [ ] Replace hardcoded fonts with Academy typography tokens  
+- [ ] Replace hardcoded spacing with Academy spacing tokens
 - [ ] Test component in light, dark, and night themes
-- [ ] Verify accessibility contrast ratios
-- [ ] Update component documentation
-- [ ] Add theme prop types if needed
+- [ ] Verify Academy brand consistency is maintained
+- [ ] Ensure accessibility contrast ratios are preserved
+- [ ] Update component documentation with Academy examples
+- [ ] Use Academy components (`CustomButton`, etc.) when available
 
-The Academy Design System ensures consistent, accessible, and maintainable styling across all mobile applications while providing excellent developer experience and user experience.
+The Academy Design System ensures consistent, accessible, and maintainable styling across both instructor and student mobile applications while maintaining the distinctive Academy brand identity.

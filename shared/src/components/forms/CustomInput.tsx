@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import { View, Text, TextInput, Pressable, KeyboardTypeOptions, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useController, Control, FieldValues, RegisterOptions } from "react-hook-form";
 import { FormFieldProps } from "../../types";
-import { useTheme, createThemedStyles } from "../../theme/ThemeProvider";
+import { useTheme } from "../../theme/ThemeProvider";
 import { themeUtils } from "../../theme";
 
 
@@ -153,6 +153,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
   const { theme } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry);
+  const inputRef = useRef<TextInput>(null);
 
   // Form integration or standalone state
   const formField = control && name ? useController({
@@ -187,11 +188,22 @@ const CustomInput: React.FC<CustomInputProps> = ({
     setIsFocused(true);
   }, []);
 
-  const togglePasswordVisibility = useCallback(() => {
+  const handleContainerPress = useCallback(() => {
+    if (!disabled && editable && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [disabled, editable]);
+
+  const togglePasswordVisibility = useCallback((event?: any) => {
+    // Prevent event bubbling
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
     setIsPasswordVisible(prev => !prev);
   }, []);
 
-  const styles = useThemedStyles();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Get variant-specific styles
   const getVariantStyles = useMemo(() => {
@@ -229,10 +241,17 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
     return (
       <Pressable 
-        onPress={togglePasswordVisibility}
-        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.iconButton]}
+        onPress={(event) => {
+          event.stopPropagation(); // Prevent container press
+          togglePasswordVisibility(event);
+        }}
+        style={({ pressed }) => [
+          { opacity: pressed ? 0.8 : 1 }, 
+          styles.iconButton
+        ]}
         accessibilityRole="button"
         accessibilityLabel={isPasswordVisible ? "Hide password" : "Show password"}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         <Ionicons
           name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
@@ -259,12 +278,16 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
   return (
     <View style={[styles.container, containerStyle]}>
-      <View style={[
-        styles.inputContainer,
-        ...getVariantStyles,
-        getSizeStyles,
-        style,
-      ]}>
+      <Pressable 
+        onPress={handleContainerPress}
+        style={[
+          styles.inputContainer,
+          ...getVariantStyles,
+          getSizeStyles,
+          style,
+        ]}
+        accessible={false} // Let the TextInput handle accessibility
+      >
         {(startIcon || leftIcon) && (
           <View style={styles.leftIconContainer}>
             {startIcon || leftIcon}
@@ -272,6 +295,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
         )}
 
         <TextInput
+          ref={inputRef}
           value={value}
           onChangeText={handleChangeText}
           onFocus={handleFocus}
@@ -296,7 +320,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
             getSizeStyles,
             inputStyle,
             disabled && styles.textInputDisabled,
-            { pointerEvents: disabled ? 'none' : 'auto' },
           ]}
           accessibilityLabel={accessibilityLabel || placeholder}
           accessibilityHint={accessibilityHint}
@@ -305,6 +328,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
             selected: isFocused,
           }}
           testID={testID || name}
+          pointerEvents={disabled ? 'none' : 'auto'}
         />
 
         {renderErrorIcon()}
@@ -315,7 +339,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
             {endIcon || rightIcon}
           </View>
         )}
-      </View>
+      </Pressable>
 
       {error && (
         <View style={styles.errorContainer}>
@@ -334,146 +358,151 @@ const CustomInput: React.FC<CustomInputProps> = ({
   );
 };
 
-const useThemedStyles = createThemedStyles((theme) => 
-  StyleSheet.create({
-    container: {
-      marginBottom: theme.componentSpacing.form.fieldGap,
-    },
+const createStyles = (theme: any) => StyleSheet.create({
+  container: {
+    marginBottom: theme.spacing.md,
+    width: '100%',
+  },
 
-    inputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
 
-    // Base input styles
-    input: {
-      backgroundColor: theme.colors.background.primary,
-      borderWidth: theme.borderWidth.sm,
-      borderColor: theme.colors.border.primary,
-      borderRadius: theme.borderRadius.md,
-      minHeight: theme.safeArea.minTouchTarget.height,
-    },
+  // Base input styles
+  input: {
+    backgroundColor: theme.colors.background.primary,
+    borderWidth: 1,
+    borderColor: theme.colors.border.primary,
+    borderRadius: theme.borderRadius.md,
+    minHeight: 44,
+  },
 
-    inputFocused: {
-      borderColor: theme.colors.border.focused,
-      borderWidth: theme.borderWidth.md,
-      ...themeUtils.createShadow('sm', theme.colors.interactive.primary),
-    },
+  inputFocused: {
+    borderColor: theme.colors.interactive.primary,
+    borderWidth: 2,
+    ...themeUtils.createShadow('sm', theme.colors.interactive.primary),
+  },
 
-    inputError: {
-      borderColor: theme.colors.border.error,
-      borderWidth: theme.borderWidth.sm,
-    },
+  inputError: {
+    borderColor: theme.colors.status.error,
+    borderWidth: 1,
+  },
 
-    inputDisabled: {
-      backgroundColor: theme.colors.background.secondary,
-      borderColor: theme.colors.border.primary,
-      opacity: 0.6,
-    },
+  inputDisabled: {
+    backgroundColor: theme.colors.background.secondary,
+    borderColor: theme.colors.border.primary,
+    opacity: 0.6,
+  },
 
-    // Variant styles
-    inputOutline: {
-      backgroundColor: 'transparent',
-      borderWidth: theme.borderWidth.md,
-      borderColor: theme.colors.border.secondary,
-    },
+  // Variant styles
+  inputOutline: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: theme.colors.border.secondary,
+  },
 
-    inputGhost: {
-      backgroundColor: 'transparent',
-      borderWidth: 0,
-      borderBottomWidth: theme.borderWidth.sm,
-      borderRadius: 0,
-      borderBottomColor: theme.colors.border.primary,
-    },
+  inputGhost: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderRadius: 0,
+    borderBottomColor: theme.colors.border.primary,
+  },
 
-    inputPassword: {
-      backgroundColor: theme.colors.background.secondary,
-      borderColor: theme.colors.border.primary,
-    },
+  inputPassword: {
+    backgroundColor: theme.colors.background.secondary,
+    borderColor: theme.colors.border.primary,
+  },
 
-    // Size styles
-    sizeSmall: {
-      paddingHorizontal: theme.spacing[3],
-      paddingVertical: theme.spacing[2],
-      minHeight: 36,
-    },
+  // Size styles
+  sizeSmall: {
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    minHeight: 36,
+  },
 
-    sizeMedium: {
-      paddingHorizontal: theme.spacing[4],
-      paddingVertical: theme.spacing[3],
-      minHeight: theme.safeArea.minTouchTarget.height,
-    },
+  sizeMedium: {
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+    minHeight: 44,
+  },
 
-    sizeLarge: {
-      paddingHorizontal: theme.spacing[5],
-      paddingVertical: theme.spacing[4],
-      minHeight: 52,
-    },
+  sizeLarge: {
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.md,
+    minHeight: 52,
+  },
 
-    // Text input
-    textInput: {
-      flex: 1,
-      ...theme.typography.body.base,
-      color: theme.colors.text.primary,
-      textAlignVertical: 'center',
-    },
+  // Text input
+  textInput: {
+    flex: 1,
+    fontSize: theme.fontSizes.base,
+    fontWeight: theme.fontConfig.fontWeight.regular,
+    color: theme.colors.text.primary,
+    textAlignVertical: 'center',
+    padding: 0, // Remove default padding to prevent touch issues
+    margin: 0,  // Remove default margin to prevent touch issues
+  },
 
-    textInputDisabled: {
-      color: theme.colors.text.disabled,
-    },
+  textInputDisabled: {
+    color: theme.colors.text.disabled,
+  },
 
-    // Icon containers
-    leftIconContainer: {
-      marginRight: theme.spacing[3],
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
+  // Icon containers
+  leftIconContainer: {
+    marginLeft: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-    rightIconContainer: {
-      marginLeft: theme.spacing[3],
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
+  rightIconContainer: {
+    marginLeft: theme.spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-    iconButton: {
-      marginLeft: theme.spacing[3],
-      padding: theme.spacing[1],
-      alignItems: 'center',
-      justifyContent: 'center',
-      minWidth: theme.safeArea.minTouchTarget.width,
-      minHeight: theme.safeArea.minTouchTarget.height,
-    },
+  iconButton: {
+    marginLeft: theme.spacing.sm,
+    padding: theme.spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 32,
+    minHeight: 32,
+  },
 
-    errorIconContainer: {
-      marginLeft: theme.spacing[2],
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
+  errorIconContainer: {
+    marginLeft: theme.spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-    // Error message
-    errorContainer: {
-      marginTop: theme.spacing[1],
-      paddingHorizontal: theme.spacing[1],
-    },
+  // Error message
+  errorContainer: {
+    marginTop: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.xs,
+  },
 
-    errorText: {
-      ...theme.typography.caption.base,
-      color: theme.colors.status.error,
-    },
+  errorText: {
+    fontSize: theme.fontSizes.xs,
+    color: theme.colors.status.error,
+  },
 
-    // Required indicator
-    requiredContainer: {
-      position: 'absolute',
-      top: -2,
-      right: -2,
-    },
+  // Required indicator
+  requiredContainer: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+  },
 
-    requiredText: {
-      ...theme.typography.caption.base,
-      color: theme.colors.status.error,
-      fontWeight: theme.fontConfig.fontWeight.bold,
-    },
-  })
-);
+  requiredText: {
+    fontSize: theme.fontSizes.xs,
+    color: theme.colors.status.error,
+    fontWeight: theme.fontConfig.fontWeight.bold,
+  },
+});
 
 export { CustomInput };

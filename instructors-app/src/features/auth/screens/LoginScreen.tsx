@@ -144,7 +144,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
                 autoCapitalize="none"
                 autoComplete="email"
                 textContentType="emailAddress"
-                icon={<Ionicons name="mail-outline" size={20} color="#9CA3AF" />}
+                icon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
                 error={errors.email?.message}
               />
 
@@ -157,6 +157,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
                 autoComplete="password"
                 textContentType="password"
                 handleShowPassword={() => setShowPassword(!showPassword)}
+                icon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
                 error={errors.password?.message}
               />
 

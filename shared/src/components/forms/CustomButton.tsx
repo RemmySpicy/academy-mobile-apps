@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   Pressable, 
   Text, 
@@ -7,8 +7,9 @@ import {
   ViewStyle, 
   TextStyle,
   View,
+  Platform,
 } from 'react-native';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme } from '../../theme';
 import { themeUtils } from '../../theme';
 
 
@@ -76,7 +77,26 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   testID,
 }) => {
   const { theme } = useTheme();
-  const styles = useThemedStyles();
+  
+  // Debug logging for mobile issues
+  if (Platform.OS !== 'web') {
+    console.log('🔍 CustomButton render:', {
+      title,
+      variant,
+      size,
+      themeExists: !!theme,
+      colorsExist: !!theme?.colors,
+      primaryColor: theme?.colors?.interactive?.primary,
+      textColor: theme?.colors?.text?.primary,
+      backgroundColor: theme?.colors?.background?.primary,
+      // Log the actual theme object structure
+      themeKeys: theme ? Object.keys(theme) : 'NO_THEME',
+      colorsKeys: theme?.colors ? Object.keys(theme.colors) : 'NO_COLORS',
+      interactiveKeys: theme?.colors?.interactive ? Object.keys(theme.colors.interactive) : 'NO_INTERACTIVE',
+    });
+  }
+  
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const getButtonStyles = () => {
     const baseStyles = [
@@ -128,6 +148,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         {/* Centered Text */}
         <Text 
           style={[...getTextStyles(), textStyle]}
+          allowFontScaling={false}
         >
           {title}
         </Text>
@@ -169,175 +190,347 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   );
 };
 
-const useThemedStyles = createThemedStyles((theme) =>
-  StyleSheet.create({
-    button: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '100%',
-      borderRadius: 25, // Matching existing rounded-[25px]
-      position: 'relative',
-    },
+const createStyles = (theme: any) => StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    borderRadius: 25, // Matching existing rounded-[25px]
+    position: 'relative',
+    // Ensure proper touch target size on mobile
+    minHeight: 44,
+    // Platform-specific adjustments
+    ...(Platform.OS === 'android' && {
+      elevation: 0, // Remove default Android elevation
+    }),
+    ...(Platform.OS === 'ios' && {
+      shadowOpacity: 0, // Remove default iOS shadow
+    }),
+    // Mobile-specific improvements
+    ...(Platform.OS !== 'web' && {
+      // Ensure buttons are properly sized on mobile
+      minWidth: 44,
+      // Add some padding for better touch targets
+      paddingVertical: 2,
+    }),
+    // Fallback styles to ensure visibility - ALWAYS show these
+    backgroundColor: theme?.colors?.interactive?.primary || '#4F2EC9',
+    borderWidth: 0,
+    // Force visibility on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#4F2EC9', // Force Academy purple
+      borderWidth: 0,
+    }),
+  },
 
-    // Size variants
-    sm: {
-      paddingHorizontal: theme.spacing.md, // px-4
-      height: 36, // h-9 (9 * 4 = 36px)
-      minHeight: 36,
-    },
+  // Size variants
+  sm: {
+    paddingHorizontal: theme?.spacing?.md || 16, // px-4
+    height: 36, // h-9 (9 * 4 = 36px)
+    minHeight: 36,
+    // Mobile-specific adjustments
+    ...(Platform.OS !== 'web' && {
+      minHeight: 44, // Ensure minimum touch target on mobile
+    }),
+  },
 
-    md: {
-      paddingHorizontal: theme.spacing.md, // px-4  
-      height: 48, // h-12 (12 * 4 = 48px)
-      minHeight: 48,
-    },
+  md: {
+    paddingHorizontal: theme?.spacing?.md || 16, // px-4  
+    height: 48, // h-12 (12 * 4 = 48px)
+    minHeight: 48,
+  },
 
-    // Button variant backgrounds (matching existing design)
-    primary: {
-      backgroundColor: theme.colors.interactive.primary, // #4F2EC9
-    },
+  // Button variant backgrounds (matching existing design)
+  primary: {
+    backgroundColor: theme?.colors?.interactive?.primary || '#4F2EC9',
+    // Force primary color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#4F2EC9',
+    }),
+  },
 
-    teal: {
-      backgroundColor: theme.colors.interactive.teal, // #52E2BB
-    },
+  teal: {
+    backgroundColor: theme?.colors?.interactive?.teal || '#52E2BB',
+    // Force teal color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#52E2BB',
+    }),
+  },
 
-    outline: {
-      backgroundColor: theme.colors.background.secondary,
-    },
+  outline: {
+    backgroundColor: theme?.colors?.background?.secondary || '#F5F5F5',
+    // Force outline color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#F5F5F5',
+    }),
+  },
 
-    outlineTheme: {
-      backgroundColor: theme.colors.background.primary, // white
-      borderWidth: 1,
-      borderColor: theme.colors.interactive.primary, // #4F2EC9
-    },
+  outlineTheme: {
+    backgroundColor: theme?.colors?.background?.primary || '#FFFFFF',
+    borderWidth: 1,
+    borderColor: theme?.colors?.interactive?.primary || '#4F2EC9',
+    // Force outline theme colors on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#FFFFFF',
+      borderColor: '#4F2EC9',
+    }),
+  },
 
-    outlineTeal: {
-      backgroundColor: theme.colors.background.primary, // white
-      borderWidth: 1,
-      borderColor: theme.colors.interactive.teal, // #52E2BB
-    },
+  outlineTeal: {
+    backgroundColor: theme?.colors?.background?.primary || '#FFFFFF',
+    borderWidth: 1,
+    borderColor: theme?.colors?.interactive?.teal || '#52E2BB',
+    // Force outline teal colors on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#FFFFFF',
+      borderColor: '#52E2BB',
+    }),
+  },
 
-    danger: {
-      backgroundColor: theme.colors.interactive.danger + '1A', // bg-opacity-10 = 10% = 1A in hex
-    },
+  danger: {
+    backgroundColor: (theme?.colors?.interactive?.danger || '#EE4A52') + '1A', // bg-opacity-10 = 10% = 1A in hex
+    // Force danger color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#EE4A52',
+    }),
+  },
 
-    gray: {
-      backgroundColor: theme.colors.border.primary,
-    },
+  gray: {
+    backgroundColor: theme?.colors?.border?.primary || '#E5E5E5',
+    // Force gray color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#E5E5E5',
+    }),
+  },
 
-    faded: {
-      backgroundColor: theme.colors.interactive.faded, // #EAF4F4
-    },
+  faded: {
+    backgroundColor: theme?.colors?.interactive?.faded || '#EAF4F4',
+    // Force faded color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#EAF4F4',
+    }),
+  },
 
-    orange: {
-      backgroundColor: theme.colors.interactive.orange, // #FEAE24
-    },
+  orange: {
+    backgroundColor: theme?.colors?.interactive?.orange || '#FEAE24',
+    // Force orange color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#FEAE24',
+    }),
+  },
 
-    lightGray: {
-      backgroundColor: theme.colors.background.secondary,
-    },
+  lightGray: {
+    backgroundColor: theme?.colors?.background?.secondary || '#FAFAFA',
+    // Force light gray color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#FAFAFA',
+    }),
+  },
 
-    black: {
-      backgroundColor: theme.colors.interactive.themeBlack, // #121212
-    },
+  black: {
+    backgroundColor: theme?.colors?.interactive?.themeBlack || '#121212',
+    // Force black color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#121212',
+    }),
+  },
 
-    cancel: {
-      backgroundColor: theme.colors.interactive.primary + '1A', // #4F2EC9 with 10% opacity
-    },
+  cancel: {
+    backgroundColor: (theme?.colors?.interactive?.primary || '#4F2EC9') + '1A', // #4F2EC9 with 10% opacity
+    // Force cancel color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#4F2EC9',
+    }),
+  },
 
-    normal: {
-      backgroundColor: theme.colors.background.secondary + '1A', // with 10% opacity
-    },
+  normal: {
+    backgroundColor: (theme?.colors?.background?.secondary || '#F5F5F5') + '1A', // with 10% opacity
+    // Force normal color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#F5F5F5',
+    }),
+  },
 
-    disabled: {
-      backgroundColor: theme.colors.interactive.primaryDisabled,
-      opacity: 0.6,
-    },
+  disabled: {
+    backgroundColor: theme?.colors?.interactive?.primaryDisabled || '#D1D5DB',
+    opacity: 0.6,
+  },
 
-    // Text styles for each variant
-    text: {
-      ...theme.typography.button.base,
-      textAlign: 'center',
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
+  // Text styles for each variant
+  text: {
+    ...(theme?.typography?.button?.base || {}),
+    textAlign: 'center',
+    fontWeight: theme?.fontConfig?.fontWeight?.medium || '500',
+    // Ensure text is visible on mobile
+    color: theme?.colors?.text?.primary || '#000000',
+    // Platform-specific text adjustments
+    ...(Platform.OS === 'android' && {
+      fontFamily: 'Roboto',
+    }),
+    ...(Platform.OS === 'ios' && {
+      fontFamily: 'System',
+    }),
+    // Mobile-specific text improvements
+    ...(Platform.OS !== 'web' && {
+      // Ensure text is readable on mobile
+      fontSize: Math.max((theme?.typography?.button?.base?.fontSize || 14), 14),
+      lineHeight: Math.max((theme?.typography?.button?.base?.lineHeight || 20), 20),
+      // Force text color on mobile
+      color: '#FFFFFF', // Force white text for visibility
+    }),
+    // Fallback font size
+    fontSize: theme?.typography?.button?.base?.fontSize || 14,
+    lineHeight: theme?.typography?.button?.base?.lineHeight || 20,
+  },
 
-    smText: {
-      ...theme.typography.button.sm,
-    },
+  smText: {
+    ...(theme?.typography?.button?.sm || {}),
+    // Mobile-specific adjustments
+    ...(Platform.OS !== 'web' && {
+      fontSize: Math.max((theme?.typography?.button?.sm?.fontSize || 12), 12),
+      lineHeight: Math.max((theme?.typography?.button?.sm?.lineHeight || 16), 16),
+      // Force text color on mobile
+      color: '#FFFFFF',
+    }),
+    // Fallback font size
+    fontSize: theme?.typography?.button?.sm?.fontSize || 12,
+    lineHeight: theme?.typography?.button?.sm?.lineHeight || 16,
+  },
 
-    mdText: {
-      ...theme.typography.button.base,
-    },
+  mdText: {
+    ...(theme?.typography?.button?.base || {}),
+    // Mobile-specific adjustments
+    ...(Platform.OS !== 'web' && {
+      fontSize: Math.max((theme?.typography?.button?.base?.fontSize || 14), 14),
+      lineHeight: Math.max((theme?.typography?.button?.base?.lineHeight || 20), 20),
+      // Force text color on mobile
+      color: '#FFFFFF',
+    }),
+    // Fallback font size
+    fontSize: theme?.typography?.button?.base?.fontSize || 14,
+    lineHeight: theme?.typography?.button?.base?.lineHeight || 20,
+  },
 
-    // Text colors for each variant (matching existing design)
-    primaryText: {
-      color: theme.colors.text.inverse, // white
-    },
+  // Text colors for each variant (matching existing design)
+  primaryText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF', // white
+    // Force white text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
+    }),
+  },
 
-    tealText: {
-      color: theme.colors.text.inverse, // white
-    },
+  tealText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF', // white
+    // Force white text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
+    }),
+  },
 
-    outlineText: {
-      color: theme.colors.interactive.themeBlack, // #121212
-    },
+  outlineText: {
+    color: theme?.colors?.interactive?.themeBlack || '#121212',
+    // Force dark text on mobile for outline buttons
+    ...(Platform.OS !== 'web' && {
+      color: '#121212',
+    }),
+  },
 
-    outlineThemeText: {
-      color: theme.colors.interactive.primary, // #4F2EC9
-    },
+  outlineThemeText: {
+    color: theme?.colors?.interactive?.primary || '#4F2EC9',
+    // Force primary color text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#4F2EC9',
+    }),
+  },
 
-    outlineTealText: {
-      color: theme.colors.interactive.teal, // #52E2BB
-    },
+  outlineTealText: {
+    color: theme?.colors?.interactive?.teal || '#52E2BB',
+    // Force teal color text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#52E2BB',
+    }),
+  },
 
-    dangerText: {
-      color: theme.colors.text.inverse, // white (for danger buttons)
-    },
+  dangerText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF', // white (for danger buttons)
+    // Force white text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
+    }),
+  },
 
-    grayText: {
-      color: theme.colors.text.secondary, // #5B5F5F
-    },
+  grayText: {
+    color: theme?.colors?.text?.secondary || '#5B5F5F',
+    // Force secondary text color on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#5B5F5F',
+    }),
+  },
 
-    fadedText: {
-      color: theme.colors.interactive.primary, // #4F2EC9
-    },
+  fadedText: {
+    color: theme?.colors?.interactive?.primary || '#4F2EC9',
+    // Force primary color text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#4F2EC9',
+    }),
+  },
 
-    orangeText: {
-      color: theme.colors.interactive.themeBlack, // #121212
-    },
+  orangeText: {
+    color: theme?.colors?.interactive?.themeBlack || '#121212',
+    // Force dark text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#121212',
+    }),
+  },
 
-    lightGrayText: {
-      color: theme.colors.text.secondary, // #5B5F5F
-    },
+  lightGrayText: {
+    color: theme?.colors?.text?.secondary || '#5B5F5F',
+    // Force secondary text color on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#5B5F5F',
+    }),
+  },
 
-    blackText: {
-      color: theme.colors.text.inverse, // white
-    },
+  blackText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF',
+    // Force white text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
+    }),
+  },
 
-    cancelText: {
-      color: theme.colors.text.inverse, // white
-    },
+  cancelText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF',
+    // Force white text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
+    }),
+  },
 
-    normalText: {
-      color: theme.colors.interactive.primary, // #4F2EC9
-    },
+  normalText: {
+    color: theme?.colors?.interactive?.primary || '#4F2EC9',
+    // Force primary color text on mobile
+    ...(Platform.OS !== 'web' && {
+      color: '#4F2EC9',
+    }),
+  },
 
-    disabledText: {
-      color: theme.colors.text.disabled,
-    },
+  disabledText: {
+    color: theme?.colors?.text?.disabled || '#9CA3AF',
+  },
 
-    // Icon containers (matching existing absolute positioning)
-    startIconContainer: {
-      position: 'absolute',
-      left: theme.spacing.md, // left-4
-    },
+  // Icon containers (matching existing absolute positioning)
+  startIconContainer: {
+    position: 'absolute',
+    left: theme?.spacing?.md || 16, // left-4
+  },
 
-    endIconContainer: {
-      position: 'absolute',
-      right: theme.spacing.md, // right-4
-    },
-  })
-);
+  endIconContainer: {
+    position: 'absolute',
+    right: theme?.spacing?.md || 16, // right-4
+  },
+});
 
 export { CustomButton };

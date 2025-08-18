@@ -84,11 +84,11 @@ theme.spacing.xxl   // 48px
 
 ### **Typography**
 ```typescript
-theme.typography.fontSize.xs     // 12px
-theme.typography.fontSize.sm     // 14px
-theme.typography.fontSize.body   // 16px
-theme.typography.fontSize.lg     // 18px
-theme.typography.fontSize.xl     // 24px
+theme.fontSizes.xs     // 12px
+theme.fontSizes.sm     // 14px
+theme.fontSizes.body   // 16px
+theme.fontSizes.lg     // 18px
+theme.fontSizes.xl     // 24px
 
 theme.fontConfig.fontWeight.normal      // '400'
 theme.fontConfig.fontWeight.medium      // '500'
@@ -121,7 +121,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   text: {
     color: theme.colors.text.primary,
-    fontSize: theme.typography.fontSize.body,
+    fontSize: theme.fontSizes.body,
     fontWeight: theme.fontConfig.fontWeight.medium,
   },
   button: {
@@ -132,7 +132,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   buttonText: {
     color: theme.colors.text.inverse,
-    fontSize: theme.typography.fontSize.sm,
+    fontSize: theme.fontSizes.sm,
     fontWeight: theme.fontConfig.fontWeight.semibold,
   },
 });
@@ -165,7 +165,7 @@ export const SimpleComponent: React.FC = () => {
     <View style={{ backgroundColor: theme.colors.background.primary }}>
       <Text style={{ 
         color: theme.colors.text.primary,
-        fontSize: theme.typography.fontSize.body 
+        fontSize: theme.fontSizes.body 
       }}>
         Simple Text
       </Text>
@@ -201,7 +201,7 @@ padding: 24
 // Use these instead:
 theme.colors.interactive.primary      // Academy purple
 theme.colors.background.primary       // White background
-theme.typography.fontSize.body        // 16px font size
+theme.fontSizes.body        // 16px font size
 theme.spacing.lg                      // 24px padding
 ```
 
@@ -278,7 +278,7 @@ If you find code using old patterns, migrate like this:
 // OLD - Replace these:
 color: "#4F2EC9"                    → theme.colors.interactive.primary
 backgroundColor: "#FFFFFF"          → theme.colors.background.primary
-fontSize: 16                        → theme.typography.fontSize.body
+fontSize: 16                        → theme.fontSizes.body
 padding: 24                         → theme.spacing.lg
 borderRadius: 8                     → theme.borderRadius.md
 

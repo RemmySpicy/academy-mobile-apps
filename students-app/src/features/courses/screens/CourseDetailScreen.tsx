@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View,
   Text,
   ScrollView,
   Pressable,
   useWindowDimensions,
-  Dimensions } from 'react-native';
+  Dimensions,
+  StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -15,7 +16,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomButton } from '@shared/components/forms';
+import { CustomButton, useTheme } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -48,6 +49,367 @@ interface CourseDetail {
   }[];
 }
 
+const createDetailStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.secondary,
+    },
+    header: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+    },
+    headerNav: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    navButton: {
+      width: 40,
+      height: 40,
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...theme.elevation.sm,
+    },
+    courseHeaderContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    courseCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.lg,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    courseHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    courseContent: {
+      flex: 1,
+      marginRight: theme.spacing.md,
+    },
+    courseTitle: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      fontSize: theme.fontSizes['2xl'],
+      marginBottom: theme.spacing.xs,
+    },
+    courseSubtitle: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.base,
+      marginBottom: theme.spacing.sm,
+    },
+    courseDetails: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+    },
+    detailItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginRight: theme.spacing.md,
+      marginBottom: theme.spacing.xs,
+    },
+    detailText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginLeft: theme.spacing.xs,
+    },
+    iconContainer: {
+      width: 64,
+      height: 64,
+      borderRadius: theme.borderRadius['2xl'],
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    priceContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    priceSection: {
+      // No specific styles needed, using flexDirection on parent
+    },
+    priceText: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      fontSize: theme.fontSizes['2xl'],
+    },
+    priceUnit: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+    },
+    levelBadge: {
+      backgroundColor: `${theme.colors.interactive.primary}15`,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.full,
+    },
+    levelText: {
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    tabsContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.md,
+    },
+    tabButton: {
+      marginRight: theme.spacing.md,
+      paddingBottom: theme.spacing.xs,
+    },
+    activeTab: {
+      borderBottomWidth: 2,
+      borderBottomColor: theme.colors.interactive.primary,
+    },
+    activeTabText: {
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    inactiveTabText: {
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    contentContainer: {
+      flex: 1,
+      paddingHorizontal: theme.spacing.lg,
+    },
+    bottomAction: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: theme.colors.background.primary,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border.primary,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+    },
+    // Content styles
+    sectionContainer: {
+      gap: theme.spacing.lg,
+    },
+    sectionTitle: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      marginBottom: theme.spacing.sm,
+    },
+    sectionText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.base,
+      lineHeight: theme.fontSizes.base * 1.5,
+    },
+    featureItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing.xs,
+    },
+    featureText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.base,
+      marginLeft: theme.spacing.sm,
+    },
+    instructorCard: {
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+    },
+    instructorHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing.sm,
+    },
+    instructorAvatar: {
+      width: 48,
+      height: 48,
+      backgroundColor: `${theme.colors.interactive.primary}15`,
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.spacing.sm,
+    },
+    instructorInitials: {
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    instructorInfo: {
+      flex: 1,
+    },
+    instructorName: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      fontSize: theme.fontSizes.base,
+    },
+    instructorExp: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+    },
+    certContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    certBadge: {
+      backgroundColor: theme.colors.background.primary,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs / 2,
+      borderRadius: theme.borderRadius.full,
+      marginRight: theme.spacing.xs,
+      marginBottom: theme.spacing.xs,
+    },
+    certText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.xs,
+    },
+    curriculumItem: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.md,
+    },
+    curriculumContent: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    curriculumNumber: {
+      width: 24,
+      height: 24,
+      backgroundColor: theme.colors.interactive.primary,
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.spacing.sm,
+      marginTop: theme.spacing.xs / 2,
+    },
+    curriculumNumberText: {
+      color: 'white',
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+    curriculumText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.base,
+      flex: 1,
+    },
+    scheduleItem: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.md,
+    },
+    scheduleContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    scheduleInfo: {
+      flex: 1,
+    },
+    scheduleDay: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      fontSize: theme.fontSizes.base,
+    },
+    scheduleTime: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginTop: theme.spacing.xs / 2,
+    },
+    scheduleLocation: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+    },
+    availableBadge: {
+      backgroundColor: `${theme.colors.status.success}15`,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs / 2,
+      borderRadius: theme.borderRadius.full,
+    },
+    availableText: {
+      color: theme.colors.status.success,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    reviewsHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    reviewsRating: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    reviewsRatingText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginLeft: theme.spacing.xs,
+    },
+    reviewCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.md,
+    },
+    reviewHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.xs,
+    },
+    reviewUser: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    reviewAvatar: {
+      width: 32,
+      height: 32,
+      backgroundColor: `${theme.colors.interactive.primary}15`,
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.spacing.sm,
+    },
+    reviewUserInitials: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    reviewUserInfo: {
+      // No specific styles needed
+    },
+    reviewUserName: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    reviewStars: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    reviewDate: {
+      color: theme.colors.text.quaternary,
+      fontSize: theme.fontSizes.xs,
+    },
+    reviewText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+    },
+  });
+
 /**
  * Course Detail Screen
  * 
@@ -60,6 +422,8 @@ interface CourseDetail {
  * - Direct booking integration
  */
 export const CourseDetailScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createDetailStyles(theme), [theme]);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute();
@@ -77,7 +441,7 @@ export const CourseDetailScreen: React.FC = () => {
     duration: '45 min',
     level: 'Beginner',
     price: 35,
-    color: '#3B82F6',
+    color: theme.colors.interactive.accent,
     features: ['Water Safety', 'Basic Strokes', 'Floating Techniques', 'Breathing Exercises', 'Confidence Building'],
     curriculum: [
       'Water familiarization and safety',
@@ -121,40 +485,40 @@ export const CourseDetailScreen: React.FC = () => {
     switch (selectedTab) {
       case 'overview':
         return (
-          <View className="space-y-6">
+          <View style={styles.sectionContainer}>
             <View>
-              <Text className="text-gray-900 text-lg font-semibold mb-3">About This Course</Text>
-              <Text className="text-gray-600 text-base leading-6">{courseDetail.longDescription}</Text>
+              <Text style={styles.sectionTitle}>About This Course</Text>
+              <Text style={styles.sectionText}>{courseDetail.longDescription}</Text>
             </View>
             
             <View>
-              <Text className="text-gray-900 text-lg font-semibold mb-3">What You'll Learn</Text>
+              <Text style={styles.sectionTitle}>What You'll Learn</Text>
               {courseDetail.features.map((feature, index) => (
-                <View key={index} className="flex-row items-center mb-2">
-                  <Ionicons name="checkmark-circle" size={20} color="#10B981" />
-                  <Text className="text-gray-600 text-base ml-3">{feature}</Text>
+                <View key={index} style={styles.featureItem}>
+                  <Ionicons name="checkmark-circle" size={20} color={theme.colors.status.success} />
+                  <Text style={styles.featureText}>{feature}</Text>
                 </View>
               ))}
             </View>
             
             <View>
-              <Text className="text-gray-900 text-lg font-semibold mb-3">Instructor</Text>
-              <View className="bg-gray-50 rounded-xl p-4">
-                <View className="flex-row items-center mb-3">
-                  <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-3">
-                    <Text className="text-blue-600 font-semibold">
+              <Text style={styles.sectionTitle}>Instructor</Text>
+              <View style={styles.instructorCard}>
+                <View style={styles.instructorHeader}>
+                  <View style={styles.instructorAvatar}>
+                    <Text style={styles.instructorInitials}>
                       {courseDetail.instructor.name.split(' ').map(n => n[0]).join('')}
                     </Text>
                   </View>
-                  <View className="flex-1">
-                    <Text className="text-gray-900 font-semibold text-base">{courseDetail.instructor.name}</Text>
-                    <Text className="text-gray-600 text-sm">{courseDetail.instructor.experience}</Text>
+                  <View style={styles.instructorInfo}>
+                    <Text style={styles.instructorName}>{courseDetail.instructor.name}</Text>
+                    <Text style={styles.instructorExp}>{courseDetail.instructor.experience}</Text>
                   </View>
                 </View>
-                <View className="flex-row flex-wrap">
+                <View style={styles.certContainer}>
                   {courseDetail.instructor.certifications.map((cert, index) => (
-                    <View key={index} className="bg-white px-3 py-1 rounded-full mr-2 mb-2">
-                      <Text className="text-gray-700 text-xs">{cert}</Text>
+                    <View key={index} style={styles.certBadge}>
+                      <Text style={styles.certText}>{cert}</Text>
                     </View>
                   ))}
                 </View>
@@ -165,15 +529,15 @@ export const CourseDetailScreen: React.FC = () => {
       
       case 'curriculum':
         return (
-          <View className="space-y-4">
-            <Text className="text-gray-900 text-lg font-semibold">Course Curriculum</Text>
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Course Curriculum</Text>
             {courseDetail.curriculum.map((item, index) => (
-              <View key={index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <View className="flex-row items-start">
-                  <View className="w-6 h-6 bg-blue-500 rounded-full items-center justify-center mr-3 mt-1">
-                    <Text className="text-white text-xs font-bold">{index + 1}</Text>
+              <View key={index} style={styles.curriculumItem}>
+                <View style={styles.curriculumContent}>
+                  <View style={styles.curriculumNumber}>
+                    <Text style={styles.curriculumNumberText}>{index + 1}</Text>
                   </View>
-                  <Text className="text-gray-700 text-base flex-1">{item}</Text>
+                  <Text style={styles.curriculumText}>{item}</Text>
                 </View>
               </View>
             ))}
@@ -182,18 +546,18 @@ export const CourseDetailScreen: React.FC = () => {
       
       case 'schedule':
         return (
-          <View className="space-y-4">
-            <Text className="text-gray-900 text-lg font-semibold">Available Sessions</Text>
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Available Sessions</Text>
             {courseDetail.schedule.map((session, index) => (
-              <View key={index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-1">
-                    <Text className="text-gray-900 font-semibold text-base">{session.day}</Text>
-                    <Text className="text-gray-600 text-sm mt-1">{session.time}</Text>
-                    <Text className="text-gray-500 text-sm">{session.location}</Text>
+              <View key={index} style={styles.scheduleItem}>
+                <View style={styles.scheduleContent}>
+                  <View style={styles.scheduleInfo}>
+                    <Text style={styles.scheduleDay}>{session.day}</Text>
+                    <Text style={styles.scheduleTime}>{session.time}</Text>
+                    <Text style={styles.scheduleLocation}>{session.location}</Text>
                   </View>
-                  <View className="bg-green-50 px-3 py-1 rounded-full">
-                    <Text className="text-green-600 text-xs font-medium">Available</Text>
+                  <View style={styles.availableBadge}>
+                    <Text style={styles.availableText}>Available</Text>
                   </View>
                 </View>
               </View>
@@ -203,12 +567,12 @@ export const CourseDetailScreen: React.FC = () => {
       
       case 'reviews':
         return (
-          <View className="space-y-4">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-gray-900 text-lg font-semibold">Reviews</Text>
-              <View className="flex-row items-center">
-                <Ionicons name="star" size={16} color="#F59E0B" />
-                <Text className="text-gray-600 text-sm ml-1">
+          <View style={styles.sectionContainer}>
+            <View style={styles.reviewsHeader}>
+              <Text style={styles.sectionTitle}>Reviews</Text>
+              <View style={styles.reviewsRating}>
+                <Ionicons name="star" size={16} color={theme.colors.status.warning} />
+                <Text style={styles.reviewsRatingText}>
                   {courseDetail.rating} ({courseDetail.reviews} reviews)
                 </Text>
               </View>
@@ -216,24 +580,24 @@ export const CourseDetailScreen: React.FC = () => {
             
             {/* Mock reviews */}
             {[1, 2, 3].map((review) => (
-              <View key={review} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <View className="flex-row items-start justify-between mb-2">
-                  <View className="flex-row items-center">
-                    <View className="w-8 h-8 bg-blue-100 rounded-full items-center justify-center mr-3">
-                      <Text className="text-blue-600 text-xs font-semibold">JD</Text>
+              <View key={review} style={styles.reviewCard}>
+                <View style={styles.reviewHeader}>
+                  <View style={styles.reviewUser}>
+                    <View style={styles.reviewAvatar}>
+                      <Text style={styles.reviewUserInitials}>JD</Text>
                     </View>
-                    <View>
-                      <Text className="text-gray-900 font-medium">John Doe</Text>
-                      <View className="flex-row items-center">
+                    <View style={styles.reviewUserInfo}>
+                      <Text style={styles.reviewUserName}>John Doe</Text>
+                      <View style={styles.reviewStars}>
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <Ionicons key={star} name="star" size={12} color="#F59E0B" />
+                          <Ionicons key={star} name="star" size={12} color={theme.colors.status.warning} />
                         ))}
                       </View>
                     </View>
                   </View>
-                  <Text className="text-gray-400 text-xs">2 weeks ago</Text>
+                  <Text style={styles.reviewDate}>2 weeks ago</Text>
                 </View>
-                <Text className="text-gray-600 text-sm">
+                <Text style={styles.reviewText}>
                   Great course! The instructor was patient and really helped me overcome my fear of water.
                 </Text>
               </View>
@@ -247,23 +611,25 @@ export const CourseDetailScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       {/* Header */}
       <Animated.View
         entering={FadeInUp.delay(100)}
-        className="px-6 py-4"
-        style={{ paddingTop: insets.top + 16 }}
+        style={[
+          styles.header,
+          { paddingTop: insets.top + theme.spacing.md }
+        ]}
       >
-        <View className="flex-row items-center justify-between">
+        <View style={styles.headerNav}>
           <Pressable
             onPress={() => navigation.goBack()}
-            className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm"
+            style={styles.navButton}
           >
-            <Ionicons name="arrow-back" size={20} color="#374151" />
+            <Ionicons name="arrow-back" size={20} color={theme.colors.text.secondary} />
           </Pressable>
           
-          <Pressable className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm">
-            <Ionicons name="heart-outline" size={20} color="#374151" />
+          <Pressable style={styles.navButton}>
+            <Ionicons name="heart-outline" size={20} color={theme.colors.text.secondary} />
           </Pressable>
         </View>
       </Animated.View>
@@ -271,30 +637,30 @@ export const CourseDetailScreen: React.FC = () => {
       {/* Course Header */}
       <Animated.View
         entering={FadeInDown.delay(200)}
-        className="px-6 mb-6"
+        style={styles.courseHeaderContainer}
       >
-        <View className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <View className="flex-row items-start justify-between mb-4">
-            <View className="flex-1 mr-4">
-              <Text className="text-gray-900 font-bold text-2xl mb-2">
+        <View style={styles.courseCard}>
+          <View style={styles.courseHeader}>
+            <View style={styles.courseContent}>
+              <Text style={styles.courseTitle}>
                 {courseDetail.title}
               </Text>
-              <Text className="text-gray-600 text-base mb-3">
+              <Text style={styles.courseSubtitle}>
                 {courseDetail.subtitle}
               </Text>
               
-              <View className="flex-row items-center flex-wrap">
-                <View className="flex-row items-center mr-4 mb-2">
-                  <Ionicons name="people-outline" size={16} color="#6B7280" />
-                  <Text className="text-gray-600 text-sm ml-2">{courseDetail.ageRange}</Text>
+              <View style={styles.courseDetails}>
+                <View style={styles.detailItem}>
+                  <Ionicons name="people-outline" size={16} color={theme.colors.text.tertiary} />
+                  <Text style={styles.detailText}>{courseDetail.ageRange}</Text>
                 </View>
-                <View className="flex-row items-center mr-4 mb-2">
-                  <Ionicons name="time-outline" size={16} color="#6B7280" />
-                  <Text className="text-gray-600 text-sm ml-2">{courseDetail.duration}</Text>
+                <View style={styles.detailItem}>
+                  <Ionicons name="time-outline" size={16} color={theme.colors.text.tertiary} />
+                  <Text style={styles.detailText}>{courseDetail.duration}</Text>
                 </View>
-                <View className="flex-row items-center mb-2">
-                  <Ionicons name="star" size={16} color="#F59E0B" />
-                  <Text className="text-gray-600 text-sm ml-1">
+                <View style={styles.detailItem}>
+                  <Ionicons name="star" size={16} color={theme.colors.status.warning} />
+                  <Text style={styles.detailText}>
                     {courseDetail.rating} ({courseDetail.reviews})
                   </Text>
                 </View>
@@ -302,22 +668,24 @@ export const CourseDetailScreen: React.FC = () => {
             </View>
             
             <View
-              className="w-16 h-16 rounded-2xl items-center justify-center"
-              style={{ backgroundColor: `${courseDetail.color}15` }}
+              style={[
+                styles.iconContainer,
+                { backgroundColor: `${courseDetail.color}15` }
+              ]}
             >
               <Ionicons name="water" size={32} color={courseDetail.color} />
             </View>
           </View>
           
-          <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-gray-900 font-bold text-2xl">
+          <View style={styles.priceContainer}>
+            <View style={styles.priceSection}>
+              <Text style={styles.priceText}>
                 ${courseDetail.price}
               </Text>
-              <Text className="text-gray-500 text-sm">per session</Text>
+              <Text style={styles.priceUnit}>per session</Text>
             </View>
-            <View className="bg-blue-50 px-4 py-2 rounded-full">
-              <Text className="text-blue-600 font-medium">{courseDetail.level}</Text>
+            <View style={styles.levelBadge}>
+              <Text style={styles.levelText}>{courseDetail.level}</Text>
             </View>
           </View>
         </View>
@@ -326,7 +694,7 @@ export const CourseDetailScreen: React.FC = () => {
       {/* Tabs */}
       <Animated.View
         entering={FadeInDown.delay(300)}
-        className="px-6 mb-4"
+        style={styles.tabsContainer}
       >
         <ScrollView
           horizontal
@@ -337,18 +705,17 @@ export const CourseDetailScreen: React.FC = () => {
             <Pressable
               key={tab.key}
               onPress={() => setSelectedTab(tab.key)}
-              className={`mr-4 pb-2 ${
-                selectedTab === tab.key
-                  ? 'border-b-2 border-blue-500'
-                  : ''
-              }`}
+              style={[
+                styles.tabButton,
+                selectedTab === tab.key && styles.activeTab
+              ]}
             >
               <Text
-                className={`font-medium ${
+                style={[
                   selectedTab === tab.key
-                    ? 'text-blue-600'
-                    : 'text-gray-600'
-                }`}
+                    ? styles.activeTabText
+                    : styles.inactiveTabText
+                ]}
               >
                 {tab.label}
               </Text>
@@ -359,7 +726,7 @@ export const CourseDetailScreen: React.FC = () => {
 
       {/* Tab Content */}
       <ScrollView
-        className="flex-1 px-6"
+        style={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
@@ -374,8 +741,10 @@ export const CourseDetailScreen: React.FC = () => {
       {/* Bottom Action */}
       <Animated.View
         entering={FadeInUp.delay(500)}
-        className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4"
-        style={{ paddingBottom: insets.bottom + 16 }}
+        style={[
+          styles.bottomAction,
+          { paddingBottom: insets.bottom + 16 }
+        ]}
       >
         <CustomButton
           title="Book Now"

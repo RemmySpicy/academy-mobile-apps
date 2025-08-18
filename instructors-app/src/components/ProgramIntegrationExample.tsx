@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { useTheme } from '@academy/mobile-shared';
 
 // TODO: Uncomment when shared package types are fully implemented
 // import { 
@@ -7,9 +8,8 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 //   ProgramHeader, 
 //   ProgramGuard,
 //   useProgramContext,
-//   useTheme,
 //   componentThemes
-// } from 'shared';
+// } from '@academy/mobile-shared';
 
 /**
  * Example component demonstrating program context integration
@@ -24,37 +24,43 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
  * TODO: Re-implement when shared package types are fully resolved
  */
 export function ProgramIntegrationExample() {
+  const { theme } = useTheme();
+  
+  // Create themed styles
+  const themedStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: theme.spacing.md,
+      backgroundColor: theme.colors.background.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    title: {
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      marginBottom: theme.spacing.sm,
+      textAlign: 'center',
+      color: theme.colors.text.primary,
+    },
+    description: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.secondary,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
+  });
+
   // Temporary placeholder component
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Program Integration Example</Text>
-      <Text style={styles.description}>
+    <View style={themedStyles.container}>
+      <Text style={themedStyles.title}>Program Integration Example</Text>
+      <Text style={themedStyles.description}>
         This component will demonstrate program context integration once the shared package types are fully implemented.
       </Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-});
+// Remove old hardcoded styles - now using themedStyles above
 
 export default ProgramIntegrationExample;

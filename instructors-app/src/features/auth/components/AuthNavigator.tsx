@@ -1,5 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTheme } from '@academy/mobile-shared';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
 import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
@@ -24,23 +25,25 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
  * - Error handling integration
  */
 export const AuthNavigator: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
     <Stack.Navigator
       initialRouteName="Login"
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: theme.colors.background.primary,
         },
-        headerTintColor: '#374151',
+        headerTintColor: theme.colors.text.primary,
         headerTitleStyle: {
-          fontWeight: '600',
-          fontSize: 18,
+          fontWeight: theme.fontConfig.fontWeight.semibold,
+          fontSize: theme.fontSizes.lg,
         },
         headerShadowVisible: false,
         animation: 'slide_from_right',
         contentStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: theme.colors.background.primary,
         },
       }}
     >

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View,
   Text,
   ScrollView,
@@ -6,7 +6,8 @@ import { View,
   FlatList,
   TextInput,
   useWindowDimensions,
-  Dimensions } from 'react-native';
+  Dimensions,
+  StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -17,6 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { useTheme } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -44,7 +46,139 @@ interface CourseCardProps {
   onPress: (course: Course) => void;
 }
 
+const createCardStyles = (theme: any) => StyleSheet.create({
+    cardContainer: {
+      marginBottom: theme.spacing.md,
+    },
+    card: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.lg,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginHorizontal: theme.spacing.md,
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    cardContent: {
+      flex: 1,
+      marginRight: theme.spacing.md,
+    },
+    cardTitle: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      fontSize: theme.fontSizes.lg,
+      marginBottom: theme.spacing.xs,
+    },
+    cardSubtitle: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginBottom: theme.spacing.xs,
+    },
+    cardDescription: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+      lineHeight: theme.fontSizes.sm * 1.4,
+    },
+    iconContainer: {
+      width: 64,
+      height: 64,
+      borderRadius: theme.borderRadius['2xl'],
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    detailsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      marginBottom: theme.spacing.md,
+    },
+    detailItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginRight: theme.spacing.md,
+      marginBottom: theme.spacing.xs,
+    },
+    detailText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginLeft: theme.spacing.xs,
+    },
+    levelBadge: {
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: theme.spacing.xs / 2,
+      borderRadius: theme.borderRadius.full,
+      marginBottom: theme.spacing.xs,
+    },
+    levelText: {
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    featuresRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginBottom: theme.spacing.md,
+    },
+    featureBadge: {
+      backgroundColor: theme.colors.background.secondary,
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: theme.spacing.xs / 2,
+      borderRadius: theme.borderRadius.lg,
+      marginRight: theme.spacing.xs,
+      marginBottom: theme.spacing.xs,
+    },
+    featureText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.xs,
+    },
+    bottomRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    leftSection: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    ratingSection: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginRight: theme.spacing.md,
+    },
+    ratingText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginLeft: theme.spacing.xs,
+    },
+    priceText: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      fontSize: theme.fontSizes.lg,
+    },
+    priceUnit: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+    },
+    rightSection: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    learnMoreText: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginRight: theme.spacing.xs,
+    },
+});
+
 const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createCardStyles(theme), [theme]);
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -54,13 +188,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
   const getLevelColor = (level: Course['level']) => {
     switch (level) {
       case 'Beginner':
-        return '#10B981';
+        return theme.colors.status.success;
       case 'Intermediate':
-        return '#F59E0B';
+        return theme.colors.status.warning;
       case 'Advanced':
-        return '#EF4444';
+        return theme.colors.status.error;
       default:
-        return '#6B7280';
+        return theme.colors.text.tertiary;
     }
   };
 
@@ -68,8 +202,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
     <Animated.View
       layout={Layout.springify()}
       entering={FadeInRight.delay(index * 50).springify()}
-      style={animatedStyle}
-      className="mb-4"
+      style={[animatedStyle, styles.cardContainer]}
     >
       <Pressable
         onPress={() => onPress(course)}
@@ -79,50 +212,56 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
         onPressOut={() => {
           scale.value = withSpring(1);
         }}
-        className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mx-4"
+        style={styles.card}
       >
         {/* Course Header */}
-        <View className="flex-row items-start justify-between mb-4">
-          <View className="flex-1 mr-4">
-            <Text className="text-gray-900 font-bold text-lg mb-1">
+        <View style={styles.cardHeader}>
+          <View style={styles.cardContent}>
+            <Text style={styles.cardTitle}>
               {course.title}
             </Text>
-            <Text className="text-gray-600 text-sm mb-2">
+            <Text style={styles.cardSubtitle}>
               {course.subtitle}
             </Text>
-            <Text className="text-gray-500 text-sm leading-5">
+            <Text style={styles.cardDescription}>
               {course.description}
             </Text>
           </View>
           
           <View
-            className="w-16 h-16 rounded-2xl items-center justify-center"
-            style={{ backgroundColor: `${course.color}15` }}
+            style={[
+              styles.iconContainer,
+              { backgroundColor: `${course.color}15` }
+            ]}
           >
             <Ionicons name="water" size={28} color={course.color} />
           </View>
         </View>
 
         {/* Course Details */}
-        <View className="flex-row flex-wrap items-center mb-4">
-          <View className="flex-row items-center mr-4 mb-2">
-            <Ionicons name="people-outline" size={16} color="#6B7280" />
-            <Text className="text-gray-600 text-sm ml-2">{course.ageRange}</Text>
+        <View style={styles.detailsRow}>
+          <View style={styles.detailItem}>
+            <Ionicons name="people-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{course.ageRange}</Text>
           </View>
           
-          <View className="flex-row items-center mr-4 mb-2">
-            <Ionicons name="time-outline" size={16} color="#6B7280" />
-            <Text className="text-gray-600 text-sm ml-2">{course.duration}</Text>
+          <View style={styles.detailItem}>
+            <Ionicons name="time-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{course.duration}</Text>
           </View>
           
-          <View className="flex-row items-center mb-2">
+          <View style={styles.detailItem}>
             <View
-              className="px-2 py-1 rounded-full"
-              style={{ backgroundColor: `${getLevelColor(course.level)}15` }}
+              style={[
+                styles.levelBadge,
+                { backgroundColor: `${getLevelColor(course.level)}15` }
+              ]}
             >
               <Text
-                className="text-xs font-medium"
-                style={{ color: getLevelColor(course.level) }}
+                style={[
+                  styles.levelText,
+                  { color: getLevelColor(course.level) }
+                ]}
               >
                 {course.level}
               </Text>
@@ -131,18 +270,18 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
         </View>
 
         {/* Features */}
-        <View className="flex-row flex-wrap mb-4">
+        <View style={styles.featuresRow}>
           {course.features.slice(0, 3).map((feature, idx) => (
             <View
               key={idx}
-              className="bg-gray-100 px-2 py-1 rounded-lg mr-2 mb-2"
+              style={styles.featureBadge}
             >
-              <Text className="text-gray-700 text-xs">{feature}</Text>
+              <Text style={styles.featureText}>{feature}</Text>
             </View>
           ))}
           {course.features.length > 3 && (
-            <View className="bg-gray-100 px-2 py-1 rounded-lg mb-2">
-              <Text className="text-gray-700 text-xs">
+            <View style={styles.featureBadge}>
+              <Text style={styles.featureText}>
                 +{course.features.length - 3} more
               </Text>
             </View>
@@ -150,31 +289,116 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
         </View>
 
         {/* Bottom Row */}
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center">
-            <View className="flex-row items-center mr-4">
-              <Ionicons name="star" size={16} color="#F59E0B" />
-              <Text className="text-gray-600 text-sm ml-1">
+        <View style={styles.bottomRow}>
+          <View style={styles.leftSection}>
+            <View style={styles.ratingSection}>
+              <Ionicons name="star" size={16} color={theme.colors.status.warning} />
+              <Text style={styles.ratingText}>
                 {course.rating} ({course.reviews})
               </Text>
             </View>
-            <Text className="text-gray-900 font-bold text-lg">
+            <Text style={styles.priceText}>
               ${course.price}
             </Text>
-            <Text className="text-gray-500 text-sm">/session</Text>
+            <Text style={styles.priceUnit}>/session</Text>
           </View>
           
-          <View className="flex-row items-center">
-            <Text className="text-blue-600 text-sm font-medium mr-2">
+          <View style={styles.rightSection}>
+            <Text style={styles.learnMoreText}>
               Learn More
             </Text>
-            <Ionicons name="chevron-forward" size={16} color="#3B82F6" />
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.interactive.primary} />
           </View>
         </View>
       </Pressable>
     </Animated.View>
   );
 };
+
+const createScreenStyles = (theme: any) => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.secondary,
+    },
+    header: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingTop: theme.spacing.md,
+      paddingBottom: theme.spacing.xs,
+    },
+    headerTitle: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+    headerSubtitle: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.base,
+      marginTop: theme.spacing.xs,
+    },
+    searchContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.md,
+    },
+    searchBox: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+    },
+    searchInput: {
+      flex: 1,
+      marginLeft: theme.spacing.sm,
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.base,
+    },
+    filtersContainer: {
+      marginBottom: theme.spacing.md,
+    },
+    categoryButton: {
+      marginRight: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.full,
+    },
+    activeCategoryButton: {
+      backgroundColor: theme.colors.interactive.primary,
+    },
+    inactiveCategoryButton: {
+      backgroundColor: theme.colors.background.primary,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    activeCategoryText: {
+      color: 'white',
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    inactiveCategoryText: {
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    emptyContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: theme.spacing['3xl'],
+    },
+    emptyTitle: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginTop: theme.spacing.md,
+    },
+    emptySubtitle: {
+      color: theme.colors.text.quaternary,
+      fontSize: theme.fontSizes.base,
+      marginTop: theme.spacing.xs,
+      textAlign: 'center',
+      paddingHorizontal: theme.spacing.xl,
+    },
+});
 
 /**
  * Courses Screen - Course Catalog
@@ -188,6 +412,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
  * - Rating and reviews
  */
 export const CoursesScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createScreenStyles(theme), [theme]);
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'kids' | 'adults'>('all');
@@ -204,7 +430,7 @@ export const CoursesScreen: React.FC = () => {
       level: 'Beginner',
       price: 35,
       image: 'learn-to-swim',
-      color: '#3B82F6',
+      color: theme.colors.interactive.accent,
       features: ['Water Safety', 'Basic Strokes', 'Floating', 'Breathing'],
       sessions: 8,
       maxStudents: 6,
@@ -221,7 +447,7 @@ export const CoursesScreen: React.FC = () => {
       level: 'Advanced',
       price: 45,
       image: 'swimming-club',
-      color: '#10B981',
+      color: theme.colors.status.success,
       features: ['Technique', 'Endurance', 'Competition Prep', 'Stroke Analysis'],
       sessions: 12,
       maxStudents: 8,
@@ -238,7 +464,7 @@ export const CoursesScreen: React.FC = () => {
       level: 'Beginner',
       price: 40,
       image: 'adult-swimming',
-      color: '#8B5CF6',
+      color: theme.colors.interactive.purple,
       features: ['Adult-Friendly', 'Flexible Pace', 'Health Focus', 'Stress Relief'],
       sessions: 10,
       maxStudents: 4,
@@ -255,7 +481,7 @@ export const CoursesScreen: React.FC = () => {
       level: 'Beginner',
       price: 30,
       image: 'aqua-babies',
-      color: '#F59E0B',
+      color: theme.colors.status.warning,
       features: ['Parent-Child', 'Water Safety', 'Gentle Approach', 'Fun Activities'],
       sessions: 6,
       maxStudents: 4,
@@ -306,15 +532,17 @@ export const CoursesScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       {/* Header */}
       <Animated.View
         entering={FadeInDown.delay(100).springify()}
-        className="px-6 pt-4 pb-2"
-        style={{ paddingTop: insets.top + 16 }}
+        style={[
+          styles.header,
+          { paddingTop: insets.top + theme.spacing.md }
+        ]}
       >
-        <Text className="text-gray-900 text-2xl font-bold">Courses</Text>
-        <Text className="text-gray-500 text-base mt-1">
+        <Text style={styles.headerTitle}>Courses</Text>
+        <Text style={styles.headerSubtitle}>
           Find the perfect swimming program for you
         </Text>
       </Animated.View>
@@ -322,20 +550,20 @@ export const CoursesScreen: React.FC = () => {
       {/* Search Bar */}
       <Animated.View
         entering={FadeInDown.delay(200).springify()}
-        className="px-6 mb-4"
+        style={styles.searchContainer}
       >
-        <View className="bg-white rounded-xl border border-gray-200 flex-row items-center px-4 py-3">
-          <Ionicons name="search" size={20} color="#9CA3AF" />
+        <View style={styles.searchBox}>
+          <Ionicons name="search" size={20} color={theme.colors.text.tertiary} />
           <TextInput
-            className="flex-1 ml-3 text-gray-900 text-base"
+            style={styles.searchInput}
             placeholder="Search courses..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={theme.colors.text.tertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+              <Ionicons name="close-circle" size={20} color={theme.colors.text.tertiary} />
             </Pressable>
           )}
         </View>
@@ -344,29 +572,30 @@ export const CoursesScreen: React.FC = () => {
       {/* Category Filters */}
       <Animated.View
         entering={FadeInDown.delay(300).springify()}
-        className="mb-4"
+        style={styles.filtersContainer}
       >
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24 }}
+          contentContainerStyle={{ paddingHorizontal: theme.spacing.lg }}
         >
           {categories.map(category => (
             <Pressable
               key={category.key}
               onPress={() => setSelectedCategory(category.key)}
-              className={`mr-3 px-4 py-2 rounded-full ${
+              style={[
+                styles.categoryButton,
                 selectedCategory === category.key
-                  ? 'bg-blue-500'
-                  : 'bg-white border border-gray-200'
-              }`}
+                  ? styles.activeCategoryButton
+                  : styles.inactiveCategoryButton
+              ]}
             >
               <Text
-                className={`font-medium ${
+                style={[
                   selectedCategory === category.key
-                    ? 'text-white'
-                    : 'text-gray-600'
-                }`}
+                    ? styles.activeCategoryText
+                    : styles.inactiveCategoryText
+                ]}
               >
                 {category.label} ({category.count})
               </Text>
@@ -387,19 +616,19 @@ export const CoursesScreen: React.FC = () => {
           />
         )}
         contentContainerStyle={{
-          paddingBottom: 100, // Space for tab bar
+          paddingBottom: theme.spacing['3xl'], // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
-            className="items-center justify-center py-12"
+            style={styles.emptyContainer}
           >
-            <Ionicons name="search-outline" size={64} color="#D1D5DB" />
-            <Text className="text-gray-500 text-lg font-medium mt-4">
+            <Ionicons name="search-outline" size={64} color={theme.colors.text.quaternary} />
+            <Text style={styles.emptyTitle}>
               No courses found
             </Text>
-            <Text className="text-gray-400 text-base mt-2 text-center px-8">
+            <Text style={styles.emptySubtitle}>
               Try adjusting your search or filter criteria
             </Text>
           </Animated.View>

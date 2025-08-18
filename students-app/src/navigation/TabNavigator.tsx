@@ -10,7 +10,7 @@ import { ProgressNavigator } from '../features/progress/navigation/ProgressNavig
 import { ProfileNavigator } from '../features/profile/navigation/ProfileNavigator';
 
 // Development-only imports
-import { DesignSystemShowcase, FormExamplesScreen } from '@academy/mobile-shared';
+import { DesignSystemShowcase, FormExamplesScreen, ExtractedComponentsShowcase } from '@academy/mobile-shared';
 
 export type TabParamList = {
   HomeTab: undefined;
@@ -20,6 +20,7 @@ export type TabParamList = {
   ProfileTab: undefined;
   DesignSystemTab?: undefined; // Development only
   FormsTab?: undefined; // Development only
+  ExtractedTab?: undefined; // Development only
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -55,6 +56,9 @@ export const TabNavigator: React.FC = () => {
               break;
             case 'FormsTab':
               iconName = focused ? 'document-text' : 'document-text-outline';
+              break;
+            case 'ExtractedTab':
+              iconName = focused ? 'cube' : 'cube-outline';
               break;
             default:
               iconName = 'help-outline';
@@ -118,6 +122,14 @@ export const TabNavigator: React.FC = () => {
             component={FormExamplesScreen}
             options={{
               tabBarLabel: 'Forms',
+            }}
+          />
+          
+          <Tab.Screen
+            name="ExtractedTab"
+            component={ExtractedComponentsShowcase}
+            options={{
+              tabBarLabel: 'Extracted',
             }}
           />
         </>

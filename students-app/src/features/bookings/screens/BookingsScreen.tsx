@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Pressable,
   FlatList,
   RefreshControl,
+  StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomButton } from '@shared/components/forms';
+import { CustomButton, useTheme } from '@academy/mobile-shared';
 
 interface Booking {
   id: string;
@@ -40,7 +41,135 @@ interface BookingCardProps {
   onPress: (booking: Booking) => void;
 }
 
+const createCardStyles = (theme: any) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.sm,
+      marginHorizontal: theme.spacing.md,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    content: {
+      flex: 1,
+      marginRight: theme.spacing.sm,
+    },
+    title: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      fontSize: theme.fontSizes.lg,
+    },
+    level: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+    },
+    instructor: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+      marginTop: theme.spacing.xs / 2,
+    },
+    iconContainer: {
+      width: 48,
+      height: 48,
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    progressContainer: {
+      marginBottom: theme.spacing.sm,
+    },
+    progressHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.xs,
+    },
+    progressLabel: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.xs,
+    },
+    progressText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.xs,
+    },
+    progressBar: {
+      backgroundColor: theme.colors.border.secondary,
+      borderRadius: theme.borderRadius.full,
+      height: 8,
+    },
+    progressFill: {
+      height: 8,
+      borderRadius: theme.borderRadius.full,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    detailItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    detailText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginLeft: theme.spacing.xs,
+    },
+    price: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    statusRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    statusItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    statusText: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginLeft: theme.spacing.xs,
+    },
+    actionsRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    actionButton: {
+      marginRight: theme.spacing.sm,
+    },
+    rescheduleText: {
+      color: theme.colors.status.warning,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    cancelText: {
+      color: theme.colors.status.error,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    reviewText: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+  });
+
 const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createCardStyles(theme), [theme]);
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -50,15 +179,15 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
   const getStatusColor = (status: Booking['status']) => {
     switch (status) {
       case 'upcoming':
-        return '#3B82F6';
+        return theme.colors.interactive.primary;
       case 'completed':
-        return '#10B981';
+        return theme.colors.status.success;
       case 'cancelled':
-        return '#EF4444';
+        return theme.colors.status.error;
       case 'rescheduled':
-        return '#F59E0B';
+        return theme.colors.status.warning;
       default:
-        return '#6B7280';
+        return theme.colors.text.tertiary;
     }
   };
 
@@ -106,96 +235,102 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
         onPressOut={() => {
           scale.value = withSpring(1);
         }}
-        className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3 mx-4"
+        style={styles.card}
       >
-        <View className="flex-row items-start justify-between mb-3">
-          <View className="flex-1 mr-3">
-            <Text className="text-gray-900 font-semibold text-lg">
+        <View style={styles.header}>
+          <View style={styles.content}>
+            <Text style={styles.title}>
               {booking.courseTitle}
             </Text>
-            <Text className="text-gray-600 text-sm">{booking.courseLevel}</Text>
-            <Text className="text-gray-500 text-sm mt-1">
+            <Text style={styles.level}>{booking.courseLevel}</Text>
+            <Text style={styles.instructor}>
               with {booking.instructor}
             </Text>
           </View>
           
           <View
-            className="w-12 h-12 rounded-full items-center justify-center"
-            style={{ backgroundColor: `${booking.color}15` }}
+            style={[
+              styles.iconContainer,
+              { backgroundColor: `${booking.color}15` }
+            ]}
           >
             <Ionicons name="water" size={24} color={booking.color} />
           </View>
         </View>
 
         {/* Session Progress */}
-        <View className="mb-3">
-          <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-gray-500 text-xs">Progress</Text>
-            <Text className="text-gray-600 text-xs">
+        <View style={styles.progressContainer}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>Progress</Text>
+            <Text style={styles.progressText}>
               {booking.sessionNumber}/{booking.totalSessions} sessions
             </Text>
           </View>
-          <View className="bg-gray-200 rounded-full h-2">
+          <View style={styles.progressBar}>
             <View
-              className="h-2 rounded-full"
-              style={{
-                width: `${(booking.sessionNumber / booking.totalSessions) * 100}%`,
-                backgroundColor: booking.color,
-              }}
+              style={[
+                styles.progressFill,
+                {
+                  width: `${(booking.sessionNumber / booking.totalSessions) * 100}%`,
+                  backgroundColor: booking.color,
+                }
+              ]}
             />
           </View>
         </View>
 
         {/* Date and Time */}
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center">
-            <Ionicons name="calendar-outline" size={16} color="#6B7280" />
-            <Text className="text-gray-600 text-sm ml-2">{booking.date}</Text>
+        <View style={styles.detailRow}>
+          <View style={styles.detailItem}>
+            <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{booking.date}</Text>
           </View>
-          <View className="flex-row items-center">
-            <Ionicons name="time-outline" size={16} color="#6B7280" />
-            <Text className="text-gray-600 text-sm ml-2">{booking.time}</Text>
+          <View style={styles.detailItem}>
+            <Ionicons name="time-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{booking.time}</Text>
           </View>
         </View>
 
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center">
-            <Ionicons name="location-outline" size={16} color="#6B7280" />
-            <Text className="text-gray-600 text-sm ml-2">{booking.location}</Text>
+        <View style={styles.detailRow}>
+          <View style={styles.detailItem}>
+            <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{booking.location}</Text>
           </View>
-          <Text className="text-gray-900 font-semibold">${booking.price}</Text>
+          <Text style={styles.price}>${booking.price}</Text>
         </View>
 
         {/* Status and Actions */}
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center">
+        <View style={styles.statusRow}>
+          <View style={styles.statusItem}>
             <Ionicons 
               name={getStatusIcon(booking.status) as any} 
               size={16} 
               color={getStatusColor(booking.status)} 
             />
             <Text
-              className="text-sm font-medium ml-2"
-              style={{ color: getStatusColor(booking.status) }}
+              style={[
+                styles.statusText,
+                { color: getStatusColor(booking.status) }
+              ]}
             >
               {getStatusText(booking.status)}
             </Text>
           </View>
           
-          <View className="flex-row items-center">
+          <View style={styles.actionsRow}>
             {booking.status === 'upcoming' && (
               <>
-                <Pressable className="mr-3">
-                  <Text className="text-orange-600 text-sm font-medium">Reschedule</Text>
+                <Pressable style={styles.actionButton}>
+                  <Text style={styles.rescheduleText}>Reschedule</Text>
                 </Pressable>
                 <Pressable>
-                  <Text className="text-red-600 text-sm font-medium">Cancel</Text>
+                  <Text style={styles.cancelText}>Cancel</Text>
                 </Pressable>
               </>
             )}
             {booking.status === 'completed' && (
               <Pressable>
-                <Text className="text-blue-600 text-sm font-medium">Review</Text>
+                <Text style={styles.reviewText}>Review</Text>
               </Pressable>
             )}
           </View>
@@ -204,6 +339,139 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
     </Animated.View>
   );
 };
+
+const createScreenStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.secondary,
+    },
+    header: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingTop: theme.spacing.md,
+      paddingBottom: theme.spacing.xs,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.md,
+    },
+    headerContent: {
+      // No specific styles needed
+    },
+    headerTitle: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.xl,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+    headerSubtitle: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.base,
+      marginTop: theme.spacing.xs,
+    },
+    addButton: {
+      backgroundColor: theme.colors.interactive.primary,
+      width: 48,
+      height: 48,
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...theme.elevation.sm,
+    },
+    statsContainer: {
+      paddingHorizontal: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    statCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      flex: 1,
+    },
+    statCardLeft: {
+      marginRight: theme.spacing.xs,
+    },
+    statCardRight: {
+      marginLeft: theme.spacing.xs,
+    },
+    statHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.xs,
+    },
+    statLabel: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+    },
+    statValue: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+    statTime: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.sm,
+      marginTop: theme.spacing.xs / 2,
+    },
+    statSessions: {
+      color: theme.colors.status.success,
+      fontSize: theme.fontSizes.sm,
+      marginTop: theme.spacing.xs / 2,
+    },
+    filtersContainer: {
+      marginBottom: theme.spacing.md,
+    },
+    filterButton: {
+      marginRight: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.full,
+    },
+    activeFilter: {
+      backgroundColor: theme.colors.interactive.primary,
+    },
+    inactiveFilter: {
+      backgroundColor: theme.colors.background.primary,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+    activeFilterText: {
+      color: 'white',
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    inactiveFilterText: {
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    emptyContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: theme.spacing['3xl'],
+    },
+    emptyTitle: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginTop: theme.spacing.md,
+    },
+    emptySubtitle: {
+      color: theme.colors.text.quaternary,
+      fontSize: theme.fontSizes.base,
+      marginTop: theme.spacing.xs,
+      textAlign: 'center',
+      paddingHorizontal: theme.spacing.xl,
+      marginBottom: theme.spacing.lg,
+    },
+  });
 
 /**
  * Bookings Screen - Manage Course Bookings
@@ -216,6 +484,8 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
  * - Payment status and receipts
  */
 export const BookingsScreen: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createScreenStyles(theme), [theme]);
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
@@ -234,7 +504,7 @@ export const BookingsScreen: React.FC = () => {
       price: 35,
       sessionNumber: 3,
       totalSessions: 8,
-      color: '#3B82F6',
+      color: theme.colors.interactive.accent,
     },
     {
       id: '2',
@@ -248,7 +518,7 @@ export const BookingsScreen: React.FC = () => {
       price: 45,
       sessionNumber: 2,
       totalSessions: 12,
-      color: '#10B981',
+      color: theme.colors.status.success,
     },
     {
       id: '3',
@@ -262,7 +532,7 @@ export const BookingsScreen: React.FC = () => {
       price: 35,
       sessionNumber: 2,
       totalSessions: 8,
-      color: '#3B82F6',
+      color: theme.colors.interactive.accent,
     },
     {
       id: '4',
@@ -276,7 +546,7 @@ export const BookingsScreen: React.FC = () => {
       price: 40,
       sessionNumber: 1,
       totalSessions: 10,
-      color: '#8B5CF6',
+      color: theme.colors.interactive.purple,
     },
   ]);
 
@@ -308,24 +578,26 @@ export const BookingsScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       {/* Header */}
       <Animated.View
         entering={FadeInDown.delay(100).springify()}
-        className="px-6 pt-4 pb-2"
-        style={{ paddingTop: insets.top + 16 }}
+        style={[
+          styles.header,
+          { paddingTop: insets.top + theme.spacing.md }
+        ]}
       >
-        <View className="flex-row items-center justify-between mb-4">
-          <View>
-            <Text className="text-gray-900 text-2xl font-bold">My Bookings</Text>
-            <Text className="text-gray-500 text-base mt-1">
+        <View style={styles.headerRow}>
+          <View style={styles.headerContent}>
+            <Text style={styles.headerTitle}>My Bookings</Text>
+            <Text style={styles.headerSubtitle}>
               Manage your swimming sessions
             </Text>
           </View>
           
           <Pressable
             onPress={handleNewBooking}
-            className="bg-blue-500 w-12 h-12 rounded-full items-center justify-center shadow-sm"
+            style={styles.addButton}
           >
             <Ionicons name="add" size={24} color="white" />
           </Pressable>
@@ -335,25 +607,25 @@ export const BookingsScreen: React.FC = () => {
       {/* Stats Overview */}
       <Animated.View
         entering={FadeInDown.delay(200).springify()}
-        className="px-6 mb-6"
+        style={styles.statsContainer}
       >
-        <View className="flex-row justify-between">
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 mr-2">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-gray-500 text-sm">Next Session</Text>
-              <Ionicons name="time" size={16} color="#3B82F6" />
+        <View style={styles.statsRow}>
+          <View style={[styles.statCard, styles.statCardLeft]}>
+            <View style={styles.statHeader}>
+              <Text style={styles.statLabel}>Next Session</Text>
+              <Ionicons name="time" size={16} color={theme.colors.interactive.primary} />
             </View>
-            <Text className="text-gray-900 text-lg font-bold">Tomorrow</Text>
-            <Text className="text-blue-600 text-sm mt-1">3:00 PM</Text>
+            <Text style={styles.statValue}>Tomorrow</Text>
+            <Text style={styles.statTime}>3:00 PM</Text>
           </View>
           
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1 ml-2">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-gray-500 text-sm">This Month</Text>
-              <Ionicons name="calendar" size={16} color="#10B981" />
+          <View style={[styles.statCard, styles.statCardRight]}>
+            <View style={styles.statHeader}>
+              <Text style={styles.statLabel}>This Month</Text>
+              <Ionicons name="calendar" size={16} color={theme.colors.status.success} />
             </View>
-            <Text className="text-gray-900 text-lg font-bold">8</Text>
-            <Text className="text-green-600 text-sm mt-1">Sessions</Text>
+            <Text style={styles.statValue}>8</Text>
+            <Text style={styles.statSessions}>Sessions</Text>
           </View>
         </View>
       </Animated.View>
@@ -361,29 +633,30 @@ export const BookingsScreen: React.FC = () => {
       {/* Filter Tabs */}
       <Animated.View
         entering={FadeInDown.delay(300).springify()}
-        className="mb-4"
+        style={styles.filtersContainer}
       >
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24 }}
+          contentContainerStyle={{ paddingHorizontal: theme.spacing.lg }}
         >
           {filters.map(filter => (
             <Pressable
               key={filter.key}
               onPress={() => setSelectedFilter(filter.key)}
-              className={`mr-3 px-4 py-2 rounded-full ${
+              style={[
+                styles.filterButton,
                 selectedFilter === filter.key
-                  ? 'bg-blue-500'
-                  : 'bg-white border border-gray-200'
-              }`}
+                  ? styles.activeFilter
+                  : styles.inactiveFilter
+              ]}
             >
               <Text
-                className={`font-medium ${
+                style={[
                   selectedFilter === filter.key
-                    ? 'text-white'
-                    : 'text-gray-600'
-                }`}
+                    ? styles.activeFilterText
+                    : styles.inactiveFilterText
+                ]}
               >
                 {filter.label} ({filter.count})
               </Text>
@@ -404,7 +677,7 @@ export const BookingsScreen: React.FC = () => {
           />
         )}
         contentContainerStyle={{
-          paddingBottom: 100, // Space for tab bar
+          paddingBottom: theme.spacing['3xl'], // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -413,13 +686,13 @@ export const BookingsScreen: React.FC = () => {
         ListEmptyComponent={() => (
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
-            className="items-center justify-center py-12"
+            style={styles.emptyContainer}
           >
-            <Ionicons name="calendar-outline" size={64} color="#D1D5DB" />
-            <Text className="text-gray-500 text-lg font-medium mt-4">
+            <Ionicons name="calendar-outline" size={64} color={theme.colors.text.quaternary} />
+            <Text style={styles.emptyTitle}>
               No bookings found
             </Text>
-            <Text className="text-gray-400 text-base mt-2 text-center px-8 mb-6">
+            <Text style={styles.emptySubtitle}>
               {selectedFilter === 'all' 
                 ? "You haven't made any bookings yet"
                 : `No ${selectedFilter} bookings to show`

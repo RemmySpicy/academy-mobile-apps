@@ -110,6 +110,21 @@ export const baseColors = {
     950: '#0A0A0A',
   },
 
+  // Purple Colors (standard purple palette)
+  purple: {
+    50: '#FAF5FF',
+    100: '#F3E8FF',
+    200: '#E9D5FF',
+    300: '#D8B4FE',
+    400: '#C084FC',
+    500: '#A855F7',
+    600: '#9333EA',
+    700: '#7C3AED',
+    800: '#6B46C1',
+    900: '#581C87',
+    950: '#3B0764',
+  },
+
   // Academy Brand Colors (from existing design)
   academy: {
     // Primary brand purple
@@ -204,6 +219,7 @@ export const semanticColors = {
     secondary: baseColors.neutral[50],
     tertiary: baseColors.neutral[100],
     elevated: baseColors.neutral[0],
+    accent: baseColors.academy[50],
     overlay: 'rgba(0, 0, 0, 0.5)',
     backdrop: 'rgba(0, 0, 0, 0.3)',
   },
@@ -254,8 +270,11 @@ export const semanticColors = {
     themeBlack: baseColors.academy.themeBlack,  // #121212
     danger: '#EE4A52',                          // Existing danger color
     cancel: baseColors.academy.purple[500],     // Same as primary
-    gray: '#F5F5F5',                           // Light gray background
-    lightGray: '#F9F9F9',                      // Even lighter gray
+    gray: baseColors.neutral[100],             // #F5F5F5 - Light gray background
+    lightGray: baseColors.neutral[50],         // #FAFAFA - Even lighter gray
+    accent: baseColors.info[500],              // #3B82F6 - Common accent blue
+    accentHover: baseColors.info[600],         // #2563EB - Accent blue hover
+    purple: baseColors.purple[500],            // #8B5CF6 - Purple accent
   },
 
   // Status Colors - Enhanced for better contrast
@@ -293,6 +312,20 @@ export const semanticColors = {
     heavy: 'rgba(0, 0, 0, 0.25)',
     colored: 'rgba(99, 102, 241, 0.1)',
   },
+
+  // Icon Colors - Common icon colors used throughout the app
+  icon: {
+    primary: baseColors.neutral[700],     // #374151 - Dark icons
+    secondary: baseColors.neutral[500],   // #6B7280 - Secondary icons
+    tertiary: baseColors.neutral[400],    // #9CA3AF - Muted icons
+    disabled: baseColors.neutral[300],    // #D1D5DB - Disabled icons
+    accent: baseColors.info[500],         // #3B82F6 - Accent blue icons
+    success: baseColors.success[500],     // #10B981 - Success green icons
+    warning: baseColors.warning[500],     // #F59E0B - Warning orange icons
+    error: baseColors.error[500],         // #EF4444 - Error red icons
+    purple: baseColors.purple[500],       // #8B5CF6 - Purple accent icons
+    interactive: baseColors.academy.purple[500], // #4F2EC9 - Academy brand icons
+  },
 } as const;
 
 // Dark Mode Colors - Academy Brand Enhanced
@@ -312,6 +345,7 @@ export const darkColors = {
     secondary: '#2A2A2A',                 // Elevated surfaces
     tertiary: '#333333',                  // Even more elevated
     elevated: '#242424',                  // Cards, modals
+    accent: baseColors.academy[900],      // Dark accent for dark mode
     overlay: 'rgba(0, 0, 0, 0.85)',      // Enhanced modal overlays for dark mode
     backdrop: 'rgba(0, 0, 0, 0.7)',      // Enhanced backdrop for dark mode
   },
@@ -357,6 +391,23 @@ export const darkColors = {
     cancel: baseColors.academy.purple[400],       // Academy purple
     gray: baseColors.neutral[800],                // Dark gray background
     lightGray: baseColors.neutral[900],           // Even darker gray
+    accent: baseColors.info[400],                 // #60A5FA - Softer accent blue for dark
+    accentHover: baseColors.info[300],            // #93C5FD - Lighter accent blue hover
+    purple: baseColors.purple[400],               // #A78BFA - Softer purple accent
+  },
+
+  // Icon Colors for Dark Mode
+  icon: {
+    primary: baseColors.neutral[200],     // #E5E7EB - Light icons on dark bg
+    secondary: baseColors.neutral[400],   // #9CA3AF - Secondary icons
+    tertiary: baseColors.neutral[500],    // #6B7280 - Muted icons
+    disabled: baseColors.neutral[600],    // #4B5563 - Disabled icons
+    accent: baseColors.info[400],         // #60A5FA - Accent blue icons
+    success: baseColors.success[400],     // #34D399 - Success green icons
+    warning: baseColors.warning[400],     // #FBBF24 - Warning orange icons
+    error: baseColors.error[400],         // #F87171 - Error red icons
+    purple: baseColors.purple[400],       // #A78BFA - Purple accent icons
+    interactive: baseColors.academy.purple[400], // #A489FF - Academy brand icons
   },
 
   status: {
@@ -465,6 +516,7 @@ export interface ColorScheme {
     secondary: string;
     tertiary: string;
     elevated: string;
+    accent: string;
     overlay: string;
     backdrop: string;
   };
@@ -504,6 +556,18 @@ export interface ColorScheme {
     cancel: string;
     gray: string;
     lightGray: string;
+  };
+  icon: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    disabled: string;
+    accent: string;
+    success: string;
+    warning: string;
+    error: string;
+    purple: string;
+    interactive: string;
   };
   status: {
     success: string;

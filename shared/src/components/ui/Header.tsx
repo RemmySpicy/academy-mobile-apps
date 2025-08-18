@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme } from '../../theme/ThemeProvider';
 import { useProgramContext } from '../program/ProgramContextProvider';
 import { useAuthStore } from '../../store/authStore';
 
@@ -75,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({
   const { theme } = useTheme();
   const { currentProgram } = useProgramContext();
   const { user } = useAuthStore();
-  const styles = useThemedStyles();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Auto-configure based on variant
   React.useEffect(() => {
@@ -257,7 +257,7 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-const useThemedStyles = createThemedStyles(theme =>
+const createStyles = (theme: any) =>
   StyleSheet.create({
     container: {
       flexDirection: 'row',
@@ -368,7 +368,9 @@ const useThemedStyles = createThemedStyles(theme =>
       fontWeight: theme.fontConfig.fontWeight.bold,
       fontSize: theme.fontSizes.xs,
     },
-  })
-);
+  });
+
+// Add displayName for debugging
+Header.displayName = 'Header';
 
 export default Header;

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View,
   Text,
   ScrollView,
   Pressable,
-  Alert } from 'react-native';
+  Alert,
+  StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -13,7 +14,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore } from '@academy/mobile-shared';
+import { useAuthStore, useTheme } from '@academy/mobile-shared';
 
 interface ProfileMenuSection {
   title: string;
@@ -45,6 +46,7 @@ const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
   badge,
   index,
 }) => {
+  const { theme } = useTheme();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -64,34 +66,68 @@ const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
         onPressOut={() => {
           scale.value = withSpring(1);
         }}
-        className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3"
+        style={{
+          backgroundColor: theme.colors.background.primary,
+          borderRadius: theme.borderRadius.xl,
+          padding: theme.spacing.md,
+          borderWidth: 1,
+          borderColor: theme.colors.border.primary,
+          marginBottom: theme.spacing.sm,
+          ...theme.elevation.sm,
+        }}
       >
-        <View className="flex-row items-center">
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View
-            className="w-10 h-10 rounded-full items-center justify-center mr-4"
-            style={{ backgroundColor: `${color}15` }}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: theme.spacing.md,
+              backgroundColor: `${color}15`,
+            }}
           >
             <Ionicons name={icon} size={20} color={color} />
           </View>
           
-          <View className="flex-1">
-            <View className="flex-row items-center">
-              <Text className="text-gray-900 font-medium text-base flex-1">
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{
+                color: theme.colors.text.primary,
+                fontWeight: theme.fontConfig.fontWeight.medium,
+                fontSize: theme.fontSizes.base,
+                flex: 1,
+              }}>
                 {title}
               </Text>
               {badge && (
-                <View className="bg-red-500 rounded-full px-2 py-1 mr-2">
-                  <Text className="text-white text-xs font-bold">{badge}</Text>
+                <View style={{
+                  backgroundColor: theme.colors.status.error,
+                  borderRadius: theme.borderRadius.full,
+                  paddingHorizontal: theme.spacing.xs,
+                  paddingVertical: theme.spacing.xs,
+                  marginRight: theme.spacing.xs,
+                }}>
+                  <Text style={{
+                    color: 'white',
+                    fontSize: theme.fontSizes.xs,
+                    fontWeight: theme.fontConfig.fontWeight.bold,
+                  }}>{badge}</Text>
                 </View>
               )}
             </View>
             {subtitle && (
-              <Text className="text-gray-500 text-sm mt-1">{subtitle}</Text>
+              <Text style={{
+                color: theme.colors.text.secondary,
+                fontSize: theme.fontSizes.sm,
+                marginTop: 4,
+              }}>{subtitle}</Text>
             )}
           </View>
           
           {showChevron && (
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            <Ionicons name="chevron-forward" size={20} color={theme.colors.icon.tertiary} />
           )}
         </View>
       </Pressable>
@@ -112,6 +148,7 @@ const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
  * - Privacy and security settings
  */
 export const ProfileScreen: React.FC = () => {
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
   const [isParentMode, setIsParentMode] = useState(user?.role === 'parent');
@@ -148,7 +185,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'Edit Profile',
           subtitle: 'Update your personal information',
           icon: 'person-outline',
-          color: '#3B82F6',
+          color: theme.colors.interactive.accent,
           onPress: () => console.log('Navigate to edit profile'),
         },
         {
@@ -156,7 +193,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'Payment Methods',
           subtitle: 'Manage cards and billing',
           icon: 'card-outline',
-          color: '#10B981',
+          color: theme.colors.status.success,
           onPress: () => console.log('Navigate to payment methods'),
         },
         ...(user?.role === 'parent' || isParentMode ? [{
@@ -164,7 +201,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'Manage Children',
           subtitle: 'Add or edit child profiles',
           icon: 'people-outline' as const,
-          color: '#8B5CF6',
+          color: theme.colors.interactive.purple,
           onPress: () => console.log('Navigate to manage children'),
         }] : []),
       ],
@@ -177,7 +214,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'Notifications',
           subtitle: 'Customize your alerts',
           icon: 'notifications-outline',
-          color: '#F59E0B',
+          color: theme.colors.status.warning,
           onPress: () => console.log('Navigate to notifications'),
           badge: '3',
         },
@@ -186,7 +223,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'Privacy & Security',
           subtitle: 'Control your data and security',
           icon: 'shield-outline',
-          color: '#EF4444',
+          color: theme.colors.status.error,
           onPress: () => console.log('Navigate to privacy'),
         },
         {
@@ -194,7 +231,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'App Settings',
           subtitle: 'Language, theme, and more',
           icon: 'settings-outline',
-          color: '#6B7280',
+          color: theme.colors.icon.secondary,
           onPress: () => console.log('Navigate to settings'),
         },
       ],
@@ -207,7 +244,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'Help & Support',
           subtitle: 'Get help or contact us',
           icon: 'help-circle-outline',
-          color: '#8B5CF6',
+          color: theme.colors.interactive.purple,
           onPress: () => console.log('Navigate to help'),
         },
         {
@@ -215,7 +252,7 @@ export const ProfileScreen: React.FC = () => {
           title: 'About Academy',
           subtitle: 'App version and information',
           icon: 'information-circle-outline',
-          color: '#6B7280',
+          color: theme.colors.icon.secondary,
           onPress: () => console.log('Navigate to about'),
         },
       ],
@@ -231,47 +268,107 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={{
+      flex: 1,
+      backgroundColor: theme.colors.background.secondary,
+    }}>
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: insets.top + 20,
-          paddingBottom: 100, // Space for tab bar
+          paddingTop: insets.top + theme.spacing.lg,
+          paddingBottom: theme.spacing['3xl'], // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
       >
         {/* Profile Header */}
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
-          className="px-6 mb-8"
+          style={{
+            paddingHorizontal: theme.spacing.lg,
+            marginBottom: theme.spacing['2xl'],
+          }}
         >
-          <View className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <View className="flex-row items-center mb-4">
-              <View className="w-16 h-16 bg-blue-100 rounded-full items-center justify-center mr-4">
-                <Text className="text-blue-600 font-bold text-xl">
+          <View style={{
+            backgroundColor: theme.colors.background.primary,
+            borderRadius: theme.borderRadius.xl,
+            padding: theme.spacing.lg,
+            borderWidth: 1,
+            borderColor: theme.colors.border.primary,
+            ...theme.elevation.sm,
+          }}>
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: theme.spacing.md,
+            }}>
+              <View style={{
+                width: 64,
+                height: 64,
+                backgroundColor: `${theme.colors.interactive.accent}15`,
+                borderRadius: 32,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: theme.spacing.md,
+              }}>
+                <Text style={{
+                  color: theme.colors.interactive.accent,
+                  fontWeight: theme.fontConfig.fontWeight.bold,
+                  fontSize: theme.fontSizes.xl,
+                }}>
                   {getInitials(user?.firstName + ' ' + user?.lastName || 'User')}
                 </Text>
               </View>
               
-              <View className="flex-1">
-                <Text className="text-gray-900 font-bold text-xl">
+              <View style={{ flex: 1 }}>
+                <Text style={{
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.fontConfig.fontWeight.bold,
+                  fontSize: theme.fontSizes.xl,
+                }}>
                   {user?.firstName} {user?.lastName}
                 </Text>
-                <Text className="text-gray-600 text-base mt-1">
+                <Text style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: theme.fontSizes.base,
+                  marginTop: 4,
+                }}>
                   {user?.email}
                 </Text>
-                <View className="flex-row items-center mt-2">
-                  <View className="bg-blue-50 px-3 py-1 rounded-full">
-                    <Text className="text-blue-600 font-medium text-sm">
+                <View style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 8,
+                }}>
+                  <View style={{
+                    backgroundColor: theme.colors.status.infoBackground,
+                    paddingHorizontal: theme.spacing.sm,
+                    paddingVertical: theme.spacing.xs,
+                    borderRadius: theme.borderRadius.full,
+                  }}>
+                    <Text style={{
+                      color: theme.colors.interactive.accent,
+                      fontWeight: theme.fontConfig.fontWeight.medium,
+                      fontSize: theme.fontSizes.sm,
+                    }}>
                       {isParentMode ? 'Parent' : 'Student'}
                     </Text>
                   </View>
                   {user?.role === 'parent' && (
                     <Pressable
                       onPress={toggleParentMode}
-                      className="ml-2 bg-gray-100 px-3 py-1 rounded-full"
+                      style={{
+                        marginLeft: theme.spacing.xs,
+                        backgroundColor: theme.colors.background.secondary,
+                        paddingHorizontal: 12,
+                        paddingVertical: 4,
+                        borderRadius: theme.borderRadius.full,
+                      }}
                     >
-                      <Text className="text-gray-600 font-medium text-sm">
+                      <Text style={{
+                        color: theme.colors.text.secondary,
+                        fontWeight: theme.fontConfig.fontWeight.medium,
+                        fontSize: theme.fontSizes.sm,
+                      }}>
                         Switch to {isParentMode ? 'Student' : 'Parent'}
                       </Text>
                     </Pressable>
@@ -279,24 +376,58 @@ export const ProfileScreen: React.FC = () => {
                 </View>
               </View>
               
-              <Pressable className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center">
-                <Ionicons name="pencil" size={20} color="#6B7280" />
+              <Pressable style={{
+                width: 40,
+                height: 40,
+                backgroundColor: theme.colors.background.secondary,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Ionicons name="pencil" size={20} color={theme.colors.icon.secondary} />
               </Pressable>
             </View>
             
             {/* Quick Stats */}
-            <View className="flex-row justify-between border-t border-gray-100 pt-4">
-              <View className="items-center">
-                <Text className="text-gray-900 font-bold text-lg">2</Text>
-                <Text className="text-gray-500 text-sm">Active Courses</Text>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              borderTopWidth: 1,
+              borderTopColor: theme.colors.border.primary,
+              paddingTop: theme.spacing.md,
+            }}>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.fontConfig.fontWeight.bold,
+                  fontSize: theme.fontSizes.lg,
+                }}>2</Text>
+                <Text style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: theme.fontSizes.sm,
+                }}>Active Courses</Text>
               </View>
-              <View className="items-center">
-                <Text className="text-gray-900 font-bold text-lg">15</Text>
-                <Text className="text-gray-500 text-sm">Sessions</Text>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.fontConfig.fontWeight.bold,
+                  fontSize: theme.fontSizes.lg,
+                }}>15</Text>
+                <Text style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: theme.fontSizes.sm,
+                }}>Sessions</Text>
               </View>
-              <View className="items-center">
-                <Text className="text-gray-900 font-bold text-lg">3</Text>
-                <Text className="text-gray-500 text-sm">Achievements</Text>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.fontConfig.fontWeight.bold,
+                  fontSize: theme.fontSizes.lg,
+                }}>3</Text>
+                <Text style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: theme.fontSizes.sm,
+                }}>Achievements</Text>
               </View>
             </View>
           </View>
@@ -304,10 +435,18 @@ export const ProfileScreen: React.FC = () => {
 
         {/* Menu Sections */}
         {menuSections.map((section, sectionIndex) => (
-          <View key={section.title} className="px-6 mb-8">
+          <View key={section.title} style={{
+            paddingHorizontal: theme.spacing.lg,
+            marginBottom: theme.spacing['2xl'],
+          }}>
             <Animated.Text
               entering={FadeInDown.delay((sectionIndex + 2) * 100).springify()}
-              className="text-gray-900 text-lg font-semibold mb-4"
+              style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.fontSizes.lg,
+                fontWeight: theme.fontConfig.fontWeight.semibold,
+                marginBottom: theme.spacing.md,
+              }}
             >
               {section.title}
             </Animated.Text>
@@ -327,15 +466,33 @@ export const ProfileScreen: React.FC = () => {
         {/* Logout Button */}
         <Animated.View
           entering={FadeInDown.delay(500).springify()}
-          className="px-6 mb-8"
+          style={{
+            paddingHorizontal: theme.spacing.lg,
+            marginBottom: theme.spacing['2xl'],
+          }}
         >
           <Pressable
             onPress={handleLogout}
-            className="bg-red-50 rounded-xl p-4 border border-red-200"
+            style={{
+              backgroundColor: theme.colors.status.errorBackground,
+              borderRadius: theme.borderRadius.xl,
+              padding: theme.spacing.md,
+              borderWidth: 1,
+              borderColor: theme.colors.status.error,
+            }}
           >
-            <View className="flex-row items-center justify-center">
-              <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-              <Text className="text-red-600 font-medium text-base ml-3">
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Ionicons name="log-out-outline" size={20} color={theme.colors.status.error} />
+              <Text style={{
+                color: theme.colors.status.error,
+                fontWeight: theme.fontConfig.fontWeight.medium,
+                fontSize: theme.fontSizes.base,
+                marginLeft: theme.spacing.sm,
+              }}>
                 Sign Out
               </Text>
             </View>
@@ -345,9 +502,16 @@ export const ProfileScreen: React.FC = () => {
         {/* App Version */}
         <Animated.View
           entering={FadeInDown.delay(600).springify()}
-          className="px-6 mb-4"
+          style={{
+            paddingHorizontal: theme.spacing.lg,
+            marginBottom: theme.spacing.md,
+          }}
         >
-          <Text className="text-gray-400 text-center text-sm">
+          <Text style={{
+            color: theme.colors.text.tertiary,
+            textAlign: 'center',
+            fontSize: theme.fontSizes.sm,
+          }}>
             Academy Students App v1.0.0
           </Text>
         </Animated.View>

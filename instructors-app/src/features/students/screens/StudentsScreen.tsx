@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View,
   Text,
   ScrollView,
@@ -50,7 +50,7 @@ export const StudentsScreen: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'excellent' | 'good' | 'needs-attention'>('all');
   const [notificationCount, setNotificationCount] = useState(5);
   
-  const styles = createStyles(theme);
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   // Enhanced sample data matching our StudentCard interface
   const [students] = useState<StudentData[]>([
@@ -289,14 +289,18 @@ export const StudentsScreen: React.FC = () => {
         renderItem={({ item, index }) => (
           <StudentCard
             student={item}
-            index={index}
             onPress={handleStudentPress}
             onAttendancePress={handleAttendancePress}
             onPerformancePress={handlePerformancePress}
             onContactParentPress={handleContactParentPress}
             onMoreOptionsPress={handleMoreOptionsPress}
-            showInstructorActions={true}
-            variant="instructor"
+            showQuickActions={true}
+            showAlerts={true}
+            showProgress={true}
+            enableQuickAttendance={true}
+            enableQuickGrading={true}
+            variant="detailed"
+            testID={`student-card-${item.id}`}
           />
         )}
         contentContainerStyle={{
@@ -359,7 +363,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     borderRadius: theme.borderRadius.full,
   },
   filterTabText: {
-    fontSize: theme.typography.fontSize.sm,
+    fontSize: theme.fontSizes.sm,
     fontWeight: theme.fontConfig.fontWeight.semibold,
   },
   emptyContainer: {
@@ -368,7 +372,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingVertical: theme.spacing.xl * 2,
   },
   emptyTitle: {
-    fontSize: theme.typography.fontSize.lg,
+    fontSize: theme.fontSizes.lg,
     fontWeight: theme.fontConfig.fontWeight.semibold,
     marginTop: theme.spacing.md,
   },

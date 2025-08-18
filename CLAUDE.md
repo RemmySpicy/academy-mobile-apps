@@ -1,41 +1,20 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this
-repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Architecture
 
 This is a monorepo containing mobile applications for the Academy Management System:
 
-- **academy-instructors-app/**: React Native/Expo app for tutors and program coordinators
-- **academy-students-app/**: React Native/Expo app for students and parents/guardians
+- **instructors-app/**: React Native/Expo app for tutors and program coordinators
+- **students-app/**: React Native/Expo app for students and parents/guardians
 - **shared/**: Common components, utilities, API client, and TypeScript types
 
 ## Important: Rebuilding Strategy
 
-**CRITICAL**: Both apps contain `existing-code/` directories with working features that serve as
-**reference implementations**:
+**CRITICAL**: Both apps contain `existing-code/` directories with working features that serve as **reference implementations**:
 
-### Academy Instructors App (existing-code/) - Reference Only
-
-- **Complete authentication system** with AuthContext
-- **Student management features** (attendance, performance tracking, scheduling)
-- **Classroom management** with calendar integration
-- **UI components** (forms, modals, charts)
-- **Navigation setup** with React Navigation
-- **State management** using Redux Toolkit
-- **Asset library** with fonts, icons, and images
-
-### Academy Students App (existing-code/) - Reference Only
-
-- **Student portal features** (course booking, progression tracking)
-- **Payment processing** integration
-- **Profile management** for students and parents
-- **Course catalog** and booking system
-- **Progress tracking** and analytics
-- **Native Android build** configuration
-
-**Development Approach**:
+### Development Approach:
 
 1. **Reference existing-code/ implementations** - Study the working features and patterns
 2. **Rebuild optimally in main src/ directories** - Using latest dependencies and best practices
@@ -43,14 +22,13 @@ This is a monorepo containing mobile applications for the Academy Management Sys
 4. **DO NOT modify existing-code/** - These are reference implementations only
 5. **Plan to remove existing-code/** - Once all features are rebuilt and tested
 
-The goal is to rebuild the apps with modern architecture while maintaining feature parity with the
-existing implementations.
+The goal is to rebuild the apps with modern architecture while maintaining feature parity with the existing implementations.
 
-## 🎨 CRITICAL: Theme System Usage (January 2025)
+## 🎨 CRITICAL: Theme System Usage
 
 **⚠️ IMPORTANT**: The Academy Apps use a specific theme structure. Always use these exact variable names:
 
-### **Academy Purple (Brand Color)**
+### Academy Purple (Brand Color)
 ```typescript
 // ✅ CORRECT - Academy brand purple (#4F2EC9)
 theme.colors.interactive.primary
@@ -60,7 +38,7 @@ theme.colors.primary.main
 theme.colors.academy.purple[500]
 ```
 
-### **Common Theme Variables**
+### Common Theme Variables
 ```typescript
 // Colors
 theme.colors.interactive.primary     // Academy purple #4F2EC9
@@ -78,12 +56,12 @@ theme.spacing.md                    // 16px
 theme.spacing.lg                    // 24px
 
 // Typography
-theme.typography.fontSize.body      // 16px
+theme.fontSizes.base                // 16px
 theme.fontConfig.fontWeight.medium  // '500'
 theme.borderRadius.lg               // 12px
 ```
 
-### **Implementation Pattern**
+### Implementation Pattern
 ```typescript
 import { useTheme } from '@academy/mobile-shared';
 
@@ -104,1100 +82,110 @@ const MyComponent = () => {
 
 **📖 Full Documentation**: See `/docs/THEME_SYSTEM.md` for complete reference.
 
-## ✅ Enhanced Components (January 2025)
-
-The shared component library has been enhanced with Academy-themed, instructor-specific components:
-
-### Enhanced UI Components
-- **Header**: Academy themed with instructor actions (search, filter, notifications)
-- **StudentCard**: Performance indicators, attendance status, quick actions for instructors
-- **InstructorDashboard**: Comprehensive dashboard with metrics, charts, and activity feeds
-- **PerformanceChart**: Academy themed analytics charts with interactive features
-
-### Enhanced Form Components
-- **CustomInput**: Refined validation, accessibility, and Academy theming
-- **CustomButton**: All 11 Academy button variants with loading states and icons
-
-### Key Features
-- **Academy Theming**: Full integration with design system colors, typography, spacing
-- **Instructor Utilities**: Quick attendance, grading, parent contact, student management
-- **Program Context**: Automatic filtering and role-based access control
-- **Accessibility**: Full ARIA support, proper touch targets, screen reader compatibility
-- **TypeScript**: Complete type safety with exported interfaces
-
-All components are exported from `@academy/mobile-shared` and maintain feature parity with existing implementations while adding modern functionality.
+## Feature-Based Architecture
 
 Both apps use a feature-based architecture with:
 
-- **core/**: Base components, config, hooks, navigation, providers
 - **features/**: Feature modules (auth, attendance, classroom, performance, scheduling, students)
-- **shared/**: Cross-app components and services
+- **navigation/**: App navigation components
 - **services/**: API client and service layer
+- **components/**: App-specific components
 
-The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT authentication and
-role-based access control.
+The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT authentication and role-based access control.
 
-## Technology Stack (Updated August 2025)
+## 📖 Documentation Structure
 
-- **React**: 19.0.0 (Production ready)
-- **React Native**: 0.79.5 
-- **Expo SDK**: 53.0.20
-- **TypeScript**: 5.8.3 (Core type system production ready)
-- **React Navigation**: 6.x with @react-navigation/native-stack
-- **State Management**: Zustand 5.0.7 with Immer integration
-- **Forms**: React Hook Form 7.62.0 with yup validation
-- **Icons**: @expo/vector-icons (Ionicons) - ✅ Fully migrated from Remix Icons
-- **Charts**: react-native-gifted-charts v1.4.0 (React 19 compatible, modern alternative)
-- **Animation**: React Native Reanimated v3.17.4 (proper v3 API usage)
-- **Testing**: Jest 29.0.0 with React Native Testing Library
-- **Linting**: ESLint 9.25.0 with TypeScript support
-- **Formatting**: Prettier 3.4.2 with Husky pre-commit hooks
-- **Monorepo**: npm workspaces with optimized module resolution
+### Core Documentation:
+- **📋 [Development Guide](./docs/development/DEVELOPMENT_GUIDE.md)** - Setup, commands, environment configuration
+- **🎨 [Theme System](./docs/THEME_SYSTEM.md)** - Complete theming reference
+- **🏗️ [System Overview](./docs/architecture/SYSTEM_OVERVIEW.md)** - High-level architecture
+- **🔐 [Authentication](./docs/authentication/README.md)** - Auth system and roles
 
-## ✅ Production Readiness Status (August 2025)
+### Advanced Features:
+- **🎯 [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md)** - Program switching system
+- **🔧 [Component Library](./docs/components/README.md)** - Shared component usage
+- **🌐 [API Client](./docs/api/API_CLIENT.md)** - Backend integration
 
-**FULLY PRODUCTION READY** - All systems are complete and TypeScript compilation passes with zero errors:
+### Development Resources:
+- **✅ [Production Readiness](./docs/development/PRODUCTION_READINESS_STATUS.md)** - Current status
+- **🔧 [TypeScript Fixes](./docs/development/TYPE_SYSTEM_FIXES_SUMMARY.md)** - Recent improvements
+- **🚀 [Modernization Guide](./docs/development/MODERNIZATION.md)** - Ecosystem updates
 
-- ✅ **Theme System**: Complete with light/dark/night modes, full TypeScript support
-- ✅ **Authentication**: JWT-based auth with program context, fully typed
-- ✅ **Component Library**: 45+ Academy components, standardized interfaces
-- ✅ **Chart System**: Modern React 19 compatible charts with Academy theming
-- ✅ **Navigation**: Type-safe navigation with proper screen definitions
-- ✅ **State Management**: Robust Zustand stores with Immer integration
-- ✅ **Build System**: Both instructor and student apps building successfully
-- ✅ **TypeScript**: Zero compilation errors, complete type safety achieved
+## Key Implementation Notes
 
-**The shared component library is now 100% TypeScript compliant and production-ready.**
+### Multi-Program Support
+The apps support multiple academy programs with automatic context switching. See [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md) for integration details.
 
-### Recent TypeScript Modernization (August 2025)
+### Component Usage
+All shared components are exported from `@academy/mobile-shared`. Use Academy-themed components with proper TypeScript interfaces.
 
-All TypeScript compilation errors have been systematically resolved:
-
-- **✅ Theme System**: Fixed color type conflicts, enabled proper dark theme support
-- **✅ Component Library**: Resolved prop validation, accessibility, and interface issues
-- **✅ Chart Integration**: Migrated to react-native-gifted-charts for React 19 compatibility
-- **✅ Authentication**: Fixed auth store interfaces and JWT token handling
-- **✅ Form Components**: Updated to modern React Hook Form patterns
-- **✅ API Client**: Resolved response type handling and method definitions
-- **✅ Legacy Compatibility**: Fixed existing-code references while maintaining functionality
-- **✅ Accessibility**: Ensured all components meet React Native accessibility standards
-
-The monorepo now compiles with `npx tsc --noEmit` producing zero errors.
-
-## Development Commands
-
-### Installation & Setup
-
+### Development Commands
 ```bash
-# Install all dependencies
+# Install dependencies
 npm install
 
-# Fresh start (clean and reinstall everything)
-npm run dev:fresh
+# Start development
+cd instructors-app && npx expo start --offline
+cd students-app && npx expo start --offline
 
-# Complete reset (nuclear option)
-npm run reset
-
-# Individual apps
-npm run install:instructor
-npm run install:student
-npm run install:shared
-```
-
-### Development
-
-```bash
-# Start individual apps (recommended for testing)
-cd academy-instructors-app
-npx expo start --offline
-
-cd academy-students-app  
-npx expo start --offline
-
-# Start both apps simultaneously
-npm run dev:all
-
-# Docker development
-npm run docker:up
-```
-
-### Code Quality & Testing
-
-```bash
-# Run all tests with coverage
-npm run test:all
-
-# Lint all packages
-npm run lint:all
-
-# Type check all packages
+# Type checking (ALWAYS run before commits)
 npm run type-check:all
 
-# Format code
-npm run format
-
-# Check formatting
-npm run format:check
-
-# Pre-commit checks (runs automatically on git commit)
-npm run pre-commit
+# Testing
+npm run test:all
 ```
 
-### Building & Deployment
-
-```bash
-# Build both apps for development
-npm run build:all
-
-# EAS builds (individual apps)
-cd academy-instructors-app
-npm run build:development
-npm run build:preview
-npm run build:production
-
-# Deploy to Expo
-npm run deploy
-```
-
-## Environment Configuration
-
-Environment files are located in the root directory:
-
-- `.env.development` - Local development
-- `.env.staging` - Staging environment
-- `.env.production` - Production environment
-- `.env.example` - Template for new environments
-
-Key environment variables:
-
-- `EXPO_PUBLIC_API_URL` - Backend API URL
-- `EXPO_PUBLIC_ENV` - Environment name
-- `EXPO_PUBLIC_DEBUG_MODE` - Enable/disable debug features
-
-## Pre-commit Hooks
-
-Husky is configured to run on every commit:
-
-1. **ESLint** - Fixes linting issues automatically
-2. **Prettier** - Formats code consistently
-3. **TypeScript** - Type checking across all packages
-4. **Jest** - Runs related tests for changed files
-
-## Backend Dependencies
-
-Before starting mobile development, ensure backend services are running:
-
-```bash
-cd ../academy-admin
-docker-compose up db backend
-```
-
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
-- Backend Source: ../academy-admin/backend
-
-## Multi-Program Context System
-
-The mobile apps now support multi-program academies with automatic program context switching:
-
-### 🔗 Key Components (in `/shared/src/components/program/`)
-
-**ProgramContextProvider**: Wraps the entire app to provide program context
-
-```typescript
-import { ProgramContextProvider } from '@shared';
-
-export default function App() {
-  return (
-    <ProgramContextProvider>
-      {/* Your app content */}
-    </ProgramContextProvider>
-  );
-}
-```
-
-**ProgramSelector**: UI component for switching between programs
-
-```typescript
-import { ProgramSelector } from '@shared';
-
-// Different variants available
-<ProgramSelector variant="button" />     // Simple button
-<ProgramSelector variant="dropdown" />   // Dropdown style
-<ProgramSelector variant="card" />       // Card style
-```
-
-**ProgramGuard**: Protects content based on user roles
-
-```typescript
-import { ProgramGuard } from '@shared';
-
-// Require specific role
-<ProgramGuard requiredRole="program_coordinator">
-  <CoordinatorFeatures />
-</ProgramGuard>
-
-// Require minimum role level
-<ProgramGuard minimumRoleLevel="tutor">
-  <InstructorFeatures />
-</ProgramGuard>
-```
-
-**useProgramContext**: Hook for accessing program data
-
-```typescript
-import { useProgramContext } from '@shared';
-
-function MyComponent() {
-  const {
-    currentProgram, // Current program object
-    availablePrograms, // Array of available programs
-    switchProgram, // Function to switch programs
-    isLoading, // Loading state
-  } = useProgramContext();
-
-  // Your component logic
-}
-```
-
-### 🎯 Integration Steps
-
-1. **Wrap App with Provider** (in `App.tsx`):
-
-```typescript
-import { ProgramContextProvider, ThemeProvider } from '@shared';
-
-export default function App() {
-  return (
-    <ThemeProvider>
-      <ProgramContextProvider>
-        <NavigationContainer>
-          {/* Your navigation */}
-        </NavigationContainer>
-      </ProgramContextProvider>
-    </ThemeProvider>
-  );
-}
-```
-
-2. **Add Program Selector to Navigation** (recommended in header):
-
-```typescript
-import { ProgramSelector } from '@shared';
-
-function HeaderComponent() {
-  return (
-    <View style={styles.header}>
-      <ProgramSelector variant="button" />
-    </View>
-  );
-}
-```
-
-3. **Protect Role-Specific Content**:
-
-```typescript
-// Instructor App - coordinator-only features
-<ProgramGuard requiredRole="program_coordinator">
-  <StudentManagement />
-</ProgramGuard>
-
-// Student App - parent-only features
-<ProgramGuard requiredRole="parent">
-  <ChildProgressView />
-</ProgramGuard>
-```
-
-4. **Use Program Context in Data Fetching**:
-
-```typescript
-import { useProgramContext } from '@shared';
-
-function StudentsScreen() {
-  const { currentProgram } = useProgramContext();
-
-  // API calls automatically include program context via X-Program-Context header
-  const { data: students } = useQuery(['students', currentProgram?.id],
-    () => api.get('/students') // Filtered by program automatically
-  );
-
-  return (
-    <ProgramGuard minimumRoleLevel="tutor">
-      {/* Your component */}
-    </ProgramGuard>
-  );
-}
-```
-
-### 🔒 Automatic Features
-
-- **API Header Injection**: All API requests automatically include `X-Program-Context` header
-- **Data Filtering**: Backend filters all data by user's current program context
-- **Role-Based Access**: Components automatically respect user's role within the current program
-- **Persistent Context**: Program selection is stored and restored between app sessions
-- **Error Handling**: Graceful fallbacks when programs are unavailable
-
-### 📱 App-Specific Roles
-
-**Instructor App**:
-
-- `tutor` - Basic student interaction
-- `program_coordinator` - Enhanced management
-- `program_admin` - Full program control
-- `super_admin` - System-wide access
-
-**Student App**:
-
-- `student` - Course access and progress
-- `parent` - Child monitoring and communication
-
-### 🎨 Theming Integration
-
-All program components use the shared design system:
-
-- Consistent styling across both apps
-- Dark/light mode support
-- Responsive design
-- Accessibility compliance
-
-### 🔄 Migration from Swimming-Only
-
-The existing code in `existing-code/` directories assumes a single swimming program. When rebuilding
-features:
-
-1. **Wrap with ProgramContextProvider**
-2. **Add ProgramGuard** for role-based features
-3. **Use useProgramContext()** instead of hardcoded program assumptions
-4. **Test with multiple programs** to ensure proper filtering
-
-### 📋 Example Integration Files
-
-See example implementations:
-
-- **Instructor App**: `/academy-instructors-app/src/components/ProgramIntegrationExample.tsx`
-- **Student App**: `/academy-students-app/src/components/ProgramIntegrationExample.tsx`
-
-These show practical usage patterns for both apps.
-
-### 🔧 Troubleshooting
-
-**Program Context Not Loading:**
-
-- Ensure `ProgramContextProvider` wraps your app root
-- Check that user is authenticated before using program context
-- Verify backend API returns program assignments for the user
-
-**API Requests Not Filtered:**
-
-- Confirm `X-Program-Context` header is being added automatically
-- Check that API client is properly configured in auth store
-- Verify program context is set before making requests
-
-**Role-Based Guards Not Working:**
-
-- Ensure user has proper role assignments in the backend
-- Check that role names match exactly (case-sensitive)
-- Verify `ProgramGuard` is getting correct program context
-
-**Performance Issues:**
-
-- Use `ProgramGuard` to conditionally render heavy components
-- Implement proper loading states with `isLoading` from context
-- Consider memoizing components that depend on program context
-
-**Dependency Resolution Issues:**
-
-- **Module not found errors**: Check if dependency is in correct package.json (shared for runtime,
-  root for build tools)
-- **Version conflicts**: Ensure only one version of each dependency across all packages
-- **Plugin resolution errors**: Build plugins like `expo-build-properties` should be in root
-  devDependencies
-- **Shared package not found**: Run `npm install` from root to recreate workspace symlinks
-- **Expo plugin errors**: Verify plugin is accessible with
-  `node -e "console.log(require.resolve('plugin-name'))"`
-
-**Metro Configuration Issues:**
-
-- **Module resolution errors**: Ensure metro.config.js uses proper monorepo configuration
-- **Icon system**: All apps now use @expo/vector-icons (Ionicons) - Remix Icons fully removed
-- **Theme variables**: Use `theme.colors.interactive.primary` for Academy purple (#4F2EC9)
-
-**Common Fixes:**
-
-```bash
-# Recreate workspace links
-npm install
-
-# Clear all caches and reinstall
-npm run reset
-
-# Clear metro cache
-npx expo start --clear
-
-# Check dependency resolution
-cd academy-instructors-app
-node -e "console.log(require.resolve('@academy/mobile-shared'))"
-```
-
-**Metro Bundler & React Version Issues:**
-
-- **React version mismatch**: Use npm overrides in root package.json to force consistent versions:
-  ```json
-  "overrides": {
-    "react": "19.1.0",
-    "react-native-renderer": "19.1.0"
-  }
-  ```
-- **Babel plugin errors**: Ensure all required Babel plugins are installed:
-  ```bash
-  npm install --save-dev @babel/plugin-transform-template-literals
-  ```
-- **Network fetch errors**: Use `--offline` flag when behind firewalls:
-  ```bash
-  npx expo start --offline
-  ```
-
-## Styling Architecture: Custom Theme System (Updated January 2025)
-
-The Academy Apps use a **custom theme system** built on React Native StyleSheet for consistent, branded components with dynamic theme switching capabilities.
-
-### **Architecture Decision:**
-
-✅ **Primary Approach: Custom Academy Theme System**
-- **All shared components** use StyleSheet + `useTheme()` hook
-- **Academy-specific design tokens** (#4F2EC9 purple, spacing, typography)
-- **Dynamic theme switching** (light/dark/night modes)
-- **Type-safe theme access** with full IDE support
-- **Component variants** tailored to Academy use cases
-
-❌ **Deprecated: NativeWind/Tailwind CSS**
-- Removed to prevent conflicts with StyleSheet components
-- Caused mixed styling approaches and global CSS interference
-- Not aligned with Academy's custom design system needs
-
-### **Core Theme Components:**
-
-All UI components are built with the Academy theme system:
-
-```tsx
-// ✅ Academy Theme Pattern
-import { useTheme, createThemedStyles } from '@academy/mobile-shared';
-
-const MyComponent = () => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles();
-  
-  return (
-    <CustomButton
-      variant="primary"  // Uses Academy purple #4F2EC9
-      style={styles.button}
-    />
-  );
-};
-
-const useThemedStyles = createThemedStyles((theme) =>
-  StyleSheet.create({
-    button: {
-      marginTop: theme.spacing.lg,
-      backgroundColor: theme.colors.interactive.primary,
-    },
-  })
-);
-```
-
-### **Academy Theme Features:**
-
-1. **Dynamic Theme Switching:**
-   ```tsx
-   const { theme, themeMode, setThemeMode } = useTheme();
-   // Supports: 'light', 'dark', 'night', 'system'
-   ```
-
-2. **Academy Brand Colors:**
-   ```tsx
-   theme.colors.interactive.primary     // Academy purple #4F2EC9
-   theme.colors.interactive.teal        // Academy teal #52E2BB
-   theme.colors.interactive.orange     // Academy orange #FEAE24
-   theme.colors.interactive.themeBlack // Academy black #121212
-   ```
-
-3. **Consistent Spacing & Typography:**
-   ```tsx
-   theme.spacing.lg                    // 24px
-   theme.typography.heading.lg         // Academy heading styles
-   theme.borderRadius.xl               // Academy border radius
-   ```
-
-4. **Component Variants:**
-   ```tsx
-   <CustomButton variant="primary" />       // Academy purple button
-   <CustomButton variant="teal" />          // Academy teal button
-   <CustomButton variant="outlineTeal" />   // Academy teal outline button
-   <CustomButton variant="outline" />       // Academy outline button
-   <CustomInput variant="standard" />       // Academy input styling
-   ```
-
-### **Component Development Guidelines:**
-
-1. **Always Use Theme Hook:**
-   ```tsx
-   // ✅ CORRECT
-   import { useTheme, createThemedStyles } from '@academy/mobile-shared';
-   
-   const { theme } = useTheme();
-   const styles = useThemedStyles();
-   ```
-
-2. **Use Academy Design Tokens:**
-   ```tsx
-   // ✅ GOOD: Use theme tokens
-   backgroundColor: theme.colors.interactive.primary,
-   padding: theme.spacing.md,
-   
-   // ❌ AVOID: Hardcoded values
-   backgroundColor: '#4F2EC9',
-   padding: 16,
-   ```
-
-3. **Create Themed StyleSheets:**
-   ```tsx
-   const useThemedStyles = createThemedStyles((theme) =>
-     StyleSheet.create({
-       container: {
-         backgroundColor: theme.colors.background.primary,
-         padding: theme.spacing.lg,
-       },
-     })
-   );
-   ```
-
-4. **Never Mix Styling Approaches:**
-   ```tsx
-   // ❌ WRONG: Don't use className with Academy components
-   <CustomButton className="mt-6" />
-   
-   // ✅ CORRECT: Use style prop with theme
-   <CustomButton style={{ marginTop: theme.spacing.lg }} />
-   ```
-
-### **Migration from NativeWind/Tailwind:**
-
-If you encounter legacy components with `className` usage:
-
-1. **Remove Tailwind imports and configs**
-2. **Convert className to StyleSheet:**
-   ```tsx
-   // Before
-   <View className="flex-1 bg-white px-6">
-   
-   // After
-   <View style={styles.container}>
-   
-   // Add to StyleSheet
-   container: {
-     flex: 1,
-     backgroundColor: theme.colors.background.primary,
-     paddingHorizontal: theme.spacing.lg,
-   }
-   ```
-
-3. **Use Academy theme tokens** instead of Tailwind colors
-4. **Clear Metro cache** after changes: `npx expo start --clear`
-
-### **Benefits of Custom Theme System:**
-
-- **🎨 Brand Consistency**: Academy-specific colors, spacing, typography
-- **🌓 Theme Switching**: Built-in light/dark/night mode support  
-- **📱 Mobile Optimized**: React Native StyleSheet performance
-- **🔧 Type Safety**: Full TypeScript support with theme intellisense
-- **🎯 Component Variants**: Pre-built Academy component variations
-- **🚀 Performance**: No CSS-in-JS overhead, native StyleSheet performance
-
-### **When to Use NativeWind (Minimal Usage):**
-
-NativeWind is kept available but should only be used for:
-
-✅ **Simple Layout Utilities** (when StyleSheet would be overkill):
-```tsx
-// OK: Simple layout utilities
-<View className="flex-1 items-center justify-center">
-  <CustomButton variant="primary" /> {/* Academy theme */}
-</View>
-```
-
-✅ **Quick Prototyping** (before converting to Academy theme):
-```tsx
-// Temporary: For rapid prototyping
-<View className="p-4 bg-gray-100">
-  {/* Convert to Academy theme later */}
-</View>
-```
-
-❌ **Never Use NativeWind For**:
-- Academy branded components (buttons, inputs, cards)
-- Colors that should match Academy theme
-- Components that need theme switching
-- Production components (convert to Academy theme)
-
-### **Decision Matrix:**
-
-| Use Case | Approach | Example |
-|----------|----------|---------|
-| **Academy Button** | ✅ Custom Theme | `<CustomButton variant="primary" />` or `variant="teal"` |
-| **Academy Colors** | ✅ Custom Theme | `backgroundColor: theme.colors.interactive.teal` |
-| **Complex Component** | ✅ Custom Theme | `const styles = useThemedStyles()` |
-| **Simple Layout** | ⚠️ NativeWind OK | `className="flex-1 items-center"` |
-| **Quick Prototype** | ⚠️ NativeWind OK | `className="p-4"` (convert later) |
-
-### **Compliance Checker:**
-
-Run the Academy theme compliance checker:
-```bash
-./scripts/check-styling-conflicts.sh
-```
-
-This will identify components that should be converted to the Academy theme system.
-
-## Monorepo Configuration (Updated January 2025)
-
-The Academy Apps use a properly configured npm workspaces monorepo with react-native-monorepo-config for optimal module resolution.
-
-### Metro Configuration
-
-Both apps use identical metro configurations for consistent module resolution:
-
-```javascript
-const { getDefaultConfig } = require('expo/metro-config');
-const path = require('path');
-
-const projectRoot = __dirname;
-const workspaceRoot = path.resolve(projectRoot, '..');
-
-const config = getDefaultConfig(projectRoot);
-
-// 1. Watch the entire monorepo
-config.watchFolders = [workspaceRoot];
-
-// 2. Let Metro know where to resolve packages
-config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'node_modules'),
-];
-
-// 3. Configure extensions and platforms
-config.resolver.platforms = ['ios', 'android', 'native', 'web'];
-config.resolver.sourceExts = ['js', 'jsx', 'ts', 'tsx', 'json'];
-
-// 4. Add explicit alias for the shared package
-config.resolver.alias = {
-  '@academy/mobile-shared': path.resolve(workspaceRoot, 'shared'),
-};
-
-// 5. Ensure proper module resolution
-config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
-
-module.exports = config;
-```
-
-## Monorepo Structure
-
-### Configuration File Organization
-
-**Root Level (Centralized):**
-
-- `.eslintrc.js` - Unified linting rules for all packages
-- `.prettierrc.js` - Code formatting rules
-- `.gitignore` - Global ignore patterns
-- `jest.config.js` - Monorepo test configuration
-- `tsconfig.json` - Base TypeScript configuration
-- `.lintstagedrc.js` - Pre-commit checks
-- `.husky/` - Git hooks
-
-**Package Level (App-Specific):**
-
-- `babel.config.js` - Expo-specific build configuration (keep separate)
-- `jest-setup.js` - Package-specific test mocks (keep separate)
-- `tsconfig.json` - Extends root config with package specifics
-- `eas.json` - Expo build configuration
-- `package.json` - Package dependencies and scripts
-
-**Note**: Individual app `.gitignore` and `.eslintrc.js` files have been removed to avoid
-duplication.
-
-### Dependency Management Strategy
-
-**CRITICAL**: This monorepo uses a **centralized dependency management** approach to ensure version
-consistency and proper module resolution:
-
-**Root Level (`package.json`):**
-
-- **Build tools**: `husky`, `lint-staged`, `prettier`, `eslint`, `typescript`
-- **Expo plugins**: `expo-build-properties` (build-time plugin used by both apps)
-- **Development tools**: `concurrently` for running multiple apps
-- **Monorepo tooling**: Configuration and shared tooling
-
-**Shared Package (`shared/package.json`):**
-
-- **Runtime dependencies**: `react@19.1.1`, `react-native@0.80.2`, `expo@53.0.0`
-- **Core libraries**: `@react-navigation/*`, `zustand`, `react-hook-form`, `axios`
-- **UI components**: `@expo/vector-icons`, `react-native-gesture-handler`, etc.
-- **All packages both apps need**: Shared to ensure version consistency
-
-**App Level (`academy-*-app/package.json`):**
-
-- **Only app-specific dependencies**: `@academy/mobile-shared` (workspace link)
-- **Build configuration**: `babel-preset-expo`, `eslint-config-expo`, `tailwindcss`
-- **Minimal footprint**: Everything else comes from shared or root
-
-**Workspace Resolution:**
-
-- Apps automatically resolve shared dependencies through npm workspace hoisting
-- `@academy/mobile-shared` symlinked to `./shared/src/index.ts`
-- Build plugins (like `expo-build-properties`) available from root node_modules
-- No version conflicts between apps
-
-**DO NOT:**
-
-- Add runtime dependencies directly to app package.json files
-- Duplicate dependencies across packages
-- Use different versions of the same dependency
-
-**DO:**
-
-- Add new runtime dependencies to `shared/package.json`
-- Add build tools to root `package.json`
-- Keep apps lean with only essential app-specific dependencies
-
-### TypeScript Configuration
-
-- Root `tsconfig.json` provides base configuration
-- Each package extends the root config with specific settings
-- Project references enable fast builds and better IDE support
-
-### ESLint Configuration
-
-- Unified `.eslintrc.js` at root with React Native specific rules
-- Automatic fixing on save and pre-commit
-- TypeScript-aware linting
-
-### Testing Strategy
-
-- Jest configured for monorepo with separate projects
-- Shared setup files for consistent mocking
-- Coverage reporting across all packages
-- Automatic test running on file changes
-
-## Shared Resources
-
-The `/shared` directory contains:
-
-- **API Client**: Unified authentication and program context handling
-- **Types**: TypeScript definitions from backend schemas
-- **Components**: Reusable UI components (forms, buttons, inputs)
-- **Utils**: Common utilities, validators, formatters
-- **Hooks**: Shared React hooks (useAuth, useApiClient, useProgramContext)
-
-To sync shared resources to apps:
-
-```bash
-npm run sync:shared
-```
-
-## CI/CD Pipeline
-
-GitHub Actions workflows:
-
-- **ci.yml** - Runs on every push/PR (lint, test, build)
-- **eas-build.yml** - Manual EAS builds for app stores
-- **deploy.yml** - Automatic Expo publish on main branch
-
-## Role-Based Architecture
-
-### Instructor App
-
-- **Instructor**: Basic student interaction and progress viewing
-- **Program Coordinator**: Enhanced management and reporting capabilities
-
-### Student App
-
-- **Student**: Course access, assignment submission, progress tracking
-- **Parent/Guardian**: Child progress monitoring, instructor communication
-
-All data requests automatically include program context based on user role assignments.
-
-## Enhanced Component Usage
-
-The shared package now includes enhanced, Academy-themed components optimized for instructor workflows:
-
-### Using Enhanced Components
-
-```typescript
-import {
-  Header,
-  StudentCard,
-  InstructorDashboard,
-  PerformanceChart,
-  ThemeProvider,
-  ProgramContextProvider,
-} from '@academy/mobile-shared';
-
-// Wrap your app with providers
-function App() {
-  return (
-    <ThemeProvider>
-      <ProgramContextProvider>
-        <YourAppContent />
-      </ProgramContextProvider>
-    </ThemeProvider>
-  );
-}
-
-// Use enhanced header with instructor actions
-<Header
-  title="Student Management"
-  variant="instructor"
-  onSearchPress={handleSearch}
-  onFilterPress={handleFilter}
-  onNotificationPress={handleNotifications}
-  notificationCount={5}
-/>
-
-// Use enhanced student cards with quick actions
-<StudentCard
-  student={studentData}
-  variant="detailed"
-  enableQuickAttendance={true}
-  enableQuickGrading={true}
-  onAttendancePress={handleAttendance}
-  onPerformancePress={handleGrading}
-  onContactParentPress={handleParentContact}
-/>
-
-// Use instructor dashboard for overview screens
-<InstructorDashboard
-  metrics={dashboardMetrics}
-  chartData={performanceData}
-  recentStudents={students}
-  recentActivities={activities}
-  onMetricPress={handleMetricClick}
-  onStudentPress={handleStudentClick}
-/>
-```
-
-### Component Migration Guide
-
-When migrating from `existing-code/` components:
-
-1. **HeaderComponent** → `Header` with `variant="instructor"`
-2. **StudentCard** → Enhanced `StudentCard` with instructor features
-3. **Custom UI** → `InstructorDashboard` for overview screens
-4. **Charts** → `PerformanceChart` with Academy theming
-5. **Forms** → Enhanced `CustomInput` and `CustomButton`
-
-### Enhanced Features Available
-
-- **Instructor Quick Actions**: Attendance, grading, parent contact
-- **Performance Monitoring**: Visual indicators and alerts
-- **Program Context**: Automatic filtering and role-based access
-- **Academy Theming**: Consistent design system integration
-- **Accessibility**: Full ARIA support and screen reader compatibility
-
-See `ENHANCED_COMPONENTS.md` for detailed documentation and examples.
+## Technology Stack
+
+- **React**: 19.0.0 with React Native 0.79.5
+- **Expo SDK**: 53.0.20 
+- **TypeScript**: 5.8.3 (Production ready, zero errors)
+- **State Management**: Zustand 5.0.7 with Immer
+- **Navigation**: React Navigation 6.x with type safety
+- **Forms**: React Hook Form 7.62.0 with yup validation
+- **Icons**: @expo/vector-icons (Ionicons)
+- **Charts**: react-native-gifted-charts v1.4.0 (React 19 compatible)
+- **Animation**: React Native Reanimated v3.17.4
+- **Monorepo**: npm workspaces with Metro configuration
+
+## Production Status
+
+**✅ FULLY PRODUCTION READY** - All core systems are complete:
+
+- ✅ Theme system with Academy branding
+- ✅ Authentication with JWT and program context
+- ✅ **49+ shared components with TypeScript interfaces (Phase 4 Complete)**
+- ✅ Modern chart system (React 19 compatible)
+- ✅ Type-safe navigation and state management
+- ✅ Both apps building and running successfully
+- ✅ **Complete component extraction from existing code finished**
+
+### 🚀 Phase 4 Completion Summary:
+- **Button Component**: Enhanced with 9 variants, multiple sizes, and icon support
+- **FilterBar Component**: Advanced filtering with multi-group support and modal interface
+- **StudentListCard Component**: Generalized student display with progress tracking and tags
+- **Lessons Component**: Comprehensive lesson management with station-based organization
+- **All components fully tested and integrated** with ExtractedComponentsShowcase
 
 ## Development Best Practices
 
-1. **Reference existing-code/ first** - Always check existing implementations before building new
-   features
-2. **Maintain consistency** - Follow patterns established in existing-code/ for UI, navigation, and
-   state management
-3. **Always run `npm run type-check:all` before committing**
-4. **Use exact dependency versions** - no carets or tildes
-5. **Follow the established path aliases** (@shared/_, @/_)
-6. **Write tests for new features** - coverage thresholds are enforced
-7. **Use the pre-commit hooks** - they catch issues early
-8. **Keep environment variables in .env files** - never hardcode URLs or keys
-
-## Modern Syntax & Patterns (2025 Standards)
-
-### React 19 Features
-
-- **Use React Compiler optimizations** - Automatic memoization and optimization
-- **Server Components** - When applicable for web builds
-- **Enhanced Suspense** - Better loading states and error boundaries
-- **New React hooks** - `use()`, `useOptimistic()`, `useFormStatus()`
-
-### TypeScript 5.9+ Features
-
-- **Satisfies operator** - `const config = {...} satisfies Config`
-- **Template literal types** - For type-safe string patterns
-- **Const assertions** - `as const` for immutable arrays/objects
-- **Discriminated unions** - Advanced type narrowing
-
-### Modern JavaScript (ES2024)
-
-```typescript
-// Use modern async patterns
-const fetchData = async () => {
-  try {
-    const [users, posts] = await Promise.all([api.getUsers(), api.getPosts()]);
-    return { users, posts };
-  } catch (error) {
-    throw new Error(`Failed to fetch: ${error.message}`);
-  }
-};
-
-// Optional chaining and nullish coalescing
-const userName = user?.profile?.name ?? 'Anonymous';
-
-// Array methods over traditional loops
-const activeUsers = users
-  .filter(user => user.isActive)
-  .map(user => ({ ...user, displayName: user.name.toUpperCase() }));
-
-// Destructuring with defaults
-const { theme = 'light', locale = 'en' } = userPreferences;
-```
-
-### React Native Modern Patterns
-
-```typescript
-// Functional components with proper TypeScript
-interface Props {
-  user: User;
-  onPress?: () => void;
-}
-
-const UserCard: React.FC<Props> = ({ user, onPress }) => {
-  // Use modern hooks
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Custom hooks for logic separation
-  const { theme } = useTheme();
-  const { mutate: updateUser } = useMutation(updateUserApi);
-
-  // Event handlers with useCallback
-  const handlePress = useCallback(() => {
-    onPress?.();
-  }, [onPress]);
-
-  return (
-    <TouchableOpacity onPress={handlePress} style={[styles.card, { backgroundColor: theme.cardBg }]}>
-      <Text style={styles.name}>{user.name}</Text>
-    </TouchableOpacity>
-  );
-};
-```
-
-### Zustand Modern Patterns
-
-```typescript
-// Type-safe store with immer
-interface AppStore {
-  user: User | null;
-  setUser: (user: User) => void;
-  updateUser: (updates: Partial<User>) => void;
-}
-
-const useAppStore = create<AppStore>()(
-  immer(set => ({
-    user: null,
-    setUser: user => set({ user }),
-    updateUser: updates =>
-      set(state => {
-        if (state.user) {
-          Object.assign(state.user, updates);
-        }
-      }),
-  }))
-);
-```
-
-### React Hook Form with TypeScript
-
-```typescript
-interface FormData {
-  email: string;
-  password: string;
-}
-
-const LoginForm = () => {
-  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: yupResolver(loginSchema),
-    defaultValues: { email: '', password: '' }
-  });
-
-  const onSubmit = (data: FormData) => {
-    // Handle form submission
-  };
-
-  return (
-    <Controller
-      control={control}
-      name="email"
-      render={({ field }) => (
-        <CustomInput
-          {...field}
-          error={errors.email?.message}
-          placeholder="Email"
-        />
-      )}
-    />
-  );
-};
-```
-
-### Navigation with TypeScript
-
-```typescript
-// Type-safe navigation
-type RootStackParamList = {
-  Home: undefined;
-  Profile: { userId: string };
-  Settings: { section?: string };
-};
-
-const Navigation = () => {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
-```
+1. **Reference existing-code/ first** - Always check existing implementations
+2. **Use exact theme variables** - Follow Academy design system
+3. **Run type checking** - `npm run type-check:all` before commits
+4. **Feature-based organization** - Group by feature, not by file type
+5. **Shared components** - Use `@academy/mobile-shared` for reusable code
+6. **Program context** - Implement multi-program support in new features
 
 ## Working with Existing Features
 
-### Key Files to Reference
+When rebuilding features from `existing-code/`:
 
-**Instructor App (existing-code/):**
+1. **Study the existing implementation** - Understand current patterns
+2. **Plan modern architecture** - Use current tech stack and patterns
+3. **Extract to shared/** - Put reusable components in shared package
+4. **Maintain feature parity** - Ensure rebuilt features match functionality
+5. **Test thoroughly** - Verify rebuilt features work as expected
 
-- `src/auth/AuthContext.tsx` - Authentication patterns
-- `src/screens/home/` - Main feature screens
-- `src/components/` - Reusable UI components
-- `src/redux/` - State management patterns
-- `src/routes/` - Navigation structure
+---
 
-**Student App (existing-code/):**
-
-- `src/screens/home/` - Student portal features
-- `src/components/` - Form and UI components
-- `src/redux/` - State management (auth, progression)
-- `android/` - Native build configuration
-
-### Rebuilding Strategy
-
-When rebuilding features from existing-code/ into main src/ directories:
-
-1. **Study existing-code/ implementation** - Understand the current feature and its patterns
-2. **Design optimal architecture** - Plan the feature with modern patterns (Zustand, React 19,
-   feature-based structure)
-3. **Extract shared components** - Put reusable logic in shared/ package for both apps
-4. **Rebuild with latest dependencies** - Use React 19.1.1, Zustand 5.0.7, React Hook Form 7.62.0
-5. **Maintain feature parity** - Ensure the rebuilt feature matches existing functionality
-6. **Test thoroughly** - Verify the rebuilt feature works as expected
-7. **Mark for removal** - Once rebuilt feature is complete and tested, existing-code/ can be removed
-
-**Important**: Never modify files in existing-code/ - they are read-only reference implementations.
+**For detailed implementation guides, see the [docs directory](./docs/) for comprehensive documentation on all aspects of the Academy Mobile Apps.**

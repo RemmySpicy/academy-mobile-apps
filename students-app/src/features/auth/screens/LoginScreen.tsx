@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View,
   Text,
   ScrollView,
@@ -14,7 +14,7 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Form, CustomInput, CustomButton, SocialAuthButtons, validateEmail, useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { Form, CustomInput, CustomButton, SocialAuthButtons, validateEmail, useAuthStore, useTheme } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 // Validation schema
@@ -47,7 +47,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading } = useAuthStore();
   const { theme } = useTheme();
-  const styles = useThemedStyles();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const {
     control,
@@ -141,7 +141,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
-                leftIcon={<Ionicons name="mail-outline" size={20} color="#9CA3AF" />}
+                leftIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.icon.tertiary} />}
                 variant="outline"
               />
 
@@ -152,6 +152,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
                 placeholder="Enter your password"
                 secureTextEntry={!showPassword}
                 showPasswordToggle
+                leftIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.icon.tertiary} />}
                 variant="outline"
               />
 
@@ -217,8 +218,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
   );
 };
 
-const useThemedStyles = createThemedStyles((theme) =>
-  StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
@@ -245,7 +245,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     
     iconContainer: {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      backgroundColor: theme.colors.overlay.light,
       padding: theme.spacing.md,
       borderRadius: 50,
       marginBottom: theme.spacing.md,
@@ -253,14 +253,14 @@ const useThemedStyles = createThemedStyles((theme) =>
     
     headerTitle: {
       color: theme.colors.text.inverse,
-      ...theme.typography.display.sm,
+      fontSize: theme.fontSizes.xl,
       fontWeight: theme.fontConfig.fontWeight.bold,
       marginBottom: theme.spacing.sm,
     },
     
     headerSubtitle: {
-      color: 'rgba(255, 255, 255, 0.8)',
-      ...theme.typography.body.base,
+      color: theme.colors.text.inverse,
+      fontSize: theme.fontSizes.base,
       textAlign: 'center',
     },
     
@@ -276,14 +276,14 @@ const useThemedStyles = createThemedStyles((theme) =>
     
     welcomeTitle: {
       color: theme.colors.text.primary,
-      ...theme.typography.heading.lg,
+      fontSize: theme.fontSizes.lg,
       fontWeight: theme.fontConfig.fontWeight.semibold,
       marginBottom: theme.spacing.sm,
     },
     
     welcomeSubtitle: {
       color: theme.colors.text.secondary,
-      ...theme.typography.body.base,
+      fontSize: theme.fontSizes.base,
     },
     
     form: {
@@ -296,7 +296,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     
     forgotPasswordText: {
       color: theme.colors.interactive.primary,
-      ...theme.typography.body.sm,
+      fontSize: theme.fontSizes.sm,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
     
@@ -319,7 +319,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     dividerText: {
       marginHorizontal: theme.spacing.md,
       color: theme.colors.text.tertiary,
-      ...theme.typography.body.sm,
+      fontSize: theme.fontSizes.sm,
     },
     
     registerSection: {
@@ -330,12 +330,12 @@ const useThemedStyles = createThemedStyles((theme) =>
     
     registerText: {
       color: theme.colors.text.secondary,
-      ...theme.typography.body.base,
+      fontSize: theme.fontSizes.base,
     },
     
     registerLink: {
       color: theme.colors.interactive.primary,
-      ...theme.typography.body.base,
+      fontSize: theme.fontSizes.base,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
     
@@ -347,7 +347,6 @@ const useThemedStyles = createThemedStyles((theme) =>
     footerText: {
       textAlign: 'center',
       color: theme.colors.text.tertiary,
-      ...theme.typography.caption.base,
+      fontSize: theme.fontSizes.sm,
     },
-  })
-);
+});

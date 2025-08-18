@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 export type ScheduleStackParamList = {
   ScheduleMain: undefined;
 };
@@ -9,24 +10,29 @@ export type ScheduleStackParamList = {
 const Stack = createNativeStackNavigator<ScheduleStackParamList>();
 
 // Placeholder screen - will be implemented later
-const ScheduleScreen = () => (
-  <SafeAreaView className="flex-1 bg-white">
-    <View className="flex-1 items-center justify-center p-6">
-      <Text className="text-2xl font-bold text-gray-900 mb-4">
-        Schedule Management
-      </Text>
-      <Text className="text-gray-600 text-center mb-6">
-        Coming soon: Full scheduling system with calendar integration
-      </Text>
-      <View className="space-y-2">
-        <Text className="text-gray-700">• Class scheduling</Text>
-        <Text className="text-gray-700">• Calendar integration</Text>
-        <Text className="text-gray-700">• Availability management</Text>
-        <Text className="text-gray-700">• Schedule conflicts detection</Text>
+const ScheduleScreen = () => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles();
+  
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>
+          Schedule Management
+        </Text>
+        <Text style={styles.description}>
+          Coming soon: Full scheduling system with calendar integration
+        </Text>
+        <View style={styles.featureList}>
+          <Text style={styles.featureItem}>• Class scheduling</Text>
+          <Text style={styles.featureItem}>• Calendar integration</Text>
+          <Text style={styles.featureItem}>• Availability management</Text>
+          <Text style={styles.featureItem}>• Schedule conflicts detection</Text>
+        </View>
       </View>
-    </View>
-  </SafeAreaView>
-);
+    </SafeAreaView>
+  );
+};
 
 /**
  * Schedule Feature Navigator
@@ -55,3 +61,38 @@ export const ScheduleNavigator: React.FC = () => {
     </Stack.Navigator>
   );
 };
+
+const useThemedStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+    },
+    content: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: theme.spacing.lg,
+    },
+    title: {
+      fontSize: theme.fontSizes['2xl'],
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing.md,
+    },
+    description: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.secondary,
+      textAlign: 'center',
+      marginBottom: theme.spacing.lg,
+    },
+    featureList: {
+      alignItems: 'flex-start',
+    },
+    featureItem: {
+      fontSize: theme.fontSizes.base,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing.sm,
+    },
+  })
+);

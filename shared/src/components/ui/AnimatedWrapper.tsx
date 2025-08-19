@@ -7,7 +7,7 @@ import Animated, {
   AnimatedStyleProp
 } from 'react-native-reanimated';
 
-interface AnimatedWrapperProps {
+export interface AnimatedWrapperProps {
   children: React.ReactNode;
   entering?: any;
   exiting?: any;

@@ -72,6 +72,14 @@ export {
   FilterBar,
   StudentListCard,
   Lessons,
+  Badge,
+  LoadingSpinner,
+  BottomSheet,
+  BottomSheetProvider,
+  useBottomSheet,
+  useBottomSheetActions,
+  useBottomSheetState,
+  useQuickBottomSheet,
 } from './ui';
 
 export {
@@ -94,6 +102,7 @@ export {
 export {
   WorkoutCard,
   ClassroomCard,
+  ScoreStatistics,
 } from './performance';
 
 export {
@@ -115,3 +124,15 @@ export {
 export {
   StudentProfile,
 } from './student';
+
+export {
+  ClassroomGrading,
+  MyClassroom,
+  CourseProgression,
+  ProfileSettingsSection,
+  ProfileInfoSection,
+  NotificationSection,
+  SessionManagementSection,
+  PreferencesSupportSection,
+  StationProgress,
+} from './academy';

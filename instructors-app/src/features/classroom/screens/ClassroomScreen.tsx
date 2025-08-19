@@ -15,7 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { useAuthStore, useTheme, createThemedStyles, Badge } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -88,21 +88,17 @@ const ClassCard: React.FC<ClassCardProps> = ({ classInfo, index, onPress }) => {
             <Text style={styles.className}>{classInfo.name}</Text>
             <Text style={styles.classLevel}>{classInfo.level}</Text>
           </View>
-          <View 
-            style={[
-              styles.statusBadge,
-              { backgroundColor: `${getStatusColor(classInfo.status)}15` }
-            ]}
+          <Badge
+            variant={
+              classInfo.status === 'completed' ? 'success' :
+              classInfo.status === 'active' ? 'info' :
+              'warning'
+            }
+            size="sm"
+            shape="pill"
           >
-            <Text 
-              style={[
-                styles.statusText,
-                { color: getStatusColor(classInfo.status) }
-              ]}
-            >
-              {getStatusText(classInfo.status)}
-            </Text>
-          </View>
+            {getStatusText(classInfo.status)}
+          </Badge>
         </View>
 
         <View style={styles.classMetaRow}>
@@ -486,15 +482,6 @@ const useThemedStyles = createThemedStyles((theme) =>
     classLevel: {
       fontSize: theme.fontSizes.sm,
       color: theme.colors.text.secondary,
-    },
-    statusBadge: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.full,
-    },
-    statusText: {
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontConfig.fontWeight.medium,
     },
     classMetaRow: {
       flexDirection: 'row',

@@ -43,8 +43,8 @@ function MyForm() {
 |------|------|---------|-------------|
 | `variant` | `'standard' \| 'outline' \| 'ghost' \| 'password'` | `'standard'` | Visual style variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size of the input field |
-| `leftIcon` | `React.ReactNode` | - | Icon displayed on the left side |
-| `rightIcon` | `React.ReactNode` | - | Icon displayed on the right side |
+| `startIcon` | `React.ReactNode` | - | Icon displayed at the start (left) of the input |
+| `endIcon` | `React.ReactNode` | - | Icon displayed at the end (right) of the input |
 | `secureTextEntry` | `boolean` | `false` | Whether to hide text (for passwords) |
 | `showPasswordToggle` | `boolean` | `false` | Show password visibility toggle |
 | `multiline` | `boolean` | `false` | Allow multiple lines of text |
@@ -157,28 +157,28 @@ Prominent input for important fields.
 
 ## 🎭 With Icons
 
-### Left Icon
+### Start Icon (Left)
 
 ```typescript
-import { Iconify } from 'react-native-iconify';
+import { Ionicons } from '@expo/vector-icons';
 
 <CustomInput
   name="email"
   control={control}
   placeholder="Email Address"
-  leftIcon={<Iconify icon="ri:mail-line" size={20} color="#6B7280" />}
+  startIcon={<Ionicons name="mail-outline" size={20} color="#6B7280" />}
   keyboardType="email-address"
 />
 ```
 
-### Right Icon
+### End Icon (Right)
 
 ```typescript
 <CustomInput
   name="search"
   control={control}
   placeholder="Search..."
-  rightIcon={<Iconify icon="ri:search-line" size={20} color="#6B7280" />}
+  endIcon={<Ionicons name="search-outline" size={20} color="#6B7280" />}
 />
 ```
 
@@ -394,10 +394,10 @@ function ConditionalStyledInput() {
       control={control}
       placeholder="Status"
       variant={value === 'error' ? 'danger' : 'standard'}
-      leftIcon={
+      startIcon={
         value === 'error' ? 
-          <Iconify icon="ri:error-warning-line" size={20} color="#EF4444" /> :
-          <Iconify icon="ri:check-line" size={20} color="#10B981" />
+          <Ionicons name="warning-outline" size={20} color="#EF4444" /> :
+          <Ionicons name="checkmark-outline" size={20} color="#10B981" />
       }
     />
   );

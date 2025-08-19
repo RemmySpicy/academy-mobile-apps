@@ -1,97 +1,33 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View,
   Text,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
-  Pressable,
   StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Form, CustomInput, CustomButton, SocialAuthButtons, validateEmail, useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { LoginForm, useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
-
-// Validation schema
-const loginSchema = yup.object({
-  email: yup
-    .string()
-    .required('Email is required')
-    .test('valid-email', 'Please enter a valid email', validateEmail),
-  password: yup
-    .string()
-    .required('Password is required')
-    .min(6, 'Password must be at least 6 characters'),
-});
-
-type LoginFormData = yup.InferType<typeof loginSchema>;
 
 /**
  * Login Screen
  * 
- * Secure authentication screen with:
- * - Form validation using react-hook-form + yup
+ * Secure authentication screen using shared LoginForm component with:
+ * - Consistent form validation and UX across all Academy apps
  * - Integration with shared authentication service
  * - Responsive design for tablet and mobile
  * - Accessibility features
  * - Loading states and error handling
- * - Brand-consistent styling
+ * - Brand-consistent styling with instructor-specific branding
  */
 export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
   navigation,
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading } = useAuthStore();
   const { theme } = useTheme();
   const styles = useThemedStyles();
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<LoginFormData>({
-    resolver: yupResolver(loginSchema),
-    mode: 'onChange',
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
-
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      const success = await login(data.email, data.password);
-      
-      if (success) {
-        // Navigation will be handled automatically by AppNavigator
-        // based on auth state change
-      } else {
-        Alert.alert(
-          'Login Failed',
-          'Invalid email or password. Please try again.',
-          [{ text: 'OK' }]
-        );
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert(
-        'Connection Error',
-        'Unable to connect to the server. Please check your internet connection and try again.',
-        [{ text: 'OK' }]
-      );
-    }
-  };
-
-  const handleGuestLogin = () => {
-    const { bypassLogin } = useAuthStore.getState();
-    bypassLogin('instructor');
-    Alert.alert('Success', 'Logged in as instructor for development!');
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -134,88 +70,21 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
               </Text>
             </View>
 
-            <Form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
-              {/* Email Input */}
-              <CustomInput
-                name="email"
-                control={control}
-                placeholder="Enter your email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                textContentType="emailAddress"
-                icon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
-                error={errors.email?.message}
-              />
-
-              {/* Password Input */}
-              <CustomInput
-                name="password"
-                control={control}
-                placeholder="Enter your password"
-                secureTextEntry={!showPassword}
-                autoComplete="password"
-                textContentType="password"
-                handleShowPassword={() => setShowPassword(!showPassword)}
-                icon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
-                error={errors.password?.message}
-              />
-
-              {/* Forgot Password Link */}
-              <Pressable
-                onPress={() => navigation.navigate('ForgotPassword')}
-                style={styles.forgotPassword}
-              >
-                <Text style={styles.forgotPasswordText}>
-                  Forgot Password?
-                </Text>
-              </Pressable>
-
-              {/* Login Button */}
-              <CustomButton
-                title="Sign In"
-                onPress={handleSubmit(onSubmit)}
-                isLoading={isLoading}
-                disabled={!isValid || isLoading}
-                style={styles.loginButton}
-              />
-            </Form>
-
-            {/* Divider */}
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or continue with</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            {/* Social Authentication with Guest Login */}
-            <SocialAuthButtons
-              onGooglePress={() => console.log('Google login')}
-              onApplePress={() => console.log('Apple login')}
-              onFacebookPress={() => console.log('Facebook login')}
-              onGuestLogin={handleGuestLogin}
+            <LoginForm
+              onForgotPassword={() => navigation.navigate('ForgotPassword')}
+              onSignUp={() => navigation.navigate('Register')}
+              showRememberMe={true}
+              showSocialAuth={true}
+              showBypassLogin={true}
+              bypassLoginUserType="instructor"
+              onLoginSuccess={() => {
+                // Navigation will be handled automatically by AppNavigator
+                // based on auth state change
+              }}
+              onLoginError={(error) => {
+                console.error('Login error:', error);
+              }}
             />
-
-            {/* Register Link */}
-            <View style={styles.registerSection}>
-              <Text style={styles.registerText}>
-                Don't have an account?{' '}
-              </Text>
-              <Pressable
-                onPress={() => navigation.navigate('Register')}
-              >
-                <Text style={styles.registerLink}>
-                  Sign Up
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              By signing in, you agree to our Terms of Service and Privacy Policy
-            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -290,70 +159,6 @@ const useThemedStyles = createThemedStyles((theme) =>
     welcomeSubtitle: {
       color: theme.colors.text.secondary,
       ...theme.typography.body.base,
-    },
-    
-    form: {
-      gap: theme.spacing.lg,
-    },
-    
-    forgotPassword: {
-      alignSelf: 'flex-end',
-    },
-    
-    forgotPasswordText: {
-      color: theme.colors.interactive.primary,
-      ...theme.typography.body.sm,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-    
-    loginButton: {
-      marginTop: theme.spacing.lg,
-    },
-    
-    divider: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginVertical: theme.spacing.lg,
-    },
-    
-    dividerLine: {
-      flex: 1,
-      height: 1,
-      backgroundColor: theme.colors.border.primary,
-    },
-    
-    dividerText: {
-      marginHorizontal: theme.spacing.md,
-      color: theme.colors.text.tertiary,
-      ...theme.typography.body.sm,
-    },
-    
-    registerSection: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    
-    registerText: {
-      color: theme.colors.text.secondary,
-      ...theme.typography.body.base,
-    },
-    
-    registerLink: {
-      color: theme.colors.interactive.primary,
-      ...theme.typography.body.base,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-    
-    footer: {
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-    },
-    
-    footerText: {
-      textAlign: 'center',
-      color: theme.colors.text.tertiary,
-      ...theme.typography.caption.base,
     },
   })
 );

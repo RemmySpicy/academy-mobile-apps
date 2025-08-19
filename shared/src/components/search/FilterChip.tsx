@@ -1,8 +1,14 @@
 /**
- * FilterChip Component
+ * Enhanced FilterChip Component
  * 
- * Individual filter chip component for the search system.
- * Supports selection states, counts, and custom icons.
+ * Unified chip component supporting multiple patterns:
+ * - Standard filter chips
+ * - Label + count chips (QuickFilter pattern)
+ * - Badge-style count indicators (FilterBar pattern)
+ * - Status badges
+ * 
+ * Maintains consistency with Academy design system while supporting
+ * the unique styles found in extracted components.
  */
 
 import React from 'react';
@@ -18,23 +24,43 @@ export interface FilterChipProps {
   /** Whether the chip is selected */
   selected?: boolean;
   /** Optional count to display */
-  count?: number;
+  count?: number | string;
   /** Optional icon */
   icon?: keyof typeof Ionicons.glyphMap | React.ReactNode;
   /** Callback when chip is pressed */
   onPress?: (value: string) => void;
   /** Disabled state */
   disabled?: boolean;
-  /** Custom variant styles */
-  variant?: 'default' | 'primary' | 'secondary' | 'outline';
-  /** Custom container styles */
+  
+  /** Design variant */
+  variant?: 
+    | 'default'           // Standard filter chip
+    | 'primary'           // Academy purple theme
+    | 'secondary'         // Secondary theme
+    | 'outline'           // Outline only
+    | 'badge'             // For status indicators
+    | 'quickFilter'       // Label + count side by side
+    | 'filterBar';        // Advanced FilterBar style
+  
+  /** Count display style */
+  countStyle?: 'badge' | 'inline' | 'separate';
+  
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
+  
+  /** Custom styling */
   style?: ViewStyle;
-  /** Custom text styles */
   textStyle?: TextStyle;
-  /** Custom count styles */
-  countStyle?: TextStyle;
-  /** Test ID for testing */
+  countTextStyle?: TextStyle;
+  
+  /** Accessibility */
   testID?: string;
+  accessibilityLabel?: string;
+  
+  /** Advanced FilterBar features */
+  customColor?: string;
+  showDot?: boolean;
+  dotColor?: string;
 }
 
 export const FilterChip: React.FC<FilterChipProps> = ({
@@ -46,13 +72,19 @@ export const FilterChip: React.FC<FilterChipProps> = ({
   onPress,
   disabled = false,
   variant = 'default',
+  countStyle = 'badge',
+  size = 'md',
   style,
   textStyle,
-  countStyle,
+  countTextStyle,
   testID = "filter-chip",
+  accessibilityLabel,
+  customColor,
+  showDot = false,
+  dotColor,
 }) => {
   const { theme, screenDimensions } = useTheme();
-  const styles = createStyles(theme, screenDimensions, variant, selected);
+  const styles = createStyles(theme, screenDimensions, variant, selected, size);
 
   const handlePress = () => {
     if (!disabled && onPress) {
@@ -60,7 +92,13 @@ export const FilterChip: React.FC<FilterChipProps> = ({
     }
   };
 
-  const iconSize = screenDimensions.isTablet ? theme.iconSize.sm : theme.iconSize.xs;
+  const getIconSize = () => {
+    switch (size) {
+      case 'sm': return screenDimensions.isTablet ? 14 : 12;
+      case 'lg': return screenDimensions.isTablet ? 20 : 18;
+      default: return screenDimensions.isTablet ? 16 : 14;
+    }
+  };
 
   const renderIcon = () => {
     if (!icon) return null;
@@ -73,7 +111,7 @@ export const FilterChip: React.FC<FilterChipProps> = ({
       <View style={styles.iconContainer}>
         <Ionicons
           name={icon as keyof typeof Ionicons.glyphMap}
-          size={iconSize}
+          size={getIconSize()}
           color={selected ? theme.colors.text.inverse : theme.colors.icon.primary}
         />
       </View>
@@ -81,23 +119,64 @@ export const FilterChip: React.FC<FilterChipProps> = ({
   };
 
   const renderCount = () => {
-    if (count === undefined) return null;
+    if (count === undefined && count !== 0) return null;
     
+    if (countStyle === 'inline' || variant === 'quickFilter') {
+      // QuickFilter pattern: label and count side by side
+      return (
+        <Text style={[styles.countInline, countTextStyle]}>
+          {count}
+        </Text>
+      );
+    }
+    
+    if (countStyle === 'separate') {
+      // Separate count display
+      return (
+        <Text style={[styles.countSeparate, countTextStyle]}>
+          {count}
+        </Text>
+      );
+    }
+    
+    // Default badge style (FilterBar pattern)
     return (
-      <View style={[styles.countContainer, countStyle]}>
-        <Text style={styles.countText}>{count}</Text>
+      <View style={[styles.countBadge, countTextStyle]}>
+        <Text style={styles.countBadgeText}>{count}</Text>
       </View>
     );
   };
+
+  const renderDot = () => {
+    if (!showDot) return null;
+    
+    return (
+      <View style={[
+        styles.dot,
+        { backgroundColor: dotColor || theme.colors.interactive.primary }
+      ]} />
+    );
+  };
+
+  const containerStyle = [
+    styles.container,
+    customColor && { borderColor: customColor },
+    disabled && styles.disabled,
+    style,
+  ];
+
+  const labelStyle = [
+    styles.text,
+    customColor && selected && { color: customColor },
+    textStyle,
+  ];
 
   return (
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => [
-        styles.container,
+        ...containerStyle,
         pressed && !disabled && styles.pressed,
-        disabled && styles.disabled,
-        style,
       ]}
       disabled={disabled}
       testID={testID}
@@ -106,7 +185,7 @@ export const FilterChip: React.FC<FilterChipProps> = ({
         selected: selected,
         disabled: disabled,
       }}
-      accessibilityLabel={`${label}${count !== undefined ? `, ${count} items` : ''}`}
+      accessibilityLabel={accessibilityLabel || `${label}${count !== undefined ? `, ${count} items` : ''}`}
       hitSlop={{
         top: theme.spacing.xs,
         bottom: theme.spacing.xs,
@@ -114,10 +193,11 @@ export const FilterChip: React.FC<FilterChipProps> = ({
         right: theme.spacing.xs,
       }}
     >
+      {renderDot()}
       {renderIcon()}
       
       <Text 
-        style={[styles.text, textStyle]}
+        style={labelStyle}
         numberOfLines={1}
         ellipsizeMode="tail"
       >
@@ -129,50 +209,121 @@ export const FilterChip: React.FC<FilterChipProps> = ({
   );
 };
 
-const createStyles = (theme: any, screenDimensions: any, variant: string, selected: boolean) => {
+const createStyles = (theme: any, screenDimensions: any, variant: string, selected: boolean, size: string) => {
   const isTablet = screenDimensions.isTablet;
   
-  // Get variant-specific colors
+  // Size-based dimensions
+  const getSizeDimensions = () => {
+    switch (size) {
+      case 'sm':
+        return {
+          paddingHorizontal: theme.spacing.sm,
+          paddingVertical: theme.spacing.xs,
+          fontSize: theme.fontSizes.caption,
+          minHeight: isTablet ? 28 : 24,
+        };
+      case 'lg':
+        return {
+          paddingHorizontal: theme.spacing.lg,
+          paddingVertical: theme.spacing.md,
+          fontSize: theme.fontSizes.body,
+          minHeight: isTablet ? 44 : 40,
+        };
+      default: // md
+        return {
+          paddingHorizontal: theme.spacing.md,
+          paddingVertical: theme.spacing.sm,
+          fontSize: theme.fontSizes.small,
+          minHeight: isTablet ? 36 : 32,
+        };
+    }
+  };
+
+  // Variant-specific colors and styles
   const getVariantStyles = () => {
     const baseStyle = {
       backgroundColor: theme.colors.background.secondary,
       borderColor: theme.colors.border.primary,
       textColor: theme.colors.text.primary,
+      borderRadius: theme.borderRadius.full,
     };
 
     if (selected) {
       switch (variant) {
         case 'primary':
+        case 'filterBar':
           return {
             backgroundColor: theme.colors.interactive.primary,
             borderColor: theme.colors.interactive.primary,
             textColor: theme.colors.text.inverse,
+            borderRadius: theme.borderRadius.full,
           };
+          
         case 'secondary':
           return {
             backgroundColor: theme.colors.interactive.secondary,
             borderColor: theme.colors.interactive.secondaryBorder,
             textColor: theme.colors.text.primary,
+            borderRadius: theme.borderRadius.full,
           };
+          
         case 'outline':
           return {
             backgroundColor: 'transparent',
             borderColor: theme.colors.interactive.primary,
             textColor: theme.colors.interactive.primary,
+            borderRadius: theme.borderRadius.full,
           };
+          
+        case 'badge':
+          return {
+            backgroundColor: theme.colors.interactive.primary,
+            borderColor: theme.colors.interactive.primary,
+            textColor: theme.colors.text.inverse,
+            borderRadius: theme.borderRadius.md, // Less rounded for badges
+          };
+          
+        case 'quickFilter':
+          return {
+            backgroundColor: theme.colors.interactive.faded || '#DCD5F4',
+            borderColor: theme.colors.interactive.primary,
+            textColor: theme.colors.text.primary,
+            borderRadius: theme.borderRadius.full,
+          };
+          
         default:
           return {
             backgroundColor: theme.colors.interactive.faded,
             borderColor: theme.colors.interactive.primary,
             textColor: theme.colors.interactive.primary,
+            borderRadius: theme.borderRadius.full,
           };
       }
     }
 
-    return baseStyle;
+    // Unselected state modifications by variant
+    switch (variant) {
+      case 'badge':
+        return {
+          ...baseStyle,
+          borderRadius: theme.borderRadius.md,
+          backgroundColor: theme.colors.background.tertiary,
+        };
+        
+      case 'outline':
+        return {
+          ...baseStyle,
+          backgroundColor: 'transparent',
+          borderColor: theme.colors.border.secondary,
+        };
+        
+      default:
+        return baseStyle;
+    }
   };
 
   const variantStyles = getVariantStyles();
+  const sizeDimensions = getSizeDimensions();
   
   return StyleSheet.create({
     container: {
@@ -181,12 +332,12 @@ const createStyles = (theme: any, screenDimensions: any, variant: string, select
       backgroundColor: variantStyles.backgroundColor,
       borderWidth: theme.borderWidth.sm,
       borderColor: variantStyles.borderColor,
-      borderRadius: theme.borderRadius.full,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
+      borderRadius: variantStyles.borderRadius,
+      paddingHorizontal: sizeDimensions.paddingHorizontal,
+      paddingVertical: sizeDimensions.paddingVertical,
       marginRight: theme.spacing.sm,
       marginBottom: theme.spacing.xs,
-      minHeight: isTablet ? theme.safeArea.minTouchTarget.height * 0.8 : 32,
+      minHeight: sizeDimensions.minHeight,
     },
     
     pressed: {
@@ -198,6 +349,13 @@ const createStyles = (theme: any, screenDimensions: any, variant: string, select
       opacity: 0.5,
     },
     
+    dot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginRight: theme.spacing.xs,
+    },
+    
     iconContainer: {
       marginRight: theme.spacing.xs,
       alignItems: 'center',
@@ -205,30 +363,47 @@ const createStyles = (theme: any, screenDimensions: any, variant: string, select
     },
     
     text: {
-      fontSize: isTablet ? theme.fontSizes.caption * 1.1 : theme.fontSizes.caption,
+      fontSize: sizeDimensions.fontSize,
       fontWeight: theme.fontConfig.fontWeight.medium,
       color: variantStyles.textColor,
       flexShrink: 1,
     },
     
-    countContainer: {
+    // Count styles - Badge (FilterBar pattern)
+    countBadge: {
       backgroundColor: selected 
-        ? theme.colors.background.primary 
-        : theme.colors.interactive.primaryDisabled,
-      borderRadius: theme.borderRadius.full,
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs / 2,
+        ? 'rgba(255, 255, 255, 0.2)' 
+        : theme.colors.background.tertiary,
+      borderRadius: theme.borderRadius.sm,
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: 2,
       marginLeft: theme.spacing.xs,
       minWidth: theme.spacing.lg,
       alignItems: 'center',
       justifyContent: 'center',
     },
     
-    countText: {
+    countBadgeText: {
       fontSize: isTablet ? theme.fontSizes.caption : theme.fontSizes.caption * 0.9,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-      color: selected ? theme.colors.text.primary : theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: selected ? theme.colors.text.inverse : theme.colors.text.secondary,
       textAlign: 'center',
+    },
+    
+    // Count styles - Inline (QuickFilter pattern)
+    countInline: {
+      fontSize: sizeDimensions.fontSize,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.interactive.primary,
+      marginLeft: theme.spacing.xs,
+    },
+    
+    // Count styles - Separate
+    countSeparate: {
+      fontSize: sizeDimensions.fontSize * 0.8,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.text.tertiary,
+      marginLeft: theme.spacing.xs,
     },
   });
 };

@@ -50,12 +50,6 @@ interface CustomInputProps extends Omit<FormFieldProps, 'control' | 'rules' | 'n
   /** Icon displayed at the end (right) of the input */
   endIcon?: React.ReactNode;
   
-  /** Legacy: Icon displayed at the left of the input */
-  leftIcon?: React.ReactNode;
-  
-  /** Legacy: Icon displayed at the right of the input */
-  rightIcon?: React.ReactNode;
-  
   // Input behavior
   /** Whether to obscure the text (for passwords) */
   secureTextEntry?: boolean;
@@ -74,6 +68,12 @@ interface CustomInputProps extends Omit<FormFieldProps, 'control' | 'rules' | 'n
   
   /** Auto-capitalization behavior */
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  
+  /** Autocomplete hint for the system */
+  autoComplete?: string;
+  
+  /** Text content type for autofill */
+  textContentType?: string;
   
   /** Maximum number of characters allowed */
   maxLength?: number;
@@ -126,14 +126,14 @@ const CustomInput: React.FC<CustomInputProps> = ({
   onBlur: propOnBlur,
   startIcon,
   endIcon,
-  leftIcon,
-  rightIcon,
   secureTextEntry = false,
   showPasswordToggle = false,
   multiline = false,
   numberOfLines = 1,
   keyboardType = "default",
   autoCapitalize = 'none',
+  autoComplete,
+  textContentType,
   maxLength,
   editable = true,
   autoFocus = false,
@@ -288,9 +288,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
         ]}
         accessible={false} // Let the TextInput handle accessibility
       >
-        {(startIcon || leftIcon) && (
+        {startIcon && (
           <View style={styles.leftIconContainer}>
-            {startIcon || leftIcon}
+            {startIcon}
           </View>
         )}
 
@@ -315,6 +315,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
           keyboardAppearance={theme.isDark ? 'dark' : 'light'}
           autoCorrect={false}
           autoCapitalize={autoCapitalize}
+          autoComplete={autoComplete as any}
+          textContentType={textContentType as any}
           style={[
             styles.textInput,
             getSizeStyles,
@@ -334,9 +336,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
         {renderErrorIcon()}
         {renderPasswordToggle()}
         
-        {(endIcon || rightIcon) && !showPasswordToggle && !invalid && (
+        {endIcon && !showPasswordToggle && !invalid && (
           <View style={styles.rightIconContainer}>
-            {endIcon || rightIcon}
+            {endIcon}
           </View>
         )}
       </Pressable>
@@ -382,7 +384,7 @@ const createStyles = (theme: any) => StyleSheet.create({
 
   inputFocused: {
     borderColor: theme.colors.interactive.primary,
-    borderWidth: 2,
+    borderWidth: 1,
     ...themeUtils.createShadow('sm', theme.colors.interactive.primary),
   },
 

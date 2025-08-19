@@ -28,3 +28,39 @@ export type {
   ProgressionSection,
   ProgressionLesson
 } from './CourseProgression';
+
+export { 
+  default as ProfileSettingsSection,
+  ProfileInfoSection,
+  NotificationSection,
+  SessionManagementSection,
+  PreferencesSupportSection
+} from './ProfileSettings';
+export type { 
+  ProfileSettingsSectionProps,
+  ProfileSettingsSection as ProfileSettingsSectionType,
+  ProfileSettingsItem,
+  ProfileInfoSectionProps,
+  NotificationSectionProps,
+  SessionManagementSectionProps,
+  PreferencesSupportSectionProps
+} from './ProfileSettings';
+
+export { default as StationProgress } from './StationProgress';
+export type { 
+  StationProgressProps,
+  StationLesson
+} from './StationProgress';
+
+export { default as GroupedCards } from './GroupedCards';
+export type { 
+  GroupedCardsProps,
+  GroupedCardItem,
+  GroupedSection
+} from './GroupedCards';
+
+export { default as StudentCard } from './StudentCard';
+export type { 
+  StudentCardProps,
+  StudentInfo
+} from './StudentCard';

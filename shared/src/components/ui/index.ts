@@ -39,6 +39,7 @@ export { default as ErrorBoundary } from './ErrorBoundary';
 
 // Animation Components
 export { AnimatedWrapper, FadeInWrapper } from './AnimatedWrapper';
+export type { AnimatedWrapperProps } from './AnimatedWrapper';
 
 // New Core UI Components
 export { default as ToggleCard } from './ToggleCard';
@@ -116,3 +117,29 @@ export type { StudentListCardProps, StudentData, StudentTag } from './StudentLis
 
 export { default as Lessons } from './Lessons';
 export type { LessonsProps, LessonData, LessonStation, LessonActivity } from './Lessons';
+
+export { default as Badge } from './Badge';
+export type { BadgeProps } from './Badge';
+
+export { default as LoadingSpinner } from './LoadingSpinner';
+export type { LoadingSpinnerProps } from './LoadingSpinner';
+
+export { default as NotificationList } from './NotificationList';
+export type { NotificationListProps, NotificationItem } from './NotificationList';
+
+// Bottom Sheet Components
+export { default as BottomSheet } from './BottomSheet';
+export type { BottomSheetProps, BottomSheetRef, BottomSheetSnapPoint } from './BottomSheet';
+
+export { 
+  default as BottomSheetProvider, 
+  useBottomSheet, 
+  useBottomSheetActions, 
+  useBottomSheetState, 
+  useQuickBottomSheet 
+} from './BottomSheetProvider';
+export type { 
+  BottomSheetConfig, 
+  BottomSheetContextValue, 
+  BottomSheetProviderProps 
+} from './BottomSheetProvider';

@@ -15,3 +15,9 @@ export type { SchedulesProps } from './Schedules';
 export { default as ScheduleInputDefault } from './ScheduleInput';
 export { default as ScheduleListDefault } from './ScheduleList';
 export { default as SchedulesDefault } from './Schedules';
+
+export { default as ScheduleTypeSelector } from './ScheduleTypeSelector';
+export type { 
+  ScheduleTypeSelectorProps,
+  ScheduleSelections
+} from './ScheduleTypeSelector';

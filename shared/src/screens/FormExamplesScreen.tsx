@@ -5,6 +5,7 @@ import {
   Text,
   StyleSheet,
   Alert,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
@@ -26,6 +27,9 @@ import {
 
 // Store
 import { useAuthStore } from '../store/authStore';
+
+// Validation
+import { validateEmail, validatePassword } from '../utils/validators';
 
 // Form Types
 interface LoginForm {
@@ -118,11 +122,7 @@ const FormExamplesScreen: React.FC = () => {
           control={loginForm.control}
           name="email"
           rules={{
-            required: 'Email is required',
-            pattern: {
-              value: /^\S+@\S+$/i,
-              message: 'Invalid email address',
-            },
+            validate: validateEmail,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <CustomInput
@@ -161,6 +161,7 @@ const FormExamplesScreen: React.FC = () => {
               onChangeText={onChange}
               onBlur={onBlur}
               secureTextEntry
+              showPasswordToggle={true}
               startIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
               error={loginForm.formState.errors.password?.message}
               containerStyle={styles.inputNoMargin}
@@ -182,6 +183,16 @@ const FormExamplesScreen: React.FC = () => {
           )}
         />
 
+        {/* Forgot Password Link */}
+        <Pressable
+          onPress={() => Alert.alert('Forgot Password', 'Reset password flow')}
+          style={styles.forgotPassword}
+        >
+          <Text style={styles.forgotPasswordText}>
+            Forgot Password?
+          </Text>
+        </Pressable>
+
         <View style={styles.formActions}>
           <CustomButton
             title="Sign In"
@@ -191,17 +202,23 @@ const FormExamplesScreen: React.FC = () => {
           />
           
           <CustomButton
-            title="Forgot Password?"
-            variant="outlineTheme"
-            onPress={() => Alert.alert('Forgot Password', 'Reset password flow')}
-          />
-          
-          <CustomButton
             title="Bypass Login (Dev)"
             variant="gray"
             onPress={handleBypassLogin}
             startIcon={<Ionicons name="bug-outline" size={16} color={theme.colors.text.secondary} />}
           />
+        </View>
+
+        {/* Sign Up Link */}
+        <View style={styles.registerSection}>
+          <Text style={styles.registerText}>
+            Don't have an account?{' '}
+          </Text>
+          <Pressable onPress={() => Alert.alert('Sign Up', 'Registration flow')}>
+            <Text style={styles.registerLink}>
+              Sign Up
+            </Text>
+          </Pressable>
         </View>
 
         <View style={styles.divider}>
@@ -223,6 +240,13 @@ const FormExamplesScreen: React.FC = () => {
           }}
           onGuestLogin={handleBypassLogin}
         />
+
+        {/* Terms Agreement Text */}
+        <View style={styles.termsContainer}>
+          <Text style={styles.termsText}>
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -629,6 +653,46 @@ const useThemedStyles = createThemedStyles((theme) =>
 
     inputNoMargin: {
       marginBottom: 0,
+    },
+
+    forgotPassword: {
+      alignSelf: 'flex-end',
+      marginBottom: theme.spacing[2],
+    },
+
+    forgotPasswordText: {
+      color: theme.colors.interactive.primary,
+      ...theme.typography.body.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    registerSection: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: theme.spacing[3],
+    },
+
+    registerText: {
+      color: theme.colors.text.secondary,
+      ...theme.typography.body.base,
+    },
+
+    registerLink: {
+      color: theme.colors.interactive.primary,
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    termsContainer: {
+      marginTop: theme.spacing[4],
+      paddingHorizontal: theme.spacing[2],
+    },
+
+    termsText: {
+      textAlign: 'center',
+      color: theme.colors.text.tertiary,
+      ...theme.typography.caption.base,
     },
   })
 );

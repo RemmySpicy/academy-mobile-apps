@@ -43,3 +43,22 @@ export type {
   StudentProgress,
   ProgressSection,
 } from './ClassroomProgressCard';
+
+export { default as ScoreStatistics } from './ScoreStatistics';
+export type { 
+  ScoreStatisticsProps,
+  ScoreStatsData,
+  ChartDataPoint
+} from './ScoreStatistics';
+
+export { 
+  MetricPoolRender, 
+  MetricsTime, 
+  AdvancedScoreStatistics 
+} from './AdvancedMetrics';
+export type { 
+  MetricPoolRenderProps, 
+  MetricsTimeProps, 
+  AdvancedScoreStatisticsProps,
+  MetricData
+} from './AdvancedMetrics';

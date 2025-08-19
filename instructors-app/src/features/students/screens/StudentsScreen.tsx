@@ -9,7 +9,7 @@ import { View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Header, StudentCard, useTheme, FadeInWrapper } from '@academy/mobile-shared';
+import { Header, StudentCard, useTheme, FadeInWrapper, FilterChip } from '@academy/mobile-shared';
 
 // Enhanced student data structure to match our StudentCard component
 interface StudentData {
@@ -251,33 +251,17 @@ export const StudentsScreen: React.FC = () => {
           contentContainerStyle={{ paddingHorizontal: 24 }}
         >
           {filters.map(filter => (
-            <Pressable
+            <FilterChip
               key={filter.key}
-              onPress={() => setSelectedFilter(filter.key)}
-              style={[
-                styles.filterTab,
-                selectedFilter === filter.key
-                  ? { backgroundColor: theme.colors.interactive.primary }
-                  : { 
-                      backgroundColor: theme.colors.background.secondary,
-                      borderColor: theme.colors.border.primary,
-                      borderWidth: 1
-                    }
-              ]}
-            >
-              <Text
-                style={[
-                  styles.filterTabText,
-                  { 
-                    color: selectedFilter === filter.key 
-                      ? theme.colors.text.inverse 
-                      : theme.colors.text.secondary 
-                  }
-                ]}
-              >
-                {filter.label} ({filter.count})
-              </Text>
-            </Pressable>
+              label={filter.label}
+              value={filter.key}
+              count={filter.count}
+              selected={selectedFilter === filter.key}
+              onPress={(value) => setSelectedFilter(value as any)}
+              variant="quickFilter"
+              countStyle="inline"
+              size="md"
+            />
           ))}
         </ScrollView>
       </FadeInWrapper>
@@ -305,7 +289,6 @@ export const StudentsScreen: React.FC = () => {
         )}
         contentContainerStyle={{
           paddingBottom: 100, // Space for tab bar
-          paddingHorizontal: 16,
         }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
@@ -355,16 +338,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   filterContainer: {
     marginBottom: theme.spacing.md,
-  },
-  filterTab: {
-    marginRight: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.full,
-  },
-  filterTabText: {
-    fontSize: theme.fontSizes.sm,
-    fontWeight: theme.fontConfig.fontWeight.semibold,
   },
   emptyContainer: {
     alignItems: 'center',

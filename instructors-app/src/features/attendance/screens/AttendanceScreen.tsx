@@ -17,7 +17,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Badge } from '@academy/mobile-shared';
 
 interface Student {
   id: string;
@@ -79,15 +79,13 @@ const ClassCard: React.FC<ClassCardProps> = ({ classInfo, index, onPress }) => {
             <Text style={styles.classTime}>{classInfo.time}</Text>
           </View>
           
-          {classInfo.attendanceMarked ? (
-            <View style={styles.completedBadge}>
-              <Text style={styles.completedBadgeText}>Completed</Text>
-            </View>
-          ) : (
-            <View style={styles.pendingBadge}>
-              <Text style={styles.pendingBadgeText}>Pending</Text>
-            </View>
-          )}
+          <Badge
+            variant={classInfo.attendanceMarked ? 'success' : 'warning'}
+            size="sm"
+            shape="pill"
+          >
+            {classInfo.attendanceMarked ? 'Completed' : 'Pending'}
+          </Badge>
         </View>
 
         {/* Attendance Summary */}
@@ -456,28 +454,6 @@ const useThemedStyles = createThemedStyles((theme) =>
       fontSize: theme.fontSizes.xs,
       color: theme.colors.text.tertiary,
       marginTop: theme.spacing.xs,
-    },
-    completedBadge: {
-      backgroundColor: theme.colors.status.successBackground,
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.full,
-    },
-    completedBadgeText: {
-      color: theme.colors.status.success,
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-    pendingBadge: {
-      backgroundColor: theme.colors.status.warningBackground,
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.full,
-    },
-    pendingBadgeText: {
-      color: theme.colors.status.warning,
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontConfig.fontWeight.medium,
     },
     attendanceSummary: {
       flexDirection: 'row',

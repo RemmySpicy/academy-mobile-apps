@@ -34,8 +34,10 @@ export {
   InfoAlert,
   useErrorMessage,
   Header,
-  StudentCard,
   InstructorDashboard,
+  // Animation components
+  AnimatedWrapper,
+  FadeInWrapper,
   // Newly extracted UI components
   ToggleCard,
   EmptySearchResult,
@@ -56,6 +58,8 @@ export {
   FacebookSignInButton,
   SocialAuthGroup,
   SocialAuthButtons,
+  LoginForm,
+  OnboardingModal,
 } from './components/auth';
 
 export {
@@ -96,6 +100,10 @@ export {
   Performance,
   PerformanceTimes,
   ClassroomProgressCard,
+  ScoreStatistics,
+  MetricPoolRender,
+  MetricsTime,
+  AdvancedScoreStatistics,
 } from './components/performance';
 
 // Scheduling Components
@@ -103,6 +111,7 @@ export {
   ScheduleInput,
   ScheduleList,
   Schedules,
+  ScheduleTypeSelector,
 } from './components/scheduling';
 
 // Student Components
@@ -123,6 +132,14 @@ export {
   ClassroomGrading,
   MyClassroom,
   CourseProgression,
+  ProfileSettingsSection,
+  ProfileInfoSection,
+  NotificationSection,
+  SessionManagementSection,
+  PreferencesSupportSection,
+  StationProgress,
+  GroupedCards,
+  StudentCard,
 } from './components/academy';
 
 // Phase 4: Enhanced UI Components
@@ -131,6 +148,15 @@ export {
   FilterBar,
   StudentListCard,
   Lessons,
+  Badge,
+  LoadingSpinner,
+  NotificationList,
+  BottomSheet,
+  BottomSheetProvider,
+  useBottomSheet,
+  useBottomSheetActions,
+  useBottomSheetState,
+  useQuickBottomSheet,
 } from './components/ui';
 
 // Hooks - Direct exports

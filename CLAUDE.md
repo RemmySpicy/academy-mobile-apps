@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Architecture
 
-This is a monorepo containing mobile applications for the Academy Management System:
+This is a monorepo containing mobile applications for the Multi-Program Academy Management System, supporting diverse programs including swimming, football, basketball, music, coding, and other specialized programs:
 
 - **instructors-app/**: React Native/Expo app for tutors and program coordinators
 - **students-app/**: React Native/Expo app for students and parents/guardians
@@ -86,7 +86,7 @@ const MyComponent = () => {
 
 Both apps use a feature-based architecture with:
 
-- **features/**: Feature modules (auth, attendance, classroom, performance, scheduling, students)
+- **features/**: Feature modules (auth, attendance, classroom, performance, scheduling, students) - designed to work across all program types
 - **navigation/**: App navigation components
 - **services/**: API client and service layer
 - **components/**: App-specific components
@@ -114,7 +114,7 @@ The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT a
 ## Key Implementation Notes
 
 ### Multi-Program Support
-The apps support multiple academy programs with automatic context switching. See [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md) for integration details.
+The apps support multiple academy programs (swimming, football, basketball, music, coding, etc.) with automatic context switching. Each program can have its own specific requirements while sharing common functionality. See [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md) for integration details.
 
 ### Component Usage
 All shared components are exported from `@academy/mobile-shared`. Use Academy-themed components with proper TypeScript interfaces.
@@ -154,18 +154,11 @@ npm run test:all
 
 - ✅ Theme system with Academy branding
 - ✅ Authentication with JWT and program context
-- ✅ **83+ shared components with TypeScript interfaces (Phase 5 Complete)**
+- ✅ **80+ shared components with TypeScript interfaces**
 - ✅ Modern chart system (React 19 compatible)
 - ✅ Type-safe navigation and state management
 - ✅ Both apps building and running successfully
 - ✅ **Complete component extraction from existing code finished**
-
-### 🚀 Phase 4 Completion Summary:
-- **Button Component**: Enhanced with 9 variants, multiple sizes, and icon support
-- **FilterBar Component**: Advanced filtering with multi-group support and modal interface
-- **StudentListCard Component**: Generalized student display with progress tracking and tags
-- **Lessons Component**: Comprehensive lesson management with station-based organization
-- **All components fully tested and integrated** with ExtractedComponentsShowcase
 
 ## Development Best Practices
 

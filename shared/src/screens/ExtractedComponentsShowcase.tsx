@@ -26,7 +26,7 @@ import { QuickFilterBar, FilterItem, useQuickFilters } from '../components/searc
 import { SearchBar, SimpleSearchBar } from '../components/search/SearchBar';
 
 // Calendar Components
-import { Calendar, ClassroomCalendar, StudentProfileCalendar } from '../components/calendar';
+import { Calendar, ClassroomCalendar, StudentProfileCalendar, AcademyCalendar } from '../components/calendar';
 import { DatePicker } from '../components/calendar/DatePicker';
 
 // Performance Components
@@ -160,7 +160,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
         endTime: '5:00 PM' 
       },
       performanceLevels: [
-        { type: 'highest' as const, description: 'Advanced swimmers' },
+        { type: 'highest' as const, description: 'Advanced students' },
         { type: 'average' as const, description: 'Intermediate level' },
       ],
       metadata: [
@@ -178,7 +178,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
         endTime: '4:00 PM' 
       },
       performanceLevels: [
-        { type: 'lowest' as const, description: 'Beginner swimmers' },
+        { type: 'lowest' as const, description: 'Beginner students' },
       ],
       metadata: [
         { label: 'Capacity', value: '0/8', icon: 'people' as const },
@@ -286,7 +286,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
             {
               id: 'act3',
               title: 'Freestyle Introduction',
-              description: 'Basic freestyle stroke mechanics',
+              description: 'Basic technique fundamentals',
               stars: 5,
               maxStars: 5,
               rating: '4.9/5',
@@ -315,8 +315,10 @@ const ExtractedComponentsShowcase: React.FC = () => {
   // Sample data for OptionMenu
   const sampleMenuOptions = [
     { id: '1', label: 'Swimming Lessons', value: 'swimming', icon: 'water', onPress: () => console.log('Swimming selected') },
-    { id: '2', label: 'Tennis Classes', value: 'tennis', icon: 'tennisball', onPress: () => console.log('Tennis selected') },
+    { id: '2', label: 'Basketball Classes', value: 'basketball', icon: 'basketball', onPress: () => console.log('Basketball selected') },
     { id: '3', label: 'Football Training', value: 'football', icon: 'football', onPress: () => console.log('Football selected') },
+    { id: '4', label: 'Music Lessons', value: 'music', icon: 'musical-notes', onPress: () => console.log('Music selected') },
+    { id: '5', label: 'Coding Classes', value: 'coding', icon: 'code', onPress: () => console.log('Coding selected') },
   ];
 
   // Sample data for new Phase 5 components
@@ -334,7 +336,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
     {
       id: '2',
       title: 'Class Update',
-      message: 'New swimming lesson scheduled for tomorrow at 10:00 AM in Pool A.',
+      message: 'New lesson scheduled for tomorrow at 10:00 AM in Studio A.',
       timestamp: 'Yesterday',
       isRead: false,
       type: 'update' as const,
@@ -342,7 +344,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
     {
       id: '3',
       title: 'Payment Received',
-      message: 'Payment of $120 has been processed for Tom Wilson\'s swimming lessons.',
+      message: 'Payment of $120 has been processed for Tom Wilson\'s program lessons.',
       timestamp: '2 days ago',
       isRead: true,
       type: 'info' as const,
@@ -1329,6 +1331,48 @@ const ExtractedComponentsShowcase: React.FC = () => {
       />
       <Text style={styles.cardContent}>
         StudentProfileCalendar - Student-specific calendar with session tracking, progress monitoring, and achievement history
+      </Text>
+
+      <Text style={styles.subsectionTitle}>AcademyCalendar (New Consolidated)</Text>
+      <AcademyCalendar
+        variant="default"
+        selectedDate={selectedDate}
+        onDateSelect={(date) => setSelectedDate(date)}
+        events={[
+          {
+            id: '1',
+            date: 5,
+            type: 'class',
+            title: 'Swimming Lesson',
+            color: 'purple'
+          },
+          {
+            id: '2',
+            date: 12,
+            type: 'assignment',
+            title: 'Pool Test',
+            color: 'blue'
+          },
+          {
+            id: '3',
+            date: 18,
+            type: 'exam',
+            title: 'Level Assessment',
+            color: 'red'
+          },
+          {
+            id: '4',
+            date: 25,
+            type: 'holiday',
+            title: 'Pool Closed',
+            color: 'green'
+          }
+        ]}
+        showNavigation={true}
+        enableDateSelection={true}
+      />
+      <Text style={styles.cardContent}>
+        AcademyCalendar - New consolidated calendar component that replaces both ClassroomCalendar and StudentProfileCalendar. Features full Sunday-first week layout, navigation controls, date selection, and comprehensive event highlighting.
       </Text>
     </View>
   );

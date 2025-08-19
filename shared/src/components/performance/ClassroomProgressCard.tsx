@@ -390,15 +390,15 @@ const createStyles = (theme: any, screenDimensions: any) => {
     },
     
     lastActivity: {
-      fontSize: theme.fontSizes.caption,
+      fontSize: theme.fontSizes.xs,
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.xs,
     },
     
     additionalInfo: {
-      fontSize: theme.fontSizes.caption,
+      fontSize: theme.fontSizes.xs,
       color: theme.colors.text.secondary,
-      lineHeight: theme.typography.lineHeight.caption,
+      lineHeight: theme.typography.caption.base.lineHeight,
     },
     
     confirmationButton: {
@@ -417,7 +417,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
     },
     
     confirmationButtonText: {
-      fontSize: theme.fontSizes.caption,
+      fontSize: theme.fontSizes.xs,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
   });

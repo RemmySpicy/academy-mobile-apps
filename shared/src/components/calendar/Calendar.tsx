@@ -367,7 +367,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       height: daySize,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: theme.borderRadius.full,
+      borderRadius: daySize / 2,
       backgroundColor: theme.colors.background.primary,
       position: 'relative',
     },

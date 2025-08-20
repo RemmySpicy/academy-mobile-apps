@@ -25,10 +25,10 @@ All form components are designed with:
 
 ### Selection Components
 - **CustomCheckBox** - Checkbox with Academy theming and multiple variants
-- **RadioButton** - Radio button and radio group components
+- **RadioCustomButton** - Radio button and radio group components
 
 ### Form Utilities
-- **CustomButton** - Academy-themed buttons with loading states
+- **CustomButton** - Enhanced Academy-themed buttons with 18 variants, loading states, and icon support
 - **Form** - Main form wrapper with validation and submission handling
 - **LegacyForm** - Compatibility form wrapper for existing code
 
@@ -146,6 +146,57 @@ type ComponentSize = 'small' | 'medium' | 'large';
   size="large"
   variant="primary"
 />
+```
+
+### Enhanced CustomButton Component
+
+The enhanced CustomButton component provides comprehensive Academy-themed styling with 18 variants:
+
+```typescript
+import { CustomButton } from '@academy/mobile-shared';
+
+// Primary Variants
+<CustomButton title="Primary" variant="primary" />     // Academy purple (#4F2EC9)
+<CustomButton title="Teal" variant="teal" />           // Academy teal (#52E2BB)
+<CustomButton title="Secondary" variant="secondary" /> // Clean neutral button
+<CustomButton title="Ghost" variant="ghost" />         // Transparent background
+
+// Outline Variants
+<CustomButton title="Outline" variant="outline" />           // Light background
+<CustomButton title="Outline Theme" variant="outlineTheme" /> // Academy purple border
+<CustomButton title="Outline Teal" variant="outlineTeal" />   // Academy teal border
+
+// Status Variants
+<CustomButton title="Success" variant="success" />     // Green for positive actions
+<CustomButton title="Warning" variant="warning" />     // Amber for caution
+<CustomButton title="Danger" variant="danger" />       // Red for destructive actions
+<CustomButton title="Info" variant="info" />           // Blue for informational
+
+// Utility Variants
+<CustomButton title="Faded" variant="faded" />         // Academy faded theme
+<CustomButton title="Orange" variant="orange" />       // Academy orange
+<CustomButton title="Gray" variant="gray" />           // Neutral gray
+<CustomButton title="Light Gray" variant="lightGray" /> // Even lighter gray
+<CustomButton title="Black" variant="black" />         // Dark theme
+<CustomButton title="Cancel" variant="cancel" />       // Cancel actions
+<CustomButton title="Normal" variant="normal" />       // Default neutral
+
+// 2 Button Sizes (optimized for mobile)
+<CustomButton title="Small" variant="primary" size="sm" />   // 36px height
+<CustomButton title="Medium" variant="primary" size="md" />  // 48px height
+
+// Enhanced Features with Icons
+<CustomButton 
+  title="With Icons" 
+  variant="primary"
+  startIcon={<Ionicons name="save" size={16} color="white" />}
+  endIcon={<Ionicons name="arrow-forward" size={16} color="white" />}
+/>
+
+// Loading States
+<CustomButton title="Loading" variant="primary" isLoading={true} />
+<CustomButton title="Disabled" variant="primary" disabled />
+<CustomButton title="With Shadow" variant="primary" shadow={true} />
 ```
 
 ### Academy Theme Colors

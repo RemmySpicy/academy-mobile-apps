@@ -142,6 +142,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
   onValueChange,
   disabled = false,
   required = false,
+  error: propError,
   rules,
   style,
   inputStyle,
@@ -165,8 +166,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
   // Use form field values if available, otherwise use prop values
   const value = formField ? formField.field.value : propValue || "";
-  const error = formField?.fieldState.error;
-  const invalid = formField?.fieldState.invalid || false;
+  const formError = formField?.fieldState.error;
+  const error = formError || (propError ? { message: propError } : null);
+  const invalid = formField?.fieldState.invalid || !!propError;
 
   const handleChangeText = useCallback((text: string) => {
     if (formField) {
@@ -391,6 +393,8 @@ const createStyles = (theme: any) => StyleSheet.create({
   inputError: {
     borderColor: theme.colors.status.error,
     borderWidth: 1,
+    backgroundColor: theme.colors.status.errorBackground || `${theme.colors.status.error}08`,
+    ...themeUtils.createShadow('sm', theme.colors.status.error),
   },
 
   inputDisabled: {
@@ -463,13 +467,14 @@ const createStyles = (theme: any) => StyleSheet.create({
 
   rightIconContainer: {
     marginLeft: theme.spacing.sm,
+    marginRight: theme.spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   iconButton: {
     marginLeft: theme.spacing.sm,
-    padding: theme.spacing.xs,
+    marginRight: theme.spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 32,

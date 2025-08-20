@@ -271,11 +271,13 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
     const daysInMonth = getDaysInMonth(year, month);
     const firstDay = getFirstDayOfMonth(year, month);
 
-    const days: React.ReactNode[] = [];
+    // Create weeks array similar to Calendar component
+    const weeks: (React.ReactNode | null)[][] = [];
+    let currentWeek: (React.ReactNode | null)[] = [];
 
     // Add empty spaces for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
-      days.push(<View key={`empty-${i}`} style={styles.dayContainer} />);
+      currentWeek.push(<View key={`empty-${i}`} style={styles.dayContainer} />);
     }
 
     // Get current date to highlight today
@@ -300,7 +302,7 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
         accessibilityRole: "button" as const,
       } : {};
 
-      days.push(
+      const dayElement = (
         <DayComponent
           key={`day-${i}`}
           style={styles.dayContainer}
@@ -328,9 +330,25 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
           </View>
         </DayComponent>
       );
+
+      currentWeek.push(dayElement);
+
+      // If week is complete (7 days), add to weeks array
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
     }
 
-    return days;
+    // Fill remaining days of last week with empty cells
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) {
+        currentWeek.push(<View key={`empty-end-${currentWeek.length}`} style={styles.dayContainer} />);
+      }
+      weeks.push(currentWeek);
+    }
+
+    return weeks;
   }, [
     currentMonth, 
     highlightedDates, 
@@ -407,13 +425,13 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
         ))}
       </View>
 
-      <ScrollView 
-        contentContainerStyle={containerStyles.daysContainer}
-        showsVerticalScrollIndicator={false}
-        accessible={false}
-      >
-        {renderDays()}
-      </ScrollView>
+      <View style={containerStyles.calendarGrid}>
+        {renderDays().map((week, weekIndex) => (
+          <View key={weekIndex} style={containerStyles.weekRow}>
+            {week}
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
@@ -421,7 +439,7 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
 // Static styles that don't depend on theme
 const styles = StyleSheet.create({
   dayContainer: {
-    width: DAY_SIZE,
+    flex: 1,
     height: DAY_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
@@ -478,10 +496,11 @@ const createStyles = (theme: any) => StyleSheet.create({
   daysHeader: {
     flexDirection: 'row',
     marginBottom: theme.spacing.sm,
+    gap: theme.spacing.xs,
   } as ViewStyle,
 
   dayHeaderContainer: {
-    width: DAY_SIZE,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   } as ViewStyle,
@@ -492,17 +511,19 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontWeight: theme.fontConfig.fontWeight.medium,
   } as TextStyle,
 
-  daysContainer: {
+  calendarGrid: {
+    gap: theme.spacing.xs,
+  } as ViewStyle,
+
+  weekRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    gap: theme.spacing.xs,
   } as ViewStyle,
 
   day: {
-    width: DAY_SIZE - 8,
-    height: DAY_SIZE - 8,
-    borderRadius: (DAY_SIZE - 8) / 2,
+    width: DAY_SIZE - theme.spacing.sm,
+    height: DAY_SIZE - theme.spacing.sm,
+    borderRadius: (DAY_SIZE - theme.spacing.sm) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.background.primary,

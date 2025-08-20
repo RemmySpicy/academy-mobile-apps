@@ -363,8 +363,9 @@ const createStyles = (theme: any, screenDimensions: any) => {
     
     dayCell: {
       flex: 1,
-      width: daySize,
-      height: daySize,
+      aspectRatio: 1,
+      minWidth: daySize,
+      minHeight: daySize,
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: daySize / 2,

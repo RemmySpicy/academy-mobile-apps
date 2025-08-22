@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 import { useScreenDimensions } from '../../hooks';
+import { BottomSheet } from './BottomSheet';
 
 export interface FilterOption {
   id: string;
@@ -50,10 +50,10 @@ export interface FilterBarProps {
   scrollable?: boolean;
   compactMode?: boolean;
   
-  // Modal specific
-  modalTitle?: string;
-  modalVisible?: boolean;
-  onModalClose?: () => void;
+  // Bottom Sheet specific
+  bottomSheetTitle?: string;
+  bottomSheetVisible?: boolean;
+  onBottomSheetClose?: () => void;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -71,9 +71,9 @@ const FilterBar: React.FC<FilterBarProps> = ({
   maxItemsVisible = 5,
   scrollable = true,
   compactMode = false,
-  modalTitle,
-  modalVisible = false,
-  onModalClose,
+  bottomSheetTitle,
+  bottomSheetVisible = false,
+  onBottomSheetClose,
 }) => {
   const { theme } = useTheme();
   const { isTablet } = useScreenDimensions();
@@ -249,25 +249,19 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
   if (variant === 'modal') {
     return (
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={onModalClose}
+      <BottomSheet
+        visible={bottomSheetVisible}
+        onClose={onBottomSheetClose}
+        title={bottomSheetTitle || title}
+        snapPoints={['large']}
+        initialSnapPoint="large"
+        scrollable={true}
+        showDragHandle={true}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{modalTitle || title}</Text>
-            <TouchableOpacity onPress={onModalClose}>
-              <Ionicons name="close" size={24} color={theme.colors.text.primary} />
-            </TouchableOpacity>
-          </View>
-          
-          <ScrollView style={styles.modalContent}>
-            {renderContent()}
-          </ScrollView>
+        <View style={styles.bottomSheetContent}>
+          {renderContent()}
         </View>
-      </Modal>
+      </BottomSheet>
     );
   }
 
@@ -422,26 +416,9 @@ const createStyles = (theme: any, isTablet: boolean, compactMode: boolean) => St
   applyButtonText: {
     color: theme.colors.text.inverse,
   },
-  modalContainer: {
+  bottomSheetContent: {
     flex: 1,
-    backgroundColor: theme.colors.background.primary,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border.primary,
-  },
-  modalTitle: {
-    fontSize: theme.fontSizes.h3,
-    fontWeight: theme.fontConfig.fontWeight.semibold,
-    color: theme.colors.text.primary,
-  },
-  modalContent: {
-    flex: 1,
+    paddingTop: theme.spacing.md,
   },
 });
 

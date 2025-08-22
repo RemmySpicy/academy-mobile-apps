@@ -67,8 +67,11 @@ export {
   OptionMenu,
   TimesTab,
   StrokeTab,
+  SegmentedControl,
+  IconTabBar,
+  FixedTabBar,
+  PillTabs,
   CustomModalWithDot,
-  Button,
   FilterBar,
   StudentListCard,
   Lessons,
@@ -84,11 +87,11 @@ export {
 
 export {
   SearchInput,
-  FilterChip,
   QuickFilterBar,
   useQuickFilters,
   SearchBar,
   SimpleSearchBar,
+  SearchContainer,
 } from './search';
 
 export {

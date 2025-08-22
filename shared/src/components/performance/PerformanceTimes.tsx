@@ -7,8 +7,6 @@
 
 import React, { useState } from 'react';
 import {
-  Modal,
-  SafeAreaView,
   ScrollView,
   View,
   Text,
@@ -21,6 +19,7 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
 import PerformanceChart from '../charts/PerformanceChart';
+import { BottomSheet } from '../ui/BottomSheet';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -353,31 +352,31 @@ export const PerformanceTimes: React.FC<PerformanceTimesProps> = ({
   );
 
   return (
-    <Modal
-      animationType="slide"
+    <BottomSheet
       visible={visible}
-      transparent={false}
-      onRequestClose={onClose}
-      presentationStyle="pageSheet"
+      onClose={onClose}
+      title={`${eventName} - ${distance} ${stroke}`}
+      snapPoints={['large', 'full']}
+      initialSnapPoint="large"
+      scrollable={true}
+      showDragHandle={true}
       testID={testID}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
     >
-      <SafeAreaView style={[styles.container, style]}>
-        {renderHeader()}
-        
+      <View style={[styles.bottomSheetContent, style]}>
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={[styles.contentContainer, contentStyle]}
           showsVerticalScrollIndicator={false}
-          accessibilityLabel={accessibilityLabel}
-          accessibilityHint={accessibilityHint}
         >
           {renderBestTimeSection()}
           {renderChart()}
           {renderGoalsSection()}
           {renderAllTimesSection()}
         </ScrollView>
-      </SafeAreaView>
-    </Modal>
+      </View>
+    </BottomSheet>
   );
 };
 
@@ -389,6 +388,11 @@ const createStyles = (theme: any, screenDimensions: any) => {
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
+    },
+    
+    bottomSheetContent: {
+      flex: 1,
+      paddingTop: theme.spacing.sm,
     },
     
     header: {
@@ -488,7 +492,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       width: 20,
       height: 20,
       borderRadius: 10,
-      backgroundColor: '#DCF9F1',
+      backgroundColor: theme.colors.status.success + '30',
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -497,7 +501,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       width: 12,
       height: 12,
       borderRadius: 6,
-      backgroundColor: '#A8F0DD',
+      backgroundColor: theme.colors.status.success,
     },
     
     clubRecordContent: {
@@ -567,7 +571,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       width: 20,
       height: 20,
       borderRadius: 10,
-      backgroundColor: '#DCF9F1',
+      backgroundColor: theme.colors.interactive.faded,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -576,7 +580,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       width: 12,
       height: 12,
       borderRadius: 6,
-      backgroundColor: '#A8F0DD',
+      backgroundColor: theme.colors.interactive.primary,
     },
     
     goalContent: {
@@ -666,7 +670,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
     },
     
     pbBadge: {
-      backgroundColor: '#6FE7C6',
+      backgroundColor: theme.colors.status.success,
       borderRadius: theme.borderRadius.full,
       width: 32,
       height: 32,

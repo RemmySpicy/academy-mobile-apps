@@ -276,13 +276,11 @@ export const ScoreStatistics: React.FC<ScoreStatisticsProps> = ({
 const createStyles = (theme: any) => StyleSheet.create({
   container: {
     backgroundColor: theme.colors.background.secondary,
-    borderRadius: theme.borderRadius.xl,
-    padding: theme.spacing.md,
-    shadowColor: theme.colors.shadow.default,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
+    borderWidth: theme.borderWidth.thin,
+    borderColor: theme.colors.border.primary,
+    ...theme.elevation.sm,
     marginVertical: theme.spacing.md,
   },
 
@@ -321,11 +319,9 @@ const createStyles = (theme: any) => StyleSheet.create({
     borderRadius: theme.borderRadius.md,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
-    shadowColor: theme.colors.shadow.default,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
+    borderWidth: theme.borderWidth.thin,
+    borderColor: theme.colors.border.secondary,
+    ...theme.elevation.xs,
   },
 
   pickerButtonText: {
@@ -341,11 +337,9 @@ const createStyles = (theme: any) => StyleSheet.create({
     right: 0,
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.md,
-    shadowColor: theme.colors.shadow.default,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: theme.borderWidth.thin,
+    borderColor: theme.colors.border.primary,
+    ...theme.elevation.sm,
     zIndex: 1000,
   },
 
@@ -453,11 +447,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     backgroundColor: theme.colors.interactive.primary,
     borderRadius: theme.borderRadius.sm,
     minHeight: 4,
-    shadowColor: theme.colors.shadow.default,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    ...theme.elevation.xs,
   },
 
   xAxisContainer: {

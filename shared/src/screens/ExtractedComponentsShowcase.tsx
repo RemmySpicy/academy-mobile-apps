@@ -7,23 +7,23 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../theme';
 
 // Our newly extracted components
-import { ToggleCard, ControlCard, FilterComponent, OptionMenu, TimesTab, StrokeTab, CustomModalWithDot, Alert as ToastAlert, MenuList, MetricPool, Stations, BottomSheet, BottomSheetProvider, useBottomSheet, useBottomSheetActions, useQuickBottomSheet, LoadingSpinner, NotificationList } from '../components/ui';
+import { ToggleCard, ControlCard, FilterComponent, OptionMenu, TabBar, StrokeTab, SegmentedControl, IconTabBar, Alert as ToastAlert, MenuList, MetricPool, Stations, LoadingSpinner, NotificationList } from '../components/ui';
 import { EmptySearchResult } from '../components/ui/EmptySearchResult';
 import { SelectOptions, SelectOption } from '../components/ui/SelectOptions';
+import { FormDropdown, DropdownOption } from '../components/ui/FormDropdown';
 import { HeaderComponent } from '../components/ui/HeaderComponent';
 
 // Phase 4: Enhanced UI Components
 import { CustomButton } from '../components/forms/CustomButton';
-import { Button } from '../components/ui';
 import FilterBar from '../components/ui/FilterBar';
-import StudentListCard from '../components/ui/StudentListCard';
 import Lessons from '../components/ui/Lessons';
 
 // Search System Components
 import { SearchInput } from '../components/search/SearchInput';
-import { FilterChip } from '../components/search/FilterChip';
+import { Chip } from '../components/ui/Chip';
 import { QuickFilterBar, FilterItem, useQuickFilters } from '../components/search/QuickFilterBar';
 import { SearchBar, SimpleSearchBar } from '../components/search/SearchBar';
+import { SearchContainer } from '../components/search/SearchContainer';
 
 // Calendar Components
 import { Calendar, ClassroomCalendar, StudentProfileCalendar, AcademyCalendar } from '../components/calendar';
@@ -36,7 +36,7 @@ import { MetricPoolRender, MetricsTime, AdvancedScoreStatistics } from '../compo
 
 // Additional Components
 import { StudentProfile } from '../components/student';
-import { ScheduleInput, ScheduleList, Schedules, ScheduleTypeSelector } from '../components/scheduling';
+import { ScheduleInput, ScheduleList, Schedules, ScheduleTypeSelector, FilterBar as ScheduleFilterBar, BookingCard } from '../components/scheduling';
 
 // Academy-Specific Components
 import { ClassroomGrading, MyClassroom, CourseProgression, ProfileInfoSection, NotificationSection, SessionManagementSection, PreferencesSupportSection, StationProgress, GroupedCards, StudentCard } from '../components/academy';
@@ -62,7 +62,7 @@ type ShowcaseSection =
   | 'hooks';
 
 const ExtractedComponentsShowcase: React.FC = () => {
-  const { theme } = useTheme();
+  const { theme, themeMode, toggleTheme } = useTheme();
   const styles = useThemedStyles();
   const screenDimensions = useScreenDimensions();
 
@@ -73,6 +73,13 @@ const ExtractedComponentsShowcase: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectOptionsValue, setSelectOptionsValue] = useState<string[]>([]);
+  const [singleSelectValue, setSingleSelectValue] = useState<string>('beginner');
+  const [disabledSelectValue, setDisabledSelectValue] = useState<string>('option1');
+  const [dropdownValue, setDropdownValue] = useState<string>('');
+  const [searchableDropdownValue, setSearchableDropdownValue] = useState<string>('');
+  
+  // ControlCard demo states
+  const [controlCardSearchValue, setControlCardSearchValue] = useState('');
   
   // Search filters demo
   const { selectedFilters, handleFilterChange } = useQuickFilters(['active'], true);
@@ -80,9 +87,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
   // Phase 4 component states
   const [filterBarSelectedFilters, setFilterBarSelectedFilters] = useState<{ [groupId: string]: string[] }>({});
   
-  // Bottom sheet demo states
-  const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
-  const [currentBottomSheetDemo, setCurrentBottomSheetDemo] = useState<'simple' | 'snapPoints' | 'scrollable' | 'form'>('simple');
+  // Modal demo states (only feature-specific modals)
   
   const handleFilterBarChange = (groupId: string, optionId: string, selected: boolean) => {
     setFilterBarSelectedFilters(prev => {
@@ -102,6 +107,21 @@ const ExtractedComponentsShowcase: React.FC = () => {
     { id: '3', label: 'Advanced', value: 'advanced' },
     { id: '4', label: 'Expert', value: 'expert' },
   ];
+
+  const sampleDropdownOptions: DropdownOption[] = [
+    { id: '1', label: 'Swimming Instructor', value: 'swim_instructor', icon: 'water' },
+    { id: '2', label: 'Football Coach', value: 'football_coach', icon: 'football' },
+    { id: '3', label: 'Basketball Trainer', value: 'basketball_trainer', icon: 'basketball' },
+    { id: '4', label: 'Music Teacher', value: 'music_teacher', icon: 'musical-notes' },
+    { id: '5', label: 'Coding Mentor', value: 'coding_mentor', icon: 'code-slash', disabled: true },
+  ];
+
+  const largeDropdownOptions: DropdownOption[] = Array.from({ length: 50 }, (_, i) => ({
+    id: `instructor-${i}`,
+    label: `Instructor ${i + 1} - ${['John', 'Jane', 'Mike', 'Sarah', 'Alex', 'Emma'][i % 6]} ${['Smith', 'Johnson', 'Williams', 'Brown', 'Davis'][i % 5]}`,
+    value: `instructor_${i}`,
+    icon: 'person',
+  }));
 
   const sampleFilters: FilterItem[] = [
     { id: '1', label: 'Active', value: 'active', count: 12, icon: 'checkmark-circle' },
@@ -312,6 +332,39 @@ const ExtractedComponentsShowcase: React.FC = () => {
     { id: '3', label: 'Breaststroke', value: 'breaststroke', time: '1:56', active: false },
   ];
 
+  // Sample data for new tab components
+  const [segmentedValue, setSegmentedValue] = useState('list');
+  const [iconTabValue, setIconTabValue] = useState('home');
+  const [fixedTabValue, setFixedTabValue] = useState('all');
+  const [pillTabsValue, setChipValue] = useState(['beginner']);
+
+  const segmentedOptions = [
+    { value: 'list', label: 'List', icon: 'list' as const },
+    { value: 'grid', label: 'Grid', icon: 'grid' as const },
+    { value: 'card', label: 'Card', icon: 'card' as const },
+  ];
+
+  const iconTabOptions = [
+    { value: 'home', icon: 'home' as const, label: 'Home' },
+    { value: 'stats', icon: 'stats-chart' as const, label: 'Stats', badge: { count: 5 } },
+    { value: 'calendar', icon: 'calendar' as const, label: 'Schedule', badge: { showDot: true } },
+    { value: 'settings', icon: 'settings' as const, label: 'Settings' },
+  ];
+
+  const fixedTabOptions = [
+    { value: 'all', label: 'All', badge: 24 },
+    { value: 'active', label: 'Active', badge: 12, icon: 'checkmark-circle' as const },
+    { value: 'completed', label: 'Completed', badge: 8, icon: 'checkmark-done' as const },
+    { value: 'pending', label: 'Pending', badge: 4, icon: 'time' as const },
+  ];
+
+  const pillTabOptions = [
+    { value: 'beginner', label: 'Beginner', count: 15, icon: 'star' as const },
+    { value: 'intermediate', label: 'Intermediate', count: 8, icon: 'star-half' as const },
+    { value: 'advanced', label: 'Advanced', count: 3, icon: 'trophy' as const },
+    { value: 'expert', label: 'Expert', count: 1, icon: 'medal' as const },
+  ];
+
   // Sample data for OptionMenu
   const sampleMenuOptions = [
     { id: '1', label: 'Swimming Lessons', value: 'swimming', icon: 'water', onPress: () => console.log('Swimming selected') },
@@ -323,6 +376,8 @@ const ExtractedComponentsShowcase: React.FC = () => {
 
   // Sample data for new Phase 5 components
   const [onboardingModalVisible, setOnboardingModalVisible] = useState(false);
+  const [studentProfileVisible, setStudentProfileVisible] = useState(false);
+  const [performanceTimesVisible, setPerformanceTimesVisible] = useState(false);
   
   const sampleNotifications = [
     {
@@ -450,7 +505,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
         contentContainerStyle={styles.navScrollContent}
       >
         {(['overview', 'ui', 'modals', 'search', 'calendar', 'performance', 'scheduling', 'student', 'academy', 'advanced', 'hooks'] as const).map((section) => (
-          <FilterChip
+          <Chip
             key={section}
             label={section.charAt(0).toUpperCase() + section.slice(1)}
             value={section}
@@ -532,22 +587,164 @@ const ExtractedComponentsShowcase: React.FC = () => {
         </Text>
         
         <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>ToggleCard</Text>
+          <Text style={styles.componentTitle}>ToggleCard Variants</Text>
+          
+          {/* Status Variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginBottom: 8 }]}>
+            Status Variants
+          </Text>
+          
           <ToggleCard
-            title="Swimming Session Details"
-            count={5}
-            initialExpanded={false}
-            onToggle={(expanded) => console.log('Toggle:', expanded)}
+            title="Default Toggle"
+            count={8}
+            variant="default"
+            onToggle={(expanded) => console.log('Default Toggle:', expanded)}
           />
+          
+          <ToggleCard
+            title="Primary Notice"
+            count={3}
+            variant="primary"
+            onToggle={(expanded) => console.log('Primary Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Mark Present"
+            count={12}
+            variant="success"
+            onToggle={(expanded) => console.log('Success Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Unmarked List"
+            count={5}
+            variant="warning"
+            onToggle={(expanded) => console.log('Warning Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Mark Absent"
+            count={2}
+            variant="error"
+            onToggle={(expanded) => console.log('Error Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Additional Info"
+            count={1}
+            variant="info"
+            onToggle={(expanded) => console.log('Info Toggle:', expanded)}
+          />
+          
+          {/* Size Variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Size Variants
+          </Text>
+          
+          <ToggleCard
+            title="Small Toggle"
+            count={3}
+            size="sm"
+            variant="primary"
+            onToggle={(expanded) => console.log('Small Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Medium Toggle"
+            count={7}
+            size="md"
+            variant="success"
+            onToggle={(expanded) => console.log('Medium Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Large Toggle"
+            count={15}
+            size="lg"
+            variant="warning"
+            onToggle={(expanded) => console.log('Large Toggle:', expanded)}
+          />
+          
+          {/* Style Variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Style Variants
+          </Text>
+          
+          <ToggleCard
+            title="Filled Style"
+            count={4}
+            variant="primary"
+            styleVariant="filled"
+            onToggle={(expanded) => console.log('Filled Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Outlined Style"
+            count={6}
+            variant="success"
+            styleVariant="outlined"
+            onToggle={(expanded) => console.log('Outlined Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Ghost Style"
+            count={2}
+            variant="warning"
+            styleVariant="ghost"
+            onToggle={(expanded) => console.log('Ghost Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Elevated Style"
+            count={9}
+            variant="info"
+            styleVariant="elevated"
+            onToggle={(expanded) => console.log('Elevated Toggle:', expanded)}
+          />
+          
+          {/* Icon Variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Icon Variants
+          </Text>
+          
+          <ToggleCard
+            title="Arrow Icons"
+            count={3}
+            variant="default"
+            iconStyle="arrow"
+            onToggle={(expanded) => console.log('Arrow Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Chevron Icons"
+            count={5}
+            variant="primary"
+            iconStyle="chevron"
+            onToggle={(expanded) => console.log('Chevron Toggle:', expanded)}
+          />
+          
+          <ToggleCard
+            title="Plus/Minus Icons"
+            count={7}
+            variant="success"
+            iconStyle="plus"
+            onToggle={(expanded) => console.log('Plus Toggle:', expanded)}
+          />
+          
           <Text style={styles.componentDescription}>
-            Expandable interface with count badge and smooth animations
+            Comprehensive expandable cards with status variants, size options, style variants, and icon styles for Academy Apps
           </Text>
         </View>
 
         <View style={styles.componentGroup}>
           <Text style={styles.componentTitle}>SelectOptions</Text>
+          
+          {/* Multi-select variant */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginBottom: 8 }]}>
+            Multi-Select Mode
+          </Text>
           <SelectOptions
-            title="Swimming Level"
+            title="Swimming Levels (Multi-select)"
             options={sampleSelectOptions}
             value={selectOptionsValue}
             onSelectionChange={(selected) => {
@@ -555,8 +752,199 @@ const ExtractedComponentsShowcase: React.FC = () => {
             }}
             multiSelect={true}
           />
+          
+          {/* Single-select variant */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Single-Select Mode
+          </Text>
+          <SelectOptions
+            title="Primary Swimming Level (Single-select)"
+            options={sampleSelectOptions}
+            value={singleSelectValue}
+            onSelectionChange={(selected) => {
+              setSingleSelectValue(typeof selected === 'string' ? selected : selected[0]);
+            }}
+            multiSelect={false}
+          />
+          
+          {/* Size variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Size Variants
+          </Text>
+          <SelectOptions
+            title="Small Size"
+            options={['Option 1', 'Option 2', 'Option 3']}
+            value="Option 1"
+            size="sm"
+            multiSelect={false}
+          />
+          <SelectOptions
+            title="Medium Size (Default)"
+            options={['Option 1', 'Option 2', 'Option 3']}
+            value="Option 1"
+            size="md"
+            multiSelect={false}
+          />
+          <SelectOptions
+            title="Large Size"
+            options={['Option 1', 'Option 2', 'Option 3']}
+            value="Option 1"
+            size="lg"
+            multiSelect={false}
+          />
+          
+          {/* Visual style variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Visual Style Variants
+          </Text>
+          <SelectOptions
+            title="Filled Style (Default)"
+            options={['Option A', 'Option B', 'Option C']}
+            value="Option A"
+            variant="filled"
+            multiSelect={false}
+          />
+          <SelectOptions
+            title="Outlined Style"
+            options={['Option A', 'Option B', 'Option C']}
+            value="Option A"
+            variant="outlined"
+            multiSelect={false}
+          />
+          <SelectOptions
+            title="Minimal Style"
+            options={['Option A', 'Option B', 'Option C']}
+            value="Option A"
+            variant="minimal"
+            multiSelect={false}
+          />
+          
+          {/* Disabled state variant */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Disabled States
+          </Text>
+          <SelectOptions
+            title="Disabled Component"
+            options={['Option 1', 'Option 2', 'Option 3']}
+            value={disabledSelectValue}
+            onSelectionChange={(selected) => {
+              setDisabledSelectValue(typeof selected === 'string' ? selected : selected[0]);
+            }}
+            disabled={true}
+            multiSelect={false}
+          />
+          <SelectOptions
+            title="Mixed Disabled Options"
+            options={[
+              { id: '1', label: 'Available Option', value: 'available' },
+              { id: '2', label: 'Disabled Option', value: 'disabled', disabled: true },
+              { id: '3', label: 'Another Available', value: 'available2' },
+            ]}
+            value="available"
+            multiSelect={false}
+          />
+
+          {/* Column variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Layout Variants
+          </Text>
+          <SelectOptions
+            title="2-Column Layout"
+            options={['Option A', 'Option B', 'Option C', 'Option D', 'Option E', 'Option F']}
+            value={['Option A']}
+            columns={2}
+            multiSelect={true}
+            onSelectionChange={(value) => setSelectOptionsValue(Array.isArray(value) ? value : [value])}
+          />
+          <SelectOptions
+            title="3-Column Layout"
+            options={['Opt 1', 'Opt 2', 'Opt 3', 'Opt 4', 'Opt 5', 'Opt 6']}
+            value={['Opt 1']}
+            columns={3}
+            multiSelect={true}
+          />
+
+          {/* Complex options demo */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Complex Options with Custom Data
+          </Text>
+          <SelectOptions
+            title="Program Selection"
+            options={[
+              { id: 'swim', label: 'Swimming Program', value: 'swimming' },
+              { id: 'football', label: 'Football Training', value: 'football' },
+              { id: 'basketball', label: 'Basketball Skills', value: 'basketball' },
+              { id: 'music', label: 'Music Lessons', value: 'music' },
+              { id: 'coding', label: 'Coding Bootcamp', value: 'coding', disabled: true },
+            ]}
+            value={['swimming', 'football']}
+            multiSelect={true}
+            size="lg"
+            variant="outlined"
+          />
+          
           <Text style={styles.componentDescription}>
-            Dropdown menu with multi-select support and Academy theming
+            🎯 **SelectOptions Coverage**: Grid-based selection with comprehensive variants: single/multi-select, 3 sizes, 3 visual styles, disabled states, custom layouts, and Academy theming.
+          </Text>
+        </View>
+
+        <View style={styles.componentGroup}>
+          <Text style={styles.componentTitle}>FormDropdown</Text>
+          
+          {/* Basic dropdown */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginBottom: 8 }]}>
+            Basic Form Dropdown
+          </Text>
+          <FormDropdown
+            label="Role Assignment"
+            options={sampleDropdownOptions}
+            value={dropdownValue}
+            onSelectionChange={setDropdownValue}
+            placeholder="Select a role"
+            required
+          />
+          
+          {/* Searchable dropdown */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Searchable Dropdown (Large Option Set)
+          </Text>
+          <FormDropdown
+            label="Assign Instructor"
+            options={largeDropdownOptions}
+            value={searchableDropdownValue}
+            onSelectionChange={setSearchableDropdownValue}
+            placeholder="Search and select instructor"
+            searchable
+          />
+          
+          {/* Error state */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Error State
+          </Text>
+          <FormDropdown
+            label="Program Type"
+            options={['Swimming', 'Football', 'Basketball']}
+            value=""
+            placeholder="Select program type"
+            error="Please select a program type"
+            required
+          />
+          
+          {/* Disabled state */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Disabled State
+          </Text>
+          <FormDropdown
+            label="Restricted Field"
+            options={sampleDropdownOptions}
+            value="swim_instructor"
+            disabled
+            placeholder="Cannot be changed"
+          />
+          
+          <Text style={styles.componentDescription}>
+            🎯 **FormDropdown**: Traditional modal-based dropdown with React Hook Form integration, search capability, icons, error states, and Academy theming. Perfect for forms and large option sets.
+            {'\n\n'}📋 **Remaining Gaps**: ListSelector (vertical list layout), CascadingSelector (dependent selections), and specialized range/date selectors.
           </Text>
         </View>
 
@@ -581,19 +969,274 @@ const ExtractedComponentsShowcase: React.FC = () => {
         </View>
 
         <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>TimesTab</Text>
-          <TimesTab
-            tabs={sampleTimeTabs}
-            activeTab="week"
-            onTabChange={(tab) => console.log('Time tab changed:', tab)}
+          <Text style={styles.componentTitle}>Enhanced Tab Components</Text>
+          
+          {/* SegmentedControl */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            SegmentedControl - iOS-style Selector
+          </Text>
+          <SegmentedControl
+            options={segmentedOptions}
+            selectedValue={segmentedValue}
+            onChange={setSegmentedValue}
+            variant="primary"
+            size="md"
           />
           <Text style={styles.componentDescription}>
-            Time period tab selector for performance tracking and analytics
+            Animated segmented control for view modes and settings
           </Text>
-        </View>
+
+          {/* IconTabBar */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            IconTabBar - Navigation with Badges
+          </Text>
+          <IconTabBar
+            tabs={iconTabOptions}
+            activeTab={iconTabValue}
+            onTabChange={setIconTabValue}
+            variant="default"
+            showLabels={true}
+            showBadges={true}
+          />
+          <Text style={styles.componentDescription}>
+            Icon-focused navigation with badge support and labels
+          </Text>
+
+          {/* TabBar - Fixed Mode */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            TabBar - Fixed Mode (Equal Width)
+          </Text>
+          <TabBar
+            tabs={fixedTabOptions}
+            activeTab={fixedTabValue}
+            onTabChange={setFixedTabValue}
+            mode="fixed"
+            variant="underline"
+            showIcons={true}
+            showBadges={true}
+          />
+          <Text style={styles.componentDescription}>
+            Non-scrolling tabs with underline indicator and badges
+          </Text>
 
         <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>StrokeTab</Text>
+          <Text style={styles.componentTitle}>Unified Chip Component</Text>
+          <Text style={styles.componentDescription}>
+            Consolidated FilterChip and PillTabs into a single powerful component
+          </Text>
+
+          {/* Multi-Chip Collection Example */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Multi-Chip Collection (Multi-Select)
+          </Text>
+          <Chip
+            chips={pillTabOptions}
+            activeChips={pillTabsValue}
+            onChipChange={(value) => {
+              if (Array.isArray(value)) {
+                setChipValue(value);
+              } else {
+                setChipValue([value]);
+              }
+            }}
+            variant="outlined"
+            multiSelect={true}
+            showIcons={true}
+            showCounts={true}
+          />
+          <Text style={styles.componentDescription}>
+            Multi-select chip collection with icons and count badges
+          </Text>
+
+          {/* Single Chip Examples */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            Single Chip Variants
+          </Text>
+          <View style={styles.chipContainer}>
+            <Chip
+              label="Default"
+              value="default"
+              selected={true}
+              count={12}
+              variant="default"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Primary"
+              value="primary"
+              selected={true}
+              count={8}
+              variant="primary"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Filled"
+              value="filled"
+              selected={false}
+              count={5}
+              variant="filled"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Outlined"
+              value="outlined"
+              selected={false}
+              count={3}
+              variant="outlined"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Ghost"
+              value="ghost"
+              selected={true}
+              count={7}
+              variant="ghost"
+              onPress={() => {}}
+            />
+          </View>
+
+          {/* Size Variants */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            Size Variants
+          </Text>
+          <View style={styles.chipContainer}>
+            <Chip
+              label="XS"
+              value="xs"
+              selected={true}
+              count={5}
+              size="xs"
+              variant="primary"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Small"
+              value="sm"
+              selected={true}
+              count={12}
+              size="sm"
+              variant="primary"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Medium"
+              value="md"
+              selected={true}
+              count={25}
+              size="md"
+              variant="primary"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Large"
+              value="lg"
+              selected={true}
+              count={50}
+              size="lg"
+              variant="primary"
+              onPress={() => {}}
+            />
+          </View>
+
+          {/* Count Styles */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            Count Display Styles
+          </Text>
+          <View style={styles.chipContainer}>
+            <Chip
+              label="Badge Style"
+              value="badge"
+              selected={true}
+              count={12}
+              countStyle="badge"
+              variant="primary"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Inline Style"
+              value="inline"
+              selected={false}
+              count={8}
+              countStyle="inline"
+              variant="outlined"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Separate Style"
+              value="separate"
+              selected={false}
+              count={15}
+              countStyle="separate"
+              variant="filled"
+              onPress={() => {}}
+            />
+          </View>
+
+          {/* With Icons and Dots */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            With Icons and Status Dots
+          </Text>
+          <View style={styles.chipContainer}>
+            <Chip
+              label="With Icon"
+              value="icon"
+              selected={true}
+              icon="star"
+              count={5}
+              variant="primary"
+              onPress={() => {}}
+            />
+            <Chip
+              label="With Dot"
+              value="dot"
+              selected={false}
+              showDot={true}
+              dotColor="#ff6b6b"
+              variant="outlined"
+              onPress={() => {}}
+            />
+            <Chip
+              label="Both"
+              value="both"
+              selected={true}
+              icon="heart"
+              showDot={true}
+              dotColor="#51cf66"
+              count={3}
+              variant="ghost"
+              onPress={() => {}}
+            />
+          </View>
+        </View>
+
+          {/* TabBar - Scrollable Mode */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            TabBar - Scrollable Mode with Icons & Badges
+          </Text>
+          <TabBar
+            tabs={[
+              { value: 'week', label: 'This Week', icon: 'calendar' as const, badge: 7 },
+              { value: 'month', label: 'This Month', icon: 'calendar-outline' as const, badge: 30 },
+              { value: 'year', label: 'This Year', icon: 'calendar-sharp' as const, badge: 365 },
+              { value: 'quarter', label: 'Quarter', icon: 'calendar-clear' as const, badge: 90 },
+              { value: 'semester', label: 'Semester', icon: 'calendar-number' as const, badge: 180 },
+            ]}
+            activeTab="week"
+            onTabChange={(tab) => console.log('TabBar scrollable changed:', tab)}
+            mode="scrollable"
+            variant="pills"
+            showIcons={true}
+            showBadges={true}
+            iconPosition="left"
+          />
+          <Text style={styles.componentDescription}>
+            Scrollable tabs with more options, icons, badges, and flexible positioning
+          </Text>
+
+          {/* StrokeTab */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            StrokeTab - Specialized Performance Tabs
+          </Text>
           <StrokeTab
             tabs={sampleStrokes}
             activeTab="freestyle"
@@ -603,6 +1246,159 @@ const ExtractedComponentsShowcase: React.FC = () => {
           <Text style={styles.componentDescription}>
             Swimming stroke selector with performance metrics and timing data
           </Text>
+        </View>
+
+        <View style={styles.componentGroup}>
+          <Text style={styles.componentTitle}>Unified TabBar Component</Text>
+          <Text style={styles.componentDescription}>
+            Consolidated FixedTabBar and TimesTab into a single powerful component
+          </Text>
+
+          {/* Variant Examples */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            TabBar Variants
+          </Text>
+          
+          <Text style={[styles.componentDescription, { marginBottom: 8 }]}>Default Variant</Text>
+          <TabBar
+            tabs={['All', 'Active', 'Completed', 'Cancelled']}
+            activeTab="Active"
+            onTabChange={() => {}}
+            mode="fixed"
+            variant="default"
+          />
+          
+          <Text style={[styles.componentDescription, { marginTop: 16, marginBottom: 8 }]}>Underline Variant</Text>
+          <TabBar
+            tabs={[
+              { value: 'overview', label: 'Overview', icon: 'analytics' },
+              { value: 'students', label: 'Students', icon: 'people', badge: 24 },
+              { value: 'classes', label: 'Classes', icon: 'school', badge: 8 }
+            ]}
+            activeTab="students"
+            onTabChange={() => {}}
+            mode="fixed"
+            variant="underline"
+            showIcons={true}
+            showBadges={true}
+          />
+          
+          <Text style={[styles.componentDescription, { marginTop: 16, marginBottom: 8 }]}>Pills Variant</Text>
+          <TabBar
+            tabs={[
+              { value: 'beginner', label: 'Beginner', badge: 15 },
+              { value: 'intermediate', label: 'Intermediate', badge: 8 },
+              { value: 'advanced', label: 'Advanced', badge: 3 }
+            ]}
+            activeTab="intermediate"
+            onTabChange={() => {}}
+            mode="fixed"
+            variant="pills"
+            showBadges={true}
+          />
+          
+          <Text style={[styles.componentDescription, { marginTop: 16, marginBottom: 8 }]}>Cards Variant</Text>
+          <TabBar
+            tabs={['Swimming', 'Football', 'Basketball']}
+            activeTab="Swimming"
+            onTabChange={() => {}}
+            mode="fixed"
+            variant="cards"
+            size="lg"
+          />
+
+          {/* Size Examples */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            Size Variants
+          </Text>
+          
+          <Text style={[styles.componentDescription, { marginBottom: 8 }]}>Small Size</Text>
+          <TabBar
+            tabs={['Week', 'Month', 'Year']}
+            activeTab="Month"
+            onTabChange={() => {}}
+            variant="underline"
+            size="sm"
+          />
+          
+          <Text style={[styles.componentDescription, { marginTop: 16, marginBottom: 8 }]}>Large Size</Text>
+          <TabBar
+            tabs={[
+              { value: 'dashboard', label: 'Dashboard', icon: 'speedometer' },
+              { value: 'analytics', label: 'Analytics', icon: 'bar-chart' }
+            ]}
+            activeTab="dashboard"
+            onTabChange={() => {}}
+            variant="pills"
+            size="lg"
+            showIcons={true}
+          />
+
+          {/* Mode Examples */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            Mode Examples
+          </Text>
+          
+          <Text style={[styles.componentDescription, { marginBottom: 8 }]}>Fixed Mode (Equal Width)</Text>
+          <TabBar
+            tabs={['Home', 'Search', 'Profile']}
+            activeTab="Search"
+            onTabChange={() => {}}
+            mode="fixed"
+            variant="minimal"
+            equalWidth={true}
+          />
+          
+          <Text style={[styles.componentDescription, { marginTop: 16, marginBottom: 8 }]}>Scrollable Mode (Many Tabs)</Text>
+          <TabBar
+            tabs={[
+              { value: 'all', label: 'All Programs', badge: 156 },
+              { value: 'swimming', label: 'Swimming', badge: 45 },
+              { value: 'football', label: 'Football', badge: 32 },
+              { value: 'basketball', label: 'Basketball', badge: 28 },
+              { value: 'music', label: 'Music', badge: 21 },
+              { value: 'coding', label: 'Coding', badge: 18 },
+              { value: 'art', label: 'Art', badge: 12 }
+            ]}
+            activeTab="swimming"
+            onTabChange={() => {}}
+            mode="scrollable"
+            variant="pills"
+            showBadges={true}
+          />
+
+          {/* Icon Position Examples */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 20, marginBottom: 8 }]}>
+            Icon Positioning
+          </Text>
+          
+          <Text style={[styles.componentDescription, { marginBottom: 8 }]}>Icons on Top</Text>
+          <TabBar
+            tabs={[
+              { value: 'stats', label: 'Stats', icon: 'stats-chart' },
+              { value: 'goals', label: 'Goals', icon: 'flag' },
+              { value: 'progress', label: 'Progress', icon: 'trending-up' }
+            ]}
+            activeTab="goals"
+            onTabChange={() => {}}
+            variant="default"
+            iconPosition="top"
+            showIcons={true}
+          />
+          
+          <Text style={[styles.componentDescription, { marginTop: 16, marginBottom: 8 }]}>Icons on Right</Text>
+          <TabBar
+            tabs={[
+              { value: 'inbox', label: 'Inbox', icon: 'mail', badge: 5 },
+              { value: 'sent', label: 'Sent', icon: 'paper-plane' }
+            ]}
+            activeTab="inbox"
+            onTabChange={() => {}}
+            variant="underline"
+            iconPosition="right"
+            showIcons={true}
+            showBadges={true}
+          />
         </View>
 
         <View style={styles.componentGroup}>
@@ -715,51 +1511,6 @@ const ExtractedComponentsShowcase: React.FC = () => {
         </Text>
         
         <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>Button (Enhanced Component)</Text>
-          <View style={{ gap: 12 }}>
-            <View>
-              <Text style={[styles.componentDescription, { marginBottom: 8 }]}>9 Variants with Academy theming:</Text>
-              <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                <Button title="Primary" variant="primary" size="sm" onPress={() => console.log('Primary')} />
-                <Button title="Secondary" variant="secondary" size="sm" onPress={() => console.log('Secondary')} />
-                <Button title="Outline" variant="outline" size="sm" onPress={() => console.log('Outline')} />
-                <Button title="Ghost" variant="ghost" size="sm" onPress={() => console.log('Ghost')} />
-              </View>
-              <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-                <Button title="Academy" variant="academy" size="sm" onPress={() => console.log('Academy')} />
-                <Button title="Danger" variant="danger" size="sm" onPress={() => console.log('Danger')} />
-                <Button title="Success" variant="success" size="sm" onPress={() => console.log('Success')} />
-                <Button title="Warning" variant="warning" size="sm" onPress={() => console.log('Warning')} />
-                <Button title="Info" variant="info" size="sm" onPress={() => console.log('Info')} />
-              </View>
-            </View>
-            
-            <View>
-              <Text style={[styles.componentDescription, { marginBottom: 8 }]}>With icons and loading states:</Text>
-              <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-                <Button title="Save" variant="academy" size="md" startIcon="save" onPress={() => console.log('Save')} />
-                <Button title="Download" variant="primary" size="md" endIcon="download" onPress={() => console.log('Download')} />
-                <Button title="Loading" variant="secondary" size="md" loading={true} loadingText="Saving..." />
-              </View>
-            </View>
-            
-            <View>
-              <Text style={[styles.componentDescription, { marginBottom: 8 }]}>5 different sizes:</Text>
-              <View style={{ alignItems: 'flex-start', gap: 8 }}>
-                <Button title="Extra Small" variant="academy" size="xs" onPress={() => console.log('XS')} />
-                <Button title="Small" variant="academy" size="sm" onPress={() => console.log('SM')} />
-                <Button title="Medium" variant="academy" size="md" onPress={() => console.log('MD')} />
-                <Button title="Large" variant="academy" size="lg" onPress={() => console.log('LG')} />
-                <Button title="Extra Large" variant="academy" size="xl" onPress={() => console.log('XL')} />
-              </View>
-            </View>
-          </View>
-          <Text style={styles.componentDescription}>
-            Enhanced button component with 9 variants, 5 sizes, icon support, loading states, and complete Academy theming
-          </Text>
-        </View>
-        
-        <View style={styles.componentGroup}>
           <Text style={styles.componentTitle}>FilterBar (Advanced Filtering)</Text>
           <FilterBar
             filters={sampleFilterGroups}
@@ -775,17 +1526,38 @@ const ExtractedComponentsShowcase: React.FC = () => {
         </View>
 
         <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>StudentListCard (Student Display)</Text>
-          <StudentListCard
-            students={sampleStudents}
-            onStudentPress={(student) => console.log('Student pressed:', student.name)}
-            variant="detailed"
-            showProgress={true}
-            showStatistics={true}
-            showTags={true}
-          />
+          <Text style={styles.componentTitle}>StudentCard (Modern Student Display with Session Types)</Text>
+          <View style={{ gap: 12 }}>
+            {sampleStudents.map((student, index) => (
+              <StudentCard
+                key={student.id}
+                student={{
+                  id: student.id,
+                  name: student.name,
+                  level: student.level,
+                  className: student.className,
+                  progress: student.progress,
+                  attendance: {
+                    attended: student.attended,
+                    absence: student.absence,
+                    sessions: student.sessions,
+                  },
+                  paymentStatus: index === 0 ? 'fully-paid' : index === 1 ? 'partial-paid' : 'overdue',
+                  sessionType: index === 0 ? 'school-group' : index === 1 ? 'private-session' : 'mixed',
+                  tags: student.tags?.map(tag => tag.label) || [],
+                }}
+                onPress={(student) => console.log('Student pressed:', student.name)}
+                variant={index === 0 ? 'detailed' : index === 1 ? 'default' : 'compact'}
+                showProgress={true}
+                showAttendance={true}
+                showPaymentStatus={true}
+                showSessionType={true}
+                showTags={true}
+              />
+            ))}
+          </View>
           <Text style={styles.componentDescription}>
-            Generalized student display with progress bars, statistics, tag system, and multiple variants
+            Enhanced StudentCard with Session Type indicators (School Group/Private Session/Mixed) and Payment Status. Includes all features from NurserySchool/PreSchool components with Academy design system.
           </Text>
         </View>
 
@@ -882,336 +1654,112 @@ const ExtractedComponentsShowcase: React.FC = () => {
   );
 
   const renderModalsComponents = () => (
-    <BottomSheetProvider maxConcurrent={2}>
-      <ModalsContent />
-    </BottomSheetProvider>
-  );
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>🎯 Feature Modal Components</Text>
+      <Text style={styles.sectionDescription}>
+        Business-specific modal implementations for authentication, student management, and performance tracking
+      </Text>
 
-  const ModalsContent = () => {
-    const { show, hide, hideAll } = useBottomSheetActions();
-    const { showConfirm, showMenu, showContent } = useQuickBottomSheet();
-
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🔧 Modal & Bottom Sheet Components</Text>
-        <Text style={styles.sectionDescription}>
-          Comprehensive modal system with bottom sheets, snap points, and provider-based management
+      {/* OnboardingModal - Authentication Feature */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>OnboardingModal (User Authentication)</Text>
+        <View style={{ gap: 12 }}>
+          <CustomButton 
+            title="Show Onboarding Modal"
+            onPress={() => setOnboardingModalVisible(true)}
+            variant="primary"
+          />
+          
+          <OnboardingModal
+            visible={onboardingModalVisible}
+            onClose={() => setOnboardingModalVisible(false)}
+            onLogin={() => {
+              setOnboardingModalVisible(false);
+              console.log('Navigate to login');
+            }}
+            onSignup={() => {
+              setOnboardingModalVisible(false);
+              console.log('Navigate to signup');
+            }}
+            title="Welcome to Academy"
+            subtitle="Choose how you'd like to get started with your swimming journey"
+            showSocialAuth={true}
+            socialAuthConfig={{
+              enableGoogle: true,
+              enableApple: true,
+              enableFacebook: true,
+            }}
+          />
+        </View>
+        <Text style={styles.componentDescription}>
+          Complete authentication modal with social login options, customizable branding, and Academy theming for user onboarding flows
         </Text>
-
-        {/* Basic Bottom Sheet */}
-        <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>Basic Bottom Sheet</Text>
-          <View style={{ gap: 12 }}>
-            <CustomButton 
-              title="Show Simple Bottom Sheet"
-              onPress={() => {
-                show({
-                  id: 'simple-demo',
-                  content: (
-                    <View style={{ padding: 20 }}>
-                      <Text style={[styles.componentTitle, { marginBottom: 12 }]}>Welcome to Bottom Sheet!</Text>
-                      <Text style={styles.componentDescription}>
-                        This is a simple bottom sheet with basic content. It can be closed by tapping the backdrop or using the close button.
-                      </Text>
-                    </View>
-                  ),
-                  title: "Simple Demo",
-                  snapPoints: ['small'],
-                });
-              }}
-            />
-          </View>
-          <Text style={styles.componentDescription}>
-            Simple bottom sheet with backdrop close and basic content
-          </Text>
-        </View>
-
-        {/* Snap Points Demo */}
-        <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>Snap Points Bottom Sheet</Text>
-          <CustomButton 
-            title="Show Snap Points Demo"
-            onPress={() => {
-              show({
-                id: 'snap-points-demo',
-                content: (
-                  <View style={{ padding: 20 }}>
-                    <Text style={[styles.componentTitle, { marginBottom: 12 }]}>Multi-Height Bottom Sheet</Text>
-                    <Text style={styles.componentDescription}>
-                      This bottom sheet supports multiple snap points. Try dragging the handle up and down to see different height states:
-                    </Text>
-                    <Text style={[styles.componentDescription, { marginTop: 12 }]}>
-                      • Small: 25% of screen{'\n'}
-                      • Medium: 50% of screen{'\n'}
-                      • Large: 75% of screen
-                    </Text>
-                    <View style={{ height: 200, backgroundColor: theme.colors.background.secondary, borderRadius: 8, marginTop: 16, justifyContent: 'center', alignItems: 'center' }}>
-                      <Text style={styles.componentDescription}>Scroll content area</Text>
-                    </View>
-                  </View>
-                ),
-                title: "Snap Points Demo",
-                snapPoints: ['small', 'medium', 'large'],
-                initialSnapPoint: 'medium',
-              });
-            }}
-          />
-          <Text style={styles.componentDescription}>
-            Bottom sheet with multiple snap points (small, medium, large)
-          </Text>
-        </View>
-
-        {/* Scrollable Content */}
-        <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>Scrollable Bottom Sheet</Text>
-          <CustomButton 
-            title="Show Scrollable Content"
-            onPress={() => {
-              show({
-                id: 'scrollable-demo',
-                content: (
-                  <View>
-                    {Array.from({ length: 20 }, (_, i) => (
-                      <View key={i} style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: theme.colors.border.secondary }}>
-                        <Text style={styles.componentTitle}>Swimming Lesson {i + 1}</Text>
-                        <Text style={styles.componentDescription}>
-                          Learn freestyle techniques with professional instructors. Session includes warm-up, technique practice, and cool-down exercises.
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                ),
-                title: "Swimming Lessons",
-                snapPoints: ['medium', 'large'],
-                scrollable: true,
-              });
-            }}
-          />
-          <Text style={styles.componentDescription}>
-            Bottom sheet with scrollable content for long lists
-          </Text>
-        </View>
-
-        {/* Quick Actions */}
-        <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>Quick Bottom Sheet Actions</Text>
-          <View style={{ gap: 8 }}>
-            <CustomButton 
-              title="Show Confirmation"
-              onPress={() => {
-                showConfirm(
-                  'Delete Session',
-                  <Text>Are you sure you want to delete this swimming session? This action cannot be undone.</Text>,
-                  () => console.log('Confirmed delete'),
-                  () => console.log('Cancelled delete')
-                );
-              }}
-            />
-            
-            <CustomButton 
-              title="Show Menu"
-              onPress={() => {
-                showMenu(
-                  'Session Actions',
-                  [
-                    { label: 'Edit Session', onPress: () => console.log('Edit pressed'), icon: '✏️' },
-                    { label: 'Duplicate', onPress: () => console.log('Duplicate pressed'), icon: '📋' },
-                    { label: 'Share', onPress: () => console.log('Share pressed'), icon: '📤' },
-                    { label: 'Delete', onPress: () => console.log('Delete pressed'), icon: '🗑️' },
-                  ]
-                );
-              }}
-            />
-            
-            <CustomButton 
-              title="Show Custom Content"
-              onPress={() => {
-                showContent(
-                  <View style={{ padding: 20 }}>
-                    <Text style={[styles.componentTitle, { marginBottom: 16 }]}>Student Progress</Text>
-                    <View style={{ gap: 12 }}>
-                      {['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly'].map((stroke) => (
-                        <View key={stroke} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text style={styles.componentDescription}>{stroke}</Text>
-                          <View style={{ width: 100, height: 8, backgroundColor: theme.colors.background.secondary, borderRadius: 4 }}>
-                            <View style={{ 
-                              width: `${Math.floor(Math.random() * 100)}%`, 
-                              height: '100%', 
-                              backgroundColor: theme.colors.interactive.primary, 
-                              borderRadius: 4 
-                            }} />
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  </View>,
-                  { snapPoints: ['medium'], title: 'Progress Report' }
-                );
-              }}
-            />
-          </View>
-          <Text style={styles.componentDescription}>
-            Pre-built bottom sheet patterns: confirmations, menus, and custom content
-          </Text>
-        </View>
-
-        {/* Provider Management */}
-        <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>Provider Management</Text>
-          <View style={{ gap: 8 }}>
-            <CustomButton 
-              title="Show Multiple Sheets"
-              onPress={() => {
-                show({
-                  id: 'first-sheet',
-                  content: (
-                    <View style={{ padding: 20 }}>
-                      <Text style={[styles.componentTitle, { marginBottom: 12 }]}>First Sheet</Text>
-                      <Text style={styles.componentDescription}>This is the first bottom sheet.</Text>
-                      <CustomButton 
-                        title="Open Second Sheet"
-                        style={{ marginTop: 16 }}
-                        onPress={() => {
-                          show({
-                            id: 'second-sheet',
-                            content: (
-                              <View style={{ padding: 20 }}>
-                                <Text style={[styles.componentTitle, { marginBottom: 12 }]}>Second Sheet</Text>
-                                <Text style={styles.componentDescription}>This is the second sheet, opened on top!</Text>
-                              </View>
-                            ),
-                            title: "Second Sheet",
-                            snapPoints: ['small'],
-                          });
-                        }}
-                      />
-                    </View>
-                  ),
-                  title: "First Sheet",
-                  snapPoints: ['medium'],
-                });
-              }}
-            />
-            
-            <CustomButton 
-              title="Hide All Sheets"
-              onPress={hideAll}
-              variant="outline"
-            />
-          </View>
-          <Text style={styles.componentDescription}>
-            Global provider supports multiple concurrent bottom sheets with z-index management
-          </Text>
-        </View>
-
-        {/* Legacy Comparison */}
-        <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>Legacy vs New Implementation</Text>
-          <View style={{ gap: 8 }}>
-            <BottomSheet
-              visible={isBottomSheetVisible}
-              onClose={() => setIsBottomSheetVisible(false)}
-              title="Direct Bottom Sheet"
-              snapPoints={['small', 'medium']}
-            >
-              <View style={{ padding: 20 }}>
-                <Text style={[styles.componentTitle, { marginBottom: 12 }]}>Direct Usage</Text>
-                <Text style={styles.componentDescription}>
-                  This bottom sheet is used directly without the provider, similar to CustomModalWithDot but with enhanced features.
-                </Text>
-              </View>
-            </BottomSheet>
-            
-            <CustomButton 
-              title="Show Direct Bottom Sheet"
-              onPress={() => setIsBottomSheetVisible(true)}
-            />
-            
-            <CustomModalWithDot
-              visible={false}
-              onClose={() => {}}
-            >
-              <View />
-            </CustomModalWithDot>
-          </View>
-          <Text style={styles.componentDescription}>
-            Comparison between legacy CustomModalWithDot and new enhanced BottomSheet component
-          </Text>
-        </View>
-
-        {/* OnboardingModal Demo */}
-        <View style={styles.componentGroup}>
-          <Text style={styles.componentTitle}>OnboardingModal (User Authentication)</Text>
-          <View style={{ gap: 12 }}>
-            <Button 
-              title="Show Onboarding Modal"
-              onPress={() => setOnboardingModalVisible(true)}
-              variant="academy"
-            />
-            
-            <OnboardingModal
-              visible={onboardingModalVisible}
-              onClose={() => setOnboardingModalVisible(false)}
-              onLogin={() => {
-                setOnboardingModalVisible(false);
-                console.log('Navigate to login');
-              }}
-              onSignup={() => {
-                setOnboardingModalVisible(false);
-                console.log('Navigate to signup');
-              }}
-              title="Welcome to Academy"
-              subtitle="Choose how you'd like to get started with your swimming journey"
-              showSocialAuth={true}
-              socialAuthConfig={{
-                enableGoogle: true,
-                enableApple: true,
-                enableFacebook: true,
-              }}
-            />
-          </View>
-          <Text style={styles.componentDescription}>
-            Complete onboarding modal with social authentication, customizable content, and Academy theming for user registration flows
-          </Text>
-        </View>
       </View>
-    );
-  };
+
+      <Text style={styles.subsectionTitle}>Additional Feature Modals</Text>
+      <Text style={styles.componentDescription}>
+        Other feature-specific modals are demonstrated in their respective sections:
+        {'\n'}• StudentProfile modal → Student Components section
+        {'\n'}• PerformanceTimes modal → Performance Components section
+        {'\n'}• ClassroomGrading modal → Academy Components section
+        {'\n\n'}Basic modal components (CustomModal, CustomModalWithDot, BottomSheet) are available in the Design System Showcase.
+      </Text>
+    </View>
+  );
 
   const renderSearchComponents = () => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>🔍 Search System</Text>
       
-      <Text style={styles.subsectionTitle}>SearchInput</Text>
-      <SearchInput
-        value={searchValue}
-        onChangeText={setSearchValue}
-        placeholder="Search students, instructors..."
-        showClearButton={true}
-      />
-      <Text style={styles.demoText}>
-        Debounced value: "{debouncedSearch}"
-      </Text>
-
-      <Text style={styles.subsectionTitle}>FilterChip</Text>
-      <View style={styles.chipContainer}>
-        <FilterChip
-          label="Active Sessions"
-          value="active"
-          selected={true}
-          count={12}
-          icon="checkmark-circle"
-          onPress={() => {}}
-        />
-        <FilterChip
-          label="Pending"
-          value="pending"
-          selected={false}
-          count={5}
-          icon="time"
-          onPress={() => {}}
+      <Text style={styles.subsectionTitle}>SearchInput Sizes</Text>
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentDescription}>Small Size</Text>
+        <SearchInput
+          value={searchValue}
+          onChangeText={setSearchValue}
+          placeholder="Small search..."
+          size="sm"
+          showClearButton={true}
         />
       </View>
+      
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentDescription}>Medium Size (Default)</Text>
+        <SearchInput
+          value={searchValue}
+          onChangeText={setSearchValue}
+          placeholder="Search students, instructors..."
+          size="md"
+          showClearButton={true}
+        />
+        <Text style={styles.demoText}>
+          Debounced value: "{debouncedSearch}"
+        </Text>
+      </View>
+
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentDescription}>Large Size</Text>
+        <SearchInput
+          value={searchValue}
+          onChangeText={setSearchValue}
+          placeholder="Large search input..."
+          size="lg"
+          showClearButton={true}
+        />
+      </View>
+
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentDescription}>Loading State</Text>
+        <SearchInput
+          value=""
+          onChangeText={() => {}}
+          placeholder="Loading search..."
+          loading={true}
+          loadingIcon="hourglass"
+        />
+      </View>
+
+      {/* Old chip section consolidated above in the main Chip showcase */}
 
       <Text style={styles.subsectionTitle}>QuickFilterBar</Text>
       <QuickFilterBar
@@ -1228,6 +1776,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
           value: searchValue,
           onChangeText: setSearchValue,
           placeholder: "Search Academy...",
+          size: "md",
         }}
         filterProps={{
           filters: sampleFilters,
@@ -1253,6 +1802,32 @@ const ExtractedComponentsShowcase: React.FC = () => {
         placeholder="Quick search..."
         onDonePress={() => RNAlert.alert('Done', 'Quick search done')}
       />
+
+      <Text style={styles.subsectionTitle}>SearchContainer</Text>
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentDescription}>Complete search experience with unified state management</Text>
+        <SearchContainer
+          searchProps={{
+            value: searchValue,
+            onChangeText: setSearchValue,
+            placeholder: "Search with container...",
+            size: "md",
+          }}
+          filterProps={{
+            filters: sampleFilters.slice(0, 3), // Show fewer filters for demo
+            selectedFilters: selectedFilters,
+            onFilterChange: handleFilterChange,
+            multiSelect: true,
+          }}
+          showEmptyState={true}
+          emptyStateProps={{
+            title: "No results found",
+            description: "Try adjusting your search criteria",
+            iconName: "search",
+          }}
+          compact={true}
+        />
+      </View>
     </View>
   );
 
@@ -1449,8 +2024,16 @@ const ExtractedComponentsShowcase: React.FC = () => {
       </Text>
 
       <Text style={styles.subsectionTitle}>PerformanceTimes</Text>
+      <Pressable
+        style={[styles.showcaseButton, { backgroundColor: theme.colors.interactive.primary }]}
+        onPress={() => setPerformanceTimesVisible(true)}
+      >
+        <Text style={[styles.showcaseButtonText, { color: theme.colors.text.inverse }]}>
+          Open Performance Times Modal
+        </Text>
+      </Pressable>
       <PerformanceTimes
-        visible={true}
+        visible={performanceTimesVisible}
         eventName="100m Freestyle"
         poolSize="25m"
         distance="100m"
@@ -1476,11 +2059,11 @@ const ExtractedComponentsShowcase: React.FC = () => {
           { id: "2", time: "1:25.12", date: "2024-03-01" },
           { id: "3", time: "1:24.89", date: "2024-02-15" },
         ]}
-        onClose={() => console.log('PerformanceTimes closed')}
+        onClose={() => setPerformanceTimesVisible(false)}
         onTimeSelect={(timeData) => console.log('Time selected:', timeData)}
       />
       <Text style={styles.cardContent}>
-        PerformanceTimes component for swimming time tracking with stroke analysis, personal bests, and goal comparisons
+        PerformanceTimes component for time tracking with analysis, personal bests, and goal comparisons
       </Text>
 
       <Text style={styles.subsectionTitle}>ClassroomProgressCard</Text>
@@ -1626,14 +2209,118 @@ const ExtractedComponentsShowcase: React.FC = () => {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>📋 Scheduling Components</Text>
       
+      <Text style={styles.subsectionTitle}>ScheduleFilterBar</Text>
+      <ScheduleFilterBar
+        label="Schedule Views"
+        filters={[
+          { id: 'calendar', label: 'Calendar', icon: 'calendar', active: true },
+          { id: 'list', label: 'List', icon: 'list' },
+          { id: 'today', label: 'Today', icon: 'today' },
+          { id: 'week', label: 'Week', icon: 'calendar-outline' },
+          { id: 'search', label: 'Search', icon: 'search' },
+        ]}
+        onFilterPress={(filterId) => console.log('Filter pressed:', filterId)}
+      />
+      <Text style={styles.cardContent}>
+        ScheduleFilterBar - Filter component for schedule views with Academy theming and icon support
+      </Text>
+
+      <Text style={styles.subsectionTitle}>ScheduleFilterBar (Compact)</Text>
+      <ScheduleFilterBar
+        variant="compact"
+        filters={[
+          { id: 'all', label: 'All', icon: 'eye', active: true },
+          { id: 'group', label: 'Group', icon: 'people' },
+          { id: 'private', label: 'Private', icon: 'person' },
+          { id: 'cancelled', label: 'Cancelled', icon: 'close' },
+        ]}
+        onFilterPress={(filterId) => console.log('Compact filter pressed:', filterId)}
+      />
+      <Text style={styles.cardContent}>
+        ScheduleFilterBar (Compact) - Space-efficient filter variant for narrow layouts
+      </Text>
+      
+      <Text style={styles.subsectionTitle}>BookingCard</Text>
+      <BookingCard
+        booking={{
+          id: '1',
+          courseTitle: 'Advanced Swimming Technique',
+          courseLevel: 'Level 4 - Competitive',
+          instructor: 'Coach Sarah Miller',
+          date: 'Today, March 15',
+          time: '2:00 PM - 3:30 PM',
+          location: 'Pool A - Lane 3-4',
+          status: 'upcoming',
+          price: 85,
+          sessionNumber: 8,
+          totalSessions: 16,
+          color: theme.colors.interactive.primary,
+        }}
+        onPress={(booking) => console.log('Booking card pressed:', booking)}
+        onStatusPress={(booking) => console.log('Status pressed:', booking)}
+      />
+      <Text style={styles.cardContent}>
+        BookingCard - Comprehensive booking display with progress tracking, status management, and Academy theming
+      </Text>
+
+      <Text style={styles.subsectionTitle}>BookingCard (Different Statuses)</Text>
+      <View style={{ gap: theme.spacing.sm }}>
+        <BookingCard
+          booking={{
+            id: '2',
+            courseTitle: 'Beginner Water Safety',
+            courseLevel: 'Level 1 - Foundation',
+            instructor: 'Coach Mike Johnson',
+            date: 'Tomorrow, March 16',
+            time: '10:00 AM - 11:00 AM',
+            location: 'Pool B - Shallow End',
+            status: 'completed',
+            price: 45,
+            sessionNumber: 4,
+            totalSessions: 8,
+            color: '#2ECC71',
+          }}
+          variant="compact"
+          showProgress={false}
+          onPress={(booking) => console.log('Completed booking pressed:', booking)}
+        />
+        
+        <BookingCard
+          booking={{
+            id: '3',
+            courseTitle: 'Stroke Refinement',
+            courseLevel: 'Level 3 - Intermediate',
+            instructor: 'Coach Emma Davis',
+            date: 'March 18, 2024',
+            time: '4:00 PM - 5:00 PM',
+            location: 'Pool A - Lane 1-2',
+            status: 'cancelled',
+            price: 65,
+            sessionNumber: 2,
+            totalSessions: 12,
+            color: '#E74C3C',
+          }}
+          variant="compact"
+          onPress={(booking) => console.log('Cancelled booking pressed:', booking)}
+        />
+      </View>
+      <Text style={styles.cardContent}>
+        BookingCard variants showing different status states (completed, cancelled) with compact display
+      </Text>
+
       <Text style={styles.subsectionTitle}>ScheduleInput</Text>
       <ScheduleInput
+        classTitle="Advanced Technique Session"
         date={new Date()}
         startTime={new Date(new Date().setHours(9, 0, 0, 0))}
         endTime={new Date(new Date().setHours(10, 0, 0, 0))}
+        onClassTitleChange={(title) => console.log('Class title changed:', title)}
+        onDateChange={(date) => console.log('Date changed:', date)}
+        onStartTimeChange={(time) => console.log('Start time changed:', time)}
+        onEndTimeChange={(time) => console.log('End time changed:', time)}
       />
       <Text style={styles.cardContent}>
-        ScheduleInput - Input component for creating and editing swimming session schedules
+        ScheduleInput - Enhanced input component for creating and editing session schedules with Academy theming
       </Text>
 
       <Text style={styles.subsectionTitle}>ScheduleList</Text>
@@ -1682,7 +2369,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
         onStatusPress={(schedule, status) => console.log('Status changed:', schedule, status)}
       />
       <Text style={styles.cardContent}>
-        ScheduleList - List component for displaying multiple schedule items with sorting and filtering
+        ScheduleList - List component for displaying multiple schedule items with sorting and filtering capabilities
       </Text>
 
       <Text style={styles.subsectionTitle}>Schedules</Text>
@@ -1719,7 +2406,7 @@ const ExtractedComponentsShowcase: React.FC = () => {
         onParticipantsPress={(schedule) => console.log('Participants pressed:', schedule)}
       />
       <Text style={styles.cardContent}>
-        Schedules - Comprehensive schedule management component with CRUD operations
+        Schedules - Comprehensive schedule management component with CRUD operations and recurring schedule support
       </Text>
 
       <Text style={styles.subsectionTitle}>ScheduleTypeSelector</Text>
@@ -1746,6 +2433,14 @@ const ExtractedComponentsShowcase: React.FC = () => {
       <Text style={styles.sectionTitle}>👥 Student Components</Text>
       
       <Text style={styles.subsectionTitle}>StudentProfile</Text>
+      <Pressable
+        style={[styles.showcaseButton, { backgroundColor: theme.colors.interactive.primary }]}
+        onPress={() => setStudentProfileVisible(true)}
+      >
+        <Text style={[styles.showcaseButtonText, { color: theme.colors.text.inverse }]}>
+          Open Student Profile Modal
+        </Text>
+      </Pressable>
       <StudentProfile
         student={{
           id: '1',
@@ -1762,22 +2457,28 @@ const ExtractedComponentsShowcase: React.FC = () => {
           timeline: [],
           attendance: { present: 18, remaining: 2, totalSessions: 20 },
         }}
-        visible={true}
-        onClose={() => {}}
+        visible={studentProfileVisible}
+        onClose={() => setStudentProfileVisible(false)}
       />
       <Text style={styles.cardContent}>
-        StudentProfile - Comprehensive student profile component with academic and swimming progress
+        StudentProfile - Comprehensive student profile component with academic and program progress
       </Text>
 
-      <Text style={styles.subsectionTitle}>StudentCard</Text>
+      <Text style={styles.subsectionTitle}>StudentCard (Enhanced with Session Type & Payment Status)</Text>
       <View style={{ gap: 12 }}>
         <StudentCard
-          student={sampleStudentInfo}
+          student={{
+            ...sampleStudentInfo,
+            paymentStatus: 'fully-paid',
+            sessionType: 'school-group',
+            tags: ['Star Student'],
+          }}
           onPress={(student) => console.log('Student card pressed:', student.name)}
           variant="default"
           showProgress={true}
           showAttendance={true}
           showPaymentStatus={true}
+          showSessionType={true}
           showTags={true}
         />
         
@@ -1788,11 +2489,17 @@ const ExtractedComponentsShowcase: React.FC = () => {
             name: 'Alex Thompson',
             progress: 45,
             paymentStatus: 'partial-paid',
+            sessionType: 'private-session',
             attendance: { attended: 6, absence: 4, sessions: 10 },
-            tags: ['Private Sessions'],
+            tags: ['Advanced'],
           }}
           onPress={(student) => console.log('Student card pressed:', student.name)}
           variant="compact"
+          showProgress={true}
+          showAttendance={true}
+          showPaymentStatus={true}
+          showSessionType={true}
+          showTags={true}
         />
         
         <StudentCard
@@ -1802,15 +2509,41 @@ const ExtractedComponentsShowcase: React.FC = () => {
             name: 'Maya Rodriguez',
             progress: 92,
             paymentStatus: 'overdue',
+            sessionType: 'mixed',
             attendance: { attended: 12, absence: 1, sessions: 13 },
-            tags: ['Competition Team', 'Advanced'],
+            tags: ['Competition Team'],
           }}
           onPress={(student) => console.log('Student card pressed:', student.name)}
           variant="detailed"
+          showProgress={true}
+          showAttendance={true}
+          showPaymentStatus={true}
+          showSessionType={true}
+          showTags={true}
+        />
+
+        <StudentCard
+          student={{
+            ...sampleStudentInfo,
+            id: '4',
+            name: 'Emma Johnson',
+            progress: 85,
+            paymentStatus: 'unpaid',
+            sessionType: 'school-group',
+            attendance: { attended: 18, absence: 2, sessions: 20 },
+            tags: [],
+          }}
+          onPress={(student) => console.log('Student card pressed:', student.name)}
+          variant="default"
+          showProgress={true}
+          showAttendance={true}
+          showPaymentStatus={true}
+          showSessionType={true}
+          showTags={false}
         />
       </View>
       <Text style={styles.cardContent}>
-        StudentCard - Unified student display component with progress tracking, attendance statistics, payment status, and customizable variants (extracted from NurserySchool/PreSchool components)
+        Enhanced StudentCard - Now includes Session Type indicators (School Group/Private Session/Mixed) and improved Payment Status indicators. Features all functionality from NurserySchool/PreSchool components with modern design system integration.
       </Text>
     </View>
   );
@@ -2307,49 +3040,162 @@ const ExtractedComponentsShowcase: React.FC = () => {
       <Text style={styles.subsectionTitle}>Complex UI Control Patterns</Text>
       <Text style={styles.cardContent}>Advanced UI patterns for professional applications:</Text>
       
-      <Text style={styles.subsectionTitle}>ControlCard (Management Interface)</Text>
-      <ControlCard
-        schoolName="Academy Management Center"
-        groupName="Advanced control panel for complex data management"
-        onFilterAction={() => console.log('Filter action triggered')}
-        searchComponent={
-          <SearchInput
-            value={searchValue}
-            onChangeText={setSearchValue}
-            placeholder="Search within control panel..."
-            showClearButton={true}
-          />
-        }
-        filterComponent={
-          <FilterComponent
-            groupName="Status Filter"
-            allNames="All Statuses"
-            setActiveSearch={() => {}}
-          />
-        }
-      />
+      <Text style={styles.subsectionTitle}>ControlCard - Enhanced Management Interface</Text>
+      <Text style={styles.cardContent}>Comprehensive control card with multiple layouts, sizes, and variants:</Text>
+      
+      {/* Default ControlCard with Calendar */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>Default Layout with Calendar</Text>
+        <ControlCard
+          title="Swimming Academy - Downtown"
+          subtitle="Year 2 Program"
+          description="Advanced swimming techniques and competitive training"
+          dateSchedule="December 18 - 22"
+          dateSchedule2="This Week"
+          dateRangeType="week"
+          markedDates={['2024-12-20', '2024-12-22']}
+          onDateSelect={(date) => console.log('Selected date:', date)}
+          viewAll={() => console.log('View all dates')}
+          moreInfo={true}
+          onMoreInfo={() => console.log('More info pressed')}
+        />
+      </View>
+
+      {/* Compact Variant with Filters */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>Compact with Query Filters</Text>
+        <ControlCard
+          size="compact"
+          variant="outlined"
+          title="Quick Stats"
+          queryFilter={[
+            { id: '1', label: 'Active', num: '24', icon: 'checkmark-circle', color: theme.colors.status.success },
+            { id: '2', label: 'Pending', num: '8', icon: 'time', color: theme.colors.status.warning },
+            { id: '3', label: 'Completed', num: '156', icon: 'trophy', color: theme.colors.interactive.primary, isActive: true }
+          ]}
+          onQueryFilterPress={(item) => console.log('Query filter pressed:', item)}
+        />
+      </View>
+
+      {/* Search Enabled Variant */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>With Search and Quick Filters</Text>
+        <ControlCard
+          layout="detailed"
+          title="Student Management"
+          subtitle="Manage and track student progress"
+          searchEnabled={true}
+          searchPlaceholder="Search students..."
+          searchValue={controlCardSearchValue}
+          onSearchChange={setControlCardSearchValue}
+          activeSearch={controlCardSearchValue.length > 0}
+          quickFilter={[
+            { id: '1', label: 'Beginners', count: '12', icon: 'star-outline' },
+            { id: '2', label: 'Intermediate', count: '18', icon: 'star-half', isActive: true },
+            { id: '3', label: 'Advanced', count: '8', icon: 'star', color: theme.colors.status.success }
+          ]}
+          filterName="Skill Level"
+          onQuickFilterPress={(item) => console.log('Quick filter pressed:', item)}
+        />
+      </View>
+
+      {/* Dashboard Layout with Actions */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>Dashboard Layout with Actions</Text>
+        <ControlCard
+          layout="dashboard"
+          variant="elevated"
+          title="Session Overview"
+          description="Manage today's swimming sessions and track attendance"
+          actions={[
+            { id: '1', label: 'New Session', onPress: () => console.log('New session'), icon: 'add', variant: 'primary' },
+            { id: '2', label: 'Export', onPress: () => console.log('Export'), icon: 'download-outline', variant: 'outline' }
+          ]}
+          queryFilter={[
+            { id: '1', label: 'Today', num: '6', isActive: true },
+            { id: '2', label: 'This Week', num: '42' },
+            { id: '3', label: 'This Month', num: '186' }
+          ]}
+          dateRangeType="none"
+        />
+      </View>
+
+      {/* Monthly Calendar Variant */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>Monthly Calendar View</Text>
+        <ControlCard
+          title="December Schedule"
+          dateRangeType="month"
+          selectedDate={selectedDate?.toISOString().split('T')[0]}
+          markedDates={['2024-12-05', '2024-12-12', '2024-12-19', '2024-12-26']}
+          onDateSelect={(date) => {
+            setSelectedDate(new Date(date));
+            console.log('Selected date:', date);
+          }}
+          showWeekdays={false}
+          size="expanded"
+        />
+      </View>
+
+      {/* Minimal Layout */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>Minimal Layout</Text>
+        <ControlCard
+          layout="minimal"
+          variant="ghost"
+          title="Quick Access"
+          actions={[
+            { id: '1', label: 'Check In', onPress: () => console.log('Check in'), icon: 'log-in', variant: 'primary' },
+            { id: '2', label: 'Reports', onPress: () => console.log('Reports'), icon: 'document-text', variant: 'secondary' }
+          ]}
+        />
+      </View>
+
+      {/* Loading State */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>Loading State</Text>
+        <ControlCard
+          loading={true}
+          loadingText="Loading session data..."
+        />
+      </View>
+
+      {/* Error State */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>Error State</Text>
+        <ControlCard
+          error="Failed to load session data. Please check your connection."
+          onRetry={() => console.log('Retry pressed')}
+        />
+      </View>
+
+      {/* Custom Components */}
+      <View style={styles.componentGroup}>
+        <Text style={styles.componentTitle}>With Custom Components</Text>
+        <ControlCard
+          title="Custom Integration"
+          headerComponent={
+            <View style={{ backgroundColor: theme.colors.interactive.primary, padding: 8, borderRadius: 4, marginBottom: 12 }}>
+              <Text style={{ color: theme.colors.text.inverse, textAlign: 'center', fontSize: 12 }}>🏆 Premium Account</Text>
+            </View>
+          }
+          footerComponent={
+            <View style={{ marginTop: 16, padding: 12, backgroundColor: theme.colors.background.primary, borderRadius: 8 }}>
+              <Text style={{ fontSize: 12, color: theme.colors.text.secondary, textAlign: 'center' }}>
+                Last updated: {new Date().toLocaleTimeString()}
+              </Text>
+            </View>
+          }
+          dateRangeType="none"
+        />
+      </View>
+
       <Text style={styles.cardContent}>
-        ControlCard - Complex control panel with integrated search and filtering capabilities for data management
+        ControlCard now supports multiple layouts (default, minimal, detailed, dashboard), sizes (compact, normal, expanded), 
+        variants (elevated, outlined, filled, ghost), comprehensive date handling, search functionality, filtering, 
+        custom actions, loading/error states, and extensive customization options.
       </Text>
 
-      <Text style={styles.subsectionTitle}>Advanced Modal Patterns</Text>
-      <CustomModalWithDot
-        visible={false}
-        onClose={() => {}}
-        showCloseDot={true}
-      >
-        <View style={{ padding: 20 }}>
-          <Text style={{ color: theme.colors.text.primary, fontSize: 18, fontWeight: '600', marginBottom: 8 }}>
-            Advanced Modal
-          </Text>
-          <Text style={{ color: theme.colors.text.secondary }}>
-            Bottom sheet modal with indicator dot for advanced UI interactions
-          </Text>
-        </View>
-      </CustomModalWithDot>
-      <Text style={styles.cardContent}>
-        CustomModalWithDot - Bottom sheet modal with indicator dot for advanced user interactions and content presentation
-      </Text>
 
       <Text style={styles.subsectionTitle}>GroupedCards (Classroom Management)</Text>
       <GroupedCards
@@ -2438,8 +3284,23 @@ const ExtractedComponentsShowcase: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>🚀 Extracted Components</Text>
-        <Text style={styles.subtitle}>Academy Apps Shared Library</Text>
+        <View style={styles.headerTop}>
+          <View style={styles.headerContent}>
+            <Text style={styles.title}>🚀 Extracted Components</Text>
+            <Text style={styles.subtitle}>Academy Apps Shared Library</Text>
+          </View>
+          <View style={styles.themeSelector}>
+            <CustomButton
+              title={themeMode === 'system' ? '🌓' : themeMode === 'dark' ? '🌙' : themeMode === 'night' ? '🌚' : '☀️'}
+              variant="outline"
+              size="sm"
+              onPress={toggleTheme}
+              accessibilityLabel={`Current theme: ${themeMode}. Tap to cycle themes`}
+              accessibilityHint="Cycles between light, dark, and night themes"
+              style={styles.themeSelectorButton}
+            />
+          </View>
+        </View>
       </View>
 
       {renderNavigation()}
@@ -2468,12 +3329,45 @@ const useThemedStyles = createThemedStyles((theme) =>
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.primary,
       backgroundColor: theme.colors.background.elevated,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 3,
+      elevation: 2,
+    },
+
+    headerTop: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      minHeight: 48,
+    },
+
+    headerContent: {
+      flex: 1,
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing[12], // Leave space for absolute positioned theme selector
+    },
+
+    themeSelector: {
+      position: 'absolute',
+      right: 0,
+      top: '50%',
+      transform: [{ translateY: -22 }], // Center vertically (half of button height)
+    },
+
+    themeSelectorButton: {
+      minWidth: 44,
+      minHeight: 44,
+      paddingHorizontal: theme.spacing[2],
+      borderRadius: theme.borderRadius.md,
     },
 
     title: {
       ...theme.typography.heading.h2,
       color: theme.colors.text.primary,
       textAlign: 'center',
+      fontWeight: theme.fontConfig.fontWeight.semibold,
     },
 
     subtitle: {
@@ -2481,6 +3375,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.secondary,
       textAlign: 'center',
       marginTop: theme.spacing[1],
+      opacity: 0.8,
     },
 
     navigation: {
@@ -2657,6 +3552,20 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing[2],
       lineHeight: 20,
       fontStyle: 'italic',
+    },
+
+    showcaseButton: {
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[3],
+      borderRadius: theme.borderRadius.md,
+      marginBottom: theme.spacing[3],
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+
+    showcaseButtonText: {
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
     },
   })
 );

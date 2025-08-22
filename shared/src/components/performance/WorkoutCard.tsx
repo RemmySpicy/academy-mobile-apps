@@ -282,12 +282,14 @@ const createStyles = (theme: any, screenDimensions: any) => {
   
   return StyleSheet.create({
     card: {
-      backgroundColor: theme.colors.background.primary,
+      backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.lg,
       marginVertical: theme.spacing.sm,
       marginHorizontal: theme.spacing.md,
       overflow: 'hidden',
-      ...theme.elevation.md,
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.border.primary,
+      ...theme.elevation.sm,
       maxWidth: isTablet ? 600 : undefined,
       alignSelf: isTablet ? 'center' : 'stretch',
     },
@@ -296,14 +298,15 @@ const createStyles = (theme: any, screenDimensions: any) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.md,
-      borderBottomWidth: theme.borderWidth.sm,
-      borderBottomColor: theme.colors.border.primary,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.lg,
+      borderBottomWidth: theme.borderWidth.thin,
+      borderBottomColor: theme.colors.border.secondary,
+      backgroundColor: theme.colors.background.primary,
     },
     
     cardHeaderPressed: {
-      backgroundColor: theme.colors.background.secondary,
+      backgroundColor: theme.colors.background.elevated,
     },
     
     userInfo: {
@@ -433,13 +436,14 @@ const createStyles = (theme: any, screenDimensions: any) => {
     
     actionButton: {
       backgroundColor: theme.colors.interactive.primary,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borderRadius.lg,
       paddingVertical: theme.spacing.md,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.xl,
       alignItems: 'center',
       justifyContent: 'center',
-      marginTop: theme.spacing.md,
+      marginTop: theme.spacing.lg,
       minHeight: theme.safeArea.minTouchTarget.height,
+      ...theme.elevation.xs,
     },
     
     actionButtonPressed: {

@@ -27,7 +27,13 @@ type ButtonVariant =
   | 'lightGray'         // bg-gray-bg text-secondary
   | 'black'             // bg-theme-black text-white
   | 'cancel'            // bg-[#4F2EC9] bg-opacity-10 text-cancel
-  | 'normal';           // bg-[#F5F5F5] bg-opacity-10 text-normal
+  | 'normal'            // bg-[#F5F5F5] bg-opacity-10 text-normal
+  // New enhanced variants from Enhanced Button
+  | 'secondary'         // Clean neutral button with light background
+  | 'ghost'             // Transparent background, useful for subtle actions
+  | 'success'           // Green variant for positive actions
+  | 'warning'           // Amber variant for caution actions
+  | 'info';             // Light blue variant for informational actions
 
 type ButtonSize = 'sm' | 'md';
 
@@ -352,6 +358,48 @@ const createStyles = (theme: any) => StyleSheet.create({
     }),
   },
 
+  // New enhanced variants from Enhanced Button - following Academy design system
+  secondary: {
+    backgroundColor: theme?.colors?.background?.secondary || '#FAFAFA',
+    borderWidth: 1,
+    borderColor: theme?.colors?.border?.primary || '#E5E5E5',
+    // Force secondary colors on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#FAFAFA',
+      borderColor: '#E5E5E5',
+    }),
+  },
+
+  ghost: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    // Transparent on all platforms
+  },
+
+  success: {
+    backgroundColor: theme?.colors?.status?.success || '#059669',
+    // Force success color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#059669',
+    }),
+  },
+
+  warning: {
+    backgroundColor: theme?.colors?.status?.warning || '#D97706',
+    // Force warning color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#D97706',
+    }),
+  },
+
+  info: {
+    backgroundColor: theme?.colors?.status?.info || '#2563EB',
+    // Force info color on mobile
+    ...(Platform.OS !== 'web' && {
+      backgroundColor: '#2563EB',
+    }),
+  },
+
   disabled: {
     backgroundColor: theme?.colors?.interactive?.primaryDisabled || '#D1D5DB',
     opacity: 0.6,
@@ -514,6 +562,47 @@ const createStyles = (theme: any) => StyleSheet.create({
     // Force primary color text on mobile
     ...(Platform.OS !== 'web' && {
       color: '#4F2EC9',
+    }),
+  },
+
+  // Text styles for new enhanced variants
+  secondaryText: {
+    color: theme?.colors?.text?.primary || '#111827',
+    // Force dark text on mobile for secondary buttons
+    ...(Platform.OS !== 'web' && {
+      color: '#111827',
+    }),
+  },
+
+  ghostText: {
+    color: theme?.colors?.interactive?.primary || '#4F2EC9',
+    // Force primary color text on mobile for ghost buttons
+    ...(Platform.OS !== 'web' && {
+      color: '#4F2EC9',
+    }),
+  },
+
+  successText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF',
+    // Force white text on mobile for success buttons
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
+    }),
+  },
+
+  warningText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF', 
+    // Force white text on mobile for warning buttons
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
+    }),
+  },
+
+  infoText: {
+    color: theme?.colors?.text?.inverse || '#FFFFFF',
+    // Force white text on mobile for info buttons
+    ...(Platform.OS !== 'web' && {
+      color: '#FFFFFF',
     }),
   },
 

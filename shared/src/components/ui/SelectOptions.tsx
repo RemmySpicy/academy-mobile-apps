@@ -33,6 +33,10 @@ export interface SelectOptionsProps {
   multiSelect?: boolean;
   /** Number of columns in the grid (auto-calculated if not provided) */
   columns?: number;
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
+  /** Visual style variant */
+  variant?: 'filled' | 'outlined' | 'minimal';
   /** Disabled state */
   disabled?: boolean;
   /** Custom container styles */
@@ -56,6 +60,8 @@ export const SelectOptions: React.FC<SelectOptionsProps> = ({
   onSelectionChange,
   multiSelect = false,
   columns,
+  size = 'md',
+  variant = 'filled',
   disabled = false,
   style,
   titleStyle,
@@ -91,7 +97,7 @@ export const SelectOptions: React.FC<SelectOptionsProps> = ({
   }, [columns, screenDimensions.width, minOptionWidth, theme.spacing]);
 
   const numColumns = calculateColumns();
-  const styles = createStyles(theme, screenDimensions, numColumns);
+  const styles = createStyles(theme, screenDimensions, numColumns, size, variant);
 
   const isSelected = useCallback((optionValue: string): boolean => {
     if (multiSelect) {
@@ -139,18 +145,48 @@ export const SelectOptions: React.FC<SelectOptionsProps> = ({
           const selected = isSelected(option.value || option.id);
           const isDisabled = disabled || option.disabled;
           
-          return (
-            <Pressable
-              key={option.id}
-              style={({ pressed }) => [
-                styles.option,
-                {
+          // Variant-specific option styling
+          const getOptionStyle = () => {
+            switch (variant) {
+              case 'outlined':
+                return {
+                  backgroundColor: selected 
+                    ? theme.colors.interactive.primary
+                    : 'transparent',
+                  borderColor: selected 
+                    ? theme.colors.interactive.primary
+                    : theme.colors.border.primary,
+                  borderWidth: theme.borderWidth.md,
+                };
+              case 'minimal':
+                return {
+                  backgroundColor: selected 
+                    ? theme.colors.interactive.primary
+                    : 'transparent',
+                  borderColor: 'transparent',
+                  borderWidth: 0,
+                };
+              case 'filled':
+              default:
+                return {
                   backgroundColor: selected 
                     ? theme.colors.interactive.primary
                     : theme.colors.background.primary,
                   borderColor: selected 
                     ? theme.colors.interactive.primary
                     : theme.colors.border.primary,
+                  borderWidth: theme.borderWidth.sm,
+                };
+            }
+          };
+          
+          return (
+            <Pressable
+              key={option.id}
+              style={({ pressed }) => [
+                styles.option,
+                getOptionStyle(),
+                {
                   opacity: isDisabled ? 0.5 : 1,
                 },
                 selected && selectedOptionStyle,
@@ -195,23 +231,76 @@ export const SelectOptions: React.FC<SelectOptionsProps> = ({
   );
 };
 
-const createStyles = (theme: any, screenDimensions: any, numColumns: number) => {
+const createStyles = (theme: any, screenDimensions: any, numColumns: number, size: 'sm' | 'md' | 'lg', variant: 'filled' | 'outlined' | 'minimal') => {
   const isTablet = screenDimensions.isTablet;
   const optionWidthPercentage = (100 / numColumns) - 2; // Account for gap
-  const optionWidth = `${optionWidthPercentage}%`;
+  
+  // Size-based configurations
+  const sizeConfig = {
+    sm: {
+      containerPadding: theme.spacing.sm,
+      titleFontSize: isTablet ? theme.fontSizes.caption * 1.1 : theme.fontSizes.caption,
+      optionPaddingVertical: theme.spacing.sm,
+      optionPaddingHorizontal: theme.spacing.xs,
+      optionFontSize: isTablet ? theme.fontSizes.caption : theme.fontSizes.caption * 0.9,
+      optionMinHeight: 36,
+      borderRadius: theme.borderRadius.sm,
+    },
+    md: {
+      containerPadding: theme.spacing.md,
+      titleFontSize: isTablet ? theme.fontSizes.body * 1.1 : theme.fontSizes.body,
+      optionPaddingVertical: theme.spacing.md,
+      optionPaddingHorizontal: theme.spacing.sm,
+      optionFontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      optionMinHeight: theme.safeArea.minTouchTarget.height,
+      borderRadius: theme.borderRadius.md,
+    },
+    lg: {
+      containerPadding: theme.spacing.lg,
+      titleFontSize: isTablet ? theme.fontSizes.lg * 1.1 : theme.fontSizes.lg,
+      optionPaddingVertical: theme.spacing.lg,
+      optionPaddingHorizontal: theme.spacing.md,
+      optionFontSize: isTablet ? theme.fontSizes.body * 1.1 : theme.fontSizes.body,
+      optionMinHeight: theme.safeArea.minTouchTarget.height + 8,
+      borderRadius: theme.borderRadius.lg,
+    },
+  };
+  
+  const currentSize = sizeConfig[size];
+  
+  // Variant-based configurations
+  const variantConfig = {
+    filled: {
+      containerBackground: theme.colors.background.primary,
+      containerBorder: theme.borderWidth.sm,
+      containerBorderColor: theme.colors.border.primary,
+    },
+    outlined: {
+      containerBackground: 'transparent',
+      containerBorder: theme.borderWidth.md,
+      containerBorderColor: theme.colors.border.primary,
+    },
+    minimal: {
+      containerBackground: 'transparent',
+      containerBorder: 0,
+      containerBorderColor: 'transparent',
+    },
+  };
+  
+  const currentVariant = variantConfig[variant];
   
   return StyleSheet.create({
     container: {
-      backgroundColor: theme.colors.background.primary,
+      backgroundColor: currentVariant.containerBackground,
       borderRadius: theme.borderRadius.lg,
-      borderWidth: theme.borderWidth.sm,
-      borderColor: theme.colors.border.primary,
-      padding: theme.spacing.md,
+      borderWidth: currentVariant.containerBorder,
+      borderColor: currentVariant.containerBorderColor,
+      padding: currentSize.containerPadding,
       marginVertical: theme.spacing.sm,
     },
     
     title: {
-      fontSize: isTablet ? theme.fontSizes.body * 1.1 : theme.fontSizes.body,
+      fontSize: currentSize.titleFontSize,
       fontWeight: theme.fontConfig.fontWeight.semibold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.sm,
@@ -226,13 +315,12 @@ const createStyles = (theme: any, screenDimensions: any, numColumns: number) => 
     
     option: {
       width: optionWidthPercentage + '%' as any,
-      paddingVertical: theme.spacing.md,
-      paddingHorizontal: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
-      borderWidth: theme.borderWidth.sm,
+      paddingVertical: currentSize.optionPaddingVertical,
+      paddingHorizontal: currentSize.optionPaddingHorizontal,
+      borderRadius: currentSize.borderRadius,
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: theme.safeArea.minTouchTarget.height,
+      minHeight: currentSize.optionMinHeight,
       marginVertical: theme.spacing.xs,
     },
     
@@ -242,10 +330,10 @@ const createStyles = (theme: any, screenDimensions: any, numColumns: number) => 
     },
     
     optionText: {
-      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      fontSize: currentSize.optionFontSize,
       fontWeight: theme.fontConfig.fontWeight.medium,
       textAlign: 'center',
-      lineHeight: isTablet ? 22 : 18,
+      lineHeight: currentSize.optionFontSize * 1.3,
     },
   });
 };

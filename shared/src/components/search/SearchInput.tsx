@@ -49,6 +49,12 @@ export interface SearchInputProps extends Omit<TextInputProps, 'style' | 'onChan
   rightIcon?: React.ReactNode;
   /** Disabled state */
   disabled?: boolean;
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
+  /** Loading state */
+  loading?: boolean;
+  /** Loading icon */
+  loadingIcon?: keyof typeof Ionicons.glyphMap;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -67,6 +73,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   leftIcon,
   rightIcon,
   disabled = false,
+  size = 'md',
+  loading = false,
+  loadingIcon = "hourglass-outline",
   ...textInputProps
 }) => {
   const { theme, screenDimensions } = useTheme();
@@ -74,7 +83,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | undefined>(undefined);
   
-  const styles = createStyles(theme, screenDimensions, isFocused);
+  const styles = createStyles(theme, screenDimensions, isFocused, size);
   const currentValue = value !== undefined ? value : internalValue;
 
   // Handle debounced search
@@ -112,7 +121,16 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     onClear?.();
   };
 
-  const iconSize = screenDimensions.isTablet ? theme.iconSize.md : theme.iconSize.sm;
+  const getIconSize = () => {
+    const base = screenDimensions.isTablet ? theme.iconSize.md : theme.iconSize.sm;
+    switch (size) {
+      case 'sm': return Math.max(base - 4, 12);
+      case 'lg': return base + 4;
+      default: return base;
+    }
+  };
+  
+  const iconSize = getIconSize();
 
   return (
     <View 
@@ -122,11 +140,19 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       {/* Left Icon */}
       <View style={styles.leftIconContainer}>
         {leftIcon || (
-          <Ionicons
-            name={searchIcon}
-            size={iconSize}
-            color={theme.colors.icon.secondary}
-          />
+          loading ? (
+            <Ionicons
+              name={loadingIcon}
+              size={iconSize}
+              color={theme.colors.icon.secondary}
+            />
+          ) : (
+            <Ionicons
+              name={searchIcon}
+              size={iconSize}
+              color={theme.colors.icon.secondary}
+            />
+          )
         )}
       </View>
 
@@ -180,8 +206,40 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   );
 };
 
-const createStyles = (theme: any, screenDimensions: any, isFocused: boolean) => {
+const createStyles = (theme: any, screenDimensions: any, isFocused: boolean, size: 'sm' | 'md' | 'lg') => {
   const isTablet = screenDimensions.isTablet;
+  
+  // Size-based dimensions
+  const getSizeDimensions = () => {
+    switch (size) {
+      case 'sm':
+        return {
+          paddingHorizontal: theme.spacing.sm,
+          paddingVertical: theme.spacing.xs,
+          fontSize: isTablet ? theme.fontSizes.caption : theme.fontSizes.caption * 0.9,
+          minHeight: theme.safeArea.minTouchTarget.height * 0.8,
+          borderRadius: theme.borderRadius.md,
+        };
+      case 'lg':
+        return {
+          paddingHorizontal: theme.spacing.lg,
+          paddingVertical: theme.spacing.md,
+          fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.small,
+          minHeight: theme.safeArea.minTouchTarget.height * 1.2,
+          borderRadius: theme.borderRadius.xl,
+        };
+      default: // md
+        return {
+          paddingHorizontal: theme.spacing.md,
+          paddingVertical: theme.spacing.sm,
+          fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+          minHeight: theme.safeArea.minTouchTarget.height,
+          borderRadius: theme.borderRadius.lg,
+        };
+    }
+  };
+
+  const sizeDimensions = getSizeDimensions();
   
   return StyleSheet.create({
     container: {
@@ -192,10 +250,10 @@ const createStyles = (theme: any, screenDimensions: any, isFocused: boolean) => 
       borderColor: isFocused 
         ? theme.colors.border.focused 
         : theme.colors.border.primary,
-      borderRadius: theme.borderRadius.lg,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-      minHeight: theme.safeArea.minTouchTarget.height,
+      borderRadius: sizeDimensions.borderRadius,
+      paddingHorizontal: sizeDimensions.paddingHorizontal,
+      paddingVertical: sizeDimensions.paddingVertical,
+      minHeight: sizeDimensions.minHeight,
       ...theme.elevation.sm,
     },
     
@@ -207,7 +265,7 @@ const createStyles = (theme: any, screenDimensions: any, isFocused: boolean) => 
     
     input: {
       flex: 1,
-      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      fontSize: sizeDimensions.fontSize,
       color: theme.colors.text.primary,
       fontWeight: theme.fontConfig.fontWeight.regular,
       paddingVertical: theme.spacing.xs,

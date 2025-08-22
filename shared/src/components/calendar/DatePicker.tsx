@@ -6,10 +6,11 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ViewStyle, Modal } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar, CalendarProps } from './Calendar';
 import { useTheme } from '../../theme';
+import { BottomSheet } from '../ui/BottomSheet';
 
 export interface DatePickerProps extends Omit<CalendarProps, 'onDateSelect' | 'selectedDate'> {
   /** Selected date value */
@@ -22,9 +23,9 @@ export interface DatePickerProps extends Omit<CalendarProps, 'onDateSelect' | 's
   customFormat?: (date: string) => string;
   /** Placeholder text when no date is selected */
   placeholder?: string;
-  /** Show as modal picker */
+  /** Show as bottom sheet picker */
   modal?: boolean;
-  /** Modal title */
+  /** Bottom sheet title */
   modalTitle?: string;
   /** Custom trigger component */
   renderTrigger?: (onPress: () => void, formattedDate: string) => React.ReactNode;
@@ -190,7 +191,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       selectedDate={modal ? tempSelectedDate : value}
       onDateSelect={handleDateSelect}
       testID={`${testID}-calendar`}
-      style={modal ? styles.modalCalendar : undefined}
+      style={modal ? styles.bottomSheetCalendar : undefined}
     />
   );
 
@@ -237,25 +238,20 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     <View style={[styles.container, style]} testID={testID}>
       {renderTrigger ? renderTrigger(handleOpen, formattedDate) : renderDefaultTrigger()}
       
-      <Modal
+      <BottomSheet
         visible={isVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={handleClose}
-        testID={`${testID}-modal`}
+        onClose={handleClose}
+        title={modalTitle}
+        snapPoints={['medium', 'large']}
+        initialSnapPoint="medium"
+        showDragHandle={true}
+        testID={`${testID}-bottom-sheet`}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{modalTitle}</Text>
-          </View>
-          
-          <View style={styles.modalContent}>
-            {renderCalendar()}
-          </View>
-          
+        <View style={styles.bottomSheetContent}>
+          {renderCalendar()}
           {renderModalActions()}
         </View>
-      </Modal>
+      </BottomSheet>
     </View>
   );
 };
@@ -351,34 +347,14 @@ const createStyles = (theme: any, screenDimensions: any) => {
       justifyContent: 'center',
     },
     
-    modalContainer: {
+    bottomSheetContent: {
       flex: 1,
-      backgroundColor: theme.colors.background.primary,
+      paddingTop: theme.spacing.md,
     },
     
-    modalHeader: {
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-      borderBottomWidth: theme.borderWidth.sm,
-      borderBottomColor: theme.colors.border.primary,
-      backgroundColor: theme.colors.background.secondary,
-    },
-    
-    modalTitle: {
-      fontSize: isTablet ? theme.fontSizes.h3 : theme.fontSizes.h4,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-      color: theme.colors.text.primary,
-      textAlign: 'center',
-    },
-    
-    modalContent: {
-      flex: 1,
-      paddingVertical: theme.spacing.lg,
-    },
-    
-    modalCalendar: {
+    bottomSheetCalendar: {
       marginHorizontal: 0,
-      marginBottom: 0,
+      marginBottom: theme.spacing.md,
     },
     
     modalActions: {

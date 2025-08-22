@@ -167,8 +167,8 @@ export const ClassroomProgressCard: React.FC<ClassroomProgressCardProps> = ({
         };
       default:
         return {
-          backgroundColor: '#DCF9F1',
-          borderColor: 'transparent',
+          backgroundColor: theme.colors.status.success + '20',
+          borderColor: theme.colors.status.success + '40',
         };
     }
   };

@@ -9,7 +9,7 @@ import { View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Header, StudentCard, useTheme, FadeInWrapper, FilterChip } from '@academy/mobile-shared';
+import { Header, StudentCard, useTheme, FadeInWrapper, Chip, SearchInput } from '@academy/mobile-shared';
 
 // Enhanced student data structure to match our StudentCard component
 interface StudentData {
@@ -224,19 +224,13 @@ export const StudentsScreen: React.FC = () => {
         springify={true}
         style={[styles.searchContainer, { backgroundColor: theme.colors.background.primary }]}
       >
-        <View style={[styles.searchBar, { 
-          backgroundColor: theme.colors.background.secondary,
-          borderColor: theme.colors.border.primary 
-        }]}>
-          <Ionicons name="search" size={20} color={theme.colors.text.tertiary} />
-          <TextInput
-            style={[styles.searchInput, { color: theme.colors.text.primary }]}
-            placeholder="Search students..."
-            placeholderTextColor={theme.colors.text.tertiary}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search students..."
+          size="md"
+          testID="students-search"
+        />
       </FadeInWrapper>
 
       {/* Filter Tabs */}
@@ -251,14 +245,14 @@ export const StudentsScreen: React.FC = () => {
           contentContainerStyle={{ paddingHorizontal: 24 }}
         >
           {filters.map(filter => (
-            <FilterChip
+            <Chip
               key={filter.key}
               label={filter.label}
               value={filter.key}
               count={filter.count}
               selected={selectedFilter === filter.key}
               onPress={(value) => setSelectedFilter(value as any)}
-              variant="quickFilter"
+              variant="primary"
               countStyle="inline"
               size="md"
             />
@@ -322,19 +316,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   searchContainer: {
     paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.md,
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.borderRadius.lg,
-    borderWidth: 1,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: theme.spacing.sm,
-    fontSize: theme.typography.body.base.fontSize,
   },
   filterContainer: {
     marginBottom: theme.spacing.md,

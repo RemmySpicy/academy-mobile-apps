@@ -112,27 +112,24 @@ export const SearchBar: React.FC<SearchBarProps> = ({
               <Pressable
                 key={index}
                 onPress={action.onPress}
-                style={({ pressed }) => {
-                  const variantStyle = action.variant === 'primary' ? styles.actionprimary :
-                                     action.variant === 'secondary' ? styles.actionsecondary :
-                                     styles.actiontext;
-                  return [
-                    styles.actionButton,
-                    variantStyle,
-                    pressed && styles.actionPressed,
-                    action.disabled && styles.actionDisabled,
-                  ];
-                }}
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  action.variant === 'primary' ? styles.actionPrimary :
+                  action.variant === 'secondary' ? styles.actionSecondary :
+                  styles.actionText,
+                  pressed && styles.actionPressed,
+                  action.disabled && styles.actionDisabled,
+                ]}
                 disabled={action.disabled}
                 testID={`${testID}-action-${index}`}
                 accessibilityRole="button"
                 accessibilityLabel={action.label}
               >
                 <Text style={[
-                  styles.actionText,
-                  action.variant === 'primary' ? styles.actionTextprimary :
-                  action.variant === 'secondary' ? styles.actionTextsecondary :
-                  styles.actionTexttext,
+                  styles.actionTextBase,
+                  action.variant === 'primary' ? styles.actionTextPrimary :
+                  action.variant === 'secondary' ? styles.actionTextSecondary :
+                  styles.actionTextText,
                 ]}>
                   {action.label}
                 </Text>
@@ -275,17 +272,17 @@ const createStyles = (theme: any, screenDimensions: any, compact: boolean) => {
       justifyContent: 'center',
     },
     
-    actionprimary: {
+    actionPrimary: {
       backgroundColor: theme.colors.interactive.primary,
     },
     
-    actionsecondary: {
+    actionSecondary: {
       backgroundColor: theme.colors.interactive.secondary,
       borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.interactive.secondaryBorder,
     },
     
-    actiontext: {
+    actionText: {
       backgroundColor: 'transparent',
     },
     
@@ -298,20 +295,20 @@ const createStyles = (theme: any, screenDimensions: any, compact: boolean) => {
       opacity: 0.5,
     },
     
-    actionText: {
+    actionTextBase: {
       fontSize: isTablet ? theme.fontSizes.caption * 1.1 : theme.fontSizes.caption,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
     
-    actionTextprimary: {
+    actionTextPrimary: {
       color: theme.colors.text.inverse,
     },
     
-    actionTextsecondary: {
+    actionTextSecondary: {
       color: theme.colors.text.primary,
     },
     
-    actionTexttext: {
+    actionTextText: {
       color: theme.colors.interactive.primary,
     },
     

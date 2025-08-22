@@ -43,13 +43,22 @@ export type { AnimatedWrapperProps } from './AnimatedWrapper';
 
 // New Core UI Components
 export { default as ToggleCard } from './ToggleCard';
-export type { ToggleCardProps } from './ToggleCard';
+export type { 
+  ToggleCardProps,
+  ToggleCardVariant,
+  ToggleCardSize,
+  ToggleCardStyle,
+  ToggleCardIconStyle
+} from './ToggleCard';
 
 export { default as EmptySearchResult } from './EmptySearchResult';
 export type { EmptySearchResultProps } from './EmptySearchResult';
 
 export { default as SelectOptions } from './SelectOptions';
 export type { SelectOptionsProps, SelectOption } from './SelectOptions';
+
+export { default as FormDropdown } from './FormDropdown';
+export type { FormDropdownProps, DropdownOption } from './FormDropdown';
 
 export {
   default as HeaderComponents,
@@ -83,11 +92,69 @@ export type {
 export { default as OptionMenu } from './OptionMenu';
 export type { OptionMenuProps, MenuOption } from './OptionMenu';
 
-export { default as TimesTab } from './TimesTab';
-export type { TimesTabProps, TimeTab } from './TimesTab';
+// Legacy alias for backward compatibility
+export { default as TimesTab } from './TabBar';
+export type { 
+  TabBarProps as TimesTabProps, 
+  Tab as TimeTab 
+} from './TabBar';
 
 export { default as StrokeTab } from './StrokeTab';
 export type { StrokeTabProps, StrokeTab as StrokeTabType, PerformanceTime } from './StrokeTab';
+
+// New Tab Components
+export { default as SegmentedControl } from './SegmentedControl';
+export type { 
+  SegmentedControlProps,
+  SegmentedControlOption,
+  SegmentedControlVariant,
+  SegmentedControlSize
+} from './SegmentedControl';
+
+export { default as IconTabBar } from './IconTabBar';
+export type { 
+  IconTabBarProps,
+  IconTab,
+  TabBadge,
+  IconTabBarSize,
+  IconTabBarVariant
+} from './IconTabBar';
+
+export { default as TabBar } from './TabBar';
+export type { 
+  TabBarProps,
+  Tab,
+  TabBarVariant,
+  TabBarSize,
+  TabBarMode
+} from './TabBar';
+
+// Legacy aliases for backward compatibility
+export { default as FixedTabBar } from './TabBar';
+export type { 
+  TabBarProps as FixedTabBarProps,
+  Tab as FixedTab,
+  TabBarVariant as FixedTabBarVariant,
+  TabBarSize as FixedTabBarSize
+} from './TabBar';
+
+export { default as Chip } from './Chip';
+export type { 
+  ChipProps,
+  ChipItem,
+  ChipVariant,
+  ChipSize,
+  ChipCountStyle
+} from './Chip';
+
+// Legacy alias for backward compatibility
+export { default as PillTabs } from './Chip';
+export type { 
+  ChipProps as PillTabsProps,
+  ChipItem as PillTab,
+  ChipVariant as PillTabsVariant,
+  ChipSize as PillTabsSize
+} from './Chip';
 
 export { default as CustomModalWithDot } from './CustomModalWithDot';
 export type { CustomModalWithDotProps } from './CustomModalWithDot';
@@ -106,8 +173,7 @@ export { default as Stations } from './Stations';
 export type { StationsProps, StationIconConfig } from './Stations';
 
 // Phase 4: Enhanced UI Components
-export { default as Button } from './Button';
-export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
+// Button removed - use CustomButton from forms instead
 
 export { default as FilterBar } from './FilterBar';
 export type { FilterBarProps, FilterGroup, FilterOption } from './FilterBar';

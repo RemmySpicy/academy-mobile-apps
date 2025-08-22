@@ -7,10 +7,10 @@
 
 import React from 'react';
 import { View, ScrollView, StyleSheet, ViewStyle } from 'react-native';
-import { FilterChip, FilterChipProps } from './FilterChip';
+import { Chip, ChipProps } from '../ui/Chip';
 import { useTheme } from '../../theme';
 
-export interface FilterItem extends Omit<FilterChipProps, 'onPress' | 'selected'> {
+export interface FilterItem extends Omit<ChipProps, 'onPress' | 'selected'> {
   /** Unique identifier for the filter */
   id: string;
   /** Filter label */
@@ -20,9 +20,9 @@ export interface FilterItem extends Omit<FilterChipProps, 'onPress' | 'selected'
   /** Optional count */
   count?: number;
   /** Optional icon */
-  icon?: FilterChipProps['icon'];
+  icon?: ChipProps['icon'];
   /** Custom variant */
-  variant?: FilterChipProps['variant'];
+  variant?: ChipProps['variant'];
   /** Disabled state */
   disabled?: boolean;
 }
@@ -109,7 +109,7 @@ export const QuickFilterBar: React.FC<QuickFilterBarProps> = ({
           const isSelected = selectedFilters.includes(filter.value);
           
           return (
-            <FilterChip
+            <Chip
               key={filter.id}
               label={filter.label}
               value={filter.value}

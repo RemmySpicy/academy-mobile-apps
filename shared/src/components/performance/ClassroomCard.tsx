@@ -257,12 +257,14 @@ const createStyles = (theme: any, screenDimensions: any) => {
   
   return StyleSheet.create({
     card: {
-      backgroundColor: theme.colors.background.primary,
+      backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.lg,
       marginVertical: theme.spacing.sm,
       marginHorizontal: theme.spacing.md,
       overflow: 'hidden',
-      ...theme.elevation.md,
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.border.primary,
+      ...theme.elevation.sm,
       maxWidth: isTablet ? 600 : undefined,
       alignSelf: isTablet ? 'center' : 'stretch',
     },
@@ -277,7 +279,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
     },
     
     cardContent: {
-      padding: theme.spacing.md,
+      padding: theme.spacing.lg,
     },
     
     mainRow: {

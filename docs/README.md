@@ -22,8 +22,11 @@ Welcome to the Academy Management System mobile applications documentation. This
 - **[Theme System](./THEME_SYSTEM.md)** - Complete theming reference with Academy branding
 - **[Design System](./design-system/README.md)** - Colors, typography, spacing, and component patterns
 
-### 🧩 Components
+### 🧩 Components  
+- **[Component Library](./components/README.md)** - Complete component library with 80+ Academy components
 - **[Form Components](./components/forms/README.md)** - Form components and usage patterns
+- **[Control Components](./components/controls/ControlCard.md)** - ControlCard and management interfaces
+- **[Utility Functions](./components/utilities/)** - Reusable utility functions (date, style utilities)
 
 ### 🌐 API & Services
 - **[API Client](./api/API_CLIENT.md)** - HTTP client and service layer
@@ -57,7 +60,7 @@ When working on the mobile apps, ensure you:
 
 - **Multi-Program Support** - Handle multiple academy programs with context switching
 - **Academy Theming** - Consistent branding with light/dark/night modes
-- **Component Library** - 80+ Academy-themed components
+- **Component Library** - 80+ Academy-themed components with utility functions
 - **Type Safety** - Full TypeScript support with zero compilation errors
 - **Modern Architecture** - React 19, Zustand, React Navigation 6
 - **Production Ready** - Complete authentication, error handling, and testing

@@ -29,6 +29,7 @@ export interface StudentInfo {
   completed_lessons?: number;
   paymentStatus?: 'fully-paid' | 'partial-paid' | 'unpaid' | 'overdue';
   studentType?: 'nursery' | 'preschool' | 'regular';
+  sessionType?: 'school-group' | 'private-session' | 'mixed';
   tags?: string[];
 }
 
@@ -41,6 +42,7 @@ export interface StudentCardProps {
   showPaymentStatus?: boolean;
   showTags?: boolean;
   showStatusIndicator?: boolean;
+  showSessionType?: boolean;
 }
 
 const StudentCard: React.FC<StudentCardProps> = ({
@@ -52,6 +54,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
   showPaymentStatus = true,
   showTags = true,
   showStatusIndicator = false,
+  showSessionType = true,
 }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
@@ -91,7 +94,37 @@ const StudentCard: React.FC<StudentCardProps> = ({
     }
   };
 
+  const getSessionTypeConfig = (sessionType: string) => {
+    switch (sessionType) {
+      case 'school-group':
+        return {
+          color: theme.colors.text.secondary,
+          backgroundColor: theme.colors.text.secondary,
+          text: 'School Group',
+        };
+      case 'private-session':
+        return {
+          color: theme.colors.interactive.primary,
+          backgroundColor: theme.colors.interactive.primary,
+          text: 'Private Session',
+        };
+      case 'mixed':
+        return {
+          color: theme.colors.status.warning,
+          backgroundColor: theme.colors.status.warning,
+          text: 'Mixed Sessions',
+        };
+      default:
+        return {
+          color: theme.colors.text.secondary,
+          backgroundColor: theme.colors.text.secondary,
+          text: 'School Group',
+        };
+    }
+  };
+
   const paymentConfig = getPaymentStatusConfig(student.paymentStatus || 'unpaid');
+  const sessionTypeConfig = getSessionTypeConfig(student.sessionType || 'school-group');
 
   const renderProgressBar = () => {
     if (!showProgress) return null;
@@ -138,23 +171,38 @@ const StudentCard: React.FC<StudentCardProps> = ({
   };
 
   const renderTags = () => {
-    if (!showTags || !student.tags?.length) return null;
+    const shouldRenderContainer = (showTags && student.tags?.length) || showSessionType || showPaymentStatus;
+    if (!shouldRenderContainer) return null;
 
     return (
       <View style={styles.tagsContainer}>
-        {student.tags.map((tag, index) => (
-          <View key={index} style={styles.tag}>
-            <Text style={styles.tagText}>{tag}</Text>
-          </View>
-        ))}
+        {/* Render custom tags */}
+        <View style={styles.customTagsContainer}>
+          {showTags && student.tags?.map((tag, index) => (
+            <View key={index} style={styles.tag}>
+              <Text style={styles.tagText}>{tag}</Text>
+            </View>
+          ))}
+        </View>
         
-        {showPaymentStatus && (
-          <View style={[styles.paymentTag, { backgroundColor: paymentConfig.backgroundColor }]}>
-            <Text style={[styles.paymentTagText, { color: theme.colors.background.primary }]}>
-              {paymentConfig.text}
-            </Text>
-          </View>
-        )}
+        {/* Render status indicators */}
+        <View style={styles.statusTagsContainer}>
+          {showSessionType && (
+            <View style={[styles.sessionTypeTag, { backgroundColor: sessionTypeConfig.backgroundColor }]}>
+              <Text style={[styles.sessionTypeTagText, { color: theme.colors.background.primary }]}>
+                {sessionTypeConfig.text}
+              </Text>
+            </View>
+          )}
+          
+          {showPaymentStatus && (
+            <View style={[styles.paymentTag, { backgroundColor: paymentConfig.backgroundColor }]}>
+              <Text style={[styles.paymentTagText, { color: theme.colors.background.primary }]}>
+                {paymentConfig.text}
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
     );
   };
@@ -302,6 +350,17 @@ const createStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  customTagsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    flex: 1,
+  },
+  statusTagsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+  },
   tag: {
     backgroundColor: theme.colors.text.secondary,
     paddingHorizontal: theme.spacing.sm,
@@ -312,6 +371,17 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: theme.fontSizes.xs,
     color: theme.colors.background.primary,
     textAlign: 'center',
+  },
+  sessionTypeTag: {
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    marginRight: theme.spacing.xs,
+  },
+  sessionTypeTagText: {
+    fontSize: theme.fontSizes.xs,
+    textAlign: 'center',
+    fontWeight: theme.fontConfig.fontWeight.medium,
   },
   paymentTag: {
     paddingHorizontal: theme.spacing.sm,

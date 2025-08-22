@@ -261,16 +261,16 @@ const MyClassroom: React.FC<MyClassroomProps> = ({
   };
 
   const queryFilter = [
-    { label: "Total student: ", num: stats.totalStudents.toString() },
-    { label: "My student: ", num: stats.myStudents.toString() },
-    { label: "Instructor: ", num: stats.instructors.toString() },
+    { id: "total-students", label: "Total student: ", num: stats.totalStudents.toString() },
+    { id: "my-students", label: "My student: ", num: stats.myStudents.toString() },
+    { id: "instructors", label: "Instructor: ", num: stats.instructors.toString() },
   ];
 
   const quickFilter = [
-    { label: "All Lessons: ", count: stats.totalLessons.toString() },
-    { label: "0 Stars: ", count: stats.zeroStars.toString() },
-    { label: "1 Stars: ", count: stats.oneStars.toString() },
-    { label: "2 Stars: ", count: stats.twoStars.toString() },
+    { id: "all-lessons", label: "All Lessons: ", count: stats.totalLessons.toString() },
+    { id: "zero-stars", label: "0 Stars: ", count: stats.zeroStars.toString() },
+    { id: "one-stars", label: "1 Stars: ", count: stats.oneStars.toString() },
+    { id: "two-stars", label: "2 Stars: ", count: stats.twoStars.toString() },
   ];
 
   return (

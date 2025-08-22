@@ -160,13 +160,13 @@ export const AdvancedScoreStatistics: React.FC<AdvancedScoreStatisticsProps> = (
     switch (type) {
       case 'progress-up':
         return {
-          backgroundColor: '#C8F3CD',
+          backgroundColor: theme.colors.status.success + '20',
           textColor: theme.colors.status.success,
           icon: 'arrow-up' as const,
         };
       case 'progress-down':
         return {
-          backgroundColor: '#FFE8E8',
+          backgroundColor: theme.colors.status.error + '20',
           textColor: theme.colors.status.error,
           icon: 'arrow-down' as const,
         };
@@ -317,11 +317,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginVertical: theme.spacing.sm,
   },
   shadow: {
-    shadowColor: theme.colors.shadow.default,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 8,
+    ...theme.elevation.lg,
   },
   title: {
     fontSize: theme.fontSizes.lg,
@@ -376,12 +372,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingVertical: theme.spacing.xs,
     borderRadius: theme.borderRadius.md,
     gap: theme.spacing.xs,
-    ...{
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 2,
-    },
+    ...theme.elevation.xs,
   },
   periodText: {
     fontSize: theme.fontSizes.sm,
@@ -393,12 +384,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     right: theme.spacing.md,
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.md,
-    ...{
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
-      elevation: 4,
-    },
+    ...theme.elevation.sm,
     zIndex: 1000,
   },
   periodOption: {

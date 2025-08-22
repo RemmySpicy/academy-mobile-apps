@@ -336,9 +336,11 @@ const createStyles = (theme: any, screenDimensions: any) => {
     mainCard: {
       backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.md,
-      paddingBottom: theme.spacing.md,
+      padding: theme.spacing.lg,
+      paddingBottom: theme.spacing.lg,
       marginVertical: theme.spacing.md,
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.border.primary,
       ...theme.elevation.sm,
     },
     
@@ -384,23 +386,28 @@ const createStyles = (theme: any, screenDimensions: any) => {
     tabContainer: {
       flexDirection: 'row',
       backgroundColor: theme.colors.background.elevated,
-      borderRadius: theme.borderRadius.full,
+      borderRadius: theme.borderRadius.lg,
       padding: theme.spacing.xs,
       marginTop: theme.spacing.sm,
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.border.secondary,
+      ...theme.elevation.xs,
     },
     
     tabButton: {
       flex: 1,
-      borderRadius: theme.borderRadius.full,
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: theme.safeArea.minTouchTarget.height,
+      marginHorizontal: theme.spacing.xs,
     },
     
     tabButtonActive: {
-      backgroundColor: theme.colors.text.primary,
+      backgroundColor: theme.colors.interactive.primary,
+      ...theme.elevation.sm,
     },
     
     tabButtonPressed: {
@@ -409,14 +416,15 @@ const createStyles = (theme: any, screenDimensions: any) => {
     },
     
     tabButtonText: {
-      fontSize: theme.fontSizes.caption,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.body,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.secondary,
       textAlign: 'center',
     },
     
     tabButtonTextActive: {
       color: theme.colors.text.inverse,
+      fontWeight: theme.fontConfig.fontWeight.bold,
     },
     
     poolSizeContainer: {
@@ -428,22 +436,26 @@ const createStyles = (theme: any, screenDimensions: any) => {
     },
     
     poolSizeButton: {
-      borderRadius: theme.borderRadius.full,
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.md,
+      borderRadius: theme.borderRadius.lg,
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
       minHeight: theme.safeArea.minTouchTarget.height,
       justifyContent: 'center',
       alignItems: 'center',
+      minWidth: 60,
+      ...theme.elevation.xs,
     },
     
     poolSizeButtonPrimary: {
-      backgroundColor: '#DCD5F4', // Academy purple light variant
+      backgroundColor: theme.colors.interactive.faded,
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.interactive.primary,
     },
     
     poolSizeButtonSecondary: {
-      borderWidth: 1,
-      borderColor: '#DCD5F4',
-      backgroundColor: 'transparent',
+      borderWidth: theme.borderWidth.thin,
+      borderColor: theme.colors.border.primary,
+      backgroundColor: theme.colors.background.primary,
     },
     
     poolSizeButtonPressed: {
@@ -463,9 +475,10 @@ const createStyles = (theme: any, screenDimensions: any) => {
     },
     
     poolSizeText: {
-      fontSize: theme.fontSizes.caption,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
+      fontSize: theme.fontSizes.body,
+      fontWeight: theme.fontConfig.fontWeight.bold,
       color: theme.colors.interactive.primary,
+      textAlign: 'center',
     },
     
     tabContent: {

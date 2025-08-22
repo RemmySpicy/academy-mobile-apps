@@ -42,12 +42,16 @@ export {
   ToggleCard,
   EmptySearchResult,
   SelectOptions,
+  FormDropdown,
   HeaderComponent,
   ControlCard,
   FilterComponent,
   OptionMenu,
-  TimesTab,
   StrokeTab,
+  SegmentedControl,
+  IconTabBar,
+  TabBar,
+  Chip,
   CustomModalWithDot,
 } from './components/ui';
 
@@ -78,12 +82,15 @@ export {
 // Search System Components
 export {
   SearchInput,
-  FilterChip,
   QuickFilterBar,
   SearchBar,
   SimpleSearchBar,
+  SearchContainer,
   useQuickFilters,
 } from './components/search';
+
+// Note: FilterChip has been consolidated into the unified Chip component
+// Available as: import { Chip } from '@academy/mobile-shared';
 
 // Calendar Components
 export {
@@ -144,7 +151,6 @@ export {
 
 // Phase 4: Enhanced UI Components
 export {
-  Button,
   FilterBar,
   StudentListCard,
   Lessons,

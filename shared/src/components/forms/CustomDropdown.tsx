@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal, FlatList, Animated, Platform, Dimensions } from 'react-native';
+import { View, Text, Pressable, StyleSheet, FlatList, TextInput, Platform, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useController } from 'react-hook-form';
 import { FormFieldProps } from '../../types';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 import { themeUtils } from '../../theme';
+import { BottomSheet } from '../ui/BottomSheet';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -21,7 +22,6 @@ interface CustomDropdownProps extends FormFieldProps {
   multiple?: boolean;
   maxHeight?: number;
   closeOnSelect?: boolean;
-  animationType?: 'fade' | 'slide' | 'none';
   showCheckmarks?: boolean;
 }
 
@@ -37,14 +37,12 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   disabled = false,
   required = false,
   closeOnSelect = !multiple,
-  animationType = 'slide',
   showCheckmarks = true,
 }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [slideAnim] = useState(new Animated.Value(0));
 
   const { field, fieldState } = useController({
     name,
@@ -77,7 +75,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     } else {
       field.onChange(selectedValue);
       if (closeOnSelect) {
-        closeModal();
+        setIsBottomSheetVisible(false);
       }
       if (onSelectionChange) {
         onSelectionChange(selectedValue);
@@ -99,29 +97,10 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     }
   }, [field.value, multiple, options, placeholder]);
 
-  const openModal = useCallback(() => {
-    setIsOpen(true);
-    if (animationType === 'slide') {
-      Animated.timing(slideAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [animationType, slideAnim]);
-
-  const closeModal = useCallback(() => {
-    if (animationType === 'slide') {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => setIsOpen(false));
-    } else {
-      setIsOpen(false);
-    }
+  const handleBottomSheetClose = useCallback(() => {
+    setIsBottomSheetVisible(false);
     setSearchText('');
-  }, [animationType, slideAnim]);
+  }, []);
 
   const renderOption = useCallback(({ item }: { item: DropdownOption }) => {
     const isSelected = multiple
@@ -152,50 +131,17 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     );
   }, [field.value, multiple, handleSelection, showCheckmarks]);
 
-  const getModalAnimationProps = () => {
-    switch (animationType) {
-      case 'slide':
-        return {
-          animationType: 'none' as const,
-          transparent: true,
-        };
-      case 'fade':
-        return {
-          animationType: 'fade' as const,
-          transparent: true,
-        };
-      default:
-        return {
-          animationType: 'none' as const,
-          transparent: true,
-        };
-    }
-  };
-
-  const modalContentStyle = animationType === 'slide' 
-    ? [
-        styles.modalContent,
-        {
-          transform: [{
-            translateY: slideAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [screenHeight, 0],
-            }),
-          }],
-        },
-      ]
-    : styles.modalContent;
 
   return (
     <View style={styles.container}>
       <Pressable 
         style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [
           styles.dropdown,
-          isOpen && styles.dropdownOpen,
+          isBottomSheetVisible && styles.dropdownOpen,
           fieldState.error && styles.dropdownError,
           disabled && styles.dropdownDisabled,
         ]]}
-        onPress={() => !disabled && openModal()}
+        onPress={() => !disabled && setIsBottomSheetVisible(true)}
         disabled={disabled}
         accessibilityLabel={placeholder}
         accessibilityHint="Double tap to open dropdown"
@@ -212,7 +158,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
           {getDisplayText()}
         </Text>
         <Ionicons
-          name={isOpen ? "chevron-up-outline" : "chevron-down-outline"}
+          name={isBottomSheetVisible ? "chevron-up-outline" : "chevron-down-outline"}
           size={20}
           color={disabled ? theme.colors.text.disabled : theme.colors.text.secondary}
         />
@@ -225,47 +171,51 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         </View>
       )}
 
-      <Modal
-        visible={isOpen}
-        {...getModalAnimationProps()}
-        onRequestClose={closeModal}
+      <BottomSheet
+        visible={isBottomSheetVisible}
+        onClose={handleBottomSheetClose}
+        title="Select Option"
+        snapPoints={multiple ? ['medium', 'large'] : ['small', 'medium']}
+        initialSnapPoint={multiple ? 'medium' : 'small'}
+        scrollable={true}
+        showDragHandle={true}
       >
-        <Pressable style={({ pressed }) => [styles.modalOverlay]}
-          onPress={closeModal}
-        >
-          <View style={styles.modalContainer}>
-            <Animated.View style={modalContentStyle}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Select Option</Text>
-                <Pressable 
-                  onPress={closeModal}
-                  style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.closeButton]}
-                  accessibilityLabel="Close dropdown"
-                  accessibilityRole="button"
-                >
-                  <Ionicons name="close-outline" size={24} color={theme.colors.text.secondary} />
-                </Pressable>
-              </View>
-
-              <FlatList
-                data={filteredOptions}
-                renderItem={renderOption}
-                keyExtractor={(item) => item.value.toString()}
-                style={[styles.optionsList, { maxHeight }]}
-                showsVerticalScrollIndicator={false}
-                initialNumToRender={10}
-                maxToRenderPerBatch={10}
-                windowSize={10}
-                getItemLayout={(data, index) => ({
-                  length: 48,
-                  offset: 48 * index,
-                  index,
-                })}
+        <View style={styles.bottomSheetContent}>
+          {searchable && (
+            <View style={styles.searchContainer}>
+              <Ionicons 
+                name="search" 
+                size={20} 
+                color={theme.colors.text.secondary} 
+                style={styles.searchIcon}
               />
-            </Animated.View>
-          </View>
-        </Pressable>
-      </Modal>
+              <TextInput 
+                style={styles.searchInput}
+                onChangeText={setSearchText}
+                value={searchText}
+                placeholder="Search options..."
+                placeholderTextColor={theme.colors.text.secondary}
+              />
+            </View>
+          )}
+
+          <FlatList
+            data={filteredOptions}
+            renderItem={renderOption}
+            keyExtractor={(item) => item.value.toString()}
+            style={styles.optionsList}
+            showsVerticalScrollIndicator={false}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={10}
+            getItemLayout={(data, index) => ({
+              length: 48,
+              offset: 48 * index,
+              index,
+            })}
+          />
+        </View>
+      </BottomSheet>
     </View>
   );
 };
@@ -323,43 +273,25 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginLeft: theme.spacing[1],
       flex: 1,
     },
-    modalOverlay: {
+    bottomSheetContent: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
     },
-    modalContainer: {
-      width: '100%',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-    },
-    modalContent: {
-      backgroundColor: theme.colors.background.primary,
-      borderTopLeftRadius: theme.borderRadius.lg,
-      borderTopRightRadius: theme.borderRadius.lg,
-      width: '100%',
-      maxHeight: '80%',
-      ...theme.elevation.lg,
-    },
-    modalHeader: {
+    searchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: theme.spacing[4],
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.primary,
+      marginBottom: theme.spacing[3],
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.md,
+      paddingHorizontal: theme.spacing[3],
     },
-    modalTitle: {
-      ...theme.typography.heading.h5,
+    searchIcon: {
+      marginRight: theme.spacing[2],
+    },
+    searchInput: {
+      flex: 1,
+      padding: theme.spacing[3],
+      fontSize: theme.fontSizes.base,
       color: theme.colors.text.primary,
-    },
-    closeButton: {
-      padding: theme.spacing[1],
-      minWidth: theme.safeArea.minTouchTarget.width,
-      minHeight: theme.safeArea.minTouchTarget.height,
-      alignItems: 'center',
-      justifyContent: 'center',
     },
     optionsList: {
       paddingVertical: theme.spacing[2],

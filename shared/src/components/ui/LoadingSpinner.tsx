@@ -69,7 +69,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   testID = 'loading-spinner',
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme, size, transparent, overlayColor);
+  const styles = createStyles(theme, size, transparent, overlayColor, overlay);
 
   if (!visible) return null;
 
@@ -278,25 +278,24 @@ const BarsSpinner: React.FC<{ color: string; size: string }> = ({ color, size })
   );
 };
 
-const createStyles = (theme: any, size: string, transparent: boolean, overlayColor?: string) => {
+const createStyles = (theme: any, size: string, transparent: boolean, overlayColor?: string, overlay = false) => {
   const containerPadding = size === 'small' ? theme.spacing.md : 
                           size === 'large' ? theme.spacing['2xl'] : 
                           theme.spacing.lg;
 
   return StyleSheet.create({
     container: {
-      ...(transparent ? {} : {
+      ...(overlay ? {
         position: 'absolute',
         top: 0,
         left: 0,
         width,
         height,
-        backgroundColor: overlayColor || 'rgba(0, 0, 0, 0.5)',
-      }),
-      flex: 1,
+        backgroundColor: transparent ? 'transparent' : (overlayColor || 'rgba(0, 0, 0, 0.5)'),
+        zIndex: 9999,
+      } : {}),
       justifyContent: 'center',
       alignItems: 'center',
-      zIndex: 9999,
     },
 
     spinnerContainer: {

@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme';
-import { Button } from '../ui';
+import { CustomButton } from '../forms/CustomButton';
 import { SocialAuthGroup } from './index';
 
 export interface OnboardingModalProps {
@@ -90,10 +90,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
           {/* Action Buttons */}
           <View style={styles.buttonsContainer}>
-            <Button
+            <CustomButton
               title="Login"
               variant="outline"
-              size="lg"
+              size="md"
               onPress={() => {
                 onClose();
                 onLogin();
@@ -101,10 +101,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
               style={styles.actionButton}
             />
             
-            <Button
+            <CustomButton
               title="Sign up"
-              variant="academy"
-              size="lg"
+              variant="primary"
+              size="md"
               onPress={() => {
                 onClose();
                 onSignup();

@@ -117,7 +117,54 @@ The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT a
 The apps support multiple academy programs (swimming, football, basketball, music, coding, etc.) with automatic context switching. Each program can have its own specific requirements while sharing common functionality. See [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md) for integration details.
 
 ### Component Usage
-All shared components are exported from `@academy/mobile-shared`. Use Academy-themed components with proper TypeScript interfaces.
+All shared components and utilities are exported from `@academy/mobile-shared`. Use Academy-themed components with proper TypeScript interfaces.
+
+### Selection Component Guidelines
+The Academy Apps provide comprehensive selection components for different use cases:
+
+#### **SelectOptions** - Grid-based selection
+```typescript
+import { SelectOptions } from '@academy/mobile-shared';
+
+// For skill levels, program types, visual option grids
+<SelectOptions
+  title="Swimming Level"
+  options={['Beginner', 'Intermediate', 'Advanced']}
+  value={selectedLevel}
+  onSelectionChange={setSelectedLevel}
+  multiSelect={false}
+  size="md"
+  variant="filled"
+/>
+```
+
+#### **FormDropdown** - Traditional dropdown
+```typescript
+import { FormDropdown } from '@academy/mobile-shared';
+
+// For form fields, large option sets, instructor selection
+<FormDropdown
+  label="Assign Instructor"
+  options={instructorList}
+  value={selectedInstructor}
+  onSelectionChange={setSelectedInstructor}
+  placeholder="Select instructor"
+  searchable={true}
+  required
+/>
+```
+
+**Selection Component Usage Rules:**
+- **SelectOptions**: Use for visual grids (2-8 options), skill levels, program selection
+- **FormDropdown**: Use for forms, large option sets (10+ options), instructor/student selection
+- **Always provide titles/labels** for accessibility and user clarity
+- **Use search capability** for option sets larger than 10 items
+- **Follow Academy theming** with `theme.colors.interactive.primary` for selections
+
+#### Available Utilities
+- **Date Utilities**: `getDateRange`, `formatDate`, `isToday`, `getStartOfWeek`, `getMonthBoundaries`, `isDateInRange`
+- **Style Utilities**: `getContainerStyles`, `getActionButtonStyles`, `getDayBoxStyles`, `createControlCardStyles`
+- **Type Definitions**: All utility functions include comprehensive TypeScript interfaces
 
 ### Development Commands
 ```bash
@@ -154,7 +201,7 @@ npm run test:all
 
 - ✅ Theme system with Academy branding
 - ✅ Authentication with JWT and program context
-- ✅ **80+ shared components with TypeScript interfaces**
+- ✅ **80+ shared components with TypeScript interfaces and utility functions**
 - ✅ Modern chart system (React 19 compatible)
 - ✅ Type-safe navigation and state management
 - ✅ Both apps building and running successfully
@@ -166,7 +213,7 @@ npm run test:all
 2. **Use exact theme variables** - Follow Academy design system
 3. **Run type checking** - `npm run type-check:all` before commits
 4. **Feature-based organization** - Group by feature, not by file type
-5. **Shared components** - Use `@academy/mobile-shared` for reusable code
+5. **Shared components** - Use `@academy/mobile-shared` for reusable code and utility functions
 6. **Program context** - Implement multi-program support in new features
 
 ## Working with Existing Features

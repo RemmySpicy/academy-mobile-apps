@@ -17,7 +17,7 @@ import { PerformanceNavigator } from '../features/performance/navigation/Perform
 import { ClassroomNavigator } from '../features/classroom/navigation/ClassroomNavigator';
 
 // Development-only imports
-import { DesignSystemShowcase, FormExamplesScreen, ExtractedComponentsShowcase } from '@academy/mobile-shared';
+import { DesignSystemShowcase, FormExamplesScreen, ComponentLibraryShowcase } from '@academy/mobile-shared';
 
 export type TabParamList = {
   HomeTab: undefined;
@@ -27,7 +27,7 @@ export type TabParamList = {
   ClassroomTab: undefined;
   DesignSystemTab?: undefined; // Development only
   FormsTab?: undefined; // Development only
-  ExtractedTab?: undefined; // Development only
+  ComponentsTab?: undefined; // Development only
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -145,7 +145,7 @@ export const TabNavigator: React.FC = () => {
             case 'FormsTab':
               iconName = focused ? 'document-text' : 'document-text-outline';
               break;
-            case 'ExtractedTab':
+            case 'ComponentsTab':
               iconName = focused ? 'cube' : 'cube-outline';
               break;
             default:
@@ -223,10 +223,10 @@ export const TabNavigator: React.FC = () => {
           />
           
           <Tab.Screen
-            name="ExtractedTab"
-            component={ExtractedComponentsShowcase}
+            name="ComponentsTab"
+            component={ComponentLibraryShowcase}
             options={{
-              tabBarLabel: 'Extracted',
+              tabBarLabel: 'Components',
             }}
           />
         </>

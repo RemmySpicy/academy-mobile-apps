@@ -290,8 +290,8 @@ export const TabBar: React.FC<TabBarProps> = ({
           {!iconFirst && renderIcon(tab, isActive)}
         </View>
         
-        {/* Underline indicator for underline variant */}
-        {variant === 'underline' && isActive && (
+        {/* Underline indicator for non-underline variants only */}
+        {variant !== 'underline' && variant === 'default' && isActive && (
           <View style={[
             styles.underlineIndicator,
             styles[`${size}Indicator`],

@@ -53,6 +53,7 @@ export {
   TabBar,
   Chip,
   CustomModalWithDot,
+  ErrorBoundary,
 } from './components/ui';
 
 export {
@@ -332,5 +333,5 @@ export type {
 export {
   DesignSystemShowcase,
   FormExamplesScreen,
-  ExtractedComponentsShowcase,
+  ComponentLibraryShowcase,
 } from './screens';

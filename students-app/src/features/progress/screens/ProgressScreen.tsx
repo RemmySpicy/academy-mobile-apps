@@ -420,7 +420,7 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
   },
   header: {
     paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing[12],
+    marginBottom: theme.spacing.xl,
   },
   title: {
     color: theme.colors.text.primary,
@@ -452,7 +452,7 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
   },
   statsOverview: {
     paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing[12],
+    marginBottom: theme.spacing.xl,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -519,7 +519,7 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
   },
   quickActions: {
     paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing[12],
+    marginBottom: theme.spacing.xl,
   },
   quickActionsContainer: {
     flexDirection: 'row',
@@ -687,7 +687,7 @@ export const ProgressScreen: React.FC = () => {
         style={styles.scrollView}
         contentContainerStyle={{
           paddingTop: insets.top + theme.spacing.lg,
-          paddingBottom: theme.spacing['3xl'], // Space for tab bar
+          paddingBottom: theme.spacing.xxl, // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -719,10 +719,10 @@ export const ProgressScreen: React.FC = () => {
                 style={[
                   styles.periodButton,
                   selectedPeriod !== period.key && styles.periodButtonInactive,
+                  {
+                    backgroundColor: selectedPeriod === period.key ? theme.colors.interactive.accent : undefined
+                  }
                 ]}
-                style={{
-                  backgroundColor: selectedPeriod === period.key ? theme.colors.interactive.accent : undefined
-                }}
               >
                 <Text
                   style={[
@@ -768,7 +768,7 @@ export const ProgressScreen: React.FC = () => {
         </Animated.View>
 
         {/* Featured Skills */}
-        <View style="mb-8">
+        <View style={{ marginBottom: theme.spacing.xl }}>
           <Animated.View
             entering={FadeInDown.delay(400).springify()}
             style={styles.sectionHeader}
@@ -795,7 +795,7 @@ export const ProgressScreen: React.FC = () => {
         </View>
 
         {/* Course Progress */}
-        <View style="mb-8">
+        <View style={{ marginBottom: theme.spacing.xl }}>
           <Animated.Text
             entering={FadeInDown.delay(500).springify()}
             style={styles.courseProgressTitle}

@@ -163,10 +163,10 @@ export const StudentsScreen: React.FC = () => {
   });
 
   const filters = [
-    { key: 'all' as const, label: 'All Students', count: students.length },
-    { key: 'excellent' as const, label: 'Excellent', count: students.filter(s => s.performance_level === 'excellent').length },
-    { key: 'good' as const, label: 'Good', count: students.filter(s => s.performance_level === 'good').length },
-    { key: 'needs-attention' as const, label: 'Needs Attention', count: students.filter(s => s.performance_level === 'needs-attention').length },
+    { value: 'all', label: 'All Students', count: students.length, icon: 'people' as const },
+    { value: 'excellent', label: 'Excellent', count: students.filter(s => s.performance_level === 'excellent').length, icon: 'star' as const },
+    { value: 'good', label: 'Good', count: students.filter(s => s.performance_level === 'good').length, icon: 'thumbs-up' as const },
+    { value: 'needs-attention', label: 'Needs Attention', count: students.filter(s => s.performance_level === 'needs-attention').length, icon: 'alert-circle' as const },
   ];
 
   const handleStudentPress = (student: StudentData) => {
@@ -239,25 +239,19 @@ export const StudentsScreen: React.FC = () => {
         springify={true}
         style={styles.filterContainer}
       >
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24 }}
-        >
-          {filters.map(filter => (
-            <Chip
-              key={filter.key}
-              label={filter.label}
-              value={filter.key}
-              count={filter.count}
-              selected={selectedFilter === filter.key}
-              onPress={(value) => setSelectedFilter(value as any)}
-              variant="primary"
-              countStyle="inline"
-              size="md"
-            />
-          ))}
-        </ScrollView>
+        <Chip
+          chips={filters}
+          activeChips={selectedFilter}
+          onChipChange={(value) => setSelectedFilter(Array.isArray(value) ? value[0] : value)}
+          multiSelect={false}
+          variant="primary"
+          countStyle="inline"
+          size="md"
+          showIcons={true}
+          showCounts={true}
+          scrollable={true}
+          style={{ paddingHorizontal: 24 }}
+        />
       </FadeInWrapper>
 
       {/* Students List */}

@@ -16,7 +16,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomButton, useTheme } from '@academy/mobile-shared';
+import { CustomButton, useTheme, TabBar } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -159,22 +159,6 @@ const createDetailStyles = (theme: any) =>
     tabsContainer: {
       paddingHorizontal: theme.spacing.lg,
       marginBottom: theme.spacing.md,
-    },
-    tabButton: {
-      marginRight: theme.spacing.md,
-      paddingBottom: theme.spacing.xs,
-    },
-    activeTab: {
-      borderBottomWidth: 2,
-      borderBottomColor: theme.colors.interactive.primary,
-    },
-    activeTabText: {
-      color: theme.colors.interactive.primary,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-    inactiveTabText: {
-      color: theme.colors.text.secondary,
-      fontWeight: theme.fontConfig.fontWeight.medium,
     },
     contentContainer: {
       flex: 1,
@@ -471,10 +455,10 @@ export const CourseDetailScreen: React.FC = () => {
   };
 
   const tabs = [
-    { key: 'overview' as const, label: 'Overview' },
-    { key: 'curriculum' as const, label: 'Curriculum' },
-    { key: 'schedule' as const, label: 'Schedule' },
-    { key: 'reviews' as const, label: 'Reviews' },
+    { value: 'overview', label: 'Overview', icon: 'information-circle-outline' as const },
+    { value: 'curriculum', label: 'Curriculum', icon: 'book-outline' as const },
+    { value: 'schedule', label: 'Schedule', icon: 'calendar-outline' as const },
+    { value: 'reviews', label: 'Reviews', icon: 'star-outline' as const, badge: courseDetail.reviews },
   ];
 
   const handleBookNow = () => {
@@ -696,32 +680,18 @@ export const CourseDetailScreen: React.FC = () => {
         entering={FadeInDown.delay(300)}
         style={styles.tabsContainer}
       >
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingRight: 24 }}
-        >
-          {tabs.map(tab => (
-            <Pressable
-              key={tab.key}
-              onPress={() => setSelectedTab(tab.key)}
-              style={[
-                styles.tabButton,
-                selectedTab === tab.key && styles.activeTab
-              ]}
-            >
-              <Text
-                style={[
-                  selectedTab === tab.key
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                ]}
-              >
-                {tab.label}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+        <TabBar
+          tabs={tabs}
+          activeTab={selectedTab}
+          onTabChange={(value) => setSelectedTab(value as any)}
+          mode="scrollable"
+          variant="underline"
+          size="md"
+          showIcons={true}
+          showBadges={true}
+          iconPosition="left"
+          style={{ paddingHorizontal: 0 }}
+        />
       </Animated.View>
 
       {/* Tab Content */}

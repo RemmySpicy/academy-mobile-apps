@@ -7,6 +7,7 @@ import {
   useTheme,
   useProgramContext,
   useAuthStore,
+  ProgramSelector,
 } from '@academy/mobile-shared';
 
 // Sample data for testing
@@ -22,6 +23,7 @@ const sampleCourses = [
     totalSessions: 20,
     status: 'active' as const,
     enrollment_date: '2024-01-15',
+    program_id: 'swimming-1',
   },
   {
     id: '2', 
@@ -34,6 +36,7 @@ const sampleCourses = [
     totalSessions: 20,
     status: 'active' as const,
     enrollment_date: '2024-02-01',
+    program_id: 'swimming-1',
   },
 ];
 
@@ -109,6 +112,7 @@ const sampleActivities = [
  */
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { currentProgram } = useProgramContext();
   const insets = useSafeAreaInsets();
   const [notificationCount, setNotificationCount] = useState(3);
 
@@ -141,6 +145,20 @@ export const HomeScreen: React.FC = () => {
     console.log('View all activities');
   };
 
+  // Filter courses based on current program
+  const filteredCourses = currentProgram 
+    ? sampleCourses.filter(course => course.program_id === currentProgram.id)
+    : sampleCourses;
+
+  // Filter activities based on filtered courses
+  const filteredActivities = currentProgram
+    ? sampleActivities.filter(activity => 
+        filteredCourses.some(course => 
+          course.title === activity.student_name || activity.message.includes(course.title)
+        )
+      )
+    : sampleActivities;
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
       {/* Enhanced Header */}
@@ -154,13 +172,24 @@ export const HomeScreen: React.FC = () => {
         showStudentActions={true}
         showNotifications={true}
         showProfile={true}
+        showProgramInfo={true}
         style={{ paddingTop: insets.top }}
       />
+
+      {/* Program Selector */}
+      <View style={styles.programSection}>
+        <ProgramSelector 
+          variant="card" 
+          onProgramChange={(program) => {
+            console.log('Switched to program:', program.name);
+          }}
+        />
+      </View>
 
       {/* Student Dashboard - Using InstructorDashboard as base */}
       <InstructorDashboard
         metrics={sampleMetrics}
-        recentStudents={sampleCourses.map(course => ({
+        recentStudents={filteredCourses.map(course => ({
           id: course.id,
           name: course.title,
           level: course.level,
@@ -170,7 +199,7 @@ export const HomeScreen: React.FC = () => {
           nextSession: course.nextSession,
           enrollment_date: course.enrollment_date,
         }))}
-        recentActivities={sampleActivities}
+        recentActivities={filteredActivities}
         onMetricPress={handleMetricPress}
         onStudentPress={(student) => handleCoursePress(student)}
         style={{ flex: 1 }}
@@ -182,5 +211,9 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  programSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
 });

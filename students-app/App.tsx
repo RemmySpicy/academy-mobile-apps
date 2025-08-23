@@ -10,11 +10,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import './global.css';
 
 // Re-enable shared library import with proper error handling
-let ThemeProvider: any, ProgramContextProvider: any, useAuthStore: any;
+let ThemeProvider: any, ProgramContextProvider: any, useAuthStore: any, ErrorBoundary: any;
 
 try {
   const shared = require('../shared/src');
-  ({ ThemeProvider, ProgramContextProvider, useAuthStore } = shared);
+  ({ ThemeProvider, ProgramContextProvider, useAuthStore, ErrorBoundary } = shared);
   console.log('✅ Shared library loaded successfully');
 } catch (error) {
   console.log('❌ Shared library failed, using fallbacks:', error.message);
@@ -29,11 +29,12 @@ try {
       initializeAuth: async () => {} 
     };
   };
+  // Fallback ErrorBoundary
+  ErrorBoundary = ({ children }: any) => children;
 }
 
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { LoadingScreen } from './src/components/LoadingScreen';
-import { ErrorBoundary } from './src/components/ErrorBoundary';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();

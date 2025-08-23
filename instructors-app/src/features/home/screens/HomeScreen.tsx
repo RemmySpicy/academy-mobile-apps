@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Header, InstructorDashboard, useTheme, useProgramContext, useAuthStore } from '@academy/mobile-shared';
+import { Header, InstructorDashboard, useTheme, useProgramContext, useAuthStore, ProgramSelector } from '@academy/mobile-shared';
 
 // Sample data for testing
 const sampleStudents = [
@@ -147,6 +147,7 @@ const sampleActivities = [
  */
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { currentProgram } = useProgramContext();
   const insets = useSafeAreaInsets();
   const [notificationCount, setNotificationCount] = useState(3);
 
@@ -179,6 +180,19 @@ export const HomeScreen: React.FC = () => {
     console.log('View all activities');
   };
 
+  // Filter data based on current program
+  const filteredStudents = currentProgram 
+    ? sampleStudents.filter(student => student.program_id === currentProgram.id)
+    : sampleStudents;
+
+  const filteredActivities = currentProgram
+    ? sampleActivities.filter(activity => 
+        filteredStudents.some(student => 
+          `${student.first_name} ${student.last_name}` === activity.student_name
+        )
+      )
+    : sampleActivities;
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
       {/* Enhanced Header */}
@@ -192,15 +206,26 @@ export const HomeScreen: React.FC = () => {
         showInstructorActions={true}
         showNotifications={true}
         showProfile={true}
+        showProgramInfo={true}
         style={{ paddingTop: insets.top }}
       />
+
+      {/* Program Selector */}
+      <View style={styles.programSection}>
+        <ProgramSelector 
+          variant="card" 
+          onProgramChange={(program) => {
+            console.log('Switched to program:', program.name);
+          }}
+        />
+      </View>
 
       {/* Instructor Dashboard */}
       <InstructorDashboard
         metrics={sampleMetrics}
         chartData={sampleChartData}
-        recentStudents={sampleStudents}
-        recentActivities={sampleActivities}
+        recentStudents={filteredStudents}
+        recentActivities={filteredActivities}
         onMetricPress={handleMetricPress}
         onStudentPress={handleStudentPress}
         onViewAllStudents={handleViewAllStudents}
@@ -218,5 +243,9 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  programSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
 });

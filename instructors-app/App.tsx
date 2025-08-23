@@ -13,11 +13,10 @@ import './global.css';
 console.log('React version:', React.version);
 
 // Force shared library import - production should use proper theme system
-import { ThemeProvider, ProgramContextProvider, useAuthStore } from '@academy/mobile-shared';
+import { ThemeProvider, ProgramContextProvider, useAuthStore, ErrorBoundary } from '@academy/mobile-shared';
 console.log('✅ Using proper shared library (not fallback)');
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { LoadingScreen } from './src/components/LoadingScreen';
-import { ErrorBoundary } from './src/components/ErrorBoundary';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();

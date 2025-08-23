@@ -1,6 +1,6 @@
 # Academy Components Library
 
-The Academy Mobile Apps feature a comprehensive component library with 80+ shared components designed for educational institutions. All components are built with Academy theming, accessibility, and TypeScript support.
+The Academy Mobile Apps feature a comprehensive component library with 85+ shared components designed for educational institutions. All components are built with Academy theming, accessibility, and TypeScript support. **Production-verified** - all components are actively used in the live applications.
 
 ## 🎯 Component Categories
 
@@ -50,7 +50,7 @@ Advanced control interfaces for data management:
 Complete search system with Academy theming and accessibility:
 
 - **[SearchInput](./search/SearchInput.md)** - Enhanced search input with size variants and loading states
-- **[FilterChip](./search/FilterChip.md)** - Unified filter chips with 4 optimized variants
+- **[Chip](./ui/Chip.md)** - Unified chip component (consolidated FilterChip and PillTabs)
 - **[QuickFilterBar](./search/QuickFilterBar.md)** - Horizontal scrollable filter bar
 - **[SearchBar](./search/SearchBar.md)** - Complete search interface with actions
 - **[SearchContainer](./search/SearchContainer.md)** - Unified search wrapper component
@@ -91,7 +91,7 @@ import {
   CustomInput, 
   SearchInput,
   SearchContainer,
-  FilterChip,
+  Chip,
   Calendar,
   // Selection components
   SelectOptions,

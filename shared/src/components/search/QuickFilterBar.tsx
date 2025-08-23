@@ -65,23 +65,10 @@ export const QuickFilterBar: React.FC<QuickFilterBarProps> = ({
   const { theme, screenDimensions } = useTheme();
   const styles = createStyles(theme, screenDimensions);
 
-  const handleFilterPress = (value: string) => {
+  const handleChipChange = (value: string | string[]) => {
     if (!onFilterChange) return;
-
-    let newSelection: string[];
-
-    if (multiSelect) {
-      // Multi-select: toggle the filter
-      if (selectedFilters.includes(value)) {
-        newSelection = selectedFilters.filter(filter => filter !== value);
-      } else {
-        newSelection = [...selectedFilters, value];
-      }
-    } else {
-      // Single select: replace selection or clear if same
-      newSelection = selectedFilters.includes(value) ? [] : [value];
-    }
-
+    
+    const newSelection = Array.isArray(value) ? value : [value];
     onFilterChange(newSelection);
   };
 
@@ -92,41 +79,27 @@ export const QuickFilterBar: React.FC<QuickFilterBarProps> = ({
       style={[styles.container, style]}
       testID={testID}
     >
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { 
-            paddingHorizontal: padding,
-          },
-          scrollStyle,
-        ]}
-        style={styles.scrollView}
-        testID={`${testID}-scroll`}
-      >
-        {filters.map((filter, index) => {
-          const isSelected = selectedFilters.includes(filter.value);
-          
-          return (
-            <Chip
-              key={filter.id}
-              label={filter.label}
-              value={filter.value}
-              selected={isSelected}
-              count={showCount ? filter.count : undefined}
-              icon={filter.icon}
-              variant={filter.variant || 'default'}
-              disabled={filter.disabled}
-              onPress={handleFilterPress}
-              testID={`${testID}-chip-${filter.id}`}
-              style={
-                index === filters.length - 1 ? styles.lastChip : undefined
-              }
-            />
-          );
-        })}
-      </ScrollView>
+      <Chip
+        chips={filters.map(filter => ({
+          value: filter.value,
+          label: filter.label,
+          count: showCount ? filter.count : undefined,
+          icon: filter.icon,
+          disabled: filter.disabled,
+          id: filter.id,
+        }))}
+        activeChips={selectedFilters}
+        onChipChange={handleChipChange}
+        multiSelect={multiSelect}
+        variant="default"
+        showIcons={true}
+        showCounts={showCount}
+        scrollStyle={{
+          paddingHorizontal: padding,
+          ...scrollStyle,
+        }}
+        testID={`${testID}-chips`}
+      />
     </View>
   );
 };
@@ -174,25 +147,9 @@ export const useQuickFilters = (
 };
 
 const createStyles = (theme: any, screenDimensions: any) => {
-  const isTablet = screenDimensions.isTablet;
-  
   return StyleSheet.create({
     container: {
       marginVertical: theme.spacing.sm,
-    },
-    
-    scrollView: {
-      flexGrow: 0,
-    },
-    
-    scrollContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      minHeight: isTablet ? 50 : 40,
-    },
-    
-    lastChip: {
-      marginRight: 0,
     },
   });
 };

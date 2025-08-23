@@ -59,14 +59,26 @@ const MenuList: React.FC<MenuListProps> = ({
     return Math.floor((width - spacing * 2) / (columnWidth + spacing));
   }, [columns, width, columnWidth, spacing]);
 
-  const colorVariants = useMemo(() => ({
-    lightBlue: theme.colors.background.accent || '#dcf9f1',
-    lightPurple: theme.colors.background.secondary || '#DCD5F4',
-    lightPink: '#F9DCF0',
-    lightYellow: '#F9EFDC',
-    lightGreen: '#E8F5E8',
-    lightOrange: '#FFE4B5',
-  }), [theme]);
+  const colorVariants = useMemo(() => {
+    if (theme.isDark) {
+      return {
+        darkBlue: '#1a3d5c',
+        darkPurple: '#2d1b4e',
+        darkPink: '#4a1e3d',
+        darkYellow: '#4a3a1e',
+        darkGreen: '#1e4a1e',
+        darkOrange: '#4a2f1a',
+      };
+    }
+    return {
+      lightBlue: theme.colors.background.accent || '#dcf9f1',
+      lightPurple: theme.colors.background.secondary || '#DCD5F4',
+      lightPink: '#F9DCF0',
+      lightYellow: '#F9EFDC',
+      lightGreen: '#E8F5E8',
+      lightOrange: '#FFE4B5',
+    };
+  }, [theme]);
 
   const getDefaultColors = (index: number) => {
     const colors = Object.values(colorVariants);

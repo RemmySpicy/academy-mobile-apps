@@ -1,47 +1,36 @@
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
-// Fallback theme if shared library isn't available
-let useTheme: any;
-try {
-  ({ useTheme } = require('shared'));
-} catch {
-  useTheme = () => ({ 
-    theme: { 
-      colors: { 
-        background: { primary: '#fff' },
-        interactive: { primary: '#4F2EC9' },
-        text: { secondary: '#666' }
-      }
-    }
-  });
-}
+import { useTheme } from '@academy/mobile-shared';
 
 export const LoadingScreen: React.FC = () => {
   const { theme } = useTheme();
+  const styles = createStyles(theme);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+    <View style={styles.container}>
       <ActivityIndicator 
         size="large" 
         color={theme.colors.interactive.primary} 
       />
-      <Text style={[styles.text, { color: theme.colors.text.secondary }]}>
+      <Text style={styles.text}>
         Loading Academy Instructors...
       </Text>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 16,
+    gap: theme.spacing.md,
+    backgroundColor: theme.colors.background.primary,
   },
   text: {
-    fontSize: 16,
-    marginTop: 16,
+    fontSize: theme.fontSizes.base,
+    marginTop: theme.spacing.md,
     textAlign: 'center',
+    color: theme.colors.text.secondary,
   },
 });

@@ -1,6 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -16,26 +15,67 @@ interface ErrorBoundaryProps {
   resetOnPropsChange?: boolean;
 }
 
-// Themed wrapper component
+// Error fallback that doesn't depend on ThemeProvider
 const ThemedErrorFallback: React.FC<{
   error: Error;
   retry: () => void;
 }> = ({ error, retry }) => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles();
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Oops! Something went wrong</Text>
-      <Text style={styles.message}>
+    <View style={fallbackStyles.container}>
+      <Text style={fallbackStyles.title}>Oops! Something went wrong</Text>
+      <Text style={fallbackStyles.message}>
         We're sorry, but something unexpected happened. Please try again.
       </Text>
-      <Pressable style={styles.retryButton} onPress={retry}>
-        <Text style={styles.retryButtonText}>Try Again</Text>
+      <Pressable style={fallbackStyles.retryButton} onPress={retry}>
+        <Text style={fallbackStyles.retryButtonText}>Try Again</Text>
       </Pressable>
     </View>
   );
 };
+
+// Fallback styles that don't depend on theme
+const fallbackStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#dc2626',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  message: {
+    fontSize: 16,
+    color: '#6b7280',
+    textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 24,
+  },
+  retryButton: {
+    backgroundColor: '#4F2EC9',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   private resetTimeoutId: number | null = null;
@@ -127,41 +167,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 }
 
-const useThemedStyles = createThemedStyles((theme) => ({
-  container: {
-    flex: 1,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-    padding: theme.spacing.lg,
-    backgroundColor: theme.colors.background.primary,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold' as const,
-    color: theme.colors.status.error,
-    marginBottom: theme.spacing.md,
-    textAlign: 'center' as const,
-  },
-  message: {
-    fontSize: 16,
-    color: theme.colors.text.secondary,
-    textAlign: 'center' as const,
-    marginBottom: theme.spacing.xl,
-    lineHeight: 24,
-  },
-  retryButton: {
-    backgroundColor: theme.colors.interactive.primary,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
-    ...theme.elevation.sm,
-  },
-  retryButtonText: {
-    color: theme.colors.text.inverse,
-    fontSize: 16,
-    fontWeight: '600' as const,
-  },
-}));
 
 export { ErrorBoundary };
 export default ErrorBoundary;

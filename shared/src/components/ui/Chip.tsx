@@ -407,17 +407,38 @@ const SingleChip: React.FC<SingleChipProps> = ({
     }
     
     // Default badge style
+    const getBadgeStyles = () => {
+      const baseBadgeStyle = [styles.countBadge, styles[`${size}CountBadge`]];
+      const baseTextStyle = [styles.countBadgeText, styles[`${size}CountBadgeText`]];
+      
+      if (!selected) {
+        return {
+          badgeStyle: baseBadgeStyle,
+          textStyle: baseTextStyle
+        };
+      }
+
+      // Selected state - provide high contrast based on variant while maintaining shape
+      switch (variant) {
+        case 'outlined':
+        case 'ghost':
+          return {
+            badgeStyle: [...baseBadgeStyle, { backgroundColor: theme.colors.interactive.primary }],
+            textStyle: [...baseTextStyle, { color: theme.colors.text.inverse }]
+          };
+        default:
+          return {
+            badgeStyle: [...baseBadgeStyle, { backgroundColor: 'rgba(255, 255, 255, 0.9)' }],
+            textStyle: [...baseTextStyle, { color: theme.colors.interactive.primary }]
+          };
+      }
+    };
+
+    const { badgeStyle, textStyle } = getBadgeStyles();
+
     return (
-      <View style={[
-        styles.countBadge, 
-        styles[`${size}CountBadge`],
-        selected && styles.countBadgeSelected
-      ]}>
-        <Text style={[
-          styles.countBadgeText, 
-          styles[`${size}CountBadgeText`],
-          selected && styles.countBadgeTextSelected
-        ]}>
+      <View style={badgeStyle}>
+        <Text style={textStyle}>
           {displayCount}
         </Text>
       </View>
@@ -752,18 +773,10 @@ const createStyles = (theme: any, screenDimensions: any) => {
       justifyContent: 'center',
     },
     
-    countBadgeSelected: {
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    },
-    
     countBadgeText: {
       fontWeight: theme.fontConfig.fontWeight.bold,
       color: theme.colors.text.secondary,
       textAlign: 'center',
-    },
-    
-    countBadgeTextSelected: {
-      color: theme.colors.text.inverse,
     },
     
     // Count badge size variants

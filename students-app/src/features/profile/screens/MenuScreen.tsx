@@ -573,6 +573,7 @@ export const MenuScreen: React.FC = () => {
             columns={2}
             columnWidth={160}
             spacing={theme.spacing.md}
+            containerPadding={theme.spacing.lg * 2}
             variant="card"
             scrollEnabled={false}
           />

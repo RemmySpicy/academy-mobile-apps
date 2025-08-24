@@ -32,6 +32,7 @@ export interface MenuListProps {
   columns?: number;
   columnWidth?: number;
   spacing?: number;
+  containerPadding?: number;
   contentContainerStyle?: any;
   itemStyle?: any;
   showDescription?: boolean;
@@ -44,6 +45,7 @@ const MenuList: React.FC<MenuListProps> = ({
   columns,
   columnWidth = 160,
   spacing = 16,
+  containerPadding = 0,
   contentContainerStyle,
   itemStyle,
   showDescription = false,
@@ -56,8 +58,8 @@ const MenuList: React.FC<MenuListProps> = ({
 
   const calculatedColumns = useMemo(() => {
     if (columns) return columns;
-    return Math.floor((width - spacing * 2) / (columnWidth + spacing));
-  }, [columns, width, columnWidth, spacing]);
+    return Math.floor((width - containerPadding - spacing * 2) / (columnWidth + spacing));
+  }, [columns, width, columnWidth, spacing, containerPadding]);
 
   const colorVariants = useMemo(() => {
     // Use proper Academy theme colors with transparency
@@ -97,10 +99,16 @@ const MenuList: React.FC<MenuListProps> = ({
 
   // Calculate dynamic item width based on available space
   const itemWidth = useMemo(() => {
-    const availableWidth = width - (spacing * 2);
+    const availableWidth = width - containerPadding;
     const totalSpacing = (calculatedColumns - 1) * spacing;
     return (availableWidth - totalSpacing) / calculatedColumns;
-  }, [width, calculatedColumns, spacing]);
+  }, [width, calculatedColumns, spacing, containerPadding]);
+
+  // Determine if item should have right margin (not last in row)
+  const getItemMargin = (index: number) => {
+    const isLastInRow = (index + 1) % calculatedColumns === 0;
+    return isLastInRow ? 0 : spacing;
+  };
 
   const renderMenuItem: ListRenderItem<MenuItem> = ({ item, index }) => {
     const itemBackgroundColor = item.backgroundColor || 
@@ -120,6 +128,7 @@ const MenuList: React.FC<MenuListProps> = ({
             backgroundColor: itemBackgroundColor,
             opacity,
             width: itemWidth,
+            marginRight: getItemMargin(index),
           },
           itemStyle,
         ]}
@@ -217,12 +226,12 @@ const createStyles = (theme: any, spacing: number) => StyleSheet.create({
     paddingVertical: 0,
   },
   row: {
-    justifyContent: 'space-between',
+    flexDirection: 'row',
     paddingHorizontal: 0,
     marginBottom: spacing,
   },
   menuItem: {
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borderRadius.xl,
     marginHorizontal: 0,
     marginBottom: 0,
     minHeight: 100,
@@ -231,11 +240,7 @@ const createStyles = (theme: any, spacing: number) => StyleSheet.create({
     padding: theme.spacing.md,
     borderWidth: 1,
     borderColor: theme.colors.border.primary,
-    shadowColor: theme.colors.shadow?.primary || '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...theme.elevation.sm,
   },
   minimalItem: {
     padding: theme.spacing.sm,

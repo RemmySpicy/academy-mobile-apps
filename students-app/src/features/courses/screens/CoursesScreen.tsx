@@ -18,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme } from '@academy/mobile-shared';
+import { useTheme, Header } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -417,6 +417,7 @@ export const CoursesScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'kids' | 'adults'>('all');
+  const [notificationCount, setNotificationCount] = useState(2);
 
   // Mock courses data
   const [courses] = useState<Course[]>([
@@ -531,21 +532,31 @@ export const CoursesScreen: React.FC = () => {
     console.log('Navigate to course detail:', course.id);
   };
 
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <Animated.View
-        entering={FadeInDown.delay(100).springify()}
-        style={[
-          styles.header,
-          { paddingTop: insets.top + theme.spacing.md }
-        ]}
-      >
-        <Text style={styles.headerTitle}>Courses</Text>
-        <Text style={styles.headerSubtitle}>
-          Find the perfect swimming program for you
-        </Text>
-      </Animated.View>
+      {/* Header with Program Switcher */}
+      <Header
+        title="Courses"
+        showProgramSwitcher={true}
+        showNotifications={true}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showProfile={false}
+        style={{ paddingTop: insets.top }}
+      />
 
       {/* Search Bar */}
       <Animated.View

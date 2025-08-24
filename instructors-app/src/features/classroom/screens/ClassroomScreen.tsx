@@ -15,7 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore, useTheme, createThemedStyles, Badge } from '@academy/mobile-shared';
+import { useAuthStore, useTheme, createThemedStyles, Badge, Header } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -159,6 +159,7 @@ export const ClassroomScreen: React.FC = () => {
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
   const { user, currentProgram } = useAuthStore();
+  const [notificationCount, setNotificationCount] = React.useState(1);
 
   // Mock data - replace with real API call
   const todaysClasses = [
@@ -191,32 +192,44 @@ export const ClassroomScreen: React.FC = () => {
     },
   ];
 
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
   return (
     <View style={styles.container}>
+      {/* Header with Program Switcher */}
+      <Header
+        title="Classroom"
+        showProgramSwitcher={true}
+        variant="instructor"
+        onSearchPress={handleSearch}
+        onFilterPress={handleFilter}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showInstructorActions={true}
+        showNotifications={true}
+        showProfile={false}
+        style={{ paddingTop: insets.top }}
+      />
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{
-          paddingTop: insets.top + 20,
+          paddingTop: 20,
           paddingBottom: 100, // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header Section */}
-        <Animated.View
-          entering={FadeInDown.delay(100).springify()}
-          style={styles.headerSection}
-        >
-          <Text style={styles.greetingText}>Good morning,</Text>
-          <Text style={styles.instructorName}>
-            {user?.firstName || 'Instructor'}
-          </Text>
-          <View style={styles.programBadge}>
-            <Ionicons name="business-outline" size={16} color={theme.colors.interactive.accent} />
-            <Text style={styles.programBadgeText}>
-              {currentProgram?.name || 'Select Program'}
-            </Text>
-          </View>
-        </Animated.View>
 
         {/* Quick Stats */}
         <Animated.View

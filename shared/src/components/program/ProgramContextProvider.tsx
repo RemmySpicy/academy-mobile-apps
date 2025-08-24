@@ -21,18 +21,55 @@ export function ProgramContextProvider({ children }: ProgramContextProviderProps
   const { user, isAuthenticated, currentProgram: authCurrentProgram, availablePrograms: authAvailablePrograms } = useAuthStore();
   const { theme } = useTheme();
 
+  // Mock programs for development/testing
+  const mockPrograms = [
+    {
+      id: 'swimming-1',
+      name: 'Swimming Academy',
+      description: 'Professional swimming instruction for all ages',
+      type: 'swimming',
+      isActive: true,
+    },
+    {
+      id: 'football-1', 
+      name: 'Football Training',
+      description: 'Youth and adult football development program',
+      type: 'football',
+      isActive: true,
+    },
+    {
+      id: 'basketball-1',
+      name: 'Basketball Club',
+      description: 'Basketball skills training and competition',
+      type: 'basketball', 
+      isActive: true,
+    },
+    {
+      id: 'music-1',
+      name: 'Music Academy',
+      description: 'Piano, guitar, and voice lessons',
+      type: 'music',
+      isActive: true,
+    },
+  ];
+
   // Initialize program context when auth state changes
   useEffect(() => {
     if (isAuthenticated && user && authAvailablePrograms) {
       initializeProgramContext(authAvailablePrograms, authCurrentProgram);
     } else {
-      // Clear program context when not authenticated
-      setCurrentProgram(null);
-      setAvailablePrograms([]);
-      setIsLoading(false);
-      setError(null);
+      // For development/testing: Initialize with mock programs
+      initializeProgramContextWithMockData();
     }
   }, [isAuthenticated, user?.id, authAvailablePrograms, authCurrentProgram]);
+
+  const initializeProgramContextWithMockData = () => {
+    console.log('🧪 Initializing with mock programs for testing');
+    setIsLoading(false);
+    setError(null);
+    setAvailablePrograms(mockPrograms);
+    setCurrentProgram(mockPrograms[0]); // Default to swimming
+  };
 
   const initializeProgramContext = async (
     availablePrograms: typeof authAvailablePrograms, 
@@ -71,12 +108,19 @@ export function ProgramContextProvider({ children }: ProgramContextProviderProps
 
   const switchToProgram = async (program: ProgramContext): Promise<void> => {
     setCurrentProgram(program);
-    await apiClient.setProgramContext(program.id);
     
-    // Find corresponding program assignment and update auth store
-    const programAssignment = authAvailablePrograms.find(p => p.program_id === program.id);
-    if (programAssignment) {
-      useAuthStore.getState().setCurrentProgram(programAssignment);
+    // Only call API if we have real auth data (not in mock mode)
+    if (isAuthenticated && user && authAvailablePrograms) {
+      await apiClient.setProgramContext(program.id);
+      
+      // Find corresponding program assignment and update auth store
+      const programAssignment = authAvailablePrograms.find(p => p.program_id === program.id);
+      if (programAssignment) {
+        useAuthStore.getState().setCurrentProgram(programAssignment);
+      }
+    } else {
+      // Mock mode - just log the switch
+      console.log('🧪 Mock program switch to:', program.name);
     }
   };
 

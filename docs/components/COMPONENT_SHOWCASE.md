@@ -346,46 +346,220 @@ import { QuantityController } from '@academy/mobile-shared';
 ### Student Management
 
 #### StudentCard
-Comprehensive student information display card.
+Comprehensive student information display card with instructor-enhanced features.
 
 ```tsx
 import { StudentCard } from '@academy/mobile-shared';
 
+// Sample student data
+const sampleStudent = {
+  id: '1',
+  first_name: 'Emma',
+  last_name: 'Johnson',
+  email: 'emma.johnson@academy.com',
+  avatar_url: 'https://...',
+  program_id: 'swimming-advanced',
+  enrollment_date: '2024-01-15',
+  level: 'Level 2',
+  group: 'Group A',
+  performance_level: 'excellent',
+  current_attendance_rate: 94,
+  today_attendance: 'present',
+  last_lesson_score: 88,
+  total_lessons: 20,
+  completed_lessons: 15,
+  upcoming_assessments: 2,
+  overdue_assignments: 0,
+  parent_contact_required: false,
+  special_notes: 'Excellent progress in backstroke technique'
+};
+```
+
+##### Variant: Detailed (Full instructor interface)
+```tsx
 <StudentCard
-  student={{
-    id: '1',
-    name: 'Alex Johnson',
-    avatar: 'https://...',
-    program: 'Swimming',
-    level: 'Intermediate',
-    progress: 75,
-    lastSession: '2024-01-15',
-    status: 'active'
-  }}
-  onPress={handleStudentPress}
-  onEdit={handleEdit}
-  showProgress={true}
-  showActions={true}
+  student={sampleStudent}
   variant="detailed"
+  onPress={handleStudentPress}
+  onAttendancePress={handleAttendance}
+  onPerformancePress={handleGrading}
+  onContactParentPress={handleParentContact}
+  onMoreOptionsPress={handleMoreOptions}
+  showAttendance={true}
+  showPerformance={true}
+  showProgress={true}
+  showQuickActions={true}
+  showAlerts={true}
+  enableQuickAttendance={true}
+  enableQuickGrading={true}
+  showInstructorNotes={true}
 />
 ```
 
-**Variants:** `minimal`, `standard`, `detailed`, `performance`
-**Features:** Progress indicators, status badges, action buttons
-
-#### StudentListCard
-Condensed student card for list views.
-
+##### Variant: Compact (Dashboard overview)
 ```tsx
-import { StudentListCard } from '@academy/mobile-shared';
-
-<StudentListCard
-  student={student}
-  onPress={handlePress}
-  showCheckbox={selectionMode}
-  selected={selectedStudents.includes(student.id)}
-  onSelectionChange={handleSelection}
+<StudentCard
+  student={sampleStudent}
+  variant="compact"
+  onPress={handleStudentPress}
+  showAttendance={true}
+  showPerformance={true}
+  showProgress={false}
+  showQuickActions={false}
+  showAlerts={false}
 />
+```
+
+##### Variant: Dashboard (Metrics focused)
+```tsx
+<StudentCard
+  student={sampleStudent}
+  variant="dashboard"
+  onPress={handleStudentPress}
+  showAttendance={true}
+  showPerformance={true}
+  showProgress={true}
+  showQuickActions={false}
+  showAlerts={true}
+/>
+```
+
+##### Performance-focused Configuration
+```tsx
+// Student needing attention
+const strugglingStudent = {
+  ...sampleStudent,
+  performance_level: 'needs-attention',
+  current_attendance_rate: 78,
+  today_attendance: 'absent',
+  last_lesson_score: 65,
+  overdue_assignments: 2,
+  parent_contact_required: true,
+  special_notes: 'Struggling with floating techniques - needs extra support'
+};
+
+<StudentCard
+  student={strugglingStudent}
+  variant="detailed"
+  onPress={handleStudentPress}
+  onAttendancePress={handleAttendance}
+  onContactParentPress={handleParentContact}
+  showAttendance={true}
+  showPerformance={true}
+  showProgress={true}
+  showQuickActions={true}
+  showAlerts={true}
+  enableQuickAttendance={true}
+  showInstructorNotes={true}
+/>
+```
+
+**Variants:** `compact`, `detailed`, `dashboard`
+**Performance Levels:** `excellent`, `good`, `average`, `needs-attention`, `critical`  
+**Attendance Status:** `present`, `absent`, `late`, `excused`  
+**Features:** 
+- Performance indicators (colored dots on avatar)
+- Attendance status indicators  
+- Progress bars with lesson completion
+- Quick action buttons (attendance, grading, parent contact)
+- Alert chips (overdue assignments, parent contact needed)
+- Instructor notes display
+- Emergency contact information (instructor access)
+
+#### Advanced StudentCard Configurations
+
+##### Multi-select Mode (for bulk operations)
+```tsx
+<StudentCard
+  student={sampleStudent}
+  variant="detailed"
+  onPress={handleSelection}
+  showQuickActions={false}
+  showCheckbox={true}
+  selected={selectedStudents.includes(student.id)}
+  onSelectionChange={handleBulkSelection}
+/>
+```
+
+##### Read-only Mode (for parents/guardians)
+```tsx
+<StudentCard
+  student={sampleStudent}
+  variant="dashboard"
+  onPress={handleViewProgress}
+  showQuickActions={false}
+  enableQuickAttendance={false}
+  enableQuickGrading={false}
+  showInstructorNotes={false}
+  showProgress={true}
+  showAlerts={false}
+/>
+```
+
+##### Critical Status Display
+```tsx
+const criticalStudent = {
+  ...sampleStudent,
+  performance_level: 'critical',
+  current_attendance_rate: 45,
+  today_attendance: 'absent',
+  overdue_assignments: 5,
+  parent_contact_required: true,
+  special_notes: 'Multiple missed sessions - immediate intervention required'
+};
+
+<StudentCard
+  student={criticalStudent}
+  variant="detailed"
+  onPress={handleUrgentReview}
+  onContactParentPress={handleUrgentContact}
+  showAttendance={true}
+  showPerformance={true}
+  showProgress={true}
+  showQuickActions={true}
+  showAlerts={true}
+  showInstructorNotes={true}
+  style={{ borderLeftWidth: 4, borderLeftColor: theme.colors.status.error }}
+/>
+```
+
+#### StudentCard Data Interface
+```tsx
+interface StudentData {
+  // Basic information
+  id: string;
+  first_name: string;
+  last_name: string;
+  email?: string;
+  avatar_url?: string;
+
+  // Program enrollment
+  program_id: string;
+  enrollment_date: string;
+  level?: string;
+  group?: string;
+
+  // Performance metrics (instructor view)
+  performance_level?: 'excellent' | 'good' | 'average' | 'needs-attention' | 'critical';
+  current_attendance_rate?: number;
+  today_attendance?: 'present' | 'absent' | 'late' | 'excused';
+  last_lesson_score?: number;
+  total_lessons?: number;
+  completed_lessons?: number;
+
+  // Instructor alerts
+  upcoming_assessments?: number;
+  overdue_assignments?: number;
+  parent_contact_required?: boolean;
+  special_notes?: string;
+
+  // Emergency contact (instructor access)
+  emergency_contact?: {
+    name: string;
+    phone: string;
+    relationship: string;
+  };
+}
 ```
 
 ### Classroom Management

@@ -18,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomButton, useTheme } from '@academy/mobile-shared';
+import { CustomButton, useTheme, Header } from '@academy/mobile-shared';
 
 interface Booking {
   id: string;
@@ -489,6 +489,7 @@ export const BookingsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
+  const [notificationCount, setNotificationCount] = useState(3);
 
   // Mock bookings data
   const [bookings] = useState<Booking[]>([
@@ -577,31 +578,49 @@ export const BookingsScreen: React.FC = () => {
     console.log('Navigate to create booking');
   };
 
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header with Program Switcher */}
+      <Header
+        title="Bookings"
+        showProgramSwitcher={true}
+        showNotifications={true}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showProfile={false}
+        style={{ paddingTop: insets.top }}
+      />
+
+      {/* Add Booking Button Row */}
       <Animated.View
         entering={FadeInDown.delay(100).springify()}
-        style={[
-          styles.header,
-          { paddingTop: insets.top + theme.spacing.md }
-        ]}
+        style={[styles.headerRow, { paddingHorizontal: theme.spacing.md, paddingTop: theme.spacing.md }]}
       >
-        <View style={styles.headerRow}>
-          <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>My Bookings</Text>
-            <Text style={styles.headerSubtitle}>
-              Manage your swimming sessions
-            </Text>
-          </View>
-          
-          <Pressable
-            onPress={handleNewBooking}
-            style={styles.addButton}
-          >
-            <Ionicons name="add" size={24} color="white" />
-          </Pressable>
+        <View>
+          <Text style={[styles.headerSubtitle, { marginTop: 0 }]}>
+            Manage your swimming sessions
+          </Text>
         </View>
+        
+        <Pressable
+          onPress={handleNewBooking}
+          style={styles.addButton}
+        >
+          <Ionicons name="add" size={24} color="white" />
+        </Pressable>
       </Animated.View>
 
       {/* Stats Overview */}

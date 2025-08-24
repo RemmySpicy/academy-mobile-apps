@@ -207,7 +207,7 @@ export const StudentsScreen: React.FC = () => {
       {/* Enhanced Header */}
       <Header
         title="Students"
-        subtitle="Manage your students and track their progress"
+        showProgramSwitcher={true}
         variant="instructor"
         onSearchPress={handleSearch}
         onFilterPress={handleFilter}
@@ -215,6 +215,7 @@ export const StudentsScreen: React.FC = () => {
         notificationCount={notificationCount}
         showInstructorActions={true}
         showNotifications={true}
+        showProfile={false}
         style={{ paddingTop: insets.top }}
       />
 

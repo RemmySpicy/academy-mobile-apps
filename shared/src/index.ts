@@ -34,6 +34,7 @@ export {
   InfoAlert,
   useErrorMessage,
   Header,
+  StudentCard,
   InstructorDashboard,
   // Animation components
   AnimatedWrapper,
@@ -147,7 +148,7 @@ export {
   PreferencesSupportSection,
   StationProgress,
   GroupedCards,
-  StudentCard,
+  StudentCard as AcademyStudentCard,
 } from './components/academy';
 
 // Phase 4: Enhanced UI Components

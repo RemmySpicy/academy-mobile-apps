@@ -672,8 +672,26 @@ export const useAuthStore = create<AuthStoreState>()(
         is_active: true,
         is_verified: true,
         program_assignments: [{
-          program_id: 'dev_program_1',
-          program_name: 'Development Swimming Program',
+          program_id: 'swimming-1',
+          program_name: 'Swimming Academy',
+          role: isInstructorApp ? UserRole.TUTOR : UserRole.STUDENT,
+          is_active: true,
+          enrolled_at: new Date().toISOString(),
+        }, {
+          program_id: 'football-1',
+          program_name: 'Football Training',
+          role: isInstructorApp ? UserRole.TUTOR : UserRole.STUDENT,
+          is_active: true,
+          enrolled_at: new Date().toISOString(),
+        }, {
+          program_id: 'basketball-1',
+          program_name: 'Basketball Club',
+          role: isInstructorApp ? UserRole.TUTOR : UserRole.STUDENT,
+          is_active: true,
+          enrolled_at: new Date().toISOString(),
+        }, {
+          program_id: 'music-1',
+          program_name: 'Music Academy',
           role: isInstructorApp ? UserRole.TUTOR : UserRole.STUDENT,
           is_active: true,
           enrolled_at: new Date().toISOString(),

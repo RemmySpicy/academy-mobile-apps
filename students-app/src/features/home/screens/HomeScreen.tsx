@@ -7,7 +7,6 @@ import {
   useTheme,
   useProgramContext,
   useAuthStore,
-  ProgramSelector,
 } from '@academy/mobile-shared';
 
 // Sample data for testing
@@ -161,30 +160,15 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-      {/* Enhanced Header */}
+      {/* Enhanced Header with Integrated Program Switcher */}
       <Header
         title="Student Dashboard"
-        variant="student"
-        onSearchPress={handleSearch}
-        onFilterPress={handleFilter}
+        showProgramSwitcher={true}
+        showNotifications={true}
         onNotificationPress={handleNotifications}
         notificationCount={notificationCount}
-        showStudentActions={true}
-        showNotifications={true}
-        showProfile={true}
-        showProgramInfo={true}
         style={{ paddingTop: insets.top }}
       />
-
-      {/* Program Selector */}
-      <View style={styles.programSection}>
-        <ProgramSelector 
-          variant="card" 
-          onProgramChange={(program) => {
-            console.log('Switched to program:', program.name);
-          }}
-        />
-      </View>
 
       {/* Student Dashboard - Using InstructorDashboard as base */}
       <InstructorDashboard
@@ -211,9 +195,5 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  programSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
   },
 });

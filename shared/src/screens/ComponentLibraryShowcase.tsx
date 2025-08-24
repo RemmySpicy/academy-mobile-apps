@@ -24,6 +24,7 @@ import SchedulingSection from './showcase/sections/SchedulingSection';
 import StudentSection from './showcase/sections/StudentSection';
 import AdvancedSection from './showcase/sections/AdvancedSection';
 import HooksSection from './showcase/sections/HooksSection';
+import HeaderSection from './showcase/sections/HeaderSection';
 
 // Phase 4: Enhanced UI Components
 import { CustomButton } from '../components/forms/CustomButton';
@@ -38,6 +39,7 @@ type ShowcaseSection =
   | 'overview'
   | 'ui' 
   | 'modals'
+  | 'headers'
   | 'search' 
   | 'calendar' 
   | 'performance' 
@@ -62,7 +64,7 @@ const ComponentLibraryShowcase: React.FC = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.navScrollContent}
       >
-        {(['overview', 'ui', 'modals', 'search', 'calendar', 'performance', 'scheduling', 'student', 'academy', 'advanced', 'hooks'] as const).map((section) => (
+        {(['overview', 'ui', 'modals', 'headers', 'search', 'calendar', 'performance', 'scheduling', 'student', 'academy', 'advanced', 'hooks'] as const).map((section) => (
           <Chip
             key={section}
             label={section.charAt(0).toUpperCase() + section.slice(1)}
@@ -98,6 +100,10 @@ const ComponentLibraryShowcase: React.FC = () => {
         <View style={styles.statCard}>
           <Text style={styles.statNumber}>12</Text>
           <Text style={styles.statLabel}>Academy-Specific</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>5</Text>
+          <Text style={styles.statLabel}>Header Components</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statNumber}>8</Text>
@@ -150,6 +156,8 @@ const ComponentLibraryShowcase: React.FC = () => {
         return <UIComponentsSection theme={theme} styles={styles} screenDimensions={screenDimensions} />;
       case 'modals':
         return <ModalsSection theme={theme} styles={styles} screenDimensions={screenDimensions} />;
+      case 'headers':
+        return <HeaderSection theme={theme} styles={styles} screenDimensions={screenDimensions} />;
       case 'search':
         return <SearchSection theme={theme} styles={styles} screenDimensions={screenDimensions} />;
       case 'calendar':

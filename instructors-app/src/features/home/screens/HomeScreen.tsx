@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Header, InstructorDashboard, useTheme, useProgramContext, useAuthStore, ProgramSelector } from '@academy/mobile-shared';
+import { Header, InstructorDashboard, useTheme, useProgramContext, useAuthStore } from '@academy/mobile-shared';
 
 // Sample data for testing
 const sampleStudents = [
@@ -195,30 +195,18 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-      {/* Enhanced Header */}
+      {/* Enhanced Header with Integrated Program Switcher */}
       <Header
         title="Instructor Dashboard"
-        variant="instructor"
-        onSearchPress={handleSearch}
-        onFilterPress={handleFilter}
+        showProgramSwitcher={true}
+        showNotifications={true}
         onNotificationPress={handleNotifications}
         notificationCount={notificationCount}
+        onSearchPress={handleSearch}
+        onFilterPress={handleFilter}
         showInstructorActions={true}
-        showNotifications={true}
-        showProfile={true}
-        showProgramInfo={true}
         style={{ paddingTop: insets.top }}
       />
-
-      {/* Program Selector */}
-      <View style={styles.programSection}>
-        <ProgramSelector 
-          variant="card" 
-          onProgramChange={(program) => {
-            console.log('Switched to program:', program.name);
-          }}
-        />
-      </View>
 
       {/* Instructor Dashboard */}
       <InstructorDashboard
@@ -243,9 +231,5 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  programSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
   },
 });

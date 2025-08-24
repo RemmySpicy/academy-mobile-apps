@@ -14,7 +14,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore, useTheme } from '@academy/mobile-shared';
+import { useAuthStore, useTheme, Header } from '@academy/mobile-shared';
 
 interface ProfileMenuSection {
   title: string;
@@ -152,6 +152,7 @@ export const ProfileScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
   const [isParentMode, setIsParentMode] = useState(user?.role === 'parent');
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const handleLogout = () => {
     Alert.alert(
@@ -267,15 +268,39 @@ export const ProfileScreen: React.FC = () => {
       .toUpperCase();
   };
 
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
   return (
     <View style={{
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
+      {/* Header with Program Switcher */}
+      <Header
+        title="Profile"
+        showProgramSwitcher={true}
+        showNotifications={notificationCount > 0}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showProfile={false}
+        style={{ paddingTop: insets.top }}
+      />
+
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: insets.top + theme.spacing.lg,
+          paddingTop: theme.spacing.lg,
           paddingBottom: theme.spacing['3xl'], // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}

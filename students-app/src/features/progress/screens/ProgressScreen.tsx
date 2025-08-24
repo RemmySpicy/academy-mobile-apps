@@ -15,7 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme } from '@academy/mobile-shared';
+import { useTheme, Header } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -574,6 +574,7 @@ export const ProgressScreen: React.FC = () => {
   const styles = useMemo(() => createScreenStyles(theme), [theme]);
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'all'>('month');
+  const [notificationCount, setNotificationCount] = useState(1);
 
   // Mock progress data
   const courseProgress: CourseProgress[] = [
@@ -677,30 +678,44 @@ export const ProgressScreen: React.FC = () => {
   const masterSkills = courseProgress.reduce((acc, course) => 
     acc + course.skills.filter(skill => skill.level === skill.maxLevel).length, 0
   );
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
   const avgProgress = Math.round(
     courseProgress.reduce((acc, course) => acc + course.overallProgress, 0) / courseProgress.length
   );
 
   return (
     <View style={styles.container}>
+      {/* Header with Program Switcher */}
+      <Header
+        title="Progress"
+        showProgramSwitcher={true}
+        showNotifications={true}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showProfile={false}
+        style={{ paddingTop: insets.top }}
+      />
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{
-          paddingTop: insets.top + theme.spacing.lg,
+          paddingTop: theme.spacing.lg,
           paddingBottom: theme.spacing.xxl, // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <Animated.View
-          entering={FadeInDown.delay(100).springify()}
-          style={styles.header}
-        >
-          <Text style={styles.title}>My Progress</Text>
-          <Text style={styles.subtitle}>
-            Track your swimming journey and achievements
-          </Text>
-        </Animated.View>
 
         {/* Period Selector */}
         <Animated.View

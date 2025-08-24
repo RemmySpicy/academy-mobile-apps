@@ -82,6 +82,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const [internalValue, setInternalValue] = useState(value || '');
   const [isFocused, setIsFocused] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const inputRef = useRef<TextInput>(null);
   
   const styles = createStyles(theme, screenDimensions, isFocused, size);
   const currentValue = value !== undefined ? value : internalValue;
@@ -121,6 +122,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     onClear?.();
   };
 
+  const handleSearchIconPress = () => {
+    inputRef.current?.focus();
+  };
+
   const getIconSize = () => {
     const base = screenDimensions.isTablet ? theme.iconSize.md : theme.iconSize.sm;
     switch (size) {
@@ -133,9 +138,14 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const iconSize = getIconSize();
 
   return (
-    <View 
+    <Pressable 
       style={[styles.container, containerStyle]}
+      onPress={handleSearchIconPress}
+      disabled={disabled}
       testID={testID}
+      accessibilityRole="search"
+      accessibilityLabel={placeholder}
+      accessibilityState={{ disabled }}
     >
       {/* Left Icon */}
       <View style={styles.leftIconContainer}>
@@ -158,6 +168,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
       {/* Text Input */}
       <TextInput
+        ref={inputRef}
         {...textInputProps}
         value={currentValue}
         onChangeText={handleChangeText}
@@ -202,7 +213,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           rightIcon
         ) : null}
       </View>
-    </View>
+    </Pressable>
   );
 };
 

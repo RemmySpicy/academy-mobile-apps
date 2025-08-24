@@ -2,6 +2,7 @@ export type ShowcaseSection =
   | 'overview'
   | 'ui' 
   | 'modals'
+  | 'headers'
   | 'search' 
   | 'calendar' 
   | 'performance' 

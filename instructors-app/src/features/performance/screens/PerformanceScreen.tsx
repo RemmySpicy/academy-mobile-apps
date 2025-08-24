@@ -15,7 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -195,6 +195,7 @@ export const PerformanceScreen: React.FC = () => {
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter'>('month');
+  const [notificationCount, setNotificationCount] = useState(4);
 
   const metrics = [
     {
@@ -272,26 +273,44 @@ export const PerformanceScreen: React.FC = () => {
     { key: 'quarter' as const, label: 'This Quarter' },
   ];
 
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
   return (
     <View style={styles.container}>
+      {/* Header with Program Switcher */}
+      <Header
+        title="Performance"
+        showProgramSwitcher={true}
+        variant="instructor"
+        onSearchPress={handleSearch}
+        onFilterPress={handleFilter}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showInstructorActions={true}
+        showNotifications={true}
+        showProfile={false}
+        style={{ paddingTop: insets.top }}
+      />
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{
-          paddingTop: insets.top + 20,
+          paddingTop: 20,
           paddingBottom: 100, // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <Animated.View
-          entering={FadeInDown.delay(100).springify()}
-          style={styles.headerSection}
-        >
-          <Text style={styles.headerTitle}>Performance</Text>
-          <Text style={styles.headerSubtitle}>
-            Analytics and student progress insights
-          </Text>
-        </Animated.View>
 
         {/* Period Selector */}
         <Animated.View

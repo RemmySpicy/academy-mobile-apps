@@ -27,6 +27,7 @@ interface StudentData {
   program_id: string;
   enrollment_date: string;
   level?: string;
+  module?: string;
   group?: string;
 
   // Performance metrics (instructor view)
@@ -43,6 +44,19 @@ interface StudentData {
   parent_contact_required?: boolean;
   special_notes?: string;
 
+  // Academy variant features
+  paymentStatus?: 'fully-paid' | 'partial-paid' | 'unpaid' | 'overdue';
+  studentType?: 'nursery' | 'preschool' | 'regular';
+  sessionType?: 'school-group' | 'private-session' | 'mixed';
+  tags?: string[];
+  progress?: number; // Alternative progress field for academy variant
+  className?: string;
+  attendance?: {
+    attended: number;
+    absence: number;
+    sessions: number;
+  };
+
   // Emergency contact (instructor access)
   emergency_contact?: {
     name: string;
@@ -53,7 +67,7 @@ interface StudentData {
 
 interface StudentCardProps {
   student: StudentData;
-  variant?: 'compact' | 'detailed' | 'dashboard';
+  variant?: 'compact' | 'detailed' | 'dashboard' | 'academy';
 
   // Instructor actions
   onPress?: (student: StudentData) => void;
@@ -68,6 +82,12 @@ interface StudentCardProps {
   showProgress?: boolean;
   showQuickActions?: boolean;
   showAlerts?: boolean;
+
+  // Academy variant options
+  showPaymentStatus?: boolean;
+  showSessionType?: boolean;
+  showTags?: boolean;
+  showStatusIndicator?: boolean;
 
   // Instructor-specific features
   enableQuickAttendance?: boolean;
@@ -94,6 +114,10 @@ const StudentCard: React.FC<StudentCardProps> = ({
   showProgress = true,
   showQuickActions = true,
   showAlerts = true,
+  showPaymentStatus = false,
+  showSessionType = false,
+  showTags = false,
+  showStatusIndicator = false,
   enableQuickAttendance = false,
   enableQuickGrading = false,
   showInstructorNotes = false,
@@ -145,6 +169,79 @@ const StudentCard: React.FC<StudentCardProps> = ({
     );
   };
 
+  // Helper function to format level display
+  const formatLevelDisplay = (level?: string, module?: string) => {
+    let display = '';
+    
+    if (level) {
+      display = `Level ${level}`;
+      if (module) {
+        display += ` Module ${module}`;
+      }
+    }
+    
+    return display || 'No Level';
+  };
+
+  // Academy variant helper functions
+  const getPaymentStatusConfig = (status?: string) => {
+    switch (status) {
+      case 'fully-paid':
+        return {
+          color: theme.colors.status.success,
+          text: 'Fully Paid',
+        };
+      case 'partial-paid':
+        return {
+          color: theme.colors.status.warning,
+          text: 'Partial',
+        };
+      case 'unpaid':
+        return {
+          color: theme.colors.status.error,
+          text: 'Unpaid',
+        };
+      case 'overdue':
+        return {
+          color: theme.colors.status.error,
+          text: 'Overdue',
+        };
+      default:
+        return {
+          color: theme.colors.text.tertiary,
+          text: 'Unknown',
+        };
+    }
+  };
+
+  const getSessionTypeConfig = (sessionType?: string) => {
+    // All session types use the same color (School Group color)
+    const uniformColor = theme.colors.text.secondary;
+    
+    switch (sessionType) {
+      case 'school-group':
+        return {
+          color: uniformColor,
+          text: 'School Group',
+        };
+      case 'private-session':
+        return {
+          color: uniformColor,
+          text: 'Private Session',
+        };
+      case 'mixed':
+        return {
+          color: uniformColor,
+          text: 'Mixed Sessions',
+        };
+      default:
+        return {
+          color: uniformColor,
+          text: 'School Group',
+        };
+    }
+  };
+
   const renderStudentAvatar = () => (
     <View style={styles.avatarContainer}>
       {student.avatar_url ? (
@@ -192,7 +289,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
 
       {student.level && (
         <Text style={styles.studentLevel} numberOfLines={1}>
-          Level {student.level} {student.group && `• Group ${student.group}`}
+          {formatLevelDisplay(student.level, student.module)} {student.group && `• Group ${student.group}`}
         </Text>
       )}
 
@@ -264,67 +361,46 @@ const StudentCard: React.FC<StudentCardProps> = ({
   const renderQuickActions = () => {
     if (!showQuickActions) return null;
 
+    // Create consolidated more options handler that includes all actions
+    const handleMoreOptions = () => {
+      // For demonstration, we'll log the available actions
+      // In a real implementation, this would show a menu/modal with options
+      console.log('More options for student:', student.first_name, student.last_name);
+      console.log('Available actions:');
+      
+      if (enableQuickAttendance && onAttendancePress) {
+        console.log('- Mark Attendance');
+      }
+      if (enableQuickGrading && onPerformancePress) {
+        console.log('- Grade Performance');  
+      }
+      if (onContactParentPress) {
+        console.log('- Contact Parent/Guardian');
+      }
+      if (onMoreOptionsPress) {
+        console.log('- Additional Options');
+      }
+      
+      // Call the original more options handler if provided
+      if (onMoreOptionsPress) {
+        onMoreOptionsPress(student);
+      }
+    };
+
     return (
       <View style={styles.quickActions}>
-        {enableQuickAttendance && onAttendancePress && (
-          <Pressable 
-            onPress={() => onAttendancePress(student)}
-            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
-            accessibilityRole='button'
-            accessibilityLabel='Mark attendance'
-          >
-            <Ionicons
-              name='calendar-outline'
-              size={16}
-              color={theme.colors.interactive.primary}
-            />
-          </Pressable>
-        )}
-
-        {enableQuickGrading && onPerformancePress && (
-          <Pressable 
-            onPress={() => onPerformancePress(student)}
-            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
-            accessibilityRole='button'
-            accessibilityLabel='Grade performance'
-          >
-            <Ionicons
-              name='star-outline'
-              size={16}
-              color={theme.colors.interactive.primary}
-            />
-          </Pressable>
-        )}
-
-        {onContactParentPress && (
-          <Pressable 
-            onPress={() => onContactParentPress(student)}
-            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
-            accessibilityRole='button'
-            accessibilityLabel='Contact parent'
-          >
-            <Ionicons
-              name='people-outline'
-              size={16}
-              color={theme.colors.interactive.primary}
-            />
-          </Pressable>
-        )}
-
-        {onMoreOptionsPress && (
-          <Pressable 
-            onPress={() => onMoreOptionsPress(student)}
-            style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
-            accessibilityRole='button'
-            accessibilityLabel='More options'
-          >
-            <Ionicons
-              name='ellipsis-horizontal-outline'
-              size={16}
-              color={theme.colors.text.secondary}
-            />
-          </Pressable>
-        )}
+        <Pressable 
+          onPress={handleMoreOptions}
+          style={({ pressed }) => [styles.quickActionButton, { opacity: pressed ? 0.8 : 1 }]}
+          accessibilityRole='button'
+          accessibilityLabel={`More options for ${student.first_name} ${student.last_name}`}
+        >
+          <Ionicons
+            name='ellipsis-horizontal-outline'
+            size={16}
+            color={theme.colors.text.secondary}
+          />
+        </Pressable>
       </View>
     );
   };
@@ -375,6 +451,163 @@ const StudentCard: React.FC<StudentCardProps> = ({
       </View>
     );
   };
+
+  // Academy variant render methods
+  const renderAcademyProgressBar = () => {
+    if (!showProgress) return null;
+    
+    // Handle progress from different data formats
+    const progressValue = student.progress ?? student.current_attendance_rate ?? 0;
+    
+    return (
+      <View style={styles.academyProgressContainer}>
+        <View style={styles.academyProgressBar}>
+          <View 
+            style={[
+              styles.academyProgressFill,
+              { width: `${progressValue}%` }
+            ]} 
+          />
+        </View>
+        <Text style={styles.academyProgressText}>{progressValue}%</Text>
+      </View>
+    );
+  };
+
+  const renderAcademyAttendanceStats = () => {
+    if (!showAttendance) return null;
+
+    // Handle both attendance data formats
+    const attendedCount = student.attendance?.attended ?? student.completed_lessons ?? 0;
+    const totalSessions = student.attendance?.sessions ?? student.total_lessons ?? 0;
+    const absenceCount = student.attendance?.absence ?? (totalSessions - attendedCount);
+    
+    return (
+      <View style={styles.academyAttendanceContainer}>
+        <Text style={styles.academyAttendanceText}>
+          Attended: {attendedCount}
+        </Text>
+        <Text style={styles.academyAttendanceText}>
+          Absence: {absenceCount}
+        </Text>
+        <Text style={styles.academyAttendanceText}>
+          Sessions: {totalSessions}
+        </Text>
+      </View>
+    );
+  };
+
+  const renderAcademyTags = () => {
+    const shouldRenderContainer = (showTags && student.tags?.length) || showSessionType || showPaymentStatus;
+    if (!shouldRenderContainer) return null;
+
+    const paymentConfig = getPaymentStatusConfig(student.paymentStatus);
+    const sessionTypeConfig = getSessionTypeConfig(student.sessionType);
+
+    return (
+      <View style={styles.academyTagsContainer}>
+        {/* Render custom tags */}
+        <View style={styles.customTagsContainer}>
+          {showTags && student.tags?.map((tag, index) => (
+            <View key={index} style={styles.customTag}>
+              <Text style={styles.customTagText}>{tag}</Text>
+            </View>
+          ))}
+        </View>
+        
+        {/* Render status indicators */}
+        <View style={styles.statusTagsContainer}>
+          {showSessionType && (
+            <View style={[styles.sessionTypeTag, { backgroundColor: sessionTypeConfig.color }]}>
+              <Text style={[styles.sessionTypeTagText, { color: theme.colors.text.inverse }]}>
+                {sessionTypeConfig.text}
+              </Text>
+            </View>
+          )}
+          
+          {showPaymentStatus && (
+            <View style={[styles.paymentTag, { backgroundColor: paymentConfig.color }]}>
+              <Text style={[styles.paymentTagText, { color: theme.colors.text.inverse }]}>
+                {paymentConfig.text}
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const renderAcademyCard = () => {
+    const paymentConfig = getPaymentStatusConfig(student.paymentStatus);
+    
+    return (
+      <View style={[styles.academyCard, style]}>
+        {/* Top Row - Avatar and Content */}
+        <View style={styles.academyTopRow}>
+          {/* Avatar */}
+          <View style={styles.academyAvatarContainer}>
+            <View style={styles.academyAvatarPlaceholder}>
+              {/* Performance indicator dot */}
+              <View
+                style={[
+                  styles.performanceDot,
+                  {
+                    backgroundColor: getPerformanceColor(student.performance_level),
+                    position: 'absolute',
+                    top: 2,
+                    right: 2,
+                    zIndex: 1,
+                  }
+                ]}
+              />
+              <Ionicons name="person-outline" size={20} color={theme.colors.text.tertiary} />
+            </View>
+          </View>
+
+          {/* Content */}
+          <Pressable
+            style={styles.academyContent}
+            onPress={() => onPress?.(student)}
+            accessibilityRole="button"
+            accessibilityLabel={`Academy student card for ${student.first_name} ${student.last_name}`}
+            testID={testID}
+          >
+            {/* Header */}
+            <View style={styles.academyHeader}>
+              <Text style={styles.academyName}>
+                {`${student.first_name || ''} ${student.last_name || ''}`.trim() || 'Unknown Student'}
+              </Text>
+              <Text style={styles.academyLevel}>
+                {formatLevelDisplay(student.level, student.module)}
+              </Text>
+            </View>
+
+            {/* Progress Bar */}
+            {renderAcademyProgressBar()}
+
+            {/* Attendance Stats */}
+            {renderAcademyAttendanceStats()}
+          </Pressable>
+        </View>
+
+        {/* Full Width Tags and Payment Status */}
+        {renderAcademyTags()}
+
+        {/* Status Indicator */}
+        {showStatusIndicator && (
+          <View style={[
+            styles.statusIndicator,
+            { backgroundColor: paymentConfig.color }
+          ]} />
+        )}
+      </View>
+    );
+  };
+
+  // Return academy variant if specified
+  if (variant === 'academy') {
+    return renderAcademyCard();
+  }
 
   return (
     <Pressable 
@@ -590,6 +823,175 @@ const useThemedStyles = createThemedStyles(theme =>
       color: theme.colors.text.secondary,
       flex: 1,
       fontStyle: 'italic',
+    },
+
+    // Academy variant styles
+    academyCard: {
+      backgroundColor: theme.colors.background.elevated,
+      borderRadius: theme.borderRadius.xl,
+      flexDirection: 'column',
+      marginBottom: theme.spacing[2],
+      overflow: 'hidden',
+      ...theme.elevation.sm,
+      borderWidth: theme.borderWidth.sm,
+      borderColor: theme.colors.border.primary,
+    },
+
+    academyTopRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+
+    academyAvatarContainer: {
+      padding: theme.spacing[3],
+    },
+
+    academyAvatar: {
+      width: theme.spacing[12],
+      height: theme.spacing[12],
+      borderRadius: theme.spacing[6],
+    },
+
+    academyAvatarPlaceholder: {
+      width: theme.spacing[12],
+      height: theme.spacing[12],
+      borderRadius: theme.spacing[6],
+      backgroundColor: theme.colors.background.secondary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: theme.borderWidth.sm,
+      borderColor: theme.colors.border.primary,
+    },
+
+    academyContent: {
+      flex: 1,
+      paddingVertical: theme.spacing[3],
+      paddingRight: theme.spacing[3],
+    },
+
+    academyHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing[2],
+    },
+
+    academyName: {
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+      flex: 1,
+    },
+
+    academyLevel: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+    },
+
+    academyProgressContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing[2],
+    },
+
+    academyProgressBar: {
+      flex: 1,
+      height: theme.spacing[2],
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.sm,
+      overflow: 'hidden',
+      marginRight: theme.spacing[2],
+    },
+
+    academyProgressFill: {
+      height: '100%',
+      backgroundColor: theme.colors.interactive.primary,
+      borderRadius: theme.borderRadius.sm,
+    },
+
+    academyProgressText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+      minWidth: theme.spacing[8],
+      textAlign: 'right',
+    },
+
+    academyAttendanceContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing[2],
+    },
+
+    academyAttendanceText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+    },
+
+    academyTagsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing[3],
+      paddingBottom: theme.spacing[3],
+    },
+
+    customTagsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing[1],
+      flex: 1,
+    },
+
+    statusTagsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing[1],
+    },
+
+    customTag: {
+      backgroundColor: theme.colors.background.secondary,
+      paddingHorizontal: theme.spacing[2],
+      paddingVertical: theme.spacing[1],
+      borderRadius: theme.borderRadius.sm,
+      borderWidth: theme.borderWidth.sm,
+      borderColor: theme.colors.border.primary,
+    },
+
+    customTagText: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    sessionTypeTag: {
+      paddingHorizontal: theme.spacing[2],
+      paddingVertical: theme.spacing[1],
+      borderRadius: theme.borderRadius.sm,
+    },
+
+    sessionTypeTagText: {
+      ...theme.typography.caption.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    paymentTag: {
+      paddingHorizontal: theme.spacing[2],
+      paddingVertical: theme.spacing[1],
+      borderRadius: theme.borderRadius.sm,
+    },
+
+    paymentTagText: {
+      ...theme.typography.caption.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    statusIndicator: {
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      bottom: 0,
+      width: theme.spacing[1],
     },
   })
 );

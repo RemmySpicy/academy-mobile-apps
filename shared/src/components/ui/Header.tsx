@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
-import { View, Text, Pressable, Image, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, Pressable, Image, StyleSheet, ViewStyle, TextStyle, Modal, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useProgramContext } from '../program/ProgramContextProvider';
 import { useAuthStore } from '../../store/authStore';
+import { ProgramContext } from '../../types';
 
 // Header variants for different use cases
 type HeaderVariant =
@@ -26,8 +27,9 @@ interface HeaderProps {
   showNotifications?: boolean;
   notificationCount?: number;
 
-  // Program context (for instructors)
+  // Program context
   showProgramInfo?: boolean;
+  showProgramSwitcher?: boolean;
 
   // User profile
   onProfilePress?: () => void;
@@ -59,6 +61,7 @@ const Header: React.FC<HeaderProps> = ({
   showNotifications = false,
   notificationCount = 0,
   showProgramInfo = false,
+  showProgramSwitcher = false,
   onProfilePress,
   showProfile = true,
   userImageUri,
@@ -73,9 +76,31 @@ const Header: React.FC<HeaderProps> = ({
   testID,
 }) => {
   const { theme } = useTheme();
-  const { currentProgram } = useProgramContext();
+  const { currentProgram, availablePrograms, switchProgram, isLoading } = useProgramContext();
   const { user } = useAuthStore();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const [showProgramModal, setShowProgramModal] = useState(false);
+
+  const handleProgramSwitch = async (program: ProgramContext) => {
+    if (program.id === currentProgram?.id) {
+      setShowProgramModal(false);
+      return;
+    }
+
+    try {
+      await switchProgram(program.id);
+      setShowProgramModal(false);
+    } catch (error: any) {
+      Alert.alert(
+        'Switch Failed',
+        error.message || 'Failed to switch program',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  // Get program code (first 4 characters, uppercase)
+  const programCode = currentProgram?.name?.substring(0, 4).toUpperCase() || 'TEST';
 
   // Auto-configure based on variant
   React.useEffect(() => {
@@ -111,6 +136,35 @@ const Header: React.FC<HeaderProps> = ({
             size={24}
             color={theme.colors.text.primary}
           />
+        </Pressable>
+      );
+    }
+
+    if (showProgramSwitcher) {
+      const hasMultiplePrograms = availablePrograms.length > 1;
+      
+      return (
+        <Pressable 
+          onPress={hasMultiplePrograms ? () => setShowProgramModal(true) : undefined}
+          style={({ pressed }) => [
+            { opacity: pressed && hasMultiplePrograms ? 0.8 : 1 }, 
+            styles.programSwitcherButton,
+            !hasMultiplePrograms && styles.programSwitcherButtonDisabled
+          ]}
+          accessibilityRole='button'
+          accessibilityLabel={hasMultiplePrograms ? `Switch program. Current: ${currentProgram?.name}` : `Current program: ${currentProgram?.name}`}
+          testID={`${testID}-program-switcher`}
+          disabled={isLoading || !hasMultiplePrograms}
+        >
+          <Text style={styles.programCode}>{programCode}</Text>
+          {hasMultiplePrograms && (
+            <Ionicons
+              name='chevron-down-outline'
+              size={16}
+              color={theme.colors.text.secondary}
+              style={styles.dropdownIcon}
+            />
+          )}
         </Pressable>
       );
     }
@@ -245,15 +299,96 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <View
-      style={[styles.container, backgroundColor && { backgroundColor }, style]}
-      accessibilityLabel={accessibilityLabel || `Header: ${title}`}
-      testID={testID}
-    >
-      {renderLeftSection()}
-      {renderCenterSection()}
-      {renderRightSection()}
-    </View>
+    <>
+      <View
+        style={[styles.container, backgroundColor && { backgroundColor }, style]}
+        accessibilityLabel={accessibilityLabel || `Header: ${title}`}
+        testID={testID}
+      >
+        {renderLeftSection()}
+        {renderCenterSection()}
+        {renderRightSection()}
+      </View>
+
+      {/* Program Switching Modal */}
+      {showProgramSwitcher && (
+        <Modal
+          visible={showProgramModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowProgramModal(false)}
+        >
+          <Pressable 
+            style={styles.modalBackdrop}
+            onPress={() => setShowProgramModal(false)}
+          >
+            <View
+              style={styles.modalContainer}
+              onStartShouldSetResponder={() => true}
+            >
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Switch Program</Text>
+                <Pressable 
+                  onPress={() => setShowProgramModal(false)}
+                  style={styles.closeButton}
+                >
+                  <Ionicons name="close" size={24} color={theme.colors.text.secondary} />
+                </Pressable>
+              </View>
+
+              <FlatList
+                data={availablePrograms}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <Pressable 
+                    style={[
+                      styles.programOption,
+                      {
+                        backgroundColor: item.id === currentProgram?.id 
+                          ? theme.colors.background.elevated 
+                          : 'transparent',
+                      }
+                    ]}
+                    onPress={() => handleProgramSwitch(item)}
+                  >
+                    <View style={styles.programOptionContent}>
+                      <Text style={[
+                        styles.programOptionCode,
+                        {
+                          color: item.id === currentProgram?.id 
+                            ? theme.colors.interactive.primary 
+                            : theme.colors.text.primary,
+                        }
+                      ]}>
+                        {item.name?.substring(0, 4).toUpperCase()}
+                      </Text>
+                      <Text style={[
+                        styles.programOptionName,
+                        {
+                          color: item.id === currentProgram?.id 
+                            ? theme.colors.interactive.primary 
+                            : theme.colors.text.secondary,
+                        }
+                      ]}>
+                        {item.name}
+                      </Text>
+                    </View>
+                    {item.id === currentProgram?.id && (
+                      <Ionicons 
+                        name="checkmark" 
+                        size={20} 
+                        color={theme.colors.interactive.primary} 
+                      />
+                    )}
+                  </Pressable>
+                )}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+          </Pressable>
+        </Modal>
+      )}
+    </>
   );
 };
 
@@ -367,6 +502,101 @@ const createStyles = (theme: any) =>
       color: theme.colors.text.inverse,
       fontWeight: theme.fontConfig.fontWeight.bold,
       fontSize: theme.fontSizes.xs,
+    },
+
+    // Program Switcher Styles
+    programSwitcherButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing[3],
+      paddingVertical: theme.spacing[2],
+      backgroundColor: theme.colors.background.elevated,
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      minHeight: theme.safeArea.minTouchTarget.height,
+    },
+
+    programSwitcherButtonDisabled: {
+      backgroundColor: theme.colors.background.primary,
+      borderColor: theme.colors.border.secondary,
+    },
+
+    programCode: {
+      ...theme.typography.body.base,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      fontSize: theme.fontSizes.sm,
+    },
+
+    dropdownIcon: {
+      marginLeft: theme.spacing[1],
+    },
+
+    // Modal Styles
+    modalBackdrop: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+
+    modalContainer: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      maxWidth: 300,
+      width: '90%',
+      maxHeight: 400,
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 8,
+      elevation: 8,
+    },
+
+    modalHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[3],
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border.primary,
+    },
+
+    modalTitle: {
+      ...theme.typography.heading.h4,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+
+    closeButton: {
+      padding: theme.spacing[1],
+    },
+
+    programOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[3],
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border.primary,
+    },
+
+    programOptionContent: {
+      flex: 1,
+    },
+
+    programOptionCode: {
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      fontSize: theme.fontSizes.base,
+    },
+
+    programOptionName: {
+      ...theme.typography.body.sm,
+      marginTop: theme.spacing[1],
     },
   });
 

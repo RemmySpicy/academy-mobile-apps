@@ -17,7 +17,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, createThemedStyles, Badge } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Badge, Header } from '@academy/mobile-shared';
 
 interface Student {
   id: string;
@@ -144,6 +144,7 @@ export const AttendanceScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
+  const [notificationCount, setNotificationCount] = useState(2);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Mock data - replace with real API call
@@ -202,21 +203,38 @@ export const AttendanceScreen: React.FC = () => {
     }
   };
 
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    console.log('Filter pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+    setNotificationCount(0);
+  };
+
   const completedCount = classes.filter(c => c.attendanceMarked).length;
   const pendingCount = classes.length - completedCount;
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <Animated.View
-        entering={FadeInDown.delay(100).springify()}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
-      >
-        <Text style={styles.headerTitle}>Attendance</Text>
-        <Text style={styles.headerSubtitle}>
-          Mark and track student attendance
-        </Text>
-      </Animated.View>
+      {/* Header with Program Switcher */}
+      <Header
+        title="Attendance"
+        showProgramSwitcher={true}
+        variant="instructor"
+        onSearchPress={handleSearch}
+        onFilterPress={handleFilter}
+        onNotificationPress={handleNotifications}
+        notificationCount={notificationCount}
+        showInstructorActions={true}
+        showNotifications={true}
+        showProfile={false}
+        style={{ paddingTop: insets.top }}
+      />
 
       {/* Date Selector & Stats */}
       <Animated.View

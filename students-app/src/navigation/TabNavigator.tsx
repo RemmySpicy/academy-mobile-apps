@@ -49,7 +49,7 @@ export const TabNavigator: React.FC = () => {
               iconName = focused ? 'trophy' : 'trophy-outline';
               break;
             case 'ProfileTab':
-              iconName = focused ? 'person' : 'person-outline';
+              iconName = focused ? 'menu' : 'menu-outline';
               break;
             case 'DesignSystemTab':
               iconName = focused ? 'color-palette' : 'color-palette-outline';
@@ -103,7 +103,7 @@ export const TabNavigator: React.FC = () => {
       <Tab.Screen 
         name="ProfileTab" 
         component={ProfileNavigator}
-        options={{ tabBarLabel: 'Profile' }}
+        options={{ tabBarLabel: 'Menu' }}
       />
 
       {/* Development-only Design System tabs */}

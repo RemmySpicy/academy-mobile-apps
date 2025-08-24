@@ -14,7 +14,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore, useTheme, Header } from '@academy/mobile-shared';
+import { useAuthStore, useTheme, Header, MenuList, MenuItem } from '@academy/mobile-shared';
 
 interface ProfileMenuSection {
   title: string;
@@ -136,10 +136,11 @@ const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
 };
 
 /**
- * Profile Screen - User Profile Management
+ * Menu Screen - Main Navigation Hub
  * 
  * Features:
  * - User profile overview
+ * - Navigation grid with MenuList component
  * - Account settings and preferences
  * - Payment method management
  * - Notification settings
@@ -147,7 +148,7 @@ const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
  * - Parent/Student role switching
  * - Privacy and security settings
  */
-export const ProfileScreen: React.FC = () => {
+export const MenuScreen: React.FC = () => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
@@ -288,7 +289,7 @@ export const ProfileScreen: React.FC = () => {
     }}>
       {/* Header with Program Switcher */}
       <Header
-        title="Profile"
+        title="Menu"
         showProgramSwitcher={true}
         showNotifications={notificationCount > 0}
         onNotificationPress={handleNotifications}
@@ -456,6 +457,125 @@ export const ProfileScreen: React.FC = () => {
               </View>
             </View>
           </View>
+        </Animated.View>
+
+        {/* Navigation Grid using MenuList */}
+        <Animated.View
+          entering={FadeInDown.delay(200).springify()}
+          style={{
+            paddingHorizontal: theme.spacing.lg,
+            marginBottom: theme.spacing['2xl'],
+          }}
+        >
+          <Text
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: theme.fontSizes.lg,
+              fontWeight: theme.fontConfig.fontWeight.semibold,
+              marginBottom: theme.spacing.md,
+            }}
+          >
+            Quick Actions
+          </Text>
+          
+          <MenuList
+            items={[
+              {
+                id: 'our-courses',
+                title: 'Our Courses',
+                icon: 'school',
+                onPress: () => console.log('Navigate to our courses'),
+                backgroundColor: theme.isDark ? '#1a365d' : '#e8f4fd',
+                iconColor: theme.colors.interactive.primary,
+              },
+              {
+                id: 'our-services',
+                title: 'Our Services',
+                icon: 'business',
+                onPress: () => console.log('Navigate to our services'),
+                backgroundColor: theme.isDark ? '#2d3a4f' : '#f0f4ff',
+                iconColor: theme.colors.interactive.accent,
+              },
+              {
+                id: 'achievements',
+                title: 'Achievements',
+                icon: 'trophy',
+                onPress: () => console.log('Navigate to achievements'),
+                badge: '3',
+                backgroundColor: theme.isDark ? '#1e4a3f' : '#e8f5e8',
+                iconColor: theme.colors.status.success,
+              },
+              {
+                id: 'store',
+                title: 'Store',
+                icon: 'storefront',
+                onPress: () => console.log('Navigate to store'),
+                backgroundColor: theme.isDark ? '#4a2f1a' : '#fff3cd',
+                iconColor: theme.colors.status.warning,
+              },
+              {
+                id: 'transactions',
+                title: 'Transactions',
+                icon: 'card',
+                onPress: () => console.log('Navigate to transactions'),
+                backgroundColor: theme.isDark ? '#2d1b4e' : '#f3e8ff',
+                iconColor: theme.colors.interactive.purple,
+              },
+              {
+                id: 'referrals',
+                title: 'Referrals',
+                icon: 'people',
+                onPress: () => console.log('Navigate to referrals'),
+                backgroundColor: theme.isDark ? '#1f3a3d' : '#e0f7fa',
+                iconColor: theme.colors.interactive.accent,
+              },
+              {
+                id: 'my-schedule',
+                title: 'My Schedule',
+                icon: 'calendar',
+                onPress: () => console.log('Navigate to my schedule'),
+                backgroundColor: theme.isDark ? '#3a2f1f' : '#fef7e0',
+                iconColor: theme.colors.status.warning,
+              },
+              {
+                id: 'progress-report',
+                title: 'Progress Report',
+                icon: 'trending-up',
+                onPress: () => console.log('Navigate to progress report'),
+                backgroundColor: theme.isDark ? '#1e3a4a' : '#e8f4f8',
+                iconColor: theme.colors.interactive.primary,
+              },
+              {
+                id: 'locate-us',
+                title: 'Locate Us',
+                icon: 'location',
+                onPress: () => console.log('Navigate to locate us'),
+                backgroundColor: theme.isDark ? '#4a1e3d' : '#fce4ec',
+                iconColor: theme.colors.status.error,
+              },
+              {
+                id: 'contact-us',
+                title: 'Contact Us',
+                icon: 'mail',
+                onPress: () => console.log('Navigate to contact us'),
+                backgroundColor: theme.isDark ? '#2f4a1a' : '#f1f8e9',
+                iconColor: theme.colors.status.success,
+              },
+              {
+                id: 'help-support',
+                title: 'Help & Support',
+                icon: 'help-circle',
+                onPress: () => console.log('Navigate to help & support'),
+                backgroundColor: theme.isDark ? '#4a3a1e' : '#fff8dc',
+                iconColor: theme.colors.icon.secondary,
+              },
+            ]}
+            columns={2}
+            columnWidth={160}
+            spacing={theme.spacing.md}
+            variant="card"
+            scrollEnabled={false}
+          />
         </Animated.View>
 
         {/* Menu Sections */}

@@ -60,23 +60,33 @@ const MenuList: React.FC<MenuListProps> = ({
   }, [columns, width, columnWidth, spacing]);
 
   const colorVariants = useMemo(() => {
+    // Use proper Academy theme colors with transparency
+    const baseColors = {
+      blue: theme.colors.interactive.primary,
+      purple: '#8B5CF6', // Standard purple color
+      pink: theme.colors.status.error,
+      yellow: theme.colors.status.warning,
+      green: theme.colors.status.success,
+      orange: '#F97316', // Fallback orange color
+    };
+    
     if (theme.isDark) {
       return {
-        darkBlue: '#1a3d5c',
-        darkPurple: '#2d1b4e',
-        darkPink: '#4a1e3d',
-        darkYellow: '#4a3a1e',
-        darkGreen: '#1e4a1e',
-        darkOrange: '#4a2f1a',
+        darkBlue: baseColors.blue + '20',
+        darkPurple: baseColors.purple + '20',
+        darkPink: baseColors.pink + '20',
+        darkYellow: baseColors.yellow + '20',
+        darkGreen: baseColors.green + '20',
+        darkOrange: baseColors.orange + '20',
       };
     }
     return {
-      lightBlue: theme.colors.background.accent || '#dcf9f1',
-      lightPurple: theme.colors.background.secondary || '#DCD5F4',
-      lightPink: '#F9DCF0',
-      lightYellow: '#F9EFDC',
-      lightGreen: '#E8F5E8',
-      lightOrange: '#FFE4B5',
+      lightBlue: baseColors.blue + '15',
+      lightPurple: baseColors.purple + '15',
+      lightPink: baseColors.pink + '15',
+      lightYellow: baseColors.yellow + '15',
+      lightGreen: baseColors.green + '15',
+      lightOrange: baseColors.orange + '15',
     };
   }, [theme]);
 
@@ -84,6 +94,13 @@ const MenuList: React.FC<MenuListProps> = ({
     const colors = Object.values(colorVariants);
     return colors[index % colors.length];
   };
+
+  // Calculate dynamic item width based on available space
+  const itemWidth = useMemo(() => {
+    const availableWidth = width - (spacing * 2);
+    const totalSpacing = (calculatedColumns - 1) * spacing;
+    return (availableWidth - totalSpacing) / calculatedColumns;
+  }, [width, calculatedColumns, spacing]);
 
   const renderMenuItem: ListRenderItem<MenuItem> = ({ item, index }) => {
     const itemBackgroundColor = item.backgroundColor || 
@@ -102,16 +119,16 @@ const MenuList: React.FC<MenuListProps> = ({
           { 
             backgroundColor: itemBackgroundColor,
             opacity,
-            width: columnWidth,
+            width: itemWidth,
           },
           itemStyle,
         ]}
         onPress={item.onPress}
         disabled={isDisabled}
         accessibilityRole="button"
-        accessibilityLabel={item.title}
+        accessibilityLabel={`${item.title}${item.badge ? `, ${item.badge} notifications` : ''}`}
         accessibilityHint={item.description}
-        accessibilityState={{ disabled: isDisabled }}
+        accessibilityState={{ disabled: isDisabled, selected: false }}
       >
         <View style={styles.itemContent}>
           {/* Icon or Image */}
@@ -171,7 +188,6 @@ const MenuList: React.FC<MenuListProps> = ({
         keyExtractor={keyExtractor}
         numColumns={calculatedColumns}
         contentContainerStyle={[styles.container, contentContainerStyle]}
-        ItemSeparatorComponent={() => <View style={{ height: spacing }} />}
         columnWrapperStyle={calculatedColumns > 1 ? styles.row : undefined}
         showsVerticalScrollIndicator={false}
         key={`${calculatedColumns}-${variant}`} // Force re-render when columns change
@@ -186,7 +202,6 @@ const MenuList: React.FC<MenuListProps> = ({
         renderItem={renderMenuItem}
         keyExtractor={keyExtractor}
         numColumns={calculatedColumns}
-        ItemSeparatorComponent={() => <View style={{ height: spacing }} />}
         columnWrapperStyle={calculatedColumns > 1 ? styles.row : undefined}
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
@@ -198,17 +213,18 @@ const MenuList: React.FC<MenuListProps> = ({
 
 const createStyles = (theme: any, spacing: number) => StyleSheet.create({
   container: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.lg,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
   },
   row: {
     justifyContent: 'space-between',
-    paddingHorizontal: spacing / 2,
+    paddingHorizontal: 0,
+    marginBottom: spacing,
   },
   menuItem: {
     borderRadius: theme.borderRadius.lg,
-    marginHorizontal: spacing / 2,
-    marginBottom: spacing,
+    marginHorizontal: 0,
+    marginBottom: 0,
     minHeight: 100,
   },
   cardItem: {
@@ -227,7 +243,7 @@ const createStyles = (theme: any, spacing: number) => StyleSheet.create({
   },
   itemContent: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   iconContainer: {
     position: 'relative',
@@ -261,13 +277,13 @@ const createStyles = (theme: any, spacing: number) => StyleSheet.create({
     textAlign: 'center',
   },
   textContainer: {
-    flex: 1,
+    flex: 0,
   },
   itemTitle: {
     fontSize: theme.fontSizes.body,
     fontWeight: theme.fontConfig.fontWeight.semibold,
     lineHeight: theme.typography.lineHeight?.body || 20,
-    marginBottom: theme.spacing.xs,
+    marginTop: theme.spacing.xs,
   },
   itemDescription: {
     fontSize: theme.fontSizes.small,

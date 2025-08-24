@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import { MenuScreen } from '../screens/MenuScreen';
 import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { PaymentMethodsScreen } from '../screens/PaymentMethodsScreen';
@@ -27,7 +27,7 @@ export const ProfileNavigator: React.FC = () => {
     >
       <Stack.Screen 
         name="ProfileMain" 
-        component={ProfileScreen}
+        component={MenuScreen}
       />
       <Stack.Screen 
         name="EditProfile" 

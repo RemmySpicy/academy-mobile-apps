@@ -7,7 +7,7 @@ import { HomeNavigator } from '../features/home/navigation/HomeNavigator';
 import { CoursesNavigator } from '../features/courses/navigation/CoursesNavigator';
 import { BookingsNavigator } from '../features/bookings/navigation/BookingsNavigator';
 import { ProgressNavigator } from '../features/progress/navigation/ProgressNavigator';
-import { ProfileNavigator } from '../features/profile/navigation/ProfileNavigator';
+import { MenuNavigator } from '../features/menu/navigation/MenuNavigator';
 
 // Development-only imports
 import { DesignSystemShowcase, FormExamplesScreen, ComponentLibraryShowcase } from '@academy/mobile-shared';
@@ -17,7 +17,7 @@ export type TabParamList = {
   CoursesTab: undefined;
   BookingsTab: undefined;
   ProgressTab: undefined;
-  ProfileTab: undefined;
+  MenuTab: undefined;
   DesignSystemTab?: undefined; // Development only
   FormsTab?: undefined; // Development only
   ComponentsTab?: undefined; // Development only
@@ -48,7 +48,7 @@ export const TabNavigator: React.FC = () => {
             case 'ProgressTab':
               iconName = focused ? 'trophy' : 'trophy-outline';
               break;
-            case 'ProfileTab':
+            case 'MenuTab':
               iconName = focused ? 'menu' : 'menu-outline';
               break;
             case 'DesignSystemTab':
@@ -101,8 +101,8 @@ export const TabNavigator: React.FC = () => {
         options={{ tabBarLabel: 'Progress' }}
       />
       <Tab.Screen 
-        name="ProfileTab" 
-        component={ProfileNavigator}
+        name="MenuTab" 
+        component={MenuNavigator}
         options={{ tabBarLabel: 'Menu' }}
       />
 

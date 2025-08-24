@@ -4,9 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, Header } from '@academy/mobile-shared';
 import { AppMenuScreen } from '../screens/AppMenuScreen';
-import { EditProfileScreen } from '../screens/EditProfileScreen';
-import { SettingsScreen } from '../screens/SettingsScreen';
-import { PaymentMethodsScreen } from '../screens/PaymentMethodsScreen';
+import { EditProfileScreen } from '../../profile/screens/EditProfileScreen';
+import { SettingsScreen } from '../../settings/screens/SettingsScreen';
+import { PaymentMethodsScreen } from '../../payments/screens/PaymentMethodsScreen';
 
 // Import screens from existing features
 import { CoursesScreen } from '../../courses/screens/CoursesScreen';
@@ -22,8 +22,8 @@ import { LocationScreen } from '../../location/screens/LocationScreen';
 import { ContactScreen } from '../../contact/screens/ContactScreen';
 import { HelpScreen } from '../../help/screens/HelpScreen';
 
-export type ProfileStackParamList = {
-  ProfileMain: undefined;
+export type MenuStackParamList = {
+  MenuMain: undefined;
   EditProfile: undefined;
   Settings: undefined;
   PaymentMethods: undefined;
@@ -47,9 +47,9 @@ export type ProfileStackParamList = {
 };
 
 
-const Stack = createNativeStackNavigator<ProfileStackParamList>();
+const Stack = createNativeStackNavigator<MenuStackParamList>();
 
-export const ProfileNavigator: React.FC = () => {
+export const MenuNavigator: React.FC = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -57,7 +57,7 @@ export const ProfileNavigator: React.FC = () => {
       }}
     >
       <Stack.Screen 
-        name="ProfileMain" 
+        name="MenuMain" 
         component={AppMenuScreen}
       />
       <Stack.Screen 

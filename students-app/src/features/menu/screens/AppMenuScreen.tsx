@@ -12,11 +12,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { useAuthStore, useTheme, Header, MenuList } from '@academy/mobile-shared';
-import { ProfileStackParamList } from '../navigation/ProfileNavigator';
+import { MenuStackParamList } from '../navigation/MenuNavigator';
 
-type AppMenuScreenNavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ProfileMain'>;
+type AppMenuScreenNavigationProp = NativeStackNavigationProp<MenuStackParamList, 'MenuMain'>;
 
-interface ProfileMenuItem {
+interface MenuItem {
   id: string;
   title: string;
   subtitle?: string;
@@ -27,7 +27,7 @@ interface ProfileMenuItem {
   badge?: string;
 }
 
-const ProfileMenuItemComponent: React.FC<{ item: ProfileMenuItem; index: number }> = ({
+const MenuItemComponent: React.FC<{ item: MenuItem; index: number }> = ({
   item,
   index,
 }) => {
@@ -153,7 +153,7 @@ export const AppMenuScreen: React.FC = () => {
       .toUpperCase();
   };
 
-  const accountMenuItems: ProfileMenuItem[] = [
+  const accountMenuItems: MenuItem[] = [
     {
       id: 'edit-profile',
       title: 'Edit Profile',
@@ -180,7 +180,7 @@ export const AppMenuScreen: React.FC = () => {
     }] : []),
   ];
 
-  const settingsMenuItems: ProfileMenuItem[] = [
+  const settingsMenuItems: MenuItem[] = [
     {
       id: 'notifications',
       title: 'Notifications',
@@ -208,7 +208,7 @@ export const AppMenuScreen: React.FC = () => {
     },
   ];
 
-  const supportMenuItems: ProfileMenuItem[] = [
+  const supportMenuItems: MenuItem[] = [
     {
       id: 'help',
       title: 'Help & Support',
@@ -691,7 +691,7 @@ export const AppMenuScreen: React.FC = () => {
           </Animated.Text>
           
           {accountMenuItems.map((item, index) => (
-            <ProfileMenuItemComponent
+            <MenuItemComponent
               key={item.id}
               item={item}
               index={index}
@@ -714,7 +714,7 @@ export const AppMenuScreen: React.FC = () => {
           </Animated.Text>
           
           {settingsMenuItems.map((item, index) => (
-            <ProfileMenuItemComponent
+            <MenuItemComponent
               key={item.id}
               item={item}
               index={index}
@@ -737,7 +737,7 @@ export const AppMenuScreen: React.FC = () => {
           </Animated.Text>
           
           {supportMenuItems.map((item, index) => (
-            <ProfileMenuItemComponent
+            <MenuItemComponent
               key={item.id}
               item={item}
               index={index}

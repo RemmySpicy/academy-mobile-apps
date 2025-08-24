@@ -1,30 +1,20 @@
-import React, { useState, useMemo } from 'react';
-import { View,
+import React, { useState } from 'react';
+import {
+  View,
   Text,
   ScrollView,
   Pressable,
   Alert,
-  StyleSheet } from 'react-native';
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, {
-  FadeInDown,
-  FadeInRight,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
-import { useAuthStore, useTheme, Header, MenuList, MenuItem } from '@academy/mobile-shared';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import { useAuthStore, useTheme, Header, MenuList } from '@academy/mobile-shared';
 import { ProfileStackParamList } from '../navigation/ProfileNavigator';
 
-type MenuScreenNavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ProfileMain'>;
-
-interface ProfileMenuSection {
-  title: string;
-  items: ProfileMenuItem[];
-}
+type AppMenuScreenNavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ProfileMain'>;
 
 interface ProfileMenuItem {
   id: string;
@@ -37,76 +27,53 @@ interface ProfileMenuItem {
   badge?: string;
 }
 
-interface ProfileMenuItemProps extends ProfileMenuItem {
-  index: number;
-}
-
-const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
-  title,
-  subtitle,
-  icon,
-  color,
-  onPress,
-  showChevron = true,
-  badge,
+const ProfileMenuItemComponent: React.FC<{ item: ProfileMenuItem; index: number }> = ({
+  item,
   index,
 }) => {
   const { theme } = useTheme();
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
+  
   return (
     <Animated.View
       entering={FadeInRight.delay(index * 50).springify()}
-      style={animatedStyle}
+      style={{
+        backgroundColor: theme.colors.background.primary,
+        borderRadius: theme.borderRadius.xl,
+        padding: theme.spacing.md,
+        marginBottom: theme.spacing.sm,
+        borderWidth: 1,
+        borderColor: theme.colors.border.primary,
+        ...theme.elevation.sm,
+      }}
     >
-      <Pressable
-        onPress={onPress}
-        onPressIn={() => {
-          scale.value = withSpring(0.98);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1);
-        }}
-        style={{
-          backgroundColor: theme.colors.background.primary,
-          borderRadius: theme.borderRadius.xl,
-          padding: theme.spacing.md,
-          borderWidth: 1,
-          borderColor: theme.colors.border.primary,
-          marginBottom: theme.spacing.sm,
-          ...theme.elevation.sm,
-        }}
-      >
+      <Pressable onPress={item.onPress}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: theme.spacing.md,
-              backgroundColor: `${color}15`,
-            }}
-          >
-            <Ionicons name={icon} size={20} color={color} />
+          <View style={{
+            width: 40,
+            height: 40,
+            backgroundColor: `${item.color}15`,
+            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: theme.spacing.md,
+          }}>
+            <Ionicons name={item.icon} size={20} color={item.color} />
           </View>
           
           <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
               <Text style={{
                 color: theme.colors.text.primary,
                 fontWeight: theme.fontConfig.fontWeight.medium,
                 fontSize: theme.fontSizes.base,
-                flex: 1,
               }}>
-                {title}
+                {item.title}
               </Text>
-              {badge && (
+              {item.badge && (
                 <View style={{
                   backgroundColor: theme.colors.status.error,
                   borderRadius: theme.borderRadius.full,
@@ -118,20 +85,20 @@ const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
                     color: 'white',
                     fontSize: theme.fontSizes.xs,
                     fontWeight: theme.fontConfig.fontWeight.bold,
-                  }}>{badge}</Text>
+                  }}>{item.badge}</Text>
                 </View>
               )}
             </View>
-            {subtitle && (
+            {item.subtitle && (
               <Text style={{
                 color: theme.colors.text.secondary,
                 fontSize: theme.fontSizes.sm,
                 marginTop: 4,
-              }}>{subtitle}</Text>
+              }}>{item.subtitle}</Text>
             )}
           </View>
           
-          {showChevron && (
+          {item.showChevron !== false && (
             <Ionicons name="chevron-forward" size={20} color={theme.colors.icon.tertiary} />
           )}
         </View>
@@ -140,26 +107,21 @@ const ProfileMenuItemComponent: React.FC<ProfileMenuItemProps> = ({
   );
 };
 
-/**
- * Menu Screen - Main Navigation Hub
- * 
- * Features:
- * - User profile overview
- * - Navigation grid with MenuList component
- * - Account settings and preferences
- * - Payment method management
- * - Notification settings
- * - Help and support
- * - Parent/Student role switching
- * - Privacy and security settings
- */
-export const MenuScreen: React.FC = () => {
+export const AppMenuScreen: React.FC = () => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
-  const navigation = useNavigation<MenuScreenNavigationProp>();
+  const navigation = useNavigation<AppMenuScreenNavigationProp>();
+  const [notificationCount] = useState(0);
   const [isParentMode, setIsParentMode] = useState(user?.role === 'parent');
-  const [notificationCount, setNotificationCount] = useState(0);
+
+  const handleSearch = () => {
+    console.log('Search pressed');
+  };
+
+  const handleNotifications = () => {
+    console.log('Notifications pressed');
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -181,91 +143,7 @@ export const MenuScreen: React.FC = () => {
 
   const toggleParentMode = () => {
     setIsParentMode(!isParentMode);
-    // In a real app, this would switch the user context
   };
-
-  const menuSections: ProfileMenuSection[] = [
-    {
-      title: 'Account',
-      items: [
-        {
-          id: 'edit-profile',
-          title: 'Edit Profile',
-          subtitle: 'Update your personal information',
-          icon: 'person-outline',
-          color: theme.colors.interactive.accent,
-          onPress: () => navigation.navigate('EditProfile'),
-        },
-        {
-          id: 'payment-methods',
-          title: 'Payment Methods',
-          subtitle: 'Manage cards and billing',
-          icon: 'card-outline',
-          color: theme.colors.status.success,
-          onPress: () => navigation.navigate('PaymentMethods'),
-        },
-        ...(user?.role === 'parent' || isParentMode ? [{
-          id: 'manage-children',
-          title: 'Manage Children',
-          subtitle: 'Add or edit child profiles',
-          icon: 'people-outline' as const,
-          color: theme.colors.interactive.purple,
-          onPress: () => console.log('Navigate to manage children'),
-        }] : []),
-      ],
-    },
-    {
-      title: 'Preferences',
-      items: [
-        {
-          id: 'notifications',
-          title: 'Notifications',
-          subtitle: 'Customize your alerts',
-          icon: 'notifications-outline',
-          color: theme.colors.status.warning,
-          onPress: () => navigation.navigate('NotificationSettings'),
-          badge: '3',
-        },
-        {
-          id: 'privacy',
-          title: 'Privacy & Security',
-          subtitle: 'Control your data and security',
-          icon: 'shield-outline',
-          color: theme.colors.status.error,
-          onPress: () => navigation.navigate('PrivacySettings'),
-        },
-        {
-          id: 'settings',
-          title: 'App Settings',
-          subtitle: 'Language, theme, and more',
-          icon: 'settings-outline',
-          color: theme.colors.icon.secondary,
-          onPress: () => navigation.navigate('Settings'),
-        },
-      ],
-    },
-    {
-      title: 'Support',
-      items: [
-        {
-          id: 'help',
-          title: 'Help & Support',
-          subtitle: 'Get help or contact us',
-          icon: 'help-circle-outline',
-          color: theme.colors.interactive.purple,
-          onPress: () => navigation.navigate('HelpAndSupport'),
-        },
-        {
-          id: 'about',
-          title: 'About Academy',
-          subtitle: 'App version and information',
-          icon: 'information-circle-outline',
-          color: theme.colors.icon.secondary,
-          onPress: () => navigation.navigate('About'),
-        },
-      ],
-    },
-  ];
 
   const getInitials = (name: string) => {
     return name
@@ -275,32 +153,91 @@ export const MenuScreen: React.FC = () => {
       .toUpperCase();
   };
 
-  const handleSearch = () => {
-    console.log('Search pressed');
-  };
+  const accountMenuItems: ProfileMenuItem[] = [
+    {
+      id: 'edit-profile',
+      title: 'Edit Profile',
+      subtitle: 'Update your personal information',
+      icon: 'person-outline',
+      color: theme.colors.interactive.accent,
+      onPress: () => navigation.navigate('EditProfile'),
+    },
+    {
+      id: 'payment-methods',
+      title: 'Payment Methods',
+      subtitle: 'Manage cards and billing',
+      icon: 'card-outline',
+      color: theme.colors.status.success,
+      onPress: () => navigation.navigate('PaymentMethods'),
+    },
+    ...(user?.role === 'parent' || isParentMode ? [{
+      id: 'manage-children',
+      title: 'Manage Children',
+      subtitle: 'Add or edit child profiles',
+      icon: 'people-outline' as const,
+      color: theme.colors.interactive.purple,
+      onPress: () => console.log('Navigate to manage children'),
+    }] : []),
+  ];
 
-  const handleFilter = () => {
-    console.log('Filter pressed');
-  };
+  const settingsMenuItems: ProfileMenuItem[] = [
+    {
+      id: 'notifications',
+      title: 'Notifications',
+      subtitle: 'Customize your alerts',
+      icon: 'notifications-outline',
+      color: theme.colors.status.warning,
+      onPress: () => navigation.navigate('NotificationSettings'),
+      badge: '3',
+    },
+    {
+      id: 'privacy',
+      title: 'Privacy & Security',
+      subtitle: 'Control your data and security',
+      icon: 'shield-outline',
+      color: theme.colors.status.error,
+      onPress: () => navigation.navigate('PrivacySettings'),
+    },
+    {
+      id: 'settings',
+      title: 'App Settings',
+      subtitle: 'Language, theme, and more',
+      icon: 'settings-outline',
+      color: theme.colors.icon.secondary,
+      onPress: () => navigation.navigate('Settings'),
+    },
+  ];
 
-  const handleNotifications = () => {
-    console.log('Notifications pressed');
-    setNotificationCount(0);
-  };
+  const supportMenuItems: ProfileMenuItem[] = [
+    {
+      id: 'help',
+      title: 'Help & Support',
+      subtitle: 'Get help or contact us',
+      icon: 'help-circle-outline',
+      color: theme.colors.interactive.purple,
+      onPress: () => navigation.navigate('HelpAndSupport'),
+    },
+    {
+      id: 'about',
+      title: 'About Academy',
+      subtitle: 'App version and information',
+      icon: 'information-circle-outline',
+      color: theme.colors.icon.secondary,
+      onPress: () => navigation.navigate('About'),
+    },
+  ];
 
   return (
     <View style={{
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      {/* Header with Program Switcher */}
       <Header
         title="Menu"
         showProgramSwitcher={true}
         showNotifications={notificationCount > 0}
         onNotificationPress={handleNotifications}
         notificationCount={notificationCount}
-        showProfile={false}
         style={{ paddingTop: insets.top }}
       />
 
@@ -308,7 +245,7 @@ export const MenuScreen: React.FC = () => {
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingTop: theme.spacing.lg,
-          paddingBottom: theme.spacing['3xl'], // Space for tab bar
+          paddingBottom: theme.spacing['3xl'],
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -317,7 +254,7 @@ export const MenuScreen: React.FC = () => {
           entering={FadeInDown.delay(100).springify()}
           style={{
             paddingHorizontal: theme.spacing.lg,
-            marginBottom: theme.spacing['2xl'],
+            marginBottom: theme.spacing.xl,
           }}
         >
           <View style={{
@@ -347,7 +284,7 @@ export const MenuScreen: React.FC = () => {
                   fontWeight: theme.fontConfig.fontWeight.bold,
                   fontSize: theme.fontSizes.xl,
                 }}>
-                  {getInitials(user?.firstName + ' ' + user?.lastName || 'User')}
+                  {getInitials(user?.first_name + ' ' + user?.last_name || 'User')}
                 </Text>
               </View>
               
@@ -357,7 +294,7 @@ export const MenuScreen: React.FC = () => {
                   fontWeight: theme.fontConfig.fontWeight.bold,
                   fontSize: theme.fontSizes.xl,
                 }}>
-                  {user?.firstName} {user?.lastName}
+                  {user?.first_name} {user?.last_name}
                 </Text>
                 <Text style={{
                   color: theme.colors.text.secondary,
@@ -408,14 +345,17 @@ export const MenuScreen: React.FC = () => {
                 </View>
               </View>
               
-              <Pressable style={{
-                width: 40,
-                height: 40,
-                backgroundColor: theme.colors.background.secondary,
-                borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+              <Pressable 
+                onPress={() => navigation.navigate('EditProfile')}
+                style={{
+                  width: 40,
+                  height: 40,
+                  backgroundColor: theme.colors.background.secondary,
+                  borderRadius: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 <Ionicons name="pencil" size={20} color={theme.colors.icon.secondary} />
               </Pressable>
             </View>
@@ -465,25 +405,42 @@ export const MenuScreen: React.FC = () => {
           </View>
         </Animated.View>
 
-        {/* Navigation Grid using MenuList */}
+        {/* Academy Features Header Section */}
         <Animated.View
-          entering={FadeInDown.delay(200).springify()}
+          entering={FadeInDown.delay(100).springify()}
           style={{
             paddingHorizontal: theme.spacing.lg,
-            marginBottom: theme.spacing['2xl'],
+            marginBottom: theme.spacing.xl,
+            alignItems: 'center',
           }}
         >
-          <Text
-            style={{
-              color: theme.colors.text.primary,
-              fontSize: theme.fontSizes.lg,
-              fontWeight: theme.fontConfig.fontWeight.semibold,
-              marginBottom: theme.spacing.md,
-            }}
-          >
-            Quick Actions
+          <Text style={{
+            color: theme.colors.text.primary,
+            fontSize: theme.fontSizes['2xl'],
+            fontWeight: theme.fontConfig.fontWeight.bold,
+            textAlign: 'center',
+            marginBottom: theme.spacing.md,
+          }}>
+            Academy Features
           </Text>
-          
+          <Text style={{
+            color: theme.colors.text.secondary,
+            fontSize: theme.fontSizes.base,
+            textAlign: 'center',
+            lineHeight: 24,
+          }}>
+            Explore all the features and services available in your Academy app.
+          </Text>
+        </Animated.View>
+
+        {/* App Features Grid */}
+        <Animated.View
+          entering={FadeInDown.delay(300).springify()}
+          style={{
+            paddingHorizontal: theme.spacing.lg,
+            marginBottom: theme.spacing.xl,
+          }}
+        >          
           <MenuList
             items={[
               {
@@ -585,42 +542,269 @@ export const MenuScreen: React.FC = () => {
           />
         </Animated.View>
 
-        {/* Menu Sections */}
-        {menuSections.map((section, sectionIndex) => (
-          <View key={section.title} style={{
+        {/* Quick Access Section */}
+        <Animated.View
+          entering={FadeInDown.delay(400).springify()}
+          style={{
             paddingHorizontal: theme.spacing.lg,
-            marginBottom: theme.spacing['2xl'],
+            marginBottom: theme.spacing.xl,
+          }}
+        >
+          <Text style={{
+            color: theme.colors.text.primary,
+            fontSize: theme.fontSizes.lg,
+            fontWeight: theme.fontConfig.fontWeight.semibold,
+            marginBottom: theme.spacing.md,
           }}>
-            <Animated.Text
-              entering={FadeInDown.delay((sectionIndex + 2) * 100).springify()}
+            Quick Access
+          </Text>
+          
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+            <Pressable
+              onPress={() => navigation.navigate('MySchedule')}
               style={{
-                color: theme.colors.text.primary,
-                fontSize: theme.fontSizes.lg,
-                fontWeight: theme.fontConfig.fontWeight.semibold,
-                marginBottom: theme.spacing.md,
+                backgroundColor: theme.colors.background.primary,
+                borderRadius: theme.borderRadius.xl,
+                padding: theme.spacing.md,
+                flex: 1,
+                marginRight: theme.spacing.sm,
+                alignItems: 'center',
+                ...theme.elevation.sm,
               }}
             >
-              {section.title}
-            </Animated.Text>
-            
-            <View>
-              {section.items.map((item, itemIndex) => (
-                <ProfileMenuItemComponent
-                  key={item.id}
-                  {...item}
-                  index={sectionIndex * 10 + itemIndex}
+              <View style={{
+                width: 40,
+                height: 40,
+                backgroundColor: `${theme.colors.interactive.primary}15`,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: theme.spacing.sm,
+              }}>
+                <Ionicons
+                  name="calendar"
+                  size={20}
+                  color={theme.colors.interactive.primary}
                 />
-              ))}
-            </View>
+              </View>
+              <Text style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.fontSizes.sm,
+                fontWeight: theme.fontConfig.fontWeight.medium,
+                textAlign: 'center',
+              }}>
+                Today's Schedule
+              </Text>
+            </Pressable>
+            
+            <Pressable
+              onPress={() => navigation.navigate('Achievements')}
+              style={{
+                backgroundColor: theme.colors.background.primary,
+                borderRadius: theme.borderRadius.xl,
+                padding: theme.spacing.md,
+                flex: 1,
+                marginHorizontal: theme.spacing.xs,
+                alignItems: 'center',
+                ...theme.elevation.sm,
+              }}
+            >
+              <View style={{
+                width: 40,
+                height: 40,
+                backgroundColor: `${theme.colors.status.success}15`,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: theme.spacing.sm,
+              }}>
+                <Ionicons
+                  name="trophy"
+                  size={20}
+                  color={theme.colors.status.success}
+                />
+              </View>
+              <Text style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.fontSizes.sm,
+                fontWeight: theme.fontConfig.fontWeight.medium,
+                textAlign: 'center',
+              }}>
+                My Progress
+              </Text>
+            </Pressable>
+            
+            <Pressable
+              onPress={() => navigation.navigate('Store')}
+              style={{
+                backgroundColor: theme.colors.background.primary,
+                borderRadius: theme.borderRadius.xl,
+                padding: theme.spacing.md,
+                flex: 1,
+                marginLeft: theme.spacing.sm,
+                alignItems: 'center',
+                ...theme.elevation.sm,
+              }}
+            >
+              <View style={{
+                width: 40,
+                height: 40,
+                backgroundColor: `${theme.colors.status.warning}15`,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: theme.spacing.sm,
+              }}>
+                <Ionicons
+                  name="storefront"
+                  size={20}
+                  color={theme.colors.status.warning}
+                />
+              </View>
+              <Text style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.fontSizes.sm,
+                fontWeight: theme.fontConfig.fontWeight.medium,
+                textAlign: 'center',
+              }}>
+                Shop Now
+              </Text>
+            </Pressable>
           </View>
-        ))}
+        </Animated.View>
+
+        {/* Account Section */}
+        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+          <Animated.Text
+            entering={FadeInDown.delay(500).springify()}
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: theme.fontSizes.lg,
+              fontWeight: theme.fontConfig.fontWeight.semibold,
+              marginBottom: theme.spacing.md,
+            }}
+          >
+            Account
+          </Animated.Text>
+          
+          {accountMenuItems.map((item, index) => (
+            <ProfileMenuItemComponent
+              key={item.id}
+              item={item}
+              index={index}
+            />
+          ))}
+        </View>
+
+        {/* Preferences Section */}
+        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+          <Animated.Text
+            entering={FadeInDown.delay(600).springify()}
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: theme.fontSizes.lg,
+              fontWeight: theme.fontConfig.fontWeight.semibold,
+              marginBottom: theme.spacing.md,
+            }}
+          >
+            Preferences
+          </Animated.Text>
+          
+          {settingsMenuItems.map((item, index) => (
+            <ProfileMenuItemComponent
+              key={item.id}
+              item={item}
+              index={index}
+            />
+          ))}
+        </View>
+
+        {/* Support Section */}
+        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+          <Animated.Text
+            entering={FadeInDown.delay(700).springify()}
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: theme.fontSizes.lg,
+              fontWeight: theme.fontConfig.fontWeight.semibold,
+              marginBottom: theme.spacing.md,
+            }}
+          >
+            Support
+          </Animated.Text>
+          
+          {supportMenuItems.map((item, index) => (
+            <ProfileMenuItemComponent
+              key={item.id}
+              item={item}
+              index={index}
+            />
+          ))}
+        </View>
+
+        {/* Featured Section */}
+        <Animated.View
+          entering={FadeInDown.delay(800).springify()}
+          style={{
+            margin: theme.spacing.lg,
+            backgroundColor: theme.colors.interactive.primary,
+            borderRadius: theme.borderRadius.xl,
+            padding: theme.spacing.lg,
+            alignItems: 'center',
+          }}
+        >
+          <Ionicons
+            name="star"
+            size={32}
+            color="white"
+            style={{ marginBottom: theme.spacing.md }}
+          />
+          <Text style={{
+            color: 'white',
+            fontSize: theme.fontSizes.lg,
+            fontWeight: theme.fontConfig.fontWeight.bold,
+            textAlign: 'center',
+            marginBottom: theme.spacing.sm,
+          }}>
+            Refer a Friend, Earn $50!
+          </Text>
+          <Text style={{
+            color: 'white',
+            fontSize: theme.fontSizes.base,
+            textAlign: 'center',
+            opacity: 0.9,
+            marginBottom: theme.spacing.lg,
+          }}>
+            Share your referral code and earn rewards when friends join Academy
+          </Text>
+          <Pressable
+            onPress={() => navigation.navigate('Referrals')}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: theme.borderRadius.lg,
+              paddingHorizontal: theme.spacing.xl,
+              paddingVertical: theme.spacing.md,
+            }}
+          >
+            <Text style={{
+              color: theme.colors.interactive.primary,
+              fontWeight: theme.fontConfig.fontWeight.medium,
+              fontSize: theme.fontSizes.base,
+            }}>
+              Start Referring
+            </Text>
+          </Pressable>
+        </Animated.View>
 
         {/* Logout Button */}
         <Animated.View
-          entering={FadeInDown.delay(500).springify()}
+          entering={FadeInDown.delay(900).springify()}
           style={{
             paddingHorizontal: theme.spacing.lg,
-            marginBottom: theme.spacing['2xl'],
+            marginBottom: theme.spacing.xl,
           }}
         >
           <Pressable
@@ -653,7 +837,7 @@ export const MenuScreen: React.FC = () => {
 
         {/* App Version */}
         <Animated.View
-          entering={FadeInDown.delay(600).springify()}
+          entering={FadeInDown.delay(1000).springify()}
           style={{
             paddingHorizontal: theme.spacing.lg,
             marginBottom: theme.spacing.md,

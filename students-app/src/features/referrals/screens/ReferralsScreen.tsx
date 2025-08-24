@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme } from '@academy/mobile-shared';
 
 interface Referral {
   id: string;
@@ -261,12 +261,6 @@ export const ReferralsScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      <Header
-        title="Referrals"
-        showBackButton={true}
-        style={{ paddingTop: insets.top }}
-      />
-
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{

@@ -9,7 +9,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme, FilterBar, CustomButton } from '@academy/mobile-shared';
 
 interface Service {
   id: string;
@@ -133,26 +133,12 @@ const ServiceCard: React.FC<{ service: Service; index: number }> = ({
         ))}
       </View>
 
-      <Pressable style={{
-        backgroundColor: service.popular 
-          ? theme.colors.interactive.primary 
-          : theme.colors.background.secondary,
-        borderColor: theme.colors.interactive.primary,
-        borderWidth: 1,
-        borderRadius: theme.borderRadius.lg,
-        paddingVertical: theme.spacing.md,
-        alignItems: 'center',
-      }}>
-        <Text style={{
-          color: service.popular 
-            ? 'white' 
-            : theme.colors.interactive.primary,
-          fontWeight: theme.fontConfig.fontWeight.medium,
-          fontSize: theme.fontSizes.base,
-        }}>
-          Learn More
-        </Text>
-      </Pressable>
+      <CustomButton
+        title="Learn More"
+        variant={service.popular ? 'primary' : 'outlineTheme'}
+        size="sm"
+        onPress={() => console.log(`Learn more about ${service.title}`)}
+      />
     </Animated.View>
   );
 };
@@ -160,14 +146,23 @@ const ServiceCard: React.FC<{ service: Service; index: number }> = ({
 export const ServicesScreen: React.FC = () => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({
+    category: ['all']
+  });
 
-  const categories = [
-    { id: 'all', title: 'All Services' },
-    { id: 'training', title: 'Training' },
-    { id: 'coaching', title: 'Coaching' },
-    { id: 'camps', title: 'Camps' },
-    { id: 'consulting', title: 'Consulting' },
+  const filterGroups = [
+    {
+      id: 'category',
+      title: 'Service Category',
+      options: [
+        { id: 'all', label: 'All Services', value: 'all' },
+        { id: 'training', label: 'Training', value: 'training' },
+        { id: 'coaching', label: 'Coaching', value: 'coaching' },
+        { id: 'camps', label: 'Camps', value: 'camps' },
+        { id: 'consulting', label: 'Consulting', value: 'consulting' },
+      ],
+      multiSelect: false,
+    }
   ];
 
   const services: Service[] = [
@@ -244,6 +239,28 @@ export const ServicesScreen: React.FC = () => {
     },
   ];
 
+  const handleFilterChange = (groupId: string, optionId: string, selected: boolean) => {
+    setSelectedFilters(prev => {
+      const group = filterGroups.find(g => g.id === groupId);
+      if (!group) return prev;
+
+      if (group.multiSelect) {
+        // Multi-select logic
+        const currentSelections = prev[groupId] || [];
+        if (selected) {
+          return { ...prev, [groupId]: [...currentSelections, optionId] };
+        } else {
+          return { ...prev, [groupId]: currentSelections.filter(id => id !== optionId) };
+        }
+      } else {
+        // Single-select logic
+        return { ...prev, [groupId]: [optionId] };
+      }
+    });
+  };
+
+  const selectedCategory = selectedFilters.category?.[0] || 'all';
+  
   const filteredServices = selectedCategory === 'all' 
     ? services 
     : services.filter(service => {
@@ -259,17 +276,10 @@ export const ServicesScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      <Header
-        title="Our Services"
-        showBackButton={true}
-        style={{ paddingTop: insets.top }}
-      />
-
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingTop: theme.spacing.lg,
-          paddingHorizontal: theme.spacing.lg,
           paddingBottom: theme.spacing['3xl'],
         }}
         showsVerticalScrollIndicator={false}
@@ -277,17 +287,11 @@ export const ServicesScreen: React.FC = () => {
         {/* Header Section */}
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
-          style={{ marginBottom: theme.spacing.xl }}
+          style={{ 
+            marginBottom: theme.spacing.xl,
+            paddingHorizontal: theme.spacing.lg,
+          }}
         >
-          <Text style={{
-            color: theme.colors.text.primary,
-            fontSize: theme.fontSizes['2xl'],
-            fontWeight: theme.fontConfig.fontWeight.bold,
-            textAlign: 'center',
-            marginBottom: theme.spacing.md,
-          }}>
-            Professional Services
-          </Text>
           <Text style={{
             color: theme.colors.text.secondary,
             fontSize: theme.fontSizes.base,
@@ -303,45 +307,24 @@ export const ServicesScreen: React.FC = () => {
           entering={FadeInDown.delay(200).springify()}
           style={{ marginBottom: theme.spacing.xl }}
         >
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 0 }}
-          >
-            {categories.map((category, index) => (
-              <Pressable
-                key={category.id}
-                onPress={() => setSelectedCategory(category.id)}
-                style={{
-                  backgroundColor: selectedCategory === category.id
-                    ? theme.colors.interactive.primary
-                    : theme.colors.background.primary,
-                  borderColor: selectedCategory === category.id
-                    ? theme.colors.interactive.primary
-                    : theme.colors.border.primary,
-                  borderWidth: 1,
-                  borderRadius: theme.borderRadius.full,
-                  paddingHorizontal: theme.spacing.lg,
-                  paddingVertical: theme.spacing.sm,
-                  marginRight: theme.spacing.md,
-                }}
-              >
-                <Text style={{
-                  color: selectedCategory === category.id
-                    ? 'white'
-                    : theme.colors.text.primary,
-                  fontWeight: theme.fontConfig.fontWeight.medium,
-                  fontSize: theme.fontSizes.sm,
-                }}>
-                  {category.title}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
+          <FilterBar
+            filters={filterGroups}
+            selectedFilters={selectedFilters}
+            onFilterChange={handleFilterChange}
+            variant="horizontal"
+            scrollable={true}
+            showCounts={false}
+            showIcons={false}
+            showClearAll={false}
+            compactMode={true}
+          />
         </Animated.View>
 
         {/* Services List */}
-        <Animated.View entering={FadeInDown.delay(300).springify()}>
+        <Animated.View 
+          entering={FadeInDown.delay(300).springify()}
+          style={{ paddingHorizontal: theme.spacing.lg }}
+        >
           {filteredServices.map((service, index) => (
             <ServiceCard
               key={service.id}
@@ -359,6 +342,7 @@ export const ServicesScreen: React.FC = () => {
             borderRadius: theme.borderRadius.xl,
             padding: theme.spacing.lg,
             marginTop: theme.spacing.xl,
+            marginHorizontal: theme.spacing.lg,
             alignItems: 'center',
             ...theme.elevation.sm,
           }}
@@ -387,20 +371,12 @@ export const ServicesScreen: React.FC = () => {
           }}>
             Contact us for personalized service packages tailored to your specific needs.
           </Text>
-          <Pressable style={{
-            backgroundColor: theme.colors.interactive.primary,
-            borderRadius: theme.borderRadius.lg,
-            paddingHorizontal: theme.spacing.xl,
-            paddingVertical: theme.spacing.md,
-          }}>
-            <Text style={{
-              color: 'white',
-              fontWeight: theme.fontConfig.fontWeight.medium,
-              fontSize: theme.fontSizes.base,
-            }}>
-              Contact Us
-            </Text>
-          </Pressable>
+          <CustomButton
+            title="Contact Us"
+            variant="primary"
+            size="md"
+            onPress={() => console.log('Contact us pressed')}
+          />
         </Animated.View>
       </ScrollView>
     </View>

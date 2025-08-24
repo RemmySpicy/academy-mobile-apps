@@ -9,7 +9,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme } from '@academy/mobile-shared';
 
 interface Transaction {
   id: string;
@@ -303,21 +303,6 @@ export const TransactionsScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      <Header
-        title="Transactions"
-        showBackButton={true}
-        rightComponent={
-          <Pressable>
-            <Ionicons
-              name="filter-outline"
-              size={24}
-              color={theme.colors.icon.primary}
-            />
-          </Pressable>
-        }
-        style={{ paddingTop: insets.top }}
-      />
-
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{

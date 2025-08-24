@@ -34,6 +34,7 @@ export {
   InfoAlert,
   useErrorMessage,
   Header,
+  NavigationHeader,
   StudentCard,
   InstructorDashboard,
   // Animation components

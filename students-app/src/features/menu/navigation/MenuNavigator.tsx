@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme, NavigationHeader } from '@academy/mobile-shared';
 import { AppMenuScreen } from '../screens/AppMenuScreen';
 import { EditProfileScreen } from '../../profile/screens/EditProfileScreen';
 import { SettingsScreen } from '../../settings/screens/SettingsScreen';
@@ -46,19 +46,60 @@ export type MenuStackParamList = {
   HelpAndSupport: undefined;
 };
 
+/**
+ * Get screen title for header
+ */
+function getScreenTitle(routeName: keyof MenuStackParamList): string {
+  const titleMap: Record<keyof MenuStackParamList, string> = {
+    MenuMain: 'Menu',
+    EditProfile: 'Edit Profile',
+    Settings: 'Settings',
+    PaymentMethods: 'Payment Methods',
+    NotificationSettings: 'Notifications',
+    PrivacySettings: 'Privacy',
+    HelpSupport: 'Help & Support',
+    About: 'About',
+    OurCourses: 'Our Courses',
+    OurServices: 'Our Services',
+    Achievements: 'Achievements',
+    Store: 'Store',
+    Transactions: 'Transactions',
+    Referrals: 'Referrals',
+    MySchedule: 'My Schedule',
+    ProgressReport: 'Progress Report',
+    LocateUs: 'Locate Us',
+    ContactUs: 'Contact Us',
+    HelpAndSupport: 'Help & Support',
+  };
+  
+  return titleMap[routeName] || 'Menu';
+}
 
 const Stack = createNativeStackNavigator<MenuStackParamList>();
 
 export const MenuNavigator: React.FC = () => {
+  const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        header: ({ navigation, route }) => (
+          <NavigationHeader
+            title={getScreenTitle(route.name as keyof MenuStackParamList)}
+            onBackPress={() => navigation.goBack()}
+            style={{ paddingTop: insets.top }}
+          />
+        ),
       }}
     >
       <Stack.Screen 
         name="MenuMain" 
         component={AppMenuScreen}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen 
         name="EditProfile" 

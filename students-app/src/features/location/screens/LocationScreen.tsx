@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -474,21 +474,6 @@ export const LocationScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      <Header
-        title="Locate Us"
-        showBackButton={true}
-        rightComponent={
-          <Pressable>
-            <Ionicons
-              name="search-outline"
-              size={24}
-              color={theme.colors.icon.primary}
-            />
-          </Pressable>
-        }
-        style={{ paddingTop: insets.top }}
-      />
-
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{

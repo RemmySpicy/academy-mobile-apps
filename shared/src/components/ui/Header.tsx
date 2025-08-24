@@ -103,26 +103,13 @@ const Header: React.FC<HeaderProps> = ({
   const programCode = currentProgram?.name?.substring(0, 4).toUpperCase() || 'TEST';
 
   // Auto-configure based on variant
-  React.useEffect(() => {
-    switch (variant) {
-      case 'withBack':
-        showBackButton = true;
-        break;
-      case 'withNotification':
-        showNotifications = true;
-        break;
-      case 'withProgram':
-        showProgramInfo = true;
-        break;
-      case 'instructor':
-        showInstructorActions = true;
-        showNotifications = true;
-        break;
-    }
-  }, [variant]);
+  const shouldShowBackButton = showBackButton || variant === 'withBack';
+  const shouldShowNotifications = showNotifications || variant === 'withNotification' || variant === 'instructor';
+  const shouldShowProgramInfo = showProgramInfo || variant === 'withProgram';
+  const shouldShowInstructorActions = showInstructorActions || variant === 'instructor';
 
   const renderLeftSection = () => {
-    if (showBackButton && onBack) {
+    if (shouldShowBackButton && onBack) {
       return (
         <Pressable 
           onPress={onBack}
@@ -169,7 +156,7 @@ const Header: React.FC<HeaderProps> = ({
       );
     }
 
-    if (showInstructorActions) {
+    if (shouldShowInstructorActions) {
       return (
         <View style={styles.actionGroup}>
           {onSearchPress && (
@@ -218,7 +205,7 @@ const Header: React.FC<HeaderProps> = ({
           {title}
         </Text>
 
-        {showProgramInfo && currentProgram && (
+        {shouldShowProgramInfo && currentProgram && (
           <Text style={styles.programInfo} numberOfLines={1}>
             {currentProgram.name}
           </Text>
@@ -230,7 +217,7 @@ const Header: React.FC<HeaderProps> = ({
   const renderRightSection = () => {
     return (
       <View style={styles.rightSection}>
-        {showNotifications && onNotificationPress && (
+        {shouldShowNotifications && onNotificationPress && (
           <Pressable 
             onPress={onNotificationPress}
             style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.iconButton]}

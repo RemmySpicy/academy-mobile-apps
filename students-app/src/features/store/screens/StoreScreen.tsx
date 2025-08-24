@@ -10,7 +10,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme } from '@academy/mobile-shared';
 
 interface Product {
   id: string;
@@ -296,47 +296,6 @@ export const StoreScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      <Header
-        title="Store"
-        showBackButton={true}
-        rightComponent={
-          <Pressable style={{
-            position: 'relative',
-            width: 40,
-            height: 40,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <Ionicons
-              name="bag-outline"
-              size={24}
-              color={theme.colors.icon.primary}
-            />
-            {cartItems > 0 && (
-              <View style={{
-                position: 'absolute',
-                top: -2,
-                right: -2,
-                backgroundColor: theme.colors.status.error,
-                borderRadius: theme.borderRadius.full,
-                minWidth: 18,
-                height: 18,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Text style={{
-                  color: 'white',
-                  fontSize: theme.fontSizes.xs,
-                  fontWeight: theme.fontConfig.fontWeight.bold,
-                }}>
-                  {cartItems}
-                </Text>
-              </View>
-            )}
-          </Pressable>
-        }
-        style={{ paddingTop: insets.top }}
-      />
 
       <ScrollView
         style={{ flex: 1 }}

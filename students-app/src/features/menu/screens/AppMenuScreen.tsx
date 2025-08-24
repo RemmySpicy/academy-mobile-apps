@@ -405,42 +405,20 @@ export const AppMenuScreen: React.FC = () => {
           </View>
         </Animated.View>
 
-        {/* Academy Features Header Section */}
-        <Animated.View
-          entering={FadeInDown.delay(100).springify()}
-          style={{
-            paddingHorizontal: theme.spacing.lg,
-            marginBottom: theme.spacing.xl,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{
-            color: theme.colors.text.primary,
-            fontSize: theme.fontSizes['2xl'],
-            fontWeight: theme.fontConfig.fontWeight.bold,
-            textAlign: 'center',
-            marginBottom: theme.spacing.md,
-          }}>
+        {/* Academy Features Section */}
+        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+          <Animated.Text
+            entering={FadeInDown.delay(200).springify()}
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: theme.fontSizes.lg,
+              fontWeight: theme.fontConfig.fontWeight.semibold,
+              marginBottom: theme.spacing.md,
+            }}
+          >
             Academy Features
-          </Text>
-          <Text style={{
-            color: theme.colors.text.secondary,
-            fontSize: theme.fontSizes.base,
-            textAlign: 'center',
-            lineHeight: 24,
-          }}>
-            Explore all the features and services available in your Academy app.
-          </Text>
-        </Animated.View>
+          </Animated.Text>
 
-        {/* App Features Grid */}
-        <Animated.View
-          entering={FadeInDown.delay(300).springify()}
-          style={{
-            paddingHorizontal: theme.spacing.lg,
-            marginBottom: theme.spacing.xl,
-          }}
-        >          
           <MenuList
             items={[
               {
@@ -540,7 +518,7 @@ export const AppMenuScreen: React.FC = () => {
             variant="card"
             scrollEnabled={false}
           />
-        </Animated.View>
+        </View>
 
         {/* Quick Access Section */}
         <Animated.View

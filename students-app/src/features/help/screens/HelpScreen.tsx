@@ -10,7 +10,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme, SegmentedControl, SearchInput } from '@academy/mobile-shared';
 
 interface HelpCategory {
   id: string;
@@ -290,6 +290,12 @@ export const HelpScreen: React.FC = () => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [selectedTab, setSelectedTab] = useState('help');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query: string) => {
+    console.log('Searching for:', query);
+    // TODO: Implement actual search functionality
+  };
 
   const tabs = [
     { id: 'help', title: 'Help Center' },
@@ -435,60 +441,24 @@ export const HelpScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      <Header
-        title="Help & Support"
-        showBackButton={true}
-        rightComponent={
-          <Pressable>
-            <Ionicons
-              name="search-outline"
-              size={24}
-              color={theme.colors.icon.primary}
-            />
-          </Pressable>
-        }
-        style={{ paddingTop: insets.top }}
-      />
-
       {/* Tab Navigation */}
-      <Animated.View
-        entering={FadeInDown.delay(100).springify()}
-        style={{
-          flexDirection: 'row',
-          backgroundColor: theme.colors.background.primary,
-          marginHorizontal: theme.spacing.lg,
-          marginTop: theme.spacing.lg,
-          borderRadius: theme.borderRadius.lg,
-          padding: theme.spacing.xs,
-        }}
-      >
-        {tabs.map((tab, index) => (
-          <Pressable
-            key={tab.id}
-            onPress={() => setSelectedTab(tab.id)}
-            style={{
-              flex: 1,
-              backgroundColor: selectedTab === tab.id
-                ? theme.colors.interactive.primary
-                : 'transparent',
-              borderRadius: theme.borderRadius.md,
-              paddingVertical: theme.spacing.sm,
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{
-              color: selectedTab === tab.id
-                ? 'white'
-                : theme.colors.text.secondary,
-              fontWeight: selectedTab === tab.id
-                ? theme.fontConfig.fontWeight.semibold
-                : theme.fontConfig.fontWeight.medium,
-              fontSize: theme.fontSizes.sm,
-            }}>
-              {tab.title}
-            </Text>
-          </Pressable>
-        ))}
+      <Animated.View entering={FadeInDown.delay(100).springify()}>
+        <SegmentedControl
+          options={[
+            { value: 'help', label: 'Help Center' },
+            { value: 'support', label: 'Get Support' },
+            { value: 'feedback', label: 'Feedback' }
+          ]}
+          selectedValue={selectedTab}
+          onChange={setSelectedTab}
+          variant="default"
+          size="md"
+          style={{
+            backgroundColor: theme.colors.background.primary,
+            marginHorizontal: theme.spacing.lg,
+            marginTop: theme.spacing.lg,
+          }}
+        />
       </Animated.View>
 
       <ScrollView
@@ -509,30 +479,15 @@ export const HelpScreen: React.FC = () => {
                 marginBottom: theme.spacing.xl,
               }}
             >
-              <Pressable style={{
-                backgroundColor: theme.colors.background.primary,
-                borderRadius: theme.borderRadius.lg,
-                paddingHorizontal: theme.spacing.md,
-                paddingVertical: theme.spacing.md,
-                flexDirection: 'row',
-                alignItems: 'center',
-                borderWidth: 1,
-                borderColor: theme.colors.border.primary,
-              }}>
-                <Ionicons
-                  name="search-outline"
-                  size={20}
-                  color={theme.colors.icon.secondary}
-                  style={{ marginRight: theme.spacing.sm }}
-                />
-                <Text style={{
-                  color: theme.colors.text.secondary,
-                  fontSize: theme.fontSizes.base,
-                  flex: 1,
-                }}>
-                  Search help articles...
-                </Text>
-              </Pressable>
+              <SearchInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                onDebouncedSearch={handleSearch}
+                placeholder="Search help articles..."
+                size="md"
+                debounceDelay={300}
+                testID="help-search"
+              />
             </Animated.View>
 
             {/* Popular Articles */}

@@ -135,8 +135,8 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
     segmentWidths[index] = width;
     segmentPositions[index] = x;
     
-    // Initialize animation position for first render
-    if (selectedIndex === index && !animated) {
+    // Initialize animation position for first render of selected item
+    if (selectedIndex === index) {
       animatedValue.setValue(x);
     }
   };
@@ -208,15 +208,15 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
       accessibilityLabel={accessibilityLabel}
     >
       {/* Animated Selection Indicator */}
-      {animated && selectedIndex >= 0 && (
+      {selectedIndex >= 0 && (
         <Animated.View
           style={[
             styles.selectionIndicator,
             styles[`${size}Indicator`],
             variantStyles.selectionIndicator,
             {
-              left: animatedValue,
-              width: segmentWidths[selectedIndex] || 0,
+              left: animated ? animatedValue : segmentPositions[selectedIndex] || 0,
+              width: segmentWidths[selectedIndex] || `${100 / normalizedOptions.length}%`,
             },
           ]}
         />
@@ -308,7 +308,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       flexDirection: 'row',
       borderRadius: theme.borderRadius.lg,
       backgroundColor: theme.colors.background.secondary,
-      padding: theme.spacing.xs / 2,
+      padding: theme.spacing.xs,
       position: 'relative',
       overflow: 'hidden',
     },
@@ -350,8 +350,8 @@ const createStyles = (theme: any, screenDimensions: any) => {
 
     selectionIndicator: {
       position: 'absolute',
-      top: theme.spacing.xs / 2,
-      bottom: theme.spacing.xs / 2,
+      top: theme.spacing.xs,
+      bottom: theme.spacing.xs,
       borderRadius: theme.borderRadius.md,
       backgroundColor: theme.colors.interactive.primary,
       zIndex: 0,

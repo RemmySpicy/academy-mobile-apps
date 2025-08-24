@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, Header, SelectOptions } from '@academy/mobile-shared';
+import { useTheme, SelectOptions } from '@academy/mobile-shared';
 
 interface ContactMethod {
   id: string;
@@ -292,12 +292,6 @@ export const ContactScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-      <Header
-        title="Contact Us"
-        showBackButton={true}
-        style={{ paddingTop: insets.top }}
-      />
-
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{

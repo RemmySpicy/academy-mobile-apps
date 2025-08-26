@@ -25,24 +25,24 @@ export const GuestLoginButton: React.FC<GuestLoginButtonProps> = ({
   accessibilityLabel,
 }) => {
   const { theme } = useTheme();
-  const styles = useThemedStyles();
+  // const styles = useThemedStyles(); // TODO: Uncomment when StyleSheet mobile issue is resolved
 
   const getSizeConfig = () => {
     const sizes = {
       small: { 
-        height: theme.safeArea.minTouchTarget.height * 0.9, 
-        paddingHorizontal: theme.spacing[4], 
-        fontSize: theme.typography.caption.base.fontSize 
+        height: 36,
+        paddingHorizontal: theme.spacing.md,
+        fontSize: theme.fontSizes.sm
       },
       medium: { 
-        height: theme.safeArea.minTouchTarget.height, 
-        paddingHorizontal: theme.spacing[5], 
-        fontSize: theme.typography.body.base.fontSize 
+        height: 44,
+        paddingHorizontal: theme.spacing.lg,
+        fontSize: theme.fontSizes.base
       },
       large: { 
-        height: theme.safeArea.minTouchTarget.height * 1.2, 
-        paddingHorizontal: theme.spacing[6], 
-        fontSize: theme.typography.body.lg.fontSize 
+        height: 52,
+        paddingHorizontal: theme.spacing.xl,
+        fontSize: theme.fontSizes.lg
       },
     };
     return sizes[size];
@@ -77,17 +77,43 @@ export const GuestLoginButton: React.FC<GuestLoginButtonProps> = ({
 
   const variantStyles = getVariantStyles();
 
+  // ========================================
+  // TEMPORARY MOBILE FIX - SAME ISSUE AS CustomButton
+  // ========================================
+  // ISSUE: StyleSheet.create() works on web but not mobile
+  // TODO: Remove this section when StyleSheet issue is resolved
+  
+  // TEMPORARY: Direct button styles that mirror useThemedStyles()
+  const dynamicButtonStyle = {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: theme.borderWidth.sm,
+    width: '100%' as const,
+    overflow: 'hidden' as const, // CRITICAL: Clips ripple/press effects to rounded borders
+    height: variantStyles.height,
+    paddingHorizontal: variantStyles.paddingHorizontal,
+    backgroundColor: variantStyles.backgroundColor,
+    borderColor: variantStyles.borderColor,
+  };
+
+  const dynamicTextStyle = {
+    ...theme.typography.body.base,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+    textAlign: 'center' as const,
+    fontSize: variantStyles.fontSize,
+    color: variantStyles.textColor,
+  };
+
+  const dynamicIconStyle = {
+    marginRight: theme.spacing.sm,
+  };
+
   return (
-    <Pressable style={({ pressed }) => [
-        { opacity: pressed ? 0.8 : 1 },
-        styles.button,
-        {
-          height: variantStyles.height,
-          paddingHorizontal: variantStyles.paddingHorizontal,
-          backgroundColor: variantStyles.backgroundColor,
-          borderColor: variantStyles.borderColor,
-        },
-        disabled && styles.disabled,
+    <Pressable style={[
+        dynamicButtonStyle,
+        disabled && { opacity: 0.6 }, // TEMPORARY: Direct style instead of styles.disabled
         style,
       ]}
       onPress={onPress}
@@ -95,21 +121,23 @@ export const GuestLoginButton: React.FC<GuestLoginButtonProps> = ({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || text}
       accessibilityState={{ disabled }}
+      android_ripple={{ 
+        color: 'rgba(0, 0, 0, 0.1)', // Subtle ripple for guest button
+        borderless: false,
+        radius: undefined, // Let it inherit container bounds
+        foreground: true, // Ripple appears on top of content
+      }}
       >
       <Ionicons
         name="person-outline"
         size={20}
         color={variantStyles.textColor}
-        style={styles.icon}
+        style={dynamicIconStyle} // TEMPORARY: Direct style instead of styles.icon
       />
       
       <Text
         style={[
-          styles.text,
-          {
-            fontSize: variantStyles.fontSize,
-            color: variantStyles.textColor,
-          },
+          dynamicTextStyle, // TEMPORARY: Direct style instead of styles.text
           textStyle,
         ]}
       >
@@ -119,6 +147,11 @@ export const GuestLoginButton: React.FC<GuestLoginButtonProps> = ({
   );
 };
 
+// ========================================
+// ORIGINAL STYLESHEET - WORKS ON WEB, NOT ON MOBILE
+// ========================================
+// TODO: Uncomment when mobile StyleSheet issue is resolved
+/*
 const useThemedStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     button: {
@@ -130,7 +163,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       width: '100%',
     },
     icon: {
-      marginRight: theme.spacing[3],
+      marginRight: theme.spacing.sm,
     },
     text: {
       ...theme.typography.body.base,
@@ -142,5 +175,6 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
   })
 );
+*/
 
 export default GuestLoginButton;

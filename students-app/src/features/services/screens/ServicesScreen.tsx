@@ -172,7 +172,7 @@ export const ServicesScreen: React.FC = () => {
       description: 'One-on-one personalized training sessions with certified instructors tailored to your specific goals and skill level.',
       icon: 'person',
       color: theme.colors.interactive.primary,
-      price: '$80/session',
+      price: '₦32,000/session',
       features: [
         'Customized workout plans',
         'Progress tracking',
@@ -187,7 +187,7 @@ export const ServicesScreen: React.FC = () => {
       description: 'Join our energetic group sessions designed for all skill levels. Build community while achieving your fitness goals.',
       icon: 'people',
       color: theme.colors.status.success,
-      price: '$25/class',
+      price: '₦10,000/class',
       features: [
         'Small group sizes',
         'Multiple time slots',
@@ -201,7 +201,7 @@ export const ServicesScreen: React.FC = () => {
       description: 'Multi-day intensive programs designed to rapidly improve your skills with immersive training experiences.',
       icon: 'flame',
       color: theme.colors.status.warning,
-      price: '$200/week',
+      price: '₦80,000/week',
       features: [
         'Full-day programs',
         'Expert instruction',
@@ -215,7 +215,7 @@ export const ServicesScreen: React.FC = () => {
       description: 'Remote coaching sessions with video analysis, personalized feedback, and structured training programs.',
       icon: 'videocam',
       color: theme.colors.interactive.accent,
-      price: '$50/session',
+      price: '₦20,000/session',
       features: [
         'Video analysis',
         'Custom training plans',
@@ -229,7 +229,7 @@ export const ServicesScreen: React.FC = () => {
       description: 'Comprehensive analysis of your technique and performance with detailed reports and improvement strategies.',
       icon: 'analytics',
       color: theme.colors.interactive.purple,
-      price: '$120/session',
+      price: '₦48,000/session',
       features: [
         'Video technique analysis',
         'Performance metrics',

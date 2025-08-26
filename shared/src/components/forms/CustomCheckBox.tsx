@@ -116,7 +116,14 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
   animationDuration = 200,
 }) => {
   const { theme } = useTheme();
-  const styles = useThemedStyles();
+  // const styles = useThemedStyles(); // TODO: Uncomment when StyleSheet mobile issue is resolved
+
+  // ========================================
+  // TEMPORARY MOBILE FIX - SAME ISSUE AS CustomButton
+  // ========================================
+  // ISSUE: StyleSheet.create() works on web but not mobile
+  // SOLUTION: Direct inline styles that preserve original theme-based styling
+  // TODO: Remove this section when StyleSheet issue is resolved
 
   // Animation value for smooth transitions
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
@@ -182,30 +189,65 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
     }
   }, [isChecked, animated, scaleAnim, opacityAnim, animationDuration]);
 
+  // TEMPORARY: Direct checkbox styles that mirror useThemedStyles()
   const getCheckboxStyles = () => {
-    const baseStyles = [
-      styles.checkbox,
-      styles[size],
-      styles[variant],
-    ];
+    const sizeStyles = {
+      sm: { width: 16, height: 16 }, // theme.spacing[4]
+      md: { width: 20, height: 20 }, // theme.spacing[5]
+      lg: { width: 24, height: 24 }, // theme.spacing[6]
+    };
 
-    if (isChecked) {
-      baseStyles.push(styles[`${variant}Checked`]);
-    }
+    const variantStyles = {
+      primary: {
+        borderColor: isChecked ? theme.colors.interactive.primary : theme.colors.border.primary,
+        backgroundColor: isChecked ? theme.colors.interactive.primary : theme.colors.background.primary,
+      },
+      success: {
+        borderColor: isChecked ? theme.colors.status.success : theme.colors.border.primary,
+        backgroundColor: isChecked ? theme.colors.status.success : theme.colors.background.primary,
+      },
+      warning: {
+        borderColor: isChecked ? theme.colors.status.warning : theme.colors.border.primary,
+        backgroundColor: isChecked ? theme.colors.status.warning : theme.colors.background.primary,
+      },
+      info: {
+        borderColor: isChecked ? theme.colors.status.info : theme.colors.border.primary,
+        backgroundColor: isChecked ? theme.colors.status.info : theme.colors.background.primary,
+      },
+      secondary: {
+        borderColor: isChecked ? theme.colors.text.secondary : theme.colors.border.primary,
+        backgroundColor: isChecked ? theme.colors.text.secondary : theme.colors.background.primary,
+      },
+    };
 
-    if (indeterminate) {
-      baseStyles.push(styles.indeterminate);
-    }
-
-    if (hasError) {
-      baseStyles.push(styles.error);
-    }
-
-    if (disabled) {
-      baseStyles.push(styles.disabled);
-    }
-
-    return baseStyles;
+    return {
+      // Base checkbox styles
+      borderWidth: hasError ? (theme.borderWidth?.lg || 2) : (theme.borderWidth?.md || 1),
+      borderRadius: theme.borderRadius?.sm || 4,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      overflow: 'hidden' as const, // CRITICAL: Clips ripple/press effects to rounded borders
+      
+      // Size styles
+      ...sizeStyles[size],
+      
+      // Variant styles
+      ...variantStyles[variant],
+      
+      // State styles
+      ...(indeterminate && {
+        backgroundColor: theme.colors.interactive.primary,
+        borderColor: theme.colors.interactive.primary,
+      }),
+      ...(hasError && {
+        borderColor: theme.colors.border?.error || theme.colors.status.error,
+      }),
+      ...(disabled && {
+        backgroundColor: theme.colors.background.secondary,
+        borderColor: theme.colors.border.primary,
+        opacity: 0.6,
+      }),
+    };
   };
 
   const renderCheckIcon = () => {
@@ -239,26 +281,42 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
     return uncheckedIcon || null;
   };
 
+  // TEMPORARY: Direct label styles
   const renderLabel = () => {
     if (!label) return null;
 
+    const labelContainerStyle = {
+      flex: 1,
+      marginLeft: theme.spacing?.sm || 8, // theme.spacing[3]
+      justifyContent: 'center' as const,
+    };
+
+    const labelStyle = {
+      ...theme.typography?.body?.base,
+      color: hasError ? theme.colors.status.error : disabled ? theme.colors.text.disabled : theme.colors.text.primary,
+      lineHeight: theme.typography?.body?.base?.lineHeight || 20,
+    };
+
+    const descriptionStyle = {
+      ...theme.typography?.caption?.base,
+      color: disabled ? theme.colors.text.disabled : theme.colors.text.tertiary,
+      marginTop: theme.spacing?.xs || 2, // theme.spacing[0.5]
+    };
+
+    const requiredStyle = {
+      color: theme.colors.status.error,
+      fontWeight: (theme.fontConfig?.fontWeight?.bold as any) || ('700' as const),
+    };
+
     return (
-      <View style={styles.labelContainer}>
-        <Text 
-          style={[
-            styles.label,
-            styles[`${size}Label`],
-            hasError && styles.labelError,
-            disabled && styles.labelDisabled,
-            labelStyle,
-          ]}
-        >
+      <View style={labelContainerStyle}>
+        <Text style={labelStyle}>
           {label}
-          {required && <Text style={styles.required}> *</Text>}
+          {required && <Text style={requiredStyle}> *</Text>}
         </Text>
         
         {description && (
-          <Text style={[styles.description, disabled && styles.descriptionDisabled]}>
+          <Text style={descriptionStyle}>
             {description}
           </Text>
         )}
@@ -266,24 +324,49 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
     );
   };
 
+  // TEMPORARY: Direct error styles
   const renderError = () => {
     if (!hasError || !formField) return null;
 
+    const errorContainerStyle = {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      marginTop: theme.spacing?.xs || 4, // theme.spacing[1]
+      paddingLeft: 24, // theme.spacing[6] - align with checkbox + margin
+    };
+
+    const errorTextStyle = {
+      ...theme.typography?.caption?.base,
+      color: theme.colors.status.error,
+      marginLeft: theme.spacing?.xs || 4, // theme.spacing[1]
+    };
+
     return (
-      <View style={styles.errorContainer}>
+      <View style={errorContainerStyle}>
         <Ionicons name="warning-outline" size={14} color={theme.colors.status.error} />
-        <Text style={styles.errorText} accessibilityRole="alert">
+        <Text style={errorTextStyle} accessibilityRole="alert">
           {formField.fieldState.error.message}
         </Text>
       </View>
     );
   };
 
+  // TEMPORARY: Direct container and touchable styles
+  const containerStyle = {
+    marginBottom: theme.spacing?.md || 16, // theme.componentSpacing.form.fieldGap
+  };
+
+  const touchableStyle = {
+    flexDirection: 'row' as const,
+    alignItems: 'flex-start' as const,
+    minHeight: 44, // theme.safeArea.minTouchTarget.height
+  };
+
   return (
-    <View style={[styles.container, style]}>
+    <View style={[containerStyle, style]}>
       <Pressable onPress={handleToggle}
         disabled={disabled}
-        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.touchable]}
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, touchableStyle]}
         accessibilityRole="checkbox"
         accessibilityLabel={accessibilityLabel || label}
         accessibilityHint={accessibilityHint}
@@ -293,7 +376,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
         }}
         testID={testID}
         >
-        <View style={[...getCheckboxStyles(), checkboxStyle]}>
+        <View style={[getCheckboxStyles(), checkboxStyle]}>
           {renderCheckIcon()}
         </View>
         
@@ -305,6 +388,11 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
   );
 };
 
+// ========================================
+// ORIGINAL STYLESHEET - WORKS ON WEB, NOT ON MOBILE
+// ========================================
+// TODO: Uncomment when mobile StyleSheet issue is resolved
+/*
 const useThemedStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     container: {
@@ -470,5 +558,6 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
   })
 );
+*/
 
 export { CustomCheckBox };

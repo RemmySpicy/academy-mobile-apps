@@ -302,7 +302,7 @@ export const sampleNotifications = [
   {
     id: '3',
     title: 'Payment Received',
-    message: 'Payment of $120 has been processed for Tom Wilson\'s program lessons.',
+    message: 'Payment of ₦48,000 has been processed for Tom Wilson\'s program lessons.',
     timestamp: '2 days ago',
     isRead: true,
     type: 'info' as const,

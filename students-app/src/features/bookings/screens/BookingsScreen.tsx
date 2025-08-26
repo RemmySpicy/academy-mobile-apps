@@ -296,7 +296,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
             <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
             <Text style={styles.detailText}>{booking.location}</Text>
           </View>
-          <Text style={styles.price}>${booking.price}</Text>
+          <Text style={styles.price}>₦{booking.price.toLocaleString('en-NG')}</Text>
         </View>
 
         {/* Status and Actions */}
@@ -502,7 +502,7 @@ export const BookingsScreen: React.FC = () => {
       time: '3:00 PM - 3:45 PM',
       location: 'Pool A',
       status: 'upcoming',
-      price: 35,
+      price: 14000,
       sessionNumber: 3,
       totalSessions: 8,
       color: theme.colors.interactive.accent,
@@ -516,7 +516,7 @@ export const BookingsScreen: React.FC = () => {
       time: '4:00 PM - 5:00 PM',
       location: 'Pool B',
       status: 'upcoming',
-      price: 45,
+      price: 18000,
       sessionNumber: 2,
       totalSessions: 12,
       color: theme.colors.status.success,
@@ -530,7 +530,7 @@ export const BookingsScreen: React.FC = () => {
       time: '3:00 PM - 3:45 PM',
       location: 'Pool A',
       status: 'completed',
-      price: 35,
+      price: 14000,
       sessionNumber: 2,
       totalSessions: 8,
       color: theme.colors.interactive.accent,
@@ -544,7 +544,7 @@ export const BookingsScreen: React.FC = () => {
       time: '7:00 PM - 7:50 PM',
       location: 'Pool C',
       status: 'cancelled',
-      price: 40,
+      price: 16000,
       sessionNumber: 1,
       totalSessions: 10,
       color: theme.colors.interactive.purple,

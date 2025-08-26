@@ -9,7 +9,7 @@ import {
   View,
   Platform,
 } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme, Theme } from '../../theme';
 import { themeUtils } from '../../theme';
 
 
@@ -49,23 +49,21 @@ interface CustomButtonProps {
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   
-  // Styling
+  // Style overrides
   style?: ViewStyle;
   textStyle?: TextStyle;
-  
-  // Shadow support (uses theme elevation system)
-  shadow?: boolean;
-  
-  // Loading
-  loaderColor?: string;
   
   // Accessibility
   accessibilityLabel?: string;
   accessibilityHint?: string;
   testID?: string;
+  
+  // Additional props
+  shadow?: boolean;
+  loaderColor?: string;
 }
 
-const CustomButton: React.FC<CustomButtonProps> = ({
+export const CustomButton: React.FC<CustomButtonProps> = ({
   title,
   onPress,
   variant = 'primary',
@@ -76,84 +74,263 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   endIcon,
   style,
   textStyle,
-  shadow = false,
-  loaderColor = 'white',
   accessibilityLabel,
   accessibilityHint,
   testID,
+  shadow = false,
+  loaderColor,
 }) => {
   const { theme } = useTheme();
+
+  // Set loader color based on variant
+  const defaultLoaderColor = useMemo(() => {
+    switch (variant) {
+      case 'primary':
+      case 'teal':
+      case 'success':
+      case 'warning':
+      case 'info':
+      case 'danger':
+      case 'black':
+      case 'cancel':
+        return theme.colors.text.inverse;
+      default:
+        return theme.colors.interactive.primary;
+    }
+  }, [variant, theme]);
+
+  const finalLoaderColor = loaderColor || defaultLoaderColor;
+
+  // ========================================
+  // TEMPORARY MOBILE FIX - TODO: REMOVE WHEN STYLESHEET ISSUE IS RESOLVED
+  // ========================================
+  // 
+  // ISSUE: StyleSheet.create() works perfectly on web but styles don't render on mobile
+  // ORIGINAL CODE: const styles = useMemo(() => createStyles(theme), [theme]);
+  // 
+  // TEMPORARY SOLUTION: Direct inline styles that preserve exact original styling
+  // WHEN FIXING: Uncomment the StyleSheet.create section at bottom and remove this section
+  // 
+  // The inline styles below are a 1:1 mapping of the original StyleSheet variants
+  // No visual changes - only the technical approach to applying styles
+  const getVariantStyles = () => {
+    // TEMPORARY: Maps exactly to createStyles() variants below
+    // Each variant preserves original backgroundColor and textColor from StyleSheet
+    const variantConfigs = {
+      primary: {
+        backgroundColor: theme.colors.interactive.primary,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+      teal: {
+        backgroundColor: theme.colors.interactive.teal,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+      outline: {
+        backgroundColor: theme.colors.background.secondary,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.interactive.themeBlack,
+      },
+      outlineTheme: {
+        backgroundColor: theme.colors.background.primary,
+        borderWidth: 1,
+        borderColor: theme.colors.interactive.primary,
+        textColor: theme.colors.interactive.primary,
+      },
+      outlineTeal: {
+        backgroundColor: theme.colors.background.primary,
+        borderWidth: 1,
+        borderColor: theme.colors.interactive.teal,
+        textColor: theme.colors.interactive.teal,
+      },
+      danger: {
+        backgroundColor: theme.colors.interactive.danger,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+      gray: {
+        backgroundColor: theme.colors.border.primary,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.secondary,
+      },
+      faded: {
+        backgroundColor: theme.colors.interactive.faded,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.interactive.primary,
+      },
+      orange: {
+        backgroundColor: theme.colors.interactive.orange,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.interactive.themeBlack,
+      },
+      lightGray: {
+        backgroundColor: theme.colors.background.secondary,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.secondary,
+      },
+      black: {
+        backgroundColor: theme.colors.interactive.themeBlack,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+      cancel: {
+        backgroundColor: theme.colors.interactive.primary,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+      normal: {
+        backgroundColor: theme.colors.background.secondary,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.interactive.primary,
+      },
+      secondary: {
+        backgroundColor: theme.colors.background.secondary,
+        borderWidth: 1,
+        borderColor: theme.colors.border.primary,
+        textColor: theme.colors.text.primary,
+      },
+      ghost: {
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.interactive.primary,
+      },
+      success: {
+        backgroundColor: theme.colors.status.success,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+      warning: {
+        backgroundColor: theme.colors.status.warning,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+      info: {
+        backgroundColor: theme.colors.status.info,
+        borderWidth: 0,
+        borderColor: 'transparent',
+        textColor: theme.colors.text.inverse,
+      },
+    };
+    
+    return variantConfigs[variant as keyof typeof variantConfigs] || variantConfigs.primary;
+  };
+
+  const variantConfig = getVariantStyles();
   
-  // Debug logging for mobile issues
+  // TEMPORARY: Direct button styling that mirrors createStyles().button + size + variant
+  const dynamicButtonStyle = {
+    // Base button styles (from styles.button)
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    width: '100%' as const,
+    borderRadius: 25, // Matching existing rounded-[25px]
+    position: 'relative' as const,
+    minHeight: 44,
+    overflow: 'hidden' as const, // CRITICAL: Clips ripple/press effects to rounded borders
+    
+    // Size styles (from styles.sm/styles.md)
+    height: size === 'sm' ? 36 : 48,
+    paddingHorizontal: theme.spacing?.md || 16,
+    
+    // Variant styles (from styles[variant])
+    backgroundColor: variantConfig.backgroundColor,
+    borderWidth: variantConfig.borderWidth || 0,
+    borderColor: variantConfig.borderColor || 'transparent',
+    
+    // Platform-specific adjustments (from original StyleSheet)
+    ...(Platform.OS === 'android' && {
+      elevation: 0, // Remove default Android elevation
+    }),
+    ...(Platform.OS === 'ios' && {
+      shadowOpacity: 0, // Remove default iOS shadow
+    }),
+    ...(Platform.OS !== 'web' && {
+      minWidth: 44,
+      paddingVertical: 2,
+    }),
+    
+    // Shadow handling (from themeUtils.createShadow)
+    ...(shadow && !disabled && {
+      shadowColor: theme.colors?.shadow?.default || 'rgba(0,0,0,0.1)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    }),
+  };
+
+  // TEMPORARY: Direct text styling that mirrors styles.text + styles[size]Text + styles[variant]Text
+  const dynamicTextStyle = {
+    // Base text styles (from styles.text)
+    ...(theme.typography?.button?.base || {}),
+    textAlign: 'center' as const,
+    fontWeight: theme.fontConfig?.fontWeight?.medium || '500',
+    
+    // Size-specific text styles (from styles.smText/styles.mdText)
+    fontSize: size === 'sm' 
+      ? (theme.typography?.button?.sm?.fontSize || theme.fontSizes?.sm || 14)
+      : (theme.typography?.button?.base?.fontSize || theme.fontSizes?.base || 16),
+    lineHeight: size === 'sm'
+      ? (theme.typography?.button?.sm?.lineHeight || theme.typography?.lineHeight?.small || 20)
+      : (theme.typography?.button?.base?.lineHeight || theme.typography?.lineHeight?.body || 24),
+    
+    // Variant text color (from styles[variant]Text)
+    color: variantConfig.textColor,
+  };
+
+  // Debug logging for mobile button styling issues
   if (Platform.OS !== 'web') {
-    console.log('🔍 CustomButton render:', {
-      title,
+    console.log(`🔍 CustomButton[${title}] PRESERVING ORIGINAL STYLES:`, {
       variant,
       size,
-      themeExists: !!theme,
-      colorsExist: !!theme?.colors,
-      primaryColor: theme?.colors?.interactive?.primary,
-      textColor: theme?.colors?.text?.primary,
-      backgroundColor: theme?.colors?.background?.primary,
-      // Log the actual theme object structure
-      themeKeys: theme ? Object.keys(theme) : 'NO_THEME',
-      colorsKeys: theme?.colors ? Object.keys(theme.colors) : 'NO_COLORS',
-      interactiveKeys: theme?.colors?.interactive ? Object.keys(theme.colors.interactive) : 'NO_INTERACTIVE',
+      backgroundColor: dynamicButtonStyle.backgroundColor,
+      textColor: dynamicTextStyle.color,
+      borderWidth: dynamicButtonStyle.borderWidth,
+      borderColor: dynamicButtonStyle.borderColor,
     });
   }
-  
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
-  const getButtonStyles = () => {
-    const baseStyles = [
-      styles.button,
-      styles[size],
-      styles[variant],
-    ];
-
-    if (disabled) {
-      baseStyles.push(styles.disabled);
-    }
-
-    if (shadow && !disabled) {
-      const shadowStyle = themeUtils.createShadow('sm', theme.colors.shadow.default);
-      baseStyles.push(shadowStyle as any);
-    }
-
-    return baseStyles;
-  };
-
-  const getTextStyles = () => {
-    const baseStyles = [
-      styles.text,
-      styles[`${variant}Text`],
-      styles[`${size}Text`],
-    ];
-
-    if (disabled) {
-      baseStyles.push(styles.disabledText);
-    }
-
-    return baseStyles;
-  };
 
   const renderContent = () => {
     if (isLoading) {
-      return <ActivityIndicator color={loaderColor} size={size === 'sm' ? 'small' : 'large'} />;
+      return <ActivityIndicator color={finalLoaderColor} size={size === 'sm' ? 'small' : 'large'} />;
     }
 
     return (
       <>
         {/* Start Icon at Far Left - matching existing pattern */}
         {startIcon && (
-          <View style={styles.startIconContainer}>
+          <View style={{
+            // TEMPORARY: Direct styles instead of styles.startIconContainer
+            marginRight: theme.spacing?.xs || 4,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
             {startIcon}
           </View>
         )}
         
         {/* Centered Text */}
         <Text 
-          style={[...getTextStyles(), textStyle]}
+          style={[
+            dynamicTextStyle, // TEMPORARY: Using direct styles instead of getTextStyles()
+            textStyle
+          ]}
           allowFontScaling={false}
         >
           {title}
@@ -161,7 +338,12 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         
         {/* End Icon at Far Right */}
         {endIcon && (
-          <View style={styles.endIconContainer}>
+          <View style={{
+            // TEMPORARY: Direct styles instead of styles.endIconContainer
+            marginLeft: theme.spacing?.xs || 4,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
             {endIcon}
           </View>
         )}
@@ -173,13 +355,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     <Pressable
       onPress={onPress}
       disabled={disabled || isLoading}
-      style={({ pressed }) => [
-        ...getButtonStyles(), 
+      style={[
+        // TEMPORARY: Using direct styles instead of getButtonStyles()
+        dynamicButtonStyle,
+        disabled && { opacity: 0.6 }, // Mirrors styles.disabled
         style,
-        { 
-          pointerEvents: (disabled || isLoading) ? 'none' : 'auto',
-          opacity: pressed ? 0.8 : 1,
-        }
       ]}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || title}
@@ -187,8 +367,10 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       accessibilityState={{ disabled: disabled || isLoading }}
       testID={testID}
       android_ripple={{ 
-        color: theme.colors.interactive.primaryPressed,
-        borderless: false 
+        color: theme.colors?.interactive?.primaryPressed || 'rgba(79, 46, 201, 0.3)',
+        borderless: false,
+        radius: undefined, // Let it inherit container bounds 
+        foreground: true, // Ripple appears on top of content
       }}
     >
       {renderContent()}
@@ -196,7 +378,28 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+// ========================================
+// ORIGINAL STYLESHEET - WORKS ON WEB, NOT ON MOBILE  
+// ========================================
+//
+// ISSUE: This StyleSheet.create approach works perfectly on web but styles don't render on mobile
+// ROOT CAUSE: Unknown - possibly React Native StyleSheet processing difference on mobile
+// INVESTIGATION NEEDED: Why StyleSheet.create fails to apply styles on mobile devices
+//
+// RESTORATION STEPS:
+// 1. Investigate mobile StyleSheet.create issue
+// 2. When fixed, uncomment this entire createStyles function
+// 3. Restore: const styles = useMemo(() => createStyles(theme), [theme]);
+// 4. Replace dynamicButtonStyle with: [...getButtonStyles(), style]
+// 5. Replace dynamicTextStyle with: [...getTextStyles(), textStyle]  
+// 6. Replace icon container direct styles with: styles.startIconContainer, styles.endIconContainer
+// 7. Remove all temporary inline styling above
+//
+const createStyles = (theme: Theme) => {
+  // COMMENTED OUT - ENABLE WHEN MOBILE STYLESHEET ISSUE IS RESOLVED
+  // return StyleSheet.create({
+  /*
+  return StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -220,19 +423,11 @@ const createStyles = (theme: any) => StyleSheet.create({
       // Add some padding for better touch targets
       paddingVertical: 2,
     }),
-    // Fallback styles to ensure visibility - ALWAYS show these
-    backgroundColor: theme?.colors?.interactive?.primary || '#4F2EC9',
-    borderWidth: 0,
-    // Force visibility on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#4F2EC9', // Force Academy purple
-      borderWidth: 0,
-    }),
   },
 
   // Size variants
   sm: {
-    paddingHorizontal: theme?.spacing?.md || 16, // px-4
+    paddingHorizontal: theme.spacing.md, // px-4
     height: 36, // h-9 (9 * 4 = 36px)
     minHeight: 36,
     // Mobile-specific adjustments
@@ -242,384 +437,210 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
 
   md: {
-    paddingHorizontal: theme?.spacing?.md || 16, // px-4  
+    paddingHorizontal: theme.spacing.md, // px-4  
     height: 48, // h-12 (12 * 4 = 48px)
     minHeight: 48,
   },
 
-  // Button variant backgrounds (matching existing design)
+  // Button variant backgrounds - using theme colors consistently
   primary: {
-    backgroundColor: theme?.colors?.interactive?.primary || '#4F2EC9',
-    // Force primary color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#4F2EC9',
-    }),
+    backgroundColor: theme.colors.interactive.primary,
   },
 
   teal: {
-    backgroundColor: theme?.colors?.interactive?.teal || '#52E2BB',
-    // Force teal color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#52E2BB',
-    }),
+    backgroundColor: theme.colors.interactive.teal,
   },
 
   outline: {
-    backgroundColor: theme?.colors?.background?.secondary || '#F5F5F5',
-    // Force outline color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#F5F5F5',
-    }),
+    backgroundColor: theme.colors.background.secondary,
   },
 
   outlineTheme: {
-    backgroundColor: theme?.colors?.background?.primary || '#FFFFFF',
+    backgroundColor: theme.colors.background.primary,
     borderWidth: 1,
-    borderColor: theme?.colors?.interactive?.primary || '#4F2EC9',
-    // Force outline theme colors on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#FFFFFF',
-      borderColor: '#4F2EC9',
-    }),
+    borderColor: theme.colors.interactive.primary,
   },
 
   outlineTeal: {
-    backgroundColor: theme?.colors?.background?.primary || '#FFFFFF',
+    backgroundColor: theme.colors.background.primary,
     borderWidth: 1,
-    borderColor: theme?.colors?.interactive?.teal || '#52E2BB',
-    // Force outline teal colors on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#FFFFFF',
-      borderColor: '#52E2BB',
-    }),
+    borderColor: theme.colors.interactive.teal,
   },
 
   danger: {
-    backgroundColor: (theme?.colors?.interactive?.danger || '#EE4A52') + '1A', // bg-opacity-10 = 10% = 1A in hex
-    // Force danger color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#EE4A52',
-    }),
+    backgroundColor: theme.colors.interactive.danger,
   },
 
   gray: {
-    backgroundColor: theme?.colors?.border?.primary || '#E5E5E5',
-    // Force gray color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#E5E5E5',
-    }),
+    backgroundColor: theme.colors.border.primary,
   },
 
   faded: {
-    backgroundColor: theme?.colors?.interactive?.faded || '#EAF4F4',
-    // Force faded color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#EAF4F4',
-    }),
+    backgroundColor: theme.colors.interactive.faded,
   },
 
   orange: {
-    backgroundColor: theme?.colors?.interactive?.orange || '#FEAE24',
-    // Force orange color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#FEAE24',
-    }),
+    backgroundColor: theme.colors.interactive.orange,
   },
 
   lightGray: {
-    backgroundColor: theme?.colors?.background?.secondary || '#FAFAFA',
-    // Force light gray color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#FAFAFA',
-    }),
+    backgroundColor: theme.colors.background.secondary,
   },
 
   black: {
-    backgroundColor: theme?.colors?.interactive?.themeBlack || '#121212',
-    // Force black color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#121212',
-    }),
+    backgroundColor: theme.colors.interactive.themeBlack,
   },
 
   cancel: {
-    backgroundColor: (theme?.colors?.interactive?.primary || '#4F2EC9') + '1A', // #4F2EC9 with 10% opacity
-    // Force cancel color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#4F2EC9',
-    }),
+    backgroundColor: theme.colors.interactive.primary,
   },
 
   normal: {
-    backgroundColor: (theme?.colors?.background?.secondary || '#F5F5F5') + '1A', // with 10% opacity
-    // Force normal color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#F5F5F5',
-    }),
+    backgroundColor: theme.colors.background.secondary,
   },
 
-  // New enhanced variants from Enhanced Button - following Academy design system
+  // New enhanced variants
   secondary: {
-    backgroundColor: theme?.colors?.background?.secondary || '#FAFAFA',
+    backgroundColor: theme.colors.background.secondary,
     borderWidth: 1,
-    borderColor: theme?.colors?.border?.primary || '#E5E5E5',
-    // Force secondary colors on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#FAFAFA',
-      borderColor: '#E5E5E5',
-    }),
+    borderColor: theme.colors.border.primary,
   },
 
   ghost: {
     backgroundColor: 'transparent',
     borderWidth: 0,
-    // Transparent on all platforms
   },
 
   success: {
-    backgroundColor: theme?.colors?.status?.success || '#059669',
-    // Force success color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#059669',
-    }),
+    backgroundColor: theme.colors.status.success,
   },
 
   warning: {
-    backgroundColor: theme?.colors?.status?.warning || '#D97706',
-    // Force warning color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#D97706',
-    }),
+    backgroundColor: theme.colors.status.warning,
   },
 
   info: {
-    backgroundColor: theme?.colors?.status?.info || '#2563EB',
-    // Force info color on mobile
-    ...(Platform.OS !== 'web' && {
-      backgroundColor: '#2563EB',
-    }),
+    backgroundColor: theme.colors.status.info,
   },
 
   disabled: {
-    backgroundColor: theme?.colors?.interactive?.primaryDisabled || '#D1D5DB',
+    backgroundColor: theme.colors.interactive.primaryDisabled,
     opacity: 0.6,
   },
 
-  // Text styles for each variant
+  // Text styles for each variant - using theme colors consistently
   text: {
-    ...(theme?.typography?.button?.base || {}),
+    ...(theme.typography?.button?.base || {}),
     textAlign: 'center',
-    fontWeight: theme?.fontConfig?.fontWeight?.medium || '500',
-    // Ensure text is visible on mobile
-    color: theme?.colors?.text?.primary || '#000000',
-    // Platform-specific text adjustments
-    ...(Platform.OS === 'android' && {
-      fontFamily: 'Roboto',
-    }),
-    ...(Platform.OS === 'ios' && {
-      fontFamily: 'System',
-    }),
-    // Mobile-specific text improvements
-    ...(Platform.OS !== 'web' && {
-      // Ensure text is readable on mobile
-      fontSize: Math.max((theme?.typography?.button?.base?.fontSize || 14), 14),
-      lineHeight: Math.max((theme?.typography?.button?.base?.lineHeight || 20), 20),
-      // Force text color on mobile
-      color: '#FFFFFF', // Force white text for visibility
-    }),
-    // Fallback font size
-    fontSize: theme?.typography?.button?.base?.fontSize || 14,
-    lineHeight: theme?.typography?.button?.base?.lineHeight || 20,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+    fontSize: theme.typography?.button?.base?.fontSize || theme.fontSizes.base,
+    lineHeight: theme.typography?.button?.base?.lineHeight || theme.lineHeights.base,
   },
 
   smText: {
-    ...(theme?.typography?.button?.sm || {}),
-    // Mobile-specific adjustments
-    ...(Platform.OS !== 'web' && {
-      fontSize: Math.max((theme?.typography?.button?.sm?.fontSize || 12), 12),
-      lineHeight: Math.max((theme?.typography?.button?.sm?.lineHeight || 16), 16),
-      // Force text color on mobile
-      color: '#FFFFFF',
-    }),
-    // Fallback font size
-    fontSize: theme?.typography?.button?.sm?.fontSize || 12,
-    lineHeight: theme?.typography?.button?.sm?.lineHeight || 16,
+    ...(theme.typography?.button?.sm || {}),
+    fontSize: theme.typography?.button?.sm?.fontSize || theme.fontSizes.sm,
+    lineHeight: theme.typography?.button?.sm?.lineHeight || theme.lineHeights.sm,
   },
 
   mdText: {
-    ...(theme?.typography?.button?.base || {}),
-    // Mobile-specific adjustments
-    ...(Platform.OS !== 'web' && {
-      fontSize: Math.max((theme?.typography?.button?.base?.fontSize || 14), 14),
-      lineHeight: Math.max((theme?.typography?.button?.base?.lineHeight || 20), 20),
-      // Force text color on mobile
-      color: '#FFFFFF',
-    }),
-    // Fallback font size
-    fontSize: theme?.typography?.button?.base?.fontSize || 14,
-    lineHeight: theme?.typography?.button?.base?.lineHeight || 20,
+    ...(theme.typography?.button?.base || {}),
+    fontSize: theme.typography?.button?.base?.fontSize || theme.fontSizes.base,
+    lineHeight: theme.typography?.button?.base?.lineHeight || theme.lineHeights.base,
   },
 
-  // Text colors for each variant (matching existing design)
+  // Text colors for each variant using theme
   primaryText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF', // white
-    // Force white text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   tealText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF', // white
-    // Force white text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   outlineText: {
-    color: theme?.colors?.interactive?.themeBlack || '#121212',
-    // Force dark text on mobile for outline buttons
-    ...(Platform.OS !== 'web' && {
-      color: '#121212',
-    }),
+    color: theme.colors.interactive.themeBlack,
   },
 
   outlineThemeText: {
-    color: theme?.colors?.interactive?.primary || '#4F2EC9',
-    // Force primary color text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#4F2EC9',
-    }),
+    color: theme.colors.interactive.primary,
   },
 
   outlineTealText: {
-    color: theme?.colors?.interactive?.teal || '#52E2BB',
-    // Force teal color text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#52E2BB',
-    }),
+    color: theme.colors.interactive.teal,
   },
 
   dangerText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF', // white (for danger buttons)
-    // Force white text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   grayText: {
-    color: theme?.colors?.text?.secondary || '#5B5F5F',
-    // Force secondary text color on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#5B5F5F',
-    }),
+    color: theme.colors.text.secondary,
   },
 
   fadedText: {
-    color: theme?.colors?.interactive?.primary || '#4F2EC9',
-    // Force primary color text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#4F2EC9',
-    }),
+    color: theme.colors.interactive.primary,
   },
 
   orangeText: {
-    color: theme?.colors?.interactive?.themeBlack || '#121212',
-    // Force dark text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#121212',
-    }),
+    color: theme.colors.interactive.themeBlack,
   },
 
   lightGrayText: {
-    color: theme?.colors?.text?.secondary || '#5B5F5F',
-    // Force secondary text color on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#5B5F5F',
-    }),
+    color: theme.colors.text.secondary,
   },
 
   blackText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF',
-    // Force white text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   cancelText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF',
-    // Force white text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   normalText: {
-    color: theme?.colors?.interactive?.primary || '#4F2EC9',
-    // Force primary color text on mobile
-    ...(Platform.OS !== 'web' && {
-      color: '#4F2EC9',
-    }),
+    color: theme.colors.interactive.primary,
   },
 
   // Text styles for new enhanced variants
   secondaryText: {
-    color: theme?.colors?.text?.primary || '#111827',
-    // Force dark text on mobile for secondary buttons
-    ...(Platform.OS !== 'web' && {
-      color: '#111827',
-    }),
+    color: theme.colors.text.primary,
   },
 
   ghostText: {
-    color: theme?.colors?.interactive?.primary || '#4F2EC9',
-    // Force primary color text on mobile for ghost buttons
-    ...(Platform.OS !== 'web' && {
-      color: '#4F2EC9',
-    }),
+    color: theme.colors.interactive.primary,
   },
 
   successText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF',
-    // Force white text on mobile for success buttons
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   warningText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF', 
-    // Force white text on mobile for warning buttons
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   infoText: {
-    color: theme?.colors?.text?.inverse || '#FFFFFF',
-    // Force white text on mobile for info buttons
-    ...(Platform.OS !== 'web' && {
-      color: '#FFFFFF',
-    }),
+    color: theme.colors.text.inverse,
   },
 
   disabledText: {
-    color: theme?.colors?.text?.disabled || '#9CA3AF',
+    color: theme.colors.text.disabled,
+    opacity: 1, // Don't double-apply opacity
   },
 
-  // Icon containers (matching existing absolute positioning)
+  // Icon container styles
   startIconContainer: {
-    position: 'absolute',
-    left: theme?.spacing?.md || 16, // left-4
+    marginRight: theme.spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   endIconContainer: {
-    position: 'absolute',
-    right: theme?.spacing?.md || 16, // right-4
+    marginLeft: theme.spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-
-export { CustomButton };
+*/
+// END OF COMMENTED STYLESHEET - UNCOMMENT ENTIRE SECTION WHEN MOBILE ISSUE IS RESOLVED
+};

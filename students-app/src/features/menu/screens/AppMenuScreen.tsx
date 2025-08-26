@@ -747,7 +747,7 @@ export const AppMenuScreen: React.FC = () => {
             textAlign: 'center',
             marginBottom: theme.spacing.sm,
           }}>
-            Refer a Friend, Earn $50!
+            Refer a Friend, Earn ₦20,000!
           </Text>
           <Text style={{
             color: 'white',

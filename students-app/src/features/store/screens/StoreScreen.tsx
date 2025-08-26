@@ -161,7 +161,7 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
               fontSize: theme.fontSizes.lg,
               fontWeight: theme.fontConfig.fontWeight.bold,
             }}>
-              ${product.price}
+              ₦{product.price.toLocaleString('en-NG')}
             </Text>
             {product.originalPrice && (
               <Text style={{
@@ -170,7 +170,7 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
                 textDecorationLine: 'line-through',
                 marginLeft: theme.spacing.sm,
               }}>
-                ${product.originalPrice}
+                ₦{product.originalPrice.toLocaleString('en-NG')}
               </Text>
             )}
           </View>
@@ -220,8 +220,8 @@ export const StoreScreen: React.FC = () => {
       id: 'swim-goggles',
       name: 'Pro Swimming Goggles',
       description: 'Professional grade swimming goggles with anti-fog coating',
-      price: 29.99,
-      originalPrice: 39.99,
+      price: 11999,
+      originalPrice: 15999,
       category: 'equipment',
       image: '',
       inStock: true,
@@ -233,7 +233,7 @@ export const StoreScreen: React.FC = () => {
       id: 'training-fins',
       name: 'Training Fins',
       description: 'High-quality training fins for technique improvement',
-      price: 45.99,
+      price: 18399,
       category: 'equipment',
       image: '',
       inStock: true,
@@ -244,7 +244,7 @@ export const StoreScreen: React.FC = () => {
       id: 'academy-shirt',
       name: 'Academy T-Shirt',
       description: 'Official Academy branded t-shirt made from premium cotton',
-      price: 24.99,
+      price: 9999,
       category: 'apparel',
       image: '',
       inStock: true,
@@ -255,7 +255,7 @@ export const StoreScreen: React.FC = () => {
       id: 'water-bottle',
       name: 'Smart Water Bottle',
       description: 'Temperature tracking water bottle with mobile app',
-      price: 34.99,
+      price: 13999,
       category: 'accessories',
       image: '',
       inStock: false,
@@ -266,7 +266,7 @@ export const StoreScreen: React.FC = () => {
       id: 'protein-powder',
       name: 'Performance Protein',
       description: 'High-quality whey protein for optimal recovery',
-      price: 49.99,
+      price: 19999,
       category: 'nutrition',
       image: '',
       inStock: true,
@@ -278,7 +278,7 @@ export const StoreScreen: React.FC = () => {
       id: 'kick-board',
       name: 'Training Kickboard',
       description: 'Durable foam kickboard for technique training',
-      price: 19.99,
+      price: 7999,
       category: 'equipment',
       image: '',
       inStock: true,
@@ -480,7 +480,7 @@ export const StoreScreen: React.FC = () => {
             opacity: 0.9,
             marginBottom: theme.spacing.lg,
           }}>
-            On orders over $50
+            On orders over ₦20,000
           </Text>
           <Pressable style={{
             backgroundColor: 'white',

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 // Theme
-import { useTheme, createThemedStyles, ExtendedThemeMode } from '../theme/ThemeProvider';
+import { useTheme, ExtendedThemeMode } from '../theme/ThemeProvider';
 
 // Components
 import { CustomInput } from '../components/forms/CustomInput';
@@ -18,7 +18,7 @@ import CustomAlert from '../components/ui/CustomAlert';
 
 const DesignSystemShowcase: React.FC = () => {
   const { theme, themeMode, setThemeMode } = useTheme();
-  const styles = useThemedStyles();
+  const styles = createStyles(theme);
 
   // Component states for demo
   const [inputValue, setInputValue] = useState('');
@@ -810,7 +810,7 @@ const DesignSystemShowcase: React.FC = () => {
   );
 };
 
-const useThemedStyles = createThemedStyles((theme) =>
+const createStyles = (theme: any) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -1017,7 +1017,6 @@ const useThemedStyles = createThemedStyles((theme) =>
       position: 'relative',
       minHeight: 100,
     },
-  })
-);
+  });
 
 export default DesignSystemShowcase;

@@ -58,9 +58,9 @@ const AcademySection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) => {
           },
         ]}
         groups={[
-          { id: 'group1', name: 'Advanced Group', studentCount: 8, color: '#4F2EC9' },
-          { id: 'group2', name: 'Intermediate Group', studentCount: 12, color: '#00C851' },
-          { id: 'group3', name: 'Beginner Group', studentCount: 15, color: '#FF851B' },
+          { id: 'group1', name: 'Advanced Group', studentCount: 8, color: theme.colors.interactive.primary },
+          { id: 'group2', name: 'Intermediate Group', studentCount: 12, color: theme.colors.status.success },
+          { id: 'group3', name: 'Beginner Group', studentCount: 15, color: theme.colors.status.warning },
         ]}
         onStudentGradeChange={(studentId, stars) => 
           console.log('Grade student:', { studentId, stars })
@@ -79,9 +79,9 @@ const AcademySection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) => {
         schoolName="Academy Swimming Center"
         location="Pool A - Advanced Training"
         groups={[
-          { id: 'group1', name: 'Advanced Group', studentCount: 8, color: '#4F2EC9', isActive: true },
-          { id: 'group2', name: 'Intermediate Group', studentCount: 12, color: '#00C851', isActive: false },
-          { id: 'group3', name: 'Beginner Group', studentCount: 15, color: '#FF851B', isActive: false },
+          { id: 'group1', name: 'Advanced Group', studentCount: 8, color: theme.colors.interactive.primary, isActive: true },
+          { id: 'group2', name: 'Intermediate Group', studentCount: 12, color: theme.colors.status.success, isActive: false },
+          { id: 'group3', name: 'Beginner Group', studentCount: 15, color: theme.colors.status.warning, isActive: false },
         ]}
         lessons={[
           {

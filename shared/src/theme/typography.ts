@@ -68,6 +68,19 @@ export const fontSizes = {
   '7xl': scaleFont(72),
   '8xl': scaleFont(96),
   '9xl': scaleFont(128),
+  
+  // Aliases for component compatibility
+  body: scaleFont(16),      // Same as base
+  small: scaleFont(14),     // Same as sm
+  caption: scaleFont(12),   // Same as xs
+  
+  // Heading aliases
+  h1: scaleFont(36),        // Same as 4xl
+  h2: scaleFont(30),        // Same as 3xl
+  h3: scaleFont(24),        // Same as 2xl
+  h4: scaleFont(20),        // Same as xl
+  h5: scaleFont(18),        // Same as lg
+  h6: scaleFont(16),        // Same as base
 } as const;
 
 // Line heights
@@ -307,6 +320,13 @@ export const typography = {
       letterSpacing: letterSpacing.normal,
       fontFamily: fontConfig.fontFamily.mono,
     },
+  },
+
+  // LineHeight aliases for component compatibility
+  lineHeight: {
+    body: fontSizes.base * lineHeights.normal,           // 16 * 1.5 = 24
+    small: fontSizes.sm * lineHeights.normal,            // 14 * 1.5 = 21  
+    caption: fontSizes.xs * lineHeights.normal,          // 12 * 1.5 = 18
   },
 } as const;
 

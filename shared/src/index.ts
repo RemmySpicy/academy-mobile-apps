@@ -1,16 +1,13 @@
 // Components - Direct exports to avoid property descriptor conflicts
-export {
-  Form,
-  CustomButton, // Primary button component for Academy apps
-  CustomInput,
-  CustomDropdown,
-  CustomTextArea,
-  CustomCheckBox,
-  RadioButton,
-  SingleRadioButton,
-  OtpField,
-  QuantityController,
-} from './components/forms';
+export { Form } from './components/forms/Form';
+export { CustomButton } from './components/forms/CustomButton'; // Primary button component for Academy apps
+export { CustomInput } from './components/forms/CustomInput';
+export { CustomDropdown } from './components/forms/CustomDropdown';
+export { CustomTextArea } from './components/forms/CustomTextArea';
+export { CustomCheckBox } from './components/forms/CustomCheckBox';
+export { RadioButton, SingleRadioButton } from './components/forms/RadioButton';
+export { OtpField } from './components/forms/OtpField';
+export { QuantityController } from './components/forms/QuantityController';
 
 export {
   CustomModal,
@@ -337,3 +334,10 @@ export {
   FormExamplesScreen,
   ComponentLibraryShowcase,
 } from './screens';
+
+// Debug Components (for development)
+export { ThemeDebugger } from './components/debug/ThemeDebugger';
+export { StyleSheetTester } from './components/debug/StyleSheetTester';
+export { ThemeSystemValidator } from './components/debug/ThemeSystemValidator';
+export { PlatformThemeDiagnostic } from './components/debug/PlatformThemeDiagnostic';
+export { ImportDiagnostic } from './components/debug/ImportDiagnostic';

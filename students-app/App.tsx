@@ -9,16 +9,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 import './global.css';
 
-// Re-enable shared library import with proper error handling
+// Import shared library with fallback handling
 let ThemeProvider: any, ProgramContextProvider: any, useAuthStore: any, ErrorBoundary: any;
 
 try {
-  const shared = require('../shared/src');
+  const shared = require('@academy/mobile-shared');
   ({ ThemeProvider, ProgramContextProvider, useAuthStore, ErrorBoundary } = shared);
-  console.log('✅ Shared library loaded successfully');
+  console.log('✅ Using proper shared library');
 } catch (error) {
-  console.log('❌ Shared library failed, using fallbacks:', error.message);
-  // Import our fallback theme
+  console.log('⚠️ Shared library unavailable, using enhanced fallback:', error.message);
+  // Import enhanced fallback theme
   const { ThemeProvider: FallbackTheme } = require('./src/fallback-theme');
   ThemeProvider = FallbackTheme;
   ProgramContextProvider = ({ children }: any) => children;

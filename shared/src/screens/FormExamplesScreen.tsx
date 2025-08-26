@@ -12,7 +12,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 
 // Theme
-import { useTheme, createThemedStyles } from '../theme/ThemeProvider';
+import { useTheme } from '../theme/ThemeProvider';
 
 // Components
 import { CustomInput } from '../components/forms/CustomInput';
@@ -57,7 +57,7 @@ interface FeedbackForm {
 
 const FormExamplesScreen: React.FC = () => {
   const { theme } = useTheme();
-  const styles = useThemedStyles();
+  const styles = createStyles(theme);
   const { bypassLogin, isAuthenticated, user } = useAuthStore();
 
   // Login Form
@@ -529,7 +529,7 @@ const FormExamplesScreen: React.FC = () => {
   );
 };
 
-const useThemedStyles = createThemedStyles((theme) =>
+const createStyles = (theme: any) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -694,7 +694,6 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.tertiary,
       ...theme.typography.caption.base,
     },
-  })
-);
+  });
 
 export default FormExamplesScreen;

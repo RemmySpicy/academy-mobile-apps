@@ -213,7 +213,7 @@ const createStyles = (theme: any, marginBottom: number) => StyleSheet.create({
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.md,
-    shadowColor: theme.colors.shadow?.primary || '#000',
+    shadowColor: theme.colors.shadow.default,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -235,13 +235,13 @@ const createStyles = (theme: any, marginBottom: number) => StyleSheet.create({
   heading: {
     fontSize: theme.fontSizes.body,
     fontWeight: theme.fontConfig.fontWeight.semibold,
-    lineHeight: theme.typography.lineHeight?.body || 20,
+    lineHeight: theme.typography.lineHeight.body,
     marginBottom: theme.spacing.xs,
   },
   subtitle: {
     fontSize: theme.fontSizes.small,
     fontWeight: theme.fontConfig.fontWeight.regular,
-    lineHeight: theme.typography.lineHeight?.small || 16,
+    lineHeight: theme.typography.lineHeight.small,
   },
   iconsContainer: {
     flexDirection: 'row',

@@ -128,6 +128,7 @@ const createNightTheme = (): Theme => ({
       error: '#CC4444',          // Muted error color
       success: '#44AA44',        // Muted success color
       warning: '#BB8844',        // Muted warning color
+      teal: '#5A8A8A',           // Night mode teal border
     },
     interactive: {
       primary: '#7C9AFF',        // Softer primary for night
@@ -163,6 +164,9 @@ const createNightTheme = (): Theme => ({
       cancel: '#7C9AFF',
       gray: '#1A1A1A',
       lightGray: '#0A0A0A',
+      accent: '#7C9AFF',              // Night mode accent blue
+      accentHover: '#9BB0FF',         // Night mode accent blue hover
+      purple: '#9A7BFF',              // Softer purple for night mode
     },
     status: {
       success: '#44AA44',
@@ -180,6 +184,18 @@ const createNightTheme = (): Theme => ({
       info: '#7C9AFF',
       infoBackground: '#000011',
       infoBorder: '#222233',
+    },
+    icon: {
+      primary: '#B8B8B8',               // Night mode icon colors
+      secondary: '#888888',
+      tertiary: '#666666',
+      disabled: '#444444',
+      accent: '#7C9AFF',                // Night mode accent blue icons
+      success: '#44AA44',               // Night mode success green icons
+      warning: '#BB8844',               // Night mode warning orange icons
+      error: '#CC4444',                 // Night mode error red icons
+      purple: '#9A7BFF',                // Night mode purple accent icons
+      interactive: '#7C9AFF',           // Night mode brand icons
     },
     overlay: {
       light: 'rgba(0, 0, 0, 0.6)',
@@ -404,15 +420,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   // Debug logging for theme changes
   useEffect(() => {
-    console.log('🎨 Theme context updated:', {
-      mode: themeMode,
-      isDark,
-      isNight,
-      primaryColor: currentTheme.colors.interactive.primary,
-      backgroundColor: currentTheme.colors.background.primary,
-      textColor: currentTheme.colors.text.primary,
-    });
-  }, [themeMode, isDark, isNight, currentTheme]);
+    if (Platform.OS !== 'web') {
+      console.log('🎨 Theme updated:', {
+        mode: themeMode,
+        primaryColor: currentTheme.colors.interactive.primary,
+        isLoading,
+      });
+    }
+  }, [themeMode, currentTheme, isLoading]);
 
   // Create context value - always create this regardless of loading state
   const contextValue: ThemeContextValue = {

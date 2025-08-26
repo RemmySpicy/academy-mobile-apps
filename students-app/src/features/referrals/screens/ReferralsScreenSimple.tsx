@@ -40,7 +40,7 @@ export const ReferralsScreenSimple: React.FC = () => {
           textAlign: 'center',
           lineHeight: 24,
         }}>
-          Earn $50 for each friend you refer! Share your referral code and track your rewards here.
+          Earn ₦20,000 for each friend you refer! Share your referral code and track your rewards here.
         </Text>
       </View>
     </View>

@@ -858,7 +858,7 @@ const createAdditionalStyles = (theme: any, size: ControlCardSize) => StyleSheet
   // Day box styles now handled by getDayBoxStyles utility
   // shadowBox now handled by getDayBoxStyles utility
   offShadowBox: {
-    backgroundColor: theme.colors.interactive.faded || theme.colors.background.tertiary || '#DCD5F4',
+    backgroundColor: theme.colors.interactive.faded,
     padding: size === 'compact' ? 5 : 7,
     borderRadius: theme.borderRadius.full,
   },

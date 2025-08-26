@@ -22,34 +22,42 @@ export function ProgramContextProvider({ children }: ProgramContextProviderProps
   const { theme } = useTheme();
 
   // Mock programs for development/testing
-  const mockPrograms = [
+  const mockPrograms: ProgramContext[] = [
     {
       id: 'swimming-1',
       name: 'Swimming Academy',
       description: 'Professional swimming instruction for all ages',
-      type: 'swimming',
-      isActive: true,
+      is_active: true,
+      organization_id: 'mock-org-1',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
       id: 'football-1', 
       name: 'Football Training',
       description: 'Youth and adult football development program',
-      type: 'football',
-      isActive: true,
+      is_active: true,
+      organization_id: 'mock-org-1',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
       id: 'basketball-1',
       name: 'Basketball Club',
       description: 'Basketball skills training and competition',
-      type: 'basketball', 
-      isActive: true,
+      is_active: true,
+      organization_id: 'mock-org-1',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
       id: 'music-1',
       name: 'Music Academy',
       description: 'Piano, guitar, and voice lessons',
-      type: 'music',
-      isActive: true,
+      is_active: true,
+      organization_id: 'mock-org-1',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
   ];
 

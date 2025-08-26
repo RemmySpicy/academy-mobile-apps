@@ -8,6 +8,7 @@
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { BottomSheet, BottomSheetProps, BottomSheetRef, BottomSheetSnapPoint } from './BottomSheet';
+import { useTheme } from '../../theme';
 
 export interface BottomSheetConfig extends Omit<BottomSheetProps, 'visible' | 'onClose' | 'children'> {
   /** Unique identifier for the bottom sheet */
@@ -197,6 +198,60 @@ export const useBottomSheetState = (id?: string) => {
   };
 };
 
+// Themed confirmation dialog content component
+const ConfirmDialogContent: React.FC<{
+  content: React.ReactNode;
+  onConfirm: () => void;
+  onCancel?: () => void;
+  hideBottomSheet: (id: string) => void;
+  id: string;
+}> = ({ content, onConfirm, onCancel, hideBottomSheet, id }) => {
+  const { theme } = useTheme();
+  
+  return (
+    <View style={{ padding: 16 }}>
+      {content}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 24 }}>
+        <TouchableOpacity
+          onPress={() => {
+            onCancel?.();
+            hideBottomSheet(id);
+          }}
+          style={{
+            flex: 1,
+            padding: 12,
+            marginRight: 8,
+            backgroundColor: theme.colors.background.secondary,
+            borderRadius: theme.borderRadius.md,
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: theme.colors.border.primary,
+          }}
+        >
+          <Text style={{ color: theme.colors.text.primary }}>Cancel</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          onPress={() => {
+            onConfirm();
+            hideBottomSheet(id);
+          }}
+          style={{
+            flex: 1,
+            padding: 12,
+            marginLeft: 8,
+            backgroundColor: theme.colors.interactive.primary,
+            borderRadius: theme.borderRadius.md,
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: theme.colors.text.inverse }}>Confirm</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
 // Quick show functions for common patterns
 export const useQuickBottomSheet = () => {
   const { showBottomSheet, hideBottomSheet } = useBottomSheet();
@@ -214,44 +269,13 @@ export const useQuickBottomSheet = () => {
       id,
       title,
       content: (
-        <View style={{ padding: 16 }}>
-          {content}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 24 }}>
-            <TouchableOpacity
-              onPress={() => {
-                onCancel?.();
-                hideBottomSheet(id);
-              }}
-              style={{
-                flex: 1,
-                padding: 12,
-                marginRight: 8,
-                backgroundColor: '#f0f0f0',
-                borderRadius: 8,
-                alignItems: 'center',
-              }}
-            >
-              <Text>Cancel</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              onPress={() => {
-                onConfirm();
-                hideBottomSheet(id);
-              }}
-              style={{
-                flex: 1,
-                padding: 12,
-                marginLeft: 8,
-                backgroundColor: '#007AFF',
-                borderRadius: 8,
-                alignItems: 'center',
-              }}
-            >
-              <Text style={{ color: 'white' }}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <ConfirmDialogContent
+          content={content}
+          onConfirm={onConfirm}
+          onCancel={onCancel}
+          hideBottomSheet={hideBottomSheet}
+          id={id}
+        />
       ),
       snapPoints: ['small'],
       ...options,

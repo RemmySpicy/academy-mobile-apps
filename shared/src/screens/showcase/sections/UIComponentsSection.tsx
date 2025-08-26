@@ -707,7 +707,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
               value="dot"
               selected={false}
               showDot={true}
-              dotColor="#ff6b6b"
+              dotColor={theme.colors.status.error}
               variant="outlined"
               onPress={() => {}}
             />
@@ -717,7 +717,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
               selected={true}
               icon="heart"
               showDot={true}
-              dotColor="#51cf66"
+              dotColor={theme.colors.status.success}
               count={3}
               variant="ghost"
               onPress={() => {}}
@@ -1424,8 +1424,8 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
             borderColor: theme.colors.border.primary,
             marginVertical: 8
           }}>
-            <Show condition={showContent}>
-              <ShowWhen condition={showContent}>
+            <Show>
+              <ShowWhen isTrue={showContent}>
                 <View style={{
                   backgroundColor: theme.colors.status.success + '20',
                   padding: 12,
@@ -1488,7 +1488,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
             borderColor: theme.colors.border.primary,
             marginVertical: 8
           }}>
-            <ShowUnless condition={hasPermissions}>
+            <ShowUnless isTrue={hasPermissions}>
               <View style={{
                 backgroundColor: theme.colors.status.warning + '20',
                 padding: 12,
@@ -1505,7 +1505,8 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
               </View>
             </ShowUnless>
 
-            <Show condition={hasPermissions}>
+            <Show>
+              <ShowWhen isTrue={hasPermissions}>
               <View style={{
                 backgroundColor: theme.colors.status.success + '20',
                 padding: 12,
@@ -1520,6 +1521,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
                   You have full access to the administrative features.
                 </Text>
               </View>
+              </ShowWhen>
             </Show>
           </View>
 
@@ -1580,16 +1582,16 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
               Role-Based Content:
             </Text>
             
-            <ShowSwitch>
-              <ShowCase condition={userRole === 'admin'}>
+            <ShowSwitch value={userRole}>
+              <ShowCase value="admin">
                 <View style={{
-                  backgroundColor: '#9333ea20',
+                  backgroundColor: theme.colors.interactive.purple + '20',
                   padding: 12,
                   borderRadius: 8,
                   borderWidth: 1,
-                  borderColor: '#9333ea'
+                  borderColor: theme.colors.interactive.purple
                 }}>
-                  <Text style={[styles.componentDescription, { color: '#9333ea', fontWeight: '600' }]}>
+                  <Text style={[styles.componentDescription, { color: theme.colors.interactive.purple, fontWeight: '600' }]}>
                     👑 Administrator Dashboard
                   </Text>
                   <Text style={styles.componentDescription}>
@@ -1600,7 +1602,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
                 </View>
               </ShowCase>
 
-              <ShowCase condition={userRole === 'instructor'}>
+              <ShowCase value="instructor">
                 <View style={{
                   backgroundColor: theme.colors.interactive.primary + '20',
                   padding: 12,
@@ -1619,7 +1621,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
                 </View>
               </ShowCase>
 
-              <ShowCase condition={userRole === 'student'}>
+              <ShowCase value="student">
                 <View style={{
                   backgroundColor: theme.colors.status.success + '20',
                   padding: 12,
@@ -1660,8 +1662,8 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
               View Mode Rendering:
             </Text>
 
-            <ShowSwitch>
-              <ShowCase condition={currentView === 'list'}>
+            <ShowSwitch value={currentView}>
+              <ShowCase value="list">
                 <View style={{
                   backgroundColor: theme.colors.background.primary,
                   padding: 12,
@@ -1678,7 +1680,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
                 </View>
               </ShowCase>
 
-              <ShowCase condition={currentView === 'grid'}>
+              <ShowCase value="grid">
                 <View style={{
                   backgroundColor: theme.colors.background.primary,
                   padding: 12,
@@ -1695,7 +1697,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
                 </View>
               </ShowCase>
 
-              <ShowCase condition={currentView === 'calendar'}>
+              <ShowCase value="calendar">
                 <View style={{
                   backgroundColor: theme.colors.background.primary,
                   padding: 12,
@@ -1942,11 +1944,11 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
               {switchRender(userRole, {
                 admin: (
                   <View style={{
-                    backgroundColor: '#9333ea20',
+                    backgroundColor: theme.colors.interactive.purple + '20',
                     padding: 10,
                     borderRadius: 6
                   }}>
-                    <Text style={[styles.componentDescription, { color: '#9333ea' }]}>
+                    <Text style={[styles.componentDescription, { color: theme.colors.interactive.purple }]}>
                       👑 Admin privileges active
                     </Text>
                   </View>
@@ -2015,7 +2017,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
             {/* Create a conditionally rendered component */}
             {(() => {
               const ConditionalContent = withConditionalRender(
-                ({ children }) => (
+                ({ children }: { children: React.ReactNode }) => (
                   <View style={{
                     backgroundColor: theme.colors.status.info + '20',
                     padding: 12,

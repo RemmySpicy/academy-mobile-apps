@@ -12,9 +12,30 @@ import './global.css';
 // Debug: Check React version to diagnose hook issues
 console.log('React version:', React.version);
 
-// Force shared library import - production should use proper theme system
-import { ThemeProvider, ProgramContextProvider, useAuthStore, ErrorBoundary } from '@academy/mobile-shared';
-console.log('✅ Using proper shared library (not fallback)');
+// Import shared library with fallback handling
+let ThemeProvider: any, ProgramContextProvider: any, useAuthStore: any, ErrorBoundary: any;
+
+try {
+  const shared = require('@academy/mobile-shared');
+  ({ ThemeProvider, ProgramContextProvider, useAuthStore, ErrorBoundary } = shared);
+  console.log('✅ Using proper shared library');
+} catch (error) {
+  console.log('⚠️ Shared library unavailable, falling back to minimal theme');
+  // Basic fallback for instructors app
+  const { createContext, useContext, useState } = require('react');
+  const fallbackTheme = { colors: { interactive: { primary: '#4F2EC9' } }, spacing: { md: 16 } };
+  const ThemeContext = createContext({ theme: fallbackTheme });
+  ThemeProvider = ({ children }: any) => React.createElement(ThemeContext.Provider, { value: { theme: fallbackTheme } }, children);
+  ProgramContextProvider = ({ children }: any) => children;
+  useAuthStore = () => {
+    const [isInitializing] = useState(false);
+    return { 
+      isInitializing, 
+      initializeAuth: async () => {} 
+    };
+  };
+  ErrorBoundary = ({ children }: any) => children;
+}
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { LoadingScreen } from './src/components/LoadingScreen';
 

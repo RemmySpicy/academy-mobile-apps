@@ -287,13 +287,13 @@ const createStyles = (theme: any, spacing: number) => StyleSheet.create({
   itemTitle: {
     fontSize: theme.fontSizes.body,
     fontWeight: theme.fontConfig.fontWeight.semibold,
-    lineHeight: theme.typography.lineHeight?.body || 20,
+    lineHeight: theme.typography.lineHeight.body,
     marginTop: theme.spacing.xs,
   },
   itemDescription: {
     fontSize: theme.fontSizes.small,
     fontWeight: theme.fontConfig.fontWeight.regular,
-    lineHeight: theme.typography.lineHeight?.small || 16,
+    lineHeight: theme.typography.lineHeight.small,
   },
 });
 

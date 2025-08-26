@@ -57,7 +57,7 @@ const TransactionCard: React.FC<{ transaction: Transaction; index: number }> = (
 
   const formatAmount = (amount: number, type: string) => {
     const sign = type === 'refund' ? '+' : '-';
-    return `${sign}$${amount.toFixed(2)}`;
+    return `${sign}₦${amount.toLocaleString('en-NG')}`;
   };
   
   return (
@@ -220,7 +220,7 @@ export const TransactionsScreen: React.FC = () => {
       id: 'tx-001',
       type: 'payment',
       description: 'Personal Training Session',
-      amount: 80.00,
+      amount: 32000,
       date: 'Aug 20, 2024',
       status: 'completed',
       category: 'Training',
@@ -231,7 +231,7 @@ export const TransactionsScreen: React.FC = () => {
       id: 'tx-002',
       type: 'subscription',
       description: 'Monthly Membership',
-      amount: 149.99,
+      amount: 59999,
       date: 'Aug 15, 2024',
       status: 'completed',
       category: 'Membership',
@@ -242,7 +242,7 @@ export const TransactionsScreen: React.FC = () => {
       id: 'tx-003',
       type: 'payment',
       description: 'Swimming Equipment',
-      amount: 45.99,
+      amount: 18399,
       date: 'Aug 12, 2024',
       status: 'pending',
       category: 'Store',
@@ -252,7 +252,7 @@ export const TransactionsScreen: React.FC = () => {
       id: 'tx-004',
       type: 'refund',
       description: 'Cancelled Group Class',
-      amount: 25.00,
+      amount: 10000,
       date: 'Aug 10, 2024',
       status: 'completed',
       category: 'Training',
@@ -263,7 +263,7 @@ export const TransactionsScreen: React.FC = () => {
       id: 'tx-005',
       type: 'payment',
       description: 'Performance Analysis',
-      amount: 120.00,
+      amount: 48000,
       date: 'Aug 8, 2024',
       status: 'failed',
       category: 'Training',
@@ -273,7 +273,7 @@ export const TransactionsScreen: React.FC = () => {
       id: 'tx-006',
       type: 'payment',
       description: 'Academy T-Shirt',
-      amount: 24.99,
+      amount: 9999,
       date: 'Aug 5, 2024',
       status: 'completed',
       category: 'Store',

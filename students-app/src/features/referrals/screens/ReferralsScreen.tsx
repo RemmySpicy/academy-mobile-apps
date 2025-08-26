@@ -127,7 +127,7 @@ const ReferralCard: React.FC<{ referral: Referral; index: number }> = ({
             fontWeight: theme.fontConfig.fontWeight.semibold,
             marginBottom: 4,
           }}>
-            ${referral.reward}
+            ₦{referral.reward.toLocaleString('en-NG')}
           </Text>
           <View style={{
             backgroundColor: `${getStatusColor(referral.status)}15`,
@@ -215,7 +215,7 @@ export const ReferralsScreen: React.FC = () => {
       id: 'reward-001',
       title: 'Referral Bonus',
       description: 'Sarah completed her first month',
-      amount: 50,
+      amount: 20000,
       date: 'Aug 15, 2024',
       status: 'earned',
     },
@@ -223,7 +223,7 @@ export const ReferralsScreen: React.FC = () => {
       id: 'reward-002',
       title: 'Sign-up Bonus',
       description: 'Mike signed up with your code',
-      amount: 25,
+      amount: 10000,
       date: 'Aug 20, 2024',
       status: 'pending',
     },
@@ -240,7 +240,7 @@ export const ReferralsScreen: React.FC = () => {
   const handleShareCode = async () => {
     try {
       await Share.share({
-        message: `Join Academy with my referral code ${referralCode} and we both get $50! Download the app and start your fitness journey today.`,
+        message: `Join Academy with my referral code ${referralCode} and we both get ₦20,000! Download the app and start your fitness journey today.`,
         url: 'https://academyapp.com/referral/' + referralCode,
       });
     } catch (error) {
@@ -292,7 +292,7 @@ export const ReferralsScreen: React.FC = () => {
             fontWeight: theme.fontConfig.fontWeight.bold,
             marginBottom: theme.spacing.sm,
           }}>
-            Earn $50 for Each Friend!
+            Earn ₦20,000 for Each Friend!
           </Text>
           <Text style={{
             color: 'white',
@@ -396,7 +396,7 @@ export const ReferralsScreen: React.FC = () => {
                 fontSize: theme.fontSizes.xl,
                 fontWeight: theme.fontConfig.fontWeight.bold,
               }}>
-                ${totalEarned}
+                ₦{totalEarned.toLocaleString('en-NG')}
               </Text>
             </View>
             
@@ -421,7 +421,7 @@ export const ReferralsScreen: React.FC = () => {
                 fontSize: theme.fontSizes.xl,
                 fontWeight: theme.fontConfig.fontWeight.bold,
               }}>
-                ${totalPending}
+                ₦{totalPending.toLocaleString('en-NG')}
               </Text>
             </View>
           </View>
@@ -612,7 +612,7 @@ export const ReferralsScreen: React.FC = () => {
                 fontWeight: theme.fontConfig.fontWeight.medium,
                 flex: 1,
               }}>
-                They sign up and get $25 off their first month
+                They sign up and get ₦10,000 off their first month
               </Text>
             </View>
             
@@ -643,7 +643,7 @@ export const ReferralsScreen: React.FC = () => {
                 fontWeight: theme.fontConfig.fontWeight.medium,
                 flex: 1,
               }}>
-                You earn $50 when they complete their first month
+                You earn ₦20,000 when they complete their first month
               </Text>
             </View>
           </View>

@@ -101,7 +101,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     minHeight: 28,
   },
   filterChipSelected: {
-    backgroundColor: theme.colors.interactive.faded || '#DCD5F4',
+    backgroundColor: theme.colors.interactive.faded,
     borderColor: theme.colors.interactive.primary,
   },
   filterLabel: {

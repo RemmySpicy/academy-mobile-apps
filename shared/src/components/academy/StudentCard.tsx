@@ -266,7 +266,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.sm,
     overflow: 'hidden',
-    shadowColor: theme.colors.shadow?.default || '#000',
+    shadowColor: theme.colors.shadow.default,
     shadowOffset: { width: 0, height: theme.spacing.xs / 2 },
     shadowOpacity: 0.1,
     shadowRadius: theme.elevation?.sm?.shadowRadius || 3.84,

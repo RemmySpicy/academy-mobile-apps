@@ -72,7 +72,8 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
       google: {
         icon: 'logo-google' as any,
         text: 'Continue with Google',
-        backgroundColor: theme.colors.background.primary,
+        // Always use light background for Google for consistency across themes
+        backgroundColor: theme.colors.background.secondary, // Lighter background for better contrast
         borderColor: theme.colors.border.primary,
         textColor: theme.colors.text.primary,
         iconSize: 20,
@@ -80,17 +81,19 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
       apple: {
         icon: 'logo-apple' as any,
         text: 'Continue with Apple',
-        backgroundColor: theme.colors.text.primary,
-        borderColor: theme.colors.text.primary,
-        textColor: theme.colors.background.primary,
+        // Apple always uses high contrast - dark button with light text
+        backgroundColor: theme.colors.interactive.themeBlack || '#000000',
+        borderColor: theme.colors.interactive.themeBlack || '#000000',
+        textColor: theme.colors.text.inverse,
         iconSize: 18,
       },
       facebook: {
         icon: 'logo-facebook' as any,
         text: 'Continue with Facebook',
-        backgroundColor: theme.colors.interactive.secondary,
-        borderColor: theme.colors.border.primary,
-        textColor: theme.colors.text.primary,
+        // Facebook gets consistent branding with proper dark mode support
+        backgroundColor: theme.colors.background.secondary, // Light background
+        borderColor: '#1877F2', // Facebook blue border
+        textColor: '#1877F2', // Facebook blue text
         iconSize: 20,
       },
     };
@@ -256,7 +259,34 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
   };
 
   const providerConfig = getProviderConfig();
-  const buttonStyles = getButtonStyles(variant, size, providerConfig, theme);
+  
+  // ========================================
+  // TEMPORARY MOBILE FIX - SAME ISSUE AS CustomButton
+  // ========================================
+  // ISSUE: StyleSheet.create() works on web but not mobile
+  // SOLUTION: Direct inline styles that preserve original theme-based styling
+  // TODO: Remove this section when StyleSheet issue is resolved
+  
+  // Debug mobile styling issues
+  console.log(`🔍 SocialAuthButton[${provider}]:`, {
+    variant,
+    size,
+    providerConfig: {
+      backgroundColor: providerConfig.backgroundColor,
+      borderColor: providerConfig.borderColor,
+      textColor: providerConfig.textColor,
+    },
+    theme: {
+      backgroundSecondary: theme.colors?.background?.secondary,
+      borderPrimary: theme.colors?.border?.primary,
+      textPrimary: theme.colors?.text?.primary,
+      spacingMd: theme.spacing?.md,
+      spacingLg: theme.spacing?.lg,
+      borderRadiusMd: theme.borderRadius?.md,
+      borderWidthSm: theme.borderWidth?.sm,
+      fontSizesBase: theme.fontSizes?.base,
+    }
+  });
 
   // For Apple Sign In, use the native component on iOS
   if (provider === 'apple' && Platform.OS === 'ios' && config.appleEnabled) {
@@ -269,15 +299,62 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
             : AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
         }
         cornerRadius={8}
-        style={[buttonStyles.button, style]}
+        style={[{ height: 44, borderRadius: 8 }, style]}
         onPress={handlePress}
       />
     );
   }
 
+  // TEMPORARY: Direct button styles that would normally come from getButtonStyles() function
+  const dynamicButtonStyle = {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    height: size === 'small' ? 36 : size === 'large' ? 52 : 44,
+    paddingHorizontal: size === 'small' ? (theme.spacing?.md || 16) : size === 'large' ? (theme.spacing?.xl || 32) : (theme.spacing?.lg || 24),
+    borderRadius: theme.borderRadius?.md || 8,
+    borderWidth: variant === 'outline' ? (theme.borderWidth?.sm || 1) : 0,
+    borderColor: variant === 'outline' ? (providerConfig.borderColor || '#ccc') : 'transparent',
+    backgroundColor: providerConfig.backgroundColor, // Preserves original theme-based colors
+    overflow: 'hidden' as const, // CRITICAL: Clips ripple/press effects to rounded borders
+    shadowColor: theme.colors?.shadow?.default || 'rgba(0,0,0,0.1)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+    minHeight: 44, // Ensure minimum touch target
+    width: '100%', // Ensure full width
+  };
+
+  // TEMPORARY: Direct text styles that would normally come from StyleSheet
+  const dynamicTextStyle = {
+    fontSize: size === 'small' ? (theme.fontSizes?.sm || 14) : size === 'large' ? (theme.fontSizes?.lg || 18) : (theme.fontSizes?.base || 16),
+    fontWeight: theme.fontConfig?.fontWeight?.semibold || '600',
+    color: providerConfig.textColor, // Preserves original theme-based text colors
+    textAlign: 'center' as const,
+  };
+
+  // Log styles being applied for debugging
+  console.log(`🎯 SocialAuthButton[${provider}] FINAL STYLES:`, {
+    backgroundColor: dynamicButtonStyle.backgroundColor,
+    borderWidth: dynamicButtonStyle.borderWidth,
+    borderColor: dynamicButtonStyle.borderColor,
+    height: dynamicButtonStyle.height,
+    paddingHorizontal: dynamicButtonStyle.paddingHorizontal,
+    borderRadius: dynamicButtonStyle.borderRadius,
+    textColor: dynamicTextStyle.color,
+    fontSize: dynamicTextStyle.fontSize,
+    platform: require('react-native').Platform.OS,
+  });
+
+
   return (
     <Pressable 
-      style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, [buttonStyles.button, disabled && buttonStyles.disabled, style]]}
+      style={[
+        dynamicButtonStyle,
+        disabled && { opacity: 0.6 },
+        style,
+      ]}
       onPress={handlePress}
       disabled={disabled || isLoading}
       accessibilityRole="button"
@@ -286,23 +363,30 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
         `${providerConfig.text}${isLoading ? ', loading' : ''}`
       }
       accessibilityState={{ disabled: disabled || isLoading }}
+      android_ripple={{ 
+        color: 'rgba(0, 0, 0, 0.1)', // Subtle ripple for all social buttons
+        borderless: false,
+        radius: undefined, // Let it inherit container bounds
+        foreground: true, // Ripple appears on top of content
+      }}
     >
       {isLoading ? (
         <ActivityIndicator
           size="small"
           color={providerConfig.textColor}
-          style={{ marginRight: showText ? theme.spacing[3] : 0 }}
+          style={{ marginRight: showText ? theme.spacing.sm : 0 }}
         />
       ) : (
         <Ionicons
           name={providerConfig.icon}
           size={providerConfig.iconSize}
-          style={{ marginRight: showText ? theme.spacing[3] : 0 }}
+          color={providerConfig.textColor}
+          style={{ marginRight: showText ? theme.spacing.sm : 0 }}
         />
       )}
       
       {showText && (
-        <Text style={[buttonStyles.text, textStyle]}>
+        <Text style={[dynamicTextStyle, textStyle]}>
           {isLoading ? 'Signing in...' : providerConfig.text}
         </Text>
       )}
@@ -310,57 +394,6 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
   );
 };
 
-const getButtonStyles = (variant: string, size: string, config: any, theme: any) => {
-  const sizes = {
-    small: { 
-      height: theme.safeArea.minTouchTarget.height * 0.9, 
-      paddingHorizontal: theme.spacing[4], 
-      fontSize: theme.typography.caption.base.fontSize 
-    },
-    medium: { 
-      height: theme.safeArea.minTouchTarget.height, 
-      paddingHorizontal: theme.spacing[5], 
-      fontSize: theme.typography.body.base.fontSize 
-    },
-    large: { 
-      height: theme.safeArea.minTouchTarget.height * 1.2, 
-      paddingHorizontal: theme.spacing[6], 
-      fontSize: theme.typography.body.lg.fontSize 
-    },
-  };
-
-  const sizeConfig = sizes[size as keyof typeof sizes];
-
-  return StyleSheet.create({
-    button: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: sizeConfig.height,
-      paddingHorizontal: sizeConfig.paddingHorizontal,
-      borderRadius: theme.borderRadius.md,
-      borderWidth: variant === 'outline' ? theme.borderWidth.sm : 0,
-      borderColor: variant === 'outline' ? config.borderColor : 'transparent',
-      backgroundColor: 
-        variant === 'filled' ? config.backgroundColor :
-        variant === 'outline' ? theme.colors.background.primary : 
-        'transparent',
-      ...theme.elevation.sm,
-    },
-    text: {
-      ...theme.typography.body.base,
-      fontSize: sizeConfig.fontSize,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-      color: 
-        variant === 'filled' ? config.textColor :
-        variant === 'outline' ? config.textColor :
-        config.textColor,
-    },
-    disabled: {
-      opacity: 0.6,
-    },
-  });
-};
 
 // Individual social auth button components
 export const GoogleSignInButton: React.FC<Omit<SocialAuthButtonProps, 'provider'>> = (props) => (

@@ -184,7 +184,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     right: theme.spacing.md,
     borderWidth: 1,
     borderRadius: theme.borderRadius.lg,
-    shadowColor: theme.colors.shadow?.primary || '#000',
+    shadowColor: theme.colors.shadow.default,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -214,12 +214,12 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: theme.fontSizes.body,
     fontWeight: theme.fontConfig.fontWeight.semibold,
     marginBottom: theme.spacing.xs,
-    lineHeight: theme.typography.lineHeight?.body || 22,
+    lineHeight: theme.typography.lineHeight.body,
   },
   message: {
     fontSize: theme.fontSizes.small,
     fontWeight: theme.fontConfig.fontWeight.regular,
-    lineHeight: theme.typography.lineHeight?.small || 18,
+    lineHeight: theme.typography.lineHeight.small,
   },
   actionContainer: {
     flexDirection: 'row',

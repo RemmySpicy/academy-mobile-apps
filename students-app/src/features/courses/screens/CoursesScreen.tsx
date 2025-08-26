@@ -298,7 +298,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
               </Text>
             </View>
             <Text style={styles.priceText}>
-              ${course.price}
+              ₦{course.price.toLocaleString('en-NG')}
             </Text>
             <Text style={styles.priceUnit}>/session</Text>
           </View>
@@ -429,7 +429,7 @@ export const CoursesScreen: React.FC = () => {
       ageRange: '3-30 years',
       duration: '45 min',
       level: 'Beginner',
-      price: 35,
+      price: 14000,
       image: 'learn-to-swim',
       color: theme.colors.interactive.accent,
       features: ['Water Safety', 'Basic Strokes', 'Floating', 'Breathing'],
@@ -446,7 +446,7 @@ export const CoursesScreen: React.FC = () => {
       ageRange: '5-30 years',
       duration: '60 min',
       level: 'Advanced',
-      price: 45,
+      price: 18000,
       image: 'swimming-club',
       color: theme.colors.status.success,
       features: ['Technique', 'Endurance', 'Competition Prep', 'Stroke Analysis'],
@@ -463,7 +463,7 @@ export const CoursesScreen: React.FC = () => {
       ageRange: '30+ years',
       duration: '50 min',
       level: 'Beginner',
-      price: 40,
+      price: 16000,
       image: 'adult-swimming',
       color: theme.colors.interactive.purple,
       features: ['Adult-Friendly', 'Flexible Pace', 'Health Focus', 'Stress Relief'],
@@ -480,7 +480,7 @@ export const CoursesScreen: React.FC = () => {
       ageRange: '12-36 months',
       duration: '30 min',
       level: 'Beginner',
-      price: 30,
+      price: 12000,
       image: 'aqua-babies',
       color: theme.colors.status.warning,
       features: ['Parent-Child', 'Water Safety', 'Gentle Approach', 'Fun Activities'],

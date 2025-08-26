@@ -165,7 +165,7 @@ const PerformanceSection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) =
                 },
               ],
               expanded: true,
-              color: '#4CAF50',
+              color: theme.colors.status.success,
             },
             {
               id: 'intermediate',
@@ -184,7 +184,7 @@ const PerformanceSection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) =
                 },
               ],
               expanded: false,
-              color: '#FF9800',
+              color: theme.colors.status.warning,
             },
           ]}
           showConfirmationActions={true}

@@ -993,6 +993,14 @@ const useThemedStyles = createThemedStyles(theme =>
       bottom: 0,
       width: theme.spacing[1],
     },
+
+    performanceDot: {
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      borderWidth: 2,
+      borderColor: theme.colors.background.elevated,
+    },
   })
 );
 

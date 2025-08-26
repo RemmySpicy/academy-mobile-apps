@@ -184,7 +184,7 @@ const createStyles = (theme: any, width: number, height: number) => StyleSheet.c
     alignItems: 'center',
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.xs,
-    shadowColor: theme.colors.shadow?.primary || '#000',
+    shadowColor: theme.colors.shadow.default,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -215,7 +215,7 @@ const createStyles = (theme: any, width: number, height: number) => StyleSheet.c
     fontSize: theme.fontSizes.caption,
     fontWeight: theme.fontConfig.fontWeight.regular,
     textAlign: 'center',
-    lineHeight: theme.typography.lineHeight?.caption || 14,
+    lineHeight: theme.typography.lineHeight.caption,
   },
   numberContainer: {
     justifyContent: 'center',

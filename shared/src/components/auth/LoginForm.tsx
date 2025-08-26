@@ -47,7 +47,80 @@ export const LoginForm: React.FC<LoginFormProps> = React.memo(({
   onLoginError,
 }) => {
   const { theme } = useTheme();
-  const styles = useThemedStyles();
+  // const styles = useThemedStyles(); // TODO: Uncomment when StyleSheet mobile issue is resolved  
+  
+  // ========================================
+  // TEMPORARY MOBILE FIX - SAME ISSUE AS OTHER COMPONENTS
+  // ========================================
+  // ISSUE: StyleSheet.create() works on web but not mobile
+  // TODO: Remove this section when StyleSheet issue is resolved
+  
+  // TEMPORARY: Direct inline styles that mirror useThemedStyles()
+  const styles = {
+    container: {
+      width: '100%' as const,
+    },
+    form: {
+      gap: theme.spacing?.[4] || 16,
+    },
+    formActions: {
+      gap: theme.spacing?.[3] || 12,
+      marginTop: theme.spacing?.[2] || 8,
+    },
+    inputNoMargin: {
+      marginBottom: 0,
+    },
+    forgotPassword: {
+      alignSelf: 'flex-end' as const,
+      marginBottom: theme.spacing?.[2] || 8,
+    },
+    forgotPasswordText: {
+      color: theme.colors.interactive.primary,
+      ...theme.typography?.body?.sm,
+      fontWeight: theme.fontConfig?.fontWeight?.medium || '500',
+    },
+    registerSection: {
+      flexDirection: 'row' as const,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginTop: theme.spacing?.[3] || 12,
+    },
+    registerText: {
+      color: theme.colors.text.secondary,
+      ...theme.typography?.body?.base,
+    },
+    registerLink: {
+      color: theme.colors.interactive.primary,
+      ...theme.typography?.body?.base,
+      fontWeight: theme.fontConfig?.fontWeight?.medium || '500',
+    },
+    divider: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      marginVertical: theme.spacing?.[4] || 16,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: theme.colors.border.primary,
+    },
+    dividerText: {
+      ...theme.typography?.caption?.base,
+      color: theme.colors.text.tertiary,
+      paddingHorizontal: theme.spacing?.[3] || 12,
+      backgroundColor: theme.colors.background.elevated,
+    },
+    termsContainer: {
+      marginTop: theme.spacing?.[4] || 16,
+      paddingHorizontal: theme.spacing?.[2] || 8,
+    },
+    termsText: {
+      textAlign: 'center' as const,
+      color: theme.colors.text.tertiary,
+      ...theme.typography?.caption?.base,
+    },
+  };
+  
   const { bypassLogin, login, isLoading } = useAuthStore();
 
   // Login Form
@@ -235,6 +308,11 @@ export const LoginForm: React.FC<LoginFormProps> = React.memo(({
   );
 });
 
+// ========================================
+// ORIGINAL STYLESHEET - WORKS ON WEB, NOT ON MOBILE
+// ========================================
+// TODO: Uncomment when mobile StyleSheet issue is resolved
+/*
 const useThemedStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     container: {
@@ -314,3 +392,4 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
   })
 );
+*/

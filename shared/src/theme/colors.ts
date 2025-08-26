@@ -274,7 +274,7 @@ export const semanticColors = {
     lightGray: baseColors.neutral[50],         // #FAFAFA - Even lighter gray
     accent: baseColors.info[500],              // #3B82F6 - Common accent blue
     accentHover: baseColors.info[600],         // #2563EB - Accent blue hover
-    purple: baseColors.purple[500],            // #8B5CF6 - Purple accent
+    purple: baseColors.purple[500],            // #A855F7 - Purple accent
   },
 
   // Status Colors - Enhanced for better contrast
@@ -357,6 +357,7 @@ export const darkColors = {
     error: baseColors.error[400],
     success: baseColors.success[400],
     warning: baseColors.warning[400],
+    teal: baseColors.academy.teal[500],         // Academy teal border for dark mode
   },
 
   interactive: {
@@ -380,6 +381,10 @@ export const darkColors = {
     
     orange: baseColors.academy.orange[400],       // Softer orange for dark mode
     orangeHover: baseColors.academy.orange[300],
+    
+    teal: baseColors.academy.teal[400],           // Academy teal for dark mode
+    tealHover: baseColors.academy.teal[300],
+    tealPressed: baseColors.academy.teal[500],
     
     destructive: baseColors.error[400],
     destructiveHover: baseColors.error[300],
@@ -527,7 +532,7 @@ export interface ColorScheme {
     error: string;
     success: string;
     warning: string;
-    teal?: string;
+    teal: string;
   };
   interactive: {
     primary: string;
@@ -545,9 +550,9 @@ export interface ColorScheme {
     fadedHover: string;
     orange: string;
     orangeHover: string;
-    teal?: string;
-    tealHover?: string;
-    tealPressed?: string;
+    teal: string;
+    tealHover: string;
+    tealPressed: string;
     destructive: string;
     destructiveHover: string;
     destructivePressed: string;
@@ -556,6 +561,9 @@ export interface ColorScheme {
     cancel: string;
     gray: string;
     lightGray: string;
+    accent: string;
+    accentHover: string;
+    purple: string;
   };
   icon: {
     primary: string;

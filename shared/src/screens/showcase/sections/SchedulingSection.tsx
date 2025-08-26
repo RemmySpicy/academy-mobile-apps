@@ -81,7 +81,7 @@ const SchedulingSection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) =>
             price: 45,
             sessionNumber: 4,
             totalSessions: 8,
-            color: '#2ECC71',
+            color: theme.colors.status.success,
           }}
           variant="compact"
           showProgress={false}
@@ -101,7 +101,7 @@ const SchedulingSection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) =>
             price: 65,
             sessionNumber: 2,
             totalSessions: 12,
-            color: '#E74C3C',
+            color: theme.colors.status.error,
           }}
           variant="compact"
           onPress={(booking) => console.log('Cancelled booking pressed:', booking)}

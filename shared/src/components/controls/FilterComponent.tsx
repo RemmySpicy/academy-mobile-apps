@@ -213,7 +213,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     minWidth: 0,
   },
   groupFilter: {
-    backgroundColor: theme.colors.interactive.faded || '#DCD5F4',
+    backgroundColor: theme.colors.interactive.faded,
     flex: 0.5,
   },
   studentFilter: {

@@ -265,7 +265,7 @@ const createStyles = (theme: any, isTablet: boolean, spacing: number) => StyleSh
     borderRadius: theme.borderRadius.lg,
     marginHorizontal: theme.spacing.lg,
     marginBottom: spacing,
-    shadowColor: theme.colors.shadow?.primary || '#000',
+    shadowColor: theme.colors.shadow.default,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -408,7 +408,7 @@ const createStyles = (theme: any, isTablet: boolean, spacing: number) => StyleSh
     fontSize: theme.fontSizes.body,
     color: theme.colors.text.secondary,
     textAlign: 'center',
-    lineHeight: theme.typography.lineHeight?.body || 24,
+    lineHeight: theme.typography.lineHeight.body,
   },
 });
 

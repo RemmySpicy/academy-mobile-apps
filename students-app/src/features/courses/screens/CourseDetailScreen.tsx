@@ -424,7 +424,7 @@ export const CourseDetailScreen: React.FC = () => {
     ageRange: '3-30 years',
     duration: '45 min',
     level: 'Beginner',
-    price: 35,
+    price: 14000,
     color: theme.colors.interactive.accent,
     features: ['Water Safety', 'Basic Strokes', 'Floating Techniques', 'Breathing Exercises', 'Confidence Building'],
     curriculum: [
@@ -664,7 +664,7 @@ export const CourseDetailScreen: React.FC = () => {
           <View style={styles.priceContainer}>
             <View style={styles.priceSection}>
               <Text style={styles.priceText}>
-                ${courseDetail.price}
+                ₦{courseDetail.price.toLocaleString('en-NG')}
               </Text>
               <Text style={styles.priceUnit}>per session</Text>
             </View>

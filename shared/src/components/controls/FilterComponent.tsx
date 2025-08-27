@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 const { width } = Dimensions.get('window');
 
@@ -45,7 +45,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
   activeGroup,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
   
   const [selectedGroup, setSelectedGroup] = useState(activeGroup || groupName);
   const [isVisible, setIsVisible] = useState(false);
@@ -197,7 +197,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -233,7 +233,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.interactive.primary,
     marginLeft: theme.spacing.xs,
     flexShrink: 1,
-    fontWeight: theme.fontConfig.fontWeight.semiBold,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
   },
   studentFilterText: {
     fontSize: theme.fontSizes.caption,
@@ -295,6 +295,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text.primary,
     fontWeight: theme.fontConfig.fontWeight.medium,
   },
-});
+}));
 
 export default FilterComponent;

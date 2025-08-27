@@ -459,7 +459,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       flex: 1,
     },
     headerSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     headerTitle: {
@@ -473,7 +473,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing.xs,
     },
     periodSelectorSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     periodButton: {
@@ -500,7 +500,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.secondary,
     },
     metricsSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     metricsGrid: {
@@ -553,7 +553,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing.xs,
     },
     chartSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     chartCard: {
@@ -605,7 +605,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing.sm,
     },
     studentsSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     sectionHeader: {
@@ -719,7 +719,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing.xs,
     },
     quickActionsSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing['2xl'],
     },
     quickActionsRow: {

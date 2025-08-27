@@ -20,10 +20,35 @@ try {
   ({ ThemeProvider, ProgramContextProvider, useAuthStore, ErrorBoundary } = shared);
   console.log('✅ Using proper shared library');
 } catch (error) {
-  console.log('⚠️ Shared library unavailable, falling back to minimal theme');
-  // Basic fallback for instructors app
+  console.log('⚠️ Shared library unavailable, falling back to complete mobile theme');
+  // Complete fallback theme for mobile-first approach
   const { createContext, useContext, useState } = require('react');
-  const fallbackTheme = { colors: { interactive: { primary: '#4F2EC9' } }, spacing: { md: 16 } };
+  const fallbackTheme = {
+    colors: {
+      interactive: { primary: '#4F2EC9', primaryHover: '#3F1FA3', primaryPressed: '#5F3ED1' },
+      background: { primary: '#ffffff', secondary: '#f8f9fa', tertiary: '#e9ecef' },
+      text: { primary: '#000000', secondary: '#666666', tertiary: '#999999', inverse: '#ffffff' },
+      border: { primary: '#e5e7eb', secondary: '#d1d5db' },
+      status: { error: '#ef4444', success: '#22c55e', warning: '#f59e0b' },
+      shadow: { default: 'rgba(0, 0, 0, 0.1)' }
+    },
+    spacing: {
+      // Numeric keys for compatibility
+      0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32,
+      // Semantic keys
+      xs: 4, sm: 8, md: 16, lg: 24, xl: 32
+    },
+    safeArea: {
+      minTouchTarget: { width: 44, height: 44 }
+    },
+    borderRadius: { sm: 4, md: 8, lg: 12, full: 9999 },
+    fontSizes: { sm: 14, base: 16, lg: 18 },
+    typography: { 
+      body: { base: { fontSize: 16, lineHeight: 24 } },
+      heading: { h4: { fontSize: 18, fontWeight: '600' } }
+    },
+    fontConfig: { fontWeight: { medium: '500', semibold: '600', bold: '700' } }
+  };
   const ThemeContext = createContext({ theme: fallbackTheme });
   ThemeProvider = ({ children }: any) => React.createElement(ThemeContext.Provider, { value: { theme: fallbackTheme } }, children);
   ProgramContextProvider = ({ children }: any) => children;

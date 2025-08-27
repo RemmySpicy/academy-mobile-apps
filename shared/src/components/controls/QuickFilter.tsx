@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface QuickFilterItem {
   label: string;
@@ -25,7 +25,7 @@ export const QuickFilter: React.FC<QuickFilterProps> = ({
   showsHorizontalScrollIndicator = false,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const handleFilterPress = (item: QuickFilterItem, index: number) => {
     onFilterPress?.(item, index);
@@ -72,7 +72,7 @@ export const QuickFilter: React.FC<QuickFilterProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     marginTop: theme.spacing.md,
   },
@@ -120,6 +120,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   filterCountSelected: {
     color: theme.colors.interactive.primary,
   },
-});
+}));
 
 export default QuickFilter;

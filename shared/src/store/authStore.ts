@@ -8,6 +8,8 @@ import {
   ProgramAssignment,
   UserRole,
   LoginRequest,
+  RegisterRequest,
+  RegisterResponse,
   AuthHeaders,
   AuthError,
   ApiError,
@@ -31,6 +33,7 @@ const AUTH_CONFIG = {
   TOKEN_EXPIRY_MINUTES: 30,
   ENDPOINTS: {
     LOGIN: '/auth/login/json',
+    REGISTER: '/auth/register',
     LOGOUT: '/auth/logout',
     ME: '/auth/me',
     REFRESH: '/auth/refresh',
@@ -438,6 +441,42 @@ export const useAuthStore = create<AuthStoreState>()(
             : error instanceof ApiError
             ? new AuthError('SOCIAL_LOGIN_ERROR', error.message, error.status)
             : new AuthError('SOCIAL_LOGIN_ERROR', 'Social login failed');
+        });
+        throw error;
+      }
+    },
+
+    /**
+     * Register new user with email and password
+     */
+    register: async (registrationData: RegisterRequest): Promise<boolean> => {
+      set((state) => {
+        state.isLoading = true;
+        state.error = null;
+      });
+
+      try {
+        const response = await apiClient.request<RegisterResponse>(
+          AUTH_CONFIG.ENDPOINTS.REGISTER,
+          {
+            method: 'POST',
+            body: JSON.stringify(registrationData),
+          }
+        );
+
+        set((state) => {
+          state.isLoading = false;
+        });
+
+        return response.success;
+      } catch (error) {
+        set((state) => {
+          state.isLoading = false;
+          state.error = error instanceof AuthError
+            ? error
+            : error instanceof ApiError
+            ? new AuthError('REGISTRATION_ERROR', error.message, error.status)
+            : new AuthError('REGISTRATION_ERROR', 'Registration failed');
         });
         throw error;
       }

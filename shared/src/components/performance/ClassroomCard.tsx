@@ -262,7 +262,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       marginVertical: theme.spacing.sm,
       marginHorizontal: theme.spacing.md,
       overflow: 'hidden',
-      borderWidth: theme.borderWidth.thin,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
       ...theme.elevation.sm,
       maxWidth: isTablet ? 600 : undefined,

@@ -315,7 +315,7 @@ export const TransactionsScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -380,7 +380,7 @@ export const TransactionsScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.lg,
           }}
         >
@@ -402,7 +402,7 @@ export const TransactionsScreen: React.FC = () => {
                     : theme.colors.border.primary,
                   borderWidth: 1,
                   borderRadius: theme.borderRadius.full,
-                  paddingHorizontal: theme.spacing.lg,
+                  paddingHorizontal: theme.spacing.md,
                   paddingVertical: theme.spacing.sm,
                   marginRight: theme.spacing.md,
                 }}
@@ -425,7 +425,7 @@ export const TransactionsScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -456,7 +456,7 @@ export const TransactionsScreen: React.FC = () => {
         </Animated.View>
 
         {/* Transactions List */}
-        <View style={{ paddingHorizontal: theme.spacing.lg }}>
+        <View style={{ paddingHorizontal: theme.spacing.md }}>
           <Animated.Text
             entering={FadeInDown.delay(400).springify()}
             style={{
@@ -547,7 +547,7 @@ export const TransactionsScreen: React.FC = () => {
             <Pressable style={{
               backgroundColor: theme.colors.background.secondary,
               borderRadius: theme.borderRadius.lg,
-              paddingHorizontal: theme.spacing.lg,
+              paddingHorizontal: theme.spacing.md,
               paddingVertical: theme.spacing.md,
               flex: 1,
               marginRight: theme.spacing.sm,
@@ -565,7 +565,7 @@ export const TransactionsScreen: React.FC = () => {
             <Pressable style={{
               backgroundColor: theme.colors.interactive.primary,
               borderRadius: theme.borderRadius.lg,
-              paddingHorizontal: theme.spacing.lg,
+              paddingHorizontal: theme.spacing.md,
               paddingVertical: theme.spacing.md,
               flex: 1,
               marginLeft: theme.spacing.sm,

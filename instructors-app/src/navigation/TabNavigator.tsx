@@ -120,6 +120,7 @@ export const TabNavigator: React.FC = () => {
         tabBarItemStyle: {
           paddingVertical: theme.spacing.xs,
         },
+        tabBarShowLabel: true, // Ensure labels show on all platforms
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap;
 

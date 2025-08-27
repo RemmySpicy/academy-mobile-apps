@@ -106,7 +106,7 @@ const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
     },
     
     header: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.xl,
       paddingBottom: theme.spacing.lg,
       borderBottomLeftRadius: theme.borderRadius.xl,
@@ -139,7 +139,7 @@ const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
     
     formContainer: {
       flex: 1,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.lg,
     },
     

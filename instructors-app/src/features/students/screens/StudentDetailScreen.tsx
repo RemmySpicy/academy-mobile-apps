@@ -227,7 +227,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     header: {
       backgroundColor: theme.colors.background.primary,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingBottom: theme.spacing.md,
       shadowColor: theme.colors.shadow.default,
       shadowOffset: {
@@ -266,7 +266,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       paddingBottom: 100, // Space for tab bar
     },
     sectionContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.lg,
     },
     avatarCard: {
@@ -315,7 +315,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing.xs,
     },
     progressContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     progressCard: {
@@ -425,7 +425,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing.sm,
     },
     actionsContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing['2xl'],
     },
     actionsWrapper: {

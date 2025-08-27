@@ -348,7 +348,7 @@ const useScreenStyles = createThemedStyles((theme) =>
       backgroundColor: theme.colors.background.secondary,
     },
     header: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.xs,
     },
@@ -381,7 +381,7 @@ const useScreenStyles = createThemedStyles((theme) =>
       ...theme.elevation.sm,
     },
     statsContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     statsRow: {
@@ -659,7 +659,7 @@ export const BookingsScreen: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: theme.spacing.lg }}
+          contentContainerStyle={{ paddingHorizontal: theme.spacing.md }}
         >
           {filters.map(filter => (
             <Pressable

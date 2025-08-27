@@ -172,7 +172,6 @@ export {
   // Newly extracted hooks
   useDebounce,
   useDebouncedCallback,
-  useScreenDimensions,
   useLocationPermission,
 } from './hooks';
 
@@ -305,6 +304,22 @@ export {
   ThemeModeSelector,
   themeHelpers,
 } from './theme';
+
+// Enhanced Styling Hooks - Production-ready mobile compatibility
+export {
+  useComponentStyles,
+  useStyleSheet,
+  useResponsiveStyles,
+  useDeviceStyles,
+  useStyleDebug,
+} from './hooks/useComponentStyles';
+
+// Screen Dimensions Hook - Real device dimensions
+export {
+  useScreenDimensions,
+  useResponsiveDimensions,
+  useResponsiveValue,
+} from './hooks/useScreenDimensions';
 
 // Theme types (all types from theme/index.ts re-exports)
 export type {

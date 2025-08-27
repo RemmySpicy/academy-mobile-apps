@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
-import { useTheme } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 
 export const LoadingScreen: React.FC = () => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   return (
     <View style={styles.container}>
@@ -19,7 +19,7 @@ export const LoadingScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -33,4 +33,4 @@ const createStyles = (theme: any) => StyleSheet.create({
     textAlign: 'center',
     color: theme.colors.text.secondary,
   },
-});
+}));

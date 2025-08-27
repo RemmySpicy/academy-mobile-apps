@@ -46,7 +46,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
     },
     title: {
       fontSize: theme.fontSizes.xl,

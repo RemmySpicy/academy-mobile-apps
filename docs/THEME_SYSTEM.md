@@ -76,10 +76,40 @@ theme.colors.status.info      // Blue #2563EB
 ```typescript
 theme.spacing.xs    // 4px
 theme.spacing.sm    // 8px
-theme.spacing.md    // 16px
+theme.spacing.md    // 16px  ← STANDARD for screen horizontal padding
 theme.spacing.lg    // 24px
 theme.spacing.xl    // 32px
 theme.spacing.xxl   // 48px
+```
+
+### 🎯 **Horizontal Padding Standards (Updated 2025)**
+
+**✅ CONSISTENCY ACHIEVED** - All screen files now use standardized horizontal spacing
+
+#### **Screen Edge Padding**
+```typescript
+// ✅ CORRECT - Standard screen edge padding
+paddingHorizontal: theme.spacing.md,  // 16px
+
+// ❌ WRONG - Avoid these patterns
+paddingHorizontal: theme.spacing.lg,  // 24px (too large)
+paddingHorizontal: 16,                // Hardcoded value
+paddingHorizontal: 24,                // Hardcoded value
+```
+
+#### **Implementation Examples**
+```typescript
+// Screen container
+const screenContainer = {
+  paddingHorizontal: theme.spacing.md,  // 16px from edges
+  paddingVertical: theme.spacing.lg,    // 24px top/bottom
+}
+
+// Card internal padding can vary based on need
+const cardInternal = {
+  padding: theme.spacing.md,           // 16px all around
+  margin: theme.spacing.sm,            // 8px margin
+}
 ```
 
 ### **Typography**

@@ -4,7 +4,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SelectOptions } from '../ui';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface ScheduleSelections {
   sessionType: string | null;
@@ -32,7 +32,7 @@ const ScheduleTypeSelector: React.FC<ScheduleTypeSelectorProps> = ({
   variant = 'default',
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const [selections, setSelections] = useState<ScheduleSelections>({
     sessionType: initialSelections.sessionType || null,
@@ -102,7 +102,7 @@ const ScheduleTypeSelector: React.FC<ScheduleTypeSelectorProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     zIndex: 50,
     gap: theme.spacing.md,
@@ -114,6 +114,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   dropdownContainer: {
     marginBottom: theme.spacing.sm,
   },
-});
+}));
 
 export default ScheduleTypeSelector;

@@ -308,7 +308,7 @@ export const ReferralsScreen: React.FC = () => {
           <View style={{
             backgroundColor: 'rgba(255, 255, 255, 0.2)',
             borderRadius: theme.borderRadius.lg,
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             paddingVertical: theme.spacing.md,
             flexDirection: 'row',
             alignItems: 'center',
@@ -367,7 +367,7 @@ export const ReferralsScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -431,7 +431,7 @@ export const ReferralsScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -491,7 +491,7 @@ export const ReferralsScreen: React.FC = () => {
                     ? theme.colors.interactive.primary
                     : theme.colors.background.secondary,
                   borderRadius: theme.borderRadius.lg,
-                  paddingHorizontal: theme.spacing.lg,
+                  paddingHorizontal: theme.spacing.md,
                   paddingVertical: theme.spacing.md,
                   opacity: email.trim() ? 1 : 0.5,
                 }}
@@ -509,7 +509,7 @@ export const ReferralsScreen: React.FC = () => {
         </Animated.View>
 
         {/* Referrals List */}
-        <View style={{ paddingHorizontal: theme.spacing.lg }}>
+        <View style={{ paddingHorizontal: theme.spacing.md }}>
           <Animated.Text
             entering={FadeInDown.delay(400).springify()}
             style={{

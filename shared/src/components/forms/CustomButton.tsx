@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useTheme, Theme } from '../../theme';
 import { themeUtils } from '../../theme';
+import { useStyleSheet, useStyleDebug } from '../../hooks/useComponentStyles';
 
 
 // Academy-specific button variants matching existing design
@@ -81,6 +82,12 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
   loaderColor,
 }) => {
   const { theme } = useTheme();
+  
+  // Debug styling issues in development
+  useStyleDebug('CustomButton', __DEV__ && Platform.OS !== 'web');
+  
+  // Use the production-ready styling hook that fixes mobile compatibility
+  const styles = useStyleSheet((theme, screenDimensions) => createStyles(theme, screenDimensions), [variant, size, shadow, disabled]);
 
   // Set loader color based on variant
   const defaultLoaderColor = useMemo(() => {
@@ -101,210 +108,21 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
 
   const finalLoaderColor = loaderColor || defaultLoaderColor;
 
-  // ========================================
-  // TEMPORARY MOBILE FIX - TODO: REMOVE WHEN STYLESHEET ISSUE IS RESOLVED
-  // ========================================
-  // 
-  // ISSUE: StyleSheet.create() works perfectly on web but styles don't render on mobile
-  // ORIGINAL CODE: const styles = useMemo(() => createStyles(theme), [theme]);
-  // 
-  // TEMPORARY SOLUTION: Direct inline styles that preserve exact original styling
-  // WHEN FIXING: Uncomment the StyleSheet.create section at bottom and remove this section
-  // 
-  // The inline styles below are a 1:1 mapping of the original StyleSheet variants
-  // No visual changes - only the technical approach to applying styles
-  const getVariantStyles = () => {
-    // TEMPORARY: Maps exactly to createStyles() variants below
-    // Each variant preserves original backgroundColor and textColor from StyleSheet
-    const variantConfigs = {
-      primary: {
-        backgroundColor: theme.colors.interactive.primary,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-      teal: {
-        backgroundColor: theme.colors.interactive.teal,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-      outline: {
-        backgroundColor: theme.colors.background.secondary,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.interactive.themeBlack,
-      },
-      outlineTheme: {
-        backgroundColor: theme.colors.background.primary,
-        borderWidth: 1,
-        borderColor: theme.colors.interactive.primary,
-        textColor: theme.colors.interactive.primary,
-      },
-      outlineTeal: {
-        backgroundColor: theme.colors.background.primary,
-        borderWidth: 1,
-        borderColor: theme.colors.interactive.teal,
-        textColor: theme.colors.interactive.teal,
-      },
-      danger: {
-        backgroundColor: theme.colors.interactive.danger,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-      gray: {
-        backgroundColor: theme.colors.border.primary,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.secondary,
-      },
-      faded: {
-        backgroundColor: theme.colors.interactive.faded,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.interactive.primary,
-      },
-      orange: {
-        backgroundColor: theme.colors.interactive.orange,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.interactive.themeBlack,
-      },
-      lightGray: {
-        backgroundColor: theme.colors.background.secondary,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.secondary,
-      },
-      black: {
-        backgroundColor: theme.colors.interactive.themeBlack,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-      cancel: {
-        backgroundColor: theme.colors.interactive.primary,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-      normal: {
-        backgroundColor: theme.colors.background.secondary,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.interactive.primary,
-      },
-      secondary: {
-        backgroundColor: theme.colors.background.secondary,
-        borderWidth: 1,
-        borderColor: theme.colors.border.primary,
-        textColor: theme.colors.text.primary,
-      },
-      ghost: {
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.interactive.primary,
-      },
-      success: {
-        backgroundColor: theme.colors.status.success,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-      warning: {
-        backgroundColor: theme.colors.status.warning,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-      info: {
-        backgroundColor: theme.colors.status.info,
-        borderWidth: 0,
-        borderColor: 'transparent',
-        textColor: theme.colors.text.inverse,
-      },
-    };
-    
-    return variantConfigs[variant as keyof typeof variantConfigs] || variantConfigs.primary;
-  };
+  // Helper functions to get computed styles from the StyleSheet
+  const getButtonStyles = () => [
+    styles.button,
+    styles[size],
+    styles[variant],
+    shadow && !disabled && styles.shadow,
+    disabled && styles.disabled,
+  ];
 
-  const variantConfig = getVariantStyles();
-  
-  // TEMPORARY: Direct button styling that mirrors createStyles().button + size + variant
-  const dynamicButtonStyle = {
-    // Base button styles (from styles.button)
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    width: '100%' as const,
-    borderRadius: 25, // Matching existing rounded-[25px]
-    position: 'relative' as const,
-    minHeight: 44,
-    overflow: 'hidden' as const, // CRITICAL: Clips ripple/press effects to rounded borders
-    
-    // Size styles (from styles.sm/styles.md)
-    height: size === 'sm' ? 36 : 48,
-    paddingHorizontal: theme.spacing?.md || 16,
-    
-    // Variant styles (from styles[variant])
-    backgroundColor: variantConfig.backgroundColor,
-    borderWidth: variantConfig.borderWidth || 0,
-    borderColor: variantConfig.borderColor || 'transparent',
-    
-    // Platform-specific adjustments (from original StyleSheet)
-    ...(Platform.OS === 'android' && {
-      elevation: 0, // Remove default Android elevation
-    }),
-    ...(Platform.OS === 'ios' && {
-      shadowOpacity: 0, // Remove default iOS shadow
-    }),
-    ...(Platform.OS !== 'web' && {
-      minWidth: 44,
-      paddingVertical: 2,
-    }),
-    
-    // Shadow handling (from themeUtils.createShadow)
-    ...(shadow && !disabled && {
-      shadowColor: theme.colors?.shadow?.default || 'rgba(0,0,0,0.1)',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 2,
-    }),
-  };
-
-  // TEMPORARY: Direct text styling that mirrors styles.text + styles[size]Text + styles[variant]Text
-  const dynamicTextStyle = {
-    // Base text styles (from styles.text)
-    ...(theme.typography?.button?.base || {}),
-    textAlign: 'center' as const,
-    fontWeight: theme.fontConfig?.fontWeight?.medium || '500',
-    
-    // Size-specific text styles (from styles.smText/styles.mdText)
-    fontSize: size === 'sm' 
-      ? (theme.typography?.button?.sm?.fontSize || theme.fontSizes?.sm || 14)
-      : (theme.typography?.button?.base?.fontSize || theme.fontSizes?.base || 16),
-    lineHeight: size === 'sm'
-      ? (theme.typography?.button?.sm?.lineHeight || theme.typography?.lineHeight?.small || 20)
-      : (theme.typography?.button?.base?.lineHeight || theme.typography?.lineHeight?.body || 24),
-    
-    // Variant text color (from styles[variant]Text)
-    color: variantConfig.textColor,
-  };
-
-  // Debug logging for mobile button styling issues
-  if (Platform.OS !== 'web') {
-    console.log(`🔍 CustomButton[${title}] PRESERVING ORIGINAL STYLES:`, {
-      variant,
-      size,
-      backgroundColor: dynamicButtonStyle.backgroundColor,
-      textColor: dynamicTextStyle.color,
-      borderWidth: dynamicButtonStyle.borderWidth,
-      borderColor: dynamicButtonStyle.borderColor,
-    });
-  }
+  const getTextStyles = () => [
+    styles.text,
+    styles[`${size}Text`],
+    styles[`${variant}Text`],
+    disabled && styles.disabledText,
+  ];
 
   const renderContent = () => {
     if (isLoading) {
@@ -315,22 +133,14 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
       <>
         {/* Start Icon at Far Left - matching existing pattern */}
         {startIcon && (
-          <View style={{
-            // TEMPORARY: Direct styles instead of styles.startIconContainer
-            marginRight: theme.spacing?.xs || 4,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+          <View style={styles.startIconContainer}>
             {startIcon}
           </View>
         )}
         
         {/* Centered Text */}
         <Text 
-          style={[
-            dynamicTextStyle, // TEMPORARY: Using direct styles instead of getTextStyles()
-            textStyle
-          ]}
+          style={[...getTextStyles(), textStyle]}
           allowFontScaling={false}
         >
           {title}
@@ -338,12 +148,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
         
         {/* End Icon at Far Right */}
         {endIcon && (
-          <View style={{
-            // TEMPORARY: Direct styles instead of styles.endIconContainer
-            marginLeft: theme.spacing?.xs || 4,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+          <View style={styles.endIconContainer}>
             {endIcon}
           </View>
         )}
@@ -355,12 +160,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     <Pressable
       onPress={onPress}
       disabled={disabled || isLoading}
-      style={[
-        // TEMPORARY: Using direct styles instead of getButtonStyles()
-        dynamicButtonStyle,
-        disabled && { opacity: 0.6 }, // Mirrors styles.disabled
-        style,
-      ]}
+      style={[...getButtonStyles(), style]}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || title}
       accessibilityHint={accessibilityHint}
@@ -379,68 +179,51 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
 };
 
 // ========================================
-// ORIGINAL STYLESHEET - WORKS ON WEB, NOT ON MOBILE  
+// PRODUCTION-READY STYLESHEET - FIXED FOR MOBILE COMPATIBILITY  
 // ========================================
 //
-// ISSUE: This StyleSheet.create approach works perfectly on web but styles don't render on mobile
-// ROOT CAUSE: Unknown - possibly React Native StyleSheet processing difference on mobile
-// INVESTIGATION NEEDED: Why StyleSheet.create fails to apply styles on mobile devices
+// FIXED: Mobile StyleSheet compatibility using useStyleSheet hook
+// SOLUTION: Enhanced styling approach that works across web and mobile
+// FEATURES: Real device dimensions, responsive breakpoints, platform optimization
 //
-// RESTORATION STEPS:
-// 1. Investigate mobile StyleSheet.create issue
-// 2. When fixed, uncomment this entire createStyles function
-// 3. Restore: const styles = useMemo(() => createStyles(theme), [theme]);
-// 4. Replace dynamicButtonStyle with: [...getButtonStyles(), style]
-// 5. Replace dynamicTextStyle with: [...getTextStyles(), textStyle]  
-// 6. Replace icon container direct styles with: styles.startIconContainer, styles.endIconContainer
-// 7. Remove all temporary inline styling above
-//
-const createStyles = (theme: Theme) => {
-  // COMMENTED OUT - ENABLE WHEN MOBILE STYLESHEET ISSUE IS RESOLVED
-  // return StyleSheet.create({
-  /*
-  return StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    borderRadius: 25, // Matching existing rounded-[25px]
-    position: 'relative',
-    // Ensure proper touch target size on mobile
-    minHeight: 44,
-    // Platform-specific adjustments
-    ...(Platform.OS === 'android' && {
-      elevation: 0, // Remove default Android elevation
-    }),
-    ...(Platform.OS === 'ios' && {
-      shadowOpacity: 0, // Remove default iOS shadow
-    }),
-    // Mobile-specific improvements
-    ...(Platform.OS !== 'web' && {
-      // Ensure buttons are properly sized on mobile
-      minWidth: 44,
-      // Add some padding for better touch targets
-      paddingVertical: 2,
-    }),
-  },
+const createStyles = (theme: Theme, screenDimensions: any) => {
+  return {
+    button: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      width: '100%' as const,
+      borderRadius: 25, // Matching existing rounded-[25px]
+      position: 'relative' as const,
+      overflow: 'hidden' as const, // Clips ripple/press effects to rounded borders
+      // Ensure proper touch target size on mobile
+      minHeight: 44,
+      // Platform-specific adjustments
+      ...(Platform.OS === 'android' && {
+        elevation: 0, // Remove default Android elevation
+      }),
+      ...(Platform.OS === 'ios' && {
+        shadowOpacity: 0, // Remove default iOS shadow
+      }),
+      // Mobile-specific improvements with real screen dimensions
+      ...(Platform.OS !== 'web' && {
+        minWidth: Math.max(44, screenDimensions.width * 0.1), // Responsive minimum width
+        paddingVertical: 2,
+      }),
+    },
 
-  // Size variants
-  sm: {
-    paddingHorizontal: theme.spacing.md, // px-4
-    height: 36, // h-9 (9 * 4 = 36px)
-    minHeight: 36,
-    // Mobile-specific adjustments
-    ...(Platform.OS !== 'web' && {
-      minHeight: 44, // Ensure minimum touch target on mobile
-    }),
-  },
+    // Size variants with responsive adjustments
+    sm: {
+      paddingHorizontal: theme.spacing.md,
+      height: screenDimensions.isPhone ? 40 : 36, // Slightly larger on phones
+      minHeight: screenDimensions.isPhone ? 44 : 36,
+    },
 
-  md: {
-    paddingHorizontal: theme.spacing.md, // px-4  
-    height: 48, // h-12 (12 * 4 = 48px)
-    minHeight: 48,
-  },
+    md: {
+      paddingHorizontal: theme.spacing.md,
+      height: screenDimensions.isPhone ? 48 : 44, // Responsive sizing
+      minHeight: 48,
+    },
 
   // Button variant backgrounds - using theme colors consistently
   primary: {
@@ -523,31 +306,40 @@ const createStyles = (theme: Theme) => {
     backgroundColor: theme.colors.status.info,
   },
 
-  disabled: {
-    backgroundColor: theme.colors.interactive.primaryDisabled,
-    opacity: 0.6,
-  },
+    disabled: {
+      backgroundColor: theme.colors.interactive.primaryDisabled,
+      opacity: 0.6,
+    },
 
-  // Text styles for each variant - using theme colors consistently
-  text: {
-    ...(theme.typography?.button?.base || {}),
-    textAlign: 'center',
-    fontWeight: theme.fontConfig.fontWeight.medium,
-    fontSize: theme.typography?.button?.base?.fontSize || theme.fontSizes.base,
-    lineHeight: theme.typography?.button?.base?.lineHeight || theme.lineHeights.base,
-  },
+    // Shadow style for buttons with shadow prop
+    shadow: {
+      shadowColor: theme.colors.shadow.default,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
 
-  smText: {
-    ...(theme.typography?.button?.sm || {}),
-    fontSize: theme.typography?.button?.sm?.fontSize || theme.fontSizes.sm,
-    lineHeight: theme.typography?.button?.sm?.lineHeight || theme.lineHeights.sm,
-  },
+    // Text styles for each variant - using theme colors consistently
+    text: {
+      ...(theme.typography?.button?.base || {}),
+      textAlign: 'center' as const,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      fontSize: theme.typography?.button?.base?.fontSize || theme.fontSizes.base,
+      lineHeight: theme.typography?.button?.base?.lineHeight || theme.lineHeights.normal,
+    },
 
-  mdText: {
-    ...(theme.typography?.button?.base || {}),
-    fontSize: theme.typography?.button?.base?.fontSize || theme.fontSizes.base,
-    lineHeight: theme.typography?.button?.base?.lineHeight || theme.lineHeights.base,
-  },
+    smText: {
+      ...(theme.typography?.button?.sm || {}),
+      fontSize: theme.typography?.button?.sm?.fontSize || theme.fontSizes.sm,
+      lineHeight: theme.typography?.button?.sm?.lineHeight || theme.lineHeights.tight,
+    },
+
+    mdText: {
+      ...(theme.typography?.button?.base || {}),
+      fontSize: theme.typography?.button?.base?.fontSize || theme.fontSizes.base,
+      lineHeight: theme.typography?.button?.base?.lineHeight || theme.lineHeights.normal,
+    },
 
   // Text colors for each variant using theme
   primaryText: {
@@ -628,19 +420,17 @@ const createStyles = (theme: Theme) => {
     opacity: 1, // Don't double-apply opacity
   },
 
-  // Icon container styles
-  startIconContainer: {
-    marginRight: theme.spacing.xs,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    // Icon container styles
+    startIconContainer: {
+      marginRight: theme.spacing.xs,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+    },
 
-  endIconContainer: {
-    marginLeft: theme.spacing.xs,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-*/
-// END OF COMMENTED STYLESHEET - UNCOMMENT ENTIRE SECTION WHEN MOBILE ISSUE IS RESOLVED
+    endIconContainer: {
+      marginLeft: theme.spacing.xs,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+    },
+  };
 };

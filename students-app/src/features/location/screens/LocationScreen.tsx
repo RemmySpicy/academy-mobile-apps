@@ -486,7 +486,7 @@ export const LocationScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
             alignItems: 'center',
           }}
@@ -580,7 +580,7 @@ export const LocationScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -602,7 +602,7 @@ export const LocationScreen: React.FC = () => {
                     : theme.colors.border.primary,
                   borderWidth: 1,
                   borderRadius: theme.borderRadius.full,
-                  paddingHorizontal: theme.spacing.lg,
+                  paddingHorizontal: theme.spacing.md,
                   paddingVertical: theme.spacing.sm,
                   marginRight: theme.spacing.md,
                 }}
@@ -622,7 +622,7 @@ export const LocationScreen: React.FC = () => {
         </Animated.View>
 
         {/* Locations List */}
-        <View style={{ paddingHorizontal: theme.spacing.lg }}>
+        <View style={{ paddingHorizontal: theme.spacing.md }}>
           {locations.map((location, index) => (
             <LocationCard
               key={location.id}
@@ -677,7 +677,7 @@ export const LocationScreen: React.FC = () => {
               style={{
                 backgroundColor: theme.colors.status.success,
                 borderRadius: theme.borderRadius.lg,
-                paddingHorizontal: theme.spacing.lg,
+                paddingHorizontal: theme.spacing.md,
                 paddingVertical: theme.spacing.md,
                 marginRight: theme.spacing.sm,
                 flexDirection: 'row',
@@ -704,7 +704,7 @@ export const LocationScreen: React.FC = () => {
               style={{
                 backgroundColor: theme.colors.interactive.primary,
                 borderRadius: theme.borderRadius.lg,
-                paddingHorizontal: theme.spacing.lg,
+                paddingHorizontal: theme.spacing.md,
                 paddingVertical: theme.spacing.md,
                 marginLeft: theme.spacing.sm,
                 flexDirection: 'row',

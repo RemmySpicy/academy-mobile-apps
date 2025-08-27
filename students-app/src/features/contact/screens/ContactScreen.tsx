@@ -308,7 +308,7 @@ export const ContactScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
             alignItems: 'center',
           }}
@@ -336,7 +336,7 @@ export const ContactScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -362,7 +362,7 @@ export const ContactScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -517,7 +517,7 @@ export const ContactScreen: React.FC = () => {
         </Animated.View>
 
         {/* FAQ Section */}
-        <View style={{ paddingHorizontal: theme.spacing.lg }}>
+        <View style={{ paddingHorizontal: theme.spacing.md }}>
           <Animated.Text
             entering={FadeInDown.delay(400).springify()}
             style={{
@@ -553,7 +553,7 @@ export const ContactScreen: React.FC = () => {
                       : theme.colors.border.primary,
                     borderWidth: 1,
                     borderRadius: theme.borderRadius.full,
-                    paddingHorizontal: theme.spacing.lg,
+                    paddingHorizontal: theme.spacing.md,
                     paddingVertical: theme.spacing.sm,
                     marginRight: theme.spacing.md,
                   }}
@@ -625,7 +625,7 @@ export const ContactScreen: React.FC = () => {
             style={{
               backgroundColor: theme.colors.status.error,
               borderRadius: theme.borderRadius.lg,
-              paddingHorizontal: theme.spacing.lg,
+              paddingHorizontal: theme.spacing.md,
               paddingVertical: theme.spacing.md,
               alignSelf: 'flex-start',
             }}

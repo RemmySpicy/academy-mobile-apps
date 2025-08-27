@@ -339,7 +339,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       padding: theme.spacing.lg,
       paddingBottom: theme.spacing.lg,
       marginVertical: theme.spacing.md,
-      borderWidth: theme.borderWidth.thin,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
       ...theme.elevation.sm,
     },
@@ -389,9 +389,9 @@ const createStyles = (theme: any, screenDimensions: any) => {
       borderRadius: theme.borderRadius.lg,
       padding: theme.spacing.xs,
       marginTop: theme.spacing.sm,
-      borderWidth: theme.borderWidth.thin,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.secondary,
-      ...theme.elevation.xs,
+      ...theme.elevation.sm,
     },
     
     tabButton: {
@@ -443,17 +443,17 @@ const createStyles = (theme: any, screenDimensions: any) => {
       justifyContent: 'center',
       alignItems: 'center',
       minWidth: 60,
-      ...theme.elevation.xs,
+      ...theme.elevation.sm,
     },
     
     poolSizeButtonPrimary: {
       backgroundColor: theme.colors.interactive.faded,
-      borderWidth: theme.borderWidth.thin,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.interactive.primary,
     },
     
     poolSizeButtonSecondary: {
-      borderWidth: theme.borderWidth.thin,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
       backgroundColor: theme.colors.background.primary,
     },

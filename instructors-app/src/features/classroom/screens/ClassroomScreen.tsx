@@ -374,7 +374,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       flex: 1,
     },
     headerSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     greetingText: {
@@ -404,7 +404,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginLeft: theme.spacing.sm,
     },
     statsSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     statsRow: {
@@ -459,7 +459,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       fontWeight: theme.fontConfig.fontWeight.semibold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.md,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
     },
     classCard: {
       backgroundColor: theme.colors.background.primary,
@@ -575,7 +575,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginLeft: theme.spacing.sm,
     },
     quickActionsSection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     quickActionsRow: {
@@ -616,7 +616,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.primary,
     },
     recentActivitySection: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing['2xl'],
     },
     activityCard: {

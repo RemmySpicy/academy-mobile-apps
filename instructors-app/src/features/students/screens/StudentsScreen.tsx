@@ -9,7 +9,7 @@ import { View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Header, StudentCard, useTheme, FadeInWrapper, Chip, SearchInput } from '@academy/mobile-shared';
+import { Header, StudentCard, useTheme, createThemedStyles, FadeInWrapper, Chip, SearchInput } from '@academy/mobile-shared';
 
 // Enhanced student data structure to match our StudentCard component
 interface StudentData {
@@ -50,7 +50,7 @@ export const StudentsScreen: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'excellent' | 'good' | 'needs-attention'>('all');
   const [notificationCount, setNotificationCount] = useState(5);
   
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useThemedStyles();
 
   // Enhanced sample data matching our StudentCard interface
   const [students] = useState<StudentData[]>([
@@ -251,7 +251,7 @@ export const StudentsScreen: React.FC = () => {
           showIcons={true}
           showCounts={true}
           scrollable={true}
-          style={{ paddingHorizontal: 24 }}
+          style={{ paddingHorizontal: theme.spacing.md }}
         />
       </FadeInWrapper>
 
@@ -277,6 +277,7 @@ export const StudentsScreen: React.FC = () => {
           />
         )}
         contentContainerStyle={{
+          paddingHorizontal: theme.spacing.md,
           paddingBottom: 100, // Space for tab bar
         }}
         showsVerticalScrollIndicator={false}
@@ -304,12 +305,12 @@ export const StudentsScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flex: 1,
   },
   searchContainer: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     paddingBottom: theme.spacing.md,
   },
   filterContainer: {
@@ -331,4 +332,4 @@ const createStyles = (theme: any) => StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: theme.spacing.xl,
   },
-});
+}));

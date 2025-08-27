@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Header,
   InstructorDashboard,
   useTheme,
+  createThemedStyles,
   useProgramContext,
   useAuthStore,
 } from '@academy/mobile-shared';
@@ -109,10 +110,19 @@ const sampleActivities = [
  * - Recent activity feed
  * - Quick actions for students
  */
+const useScreenStyles = createThemedStyles((theme) => ({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background.secondary,
+  },
+}));
+
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
   const { currentProgram } = useProgramContext();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const styles = useScreenStyles();
   const [notificationCount, setNotificationCount] = useState(3);
 
   const handleSearch = () => {
@@ -159,7 +169,7 @@ export const HomeScreen: React.FC = () => {
     : sampleActivities;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
+    <View style={styles.container}>
       {/* Enhanced Header with Integrated Program Switcher */}
       <Header
         title="Student Dashboard"
@@ -186,14 +196,8 @@ export const HomeScreen: React.FC = () => {
         recentActivities={filteredActivities}
         onMetricPress={handleMetricPress}
         onStudentPress={(student) => handleCoursePress(student)}
-        style={{ flex: 1 }}
       />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

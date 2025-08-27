@@ -289,7 +289,7 @@ export const ServicesScreen: React.FC = () => {
           entering={FadeInDown.delay(100).springify()}
           style={{ 
             marginBottom: theme.spacing.xl,
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
           }}
         >
           <Text style={{
@@ -323,7 +323,7 @@ export const ServicesScreen: React.FC = () => {
         {/* Services List */}
         <Animated.View 
           entering={FadeInDown.delay(300).springify()}
-          style={{ paddingHorizontal: theme.spacing.lg }}
+          style={{ paddingHorizontal: theme.spacing.md }}
         >
           {filteredServices.map((service, index) => (
             <ServiceCard

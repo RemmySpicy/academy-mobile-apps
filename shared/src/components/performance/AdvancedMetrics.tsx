@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 import MetricPool from '../ui/MetricPool';
 
 export interface MetricData {
@@ -54,7 +54,7 @@ export const MetricPoolRender: React.FC<MetricPoolRenderProps> = ({
   showShadow = true,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const actionMetrics = useMemo(() => {
     return courseActionMetrics?.flatMap((data) => data) || [];
@@ -92,7 +92,7 @@ export const MetricsTime: React.FC<MetricsTimeProps> = ({
   showShadow = true,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const timeMetrics = useMemo(() => {
     return courseTimeMetrics?.flatMap((data) => data) || [];
@@ -146,7 +146,7 @@ export const AdvancedScoreStatistics: React.FC<AdvancedScoreStatisticsProps> = (
   onPeriodChange,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
 
@@ -309,7 +309,7 @@ export const AdvancedScoreStatistics: React.FC<AdvancedScoreStatisticsProps> = (
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
@@ -372,7 +372,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingVertical: theme.spacing.xs,
     borderRadius: theme.borderRadius.md,
     gap: theme.spacing.xs,
-    ...theme.elevation.xs,
+    ...theme.elevation.sm,
   },
   periodText: {
     fontSize: theme.fontSizes.sm,
@@ -486,6 +486,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: theme.fontSizes.xs,
     color: theme.colors.text.tertiary,
   },
-});
+}));
 
 export default { MetricPoolRender, MetricsTime, AdvancedScoreStatistics };

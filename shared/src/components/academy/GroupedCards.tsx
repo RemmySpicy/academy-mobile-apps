@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 import { ToggleCard } from '../ui';
 
 export interface GroupedCardItem {
@@ -48,7 +48,7 @@ const GroupedCards: React.FC<GroupedCardsProps> = ({
   cardVariant = 'default',
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
   
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
     sections.reduce((acc, section) => ({
@@ -202,7 +202,7 @@ const GroupedCards: React.FC<GroupedCardsProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -219,7 +219,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     borderColor: theme.colors.border.primary,
     marginBottom: theme.spacing.sm,
     overflow: 'hidden',
-    ...theme.shadows?.md,
+    ...theme.elevation.md,
   },
   cardContent: {
     flexDirection: 'row',
@@ -317,6 +317,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text.tertiary,
     marginTop: theme.spacing.sm,
   },
-});
+}));
 
 export default GroupedCards;

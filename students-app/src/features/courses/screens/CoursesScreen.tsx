@@ -321,7 +321,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
       backgroundColor: theme.colors.background.secondary,
     },
     header: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.xs,
     },
@@ -336,7 +336,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
       marginTop: theme.spacing.xs,
     },
     searchContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.md,
     },
     searchBox: {
@@ -588,7 +588,7 @@ export const CoursesScreen: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: theme.spacing.lg }}
+          contentContainerStyle={{ paddingHorizontal: theme.spacing.md }}
         >
           {categories.map(category => (
             <Pressable

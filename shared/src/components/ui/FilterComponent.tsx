@@ -19,7 +19,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -70,6 +70,7 @@ const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
   onGroupSelect,
 }) => {
   const { theme } = useTheme();
+  const bottomSheetStyles = useBottomSheetThemedStyles();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
 
@@ -103,7 +104,7 @@ const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
     }
   }, [visible, fadeAnim, slideAnim]);
 
-  const styles = createBottomSheetStyles(theme);
+  const styles = bottomSheetStyles;
 
   const handleGroupPress = (group: FilterGroup) => {
     onGroupSelect(group);
@@ -203,7 +204,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   const { theme } = useTheme();
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const handleGroupFilterPress = useCallback(() => {
     if (groups.length > 0) {
@@ -350,7 +351,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
 /**
  * Styles for the main component
  */
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -370,7 +371,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     minWidth: 0,
   },
   groupFilter: {
-    backgroundColor: theme.colors.interactive.primaryBackground,
+    backgroundColor: theme.colors.interactive.faded,
     flex: 1,
     maxWidth: '45%',
   },
@@ -402,12 +403,12 @@ const createStyles = (theme: any) => StyleSheet.create({
   chevronIcon: {
     marginLeft: theme.spacing.xs,
   },
-});
+}));
 
 /**
  * Styles for the bottom sheet
  */
-const createBottomSheetStyles = (theme: any) => StyleSheet.create({
+const useBottomSheetThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: theme.colors.background.overlay,
@@ -474,7 +475,7 @@ const createBottomSheetStyles = (theme: any) => StyleSheet.create({
     }),
   },
   groupItemActive: {
-    backgroundColor: theme.colors.interactive.primaryBackground,
+    backgroundColor: theme.colors.interactive.faded,
     borderWidth: 1,
     borderColor: theme.colors.interactive.primary,
   },
@@ -488,6 +489,6 @@ const createBottomSheetStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.interactive.primary,
     fontWeight: theme.fontConfig.fontWeight.medium,
   },
-});
+}));
 
 export default FilterComponent;

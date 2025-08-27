@@ -55,7 +55,7 @@ const useDetailThemedStyles = createThemedStyles((theme) => StyleSheet.create({
       backgroundColor: theme.colors.background.secondary,
     },
     header: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.md,
     },
     headerNav: {
@@ -73,7 +73,7 @@ const useDetailThemedStyles = createThemedStyles((theme) => StyleSheet.create({
       ...theme.elevation.sm,
     },
     courseHeaderContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     courseCard: {
@@ -156,12 +156,12 @@ const useDetailThemedStyles = createThemedStyles((theme) => StyleSheet.create({
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
     tabsContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.md,
     },
     contentContainer: {
       flex: 1,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
     },
     bottomAction: {
       position: 'absolute',
@@ -171,7 +171,7 @@ const useDetailThemedStyles = createThemedStyles((theme) => StyleSheet.create({
       backgroundColor: theme.colors.background.primary,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border.primary,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.md,
     },
     // Content styles

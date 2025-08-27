@@ -78,6 +78,7 @@ export const TabNavigator: React.FC = () => {
           fontSize: theme.fontSizes.sm,
           fontFamily: theme.fontConfig.fontFamily.primary,
         },
+        tabBarShowLabel: true, // Ensure labels show on all platforms
       })}
     >
       <Tab.Screen 

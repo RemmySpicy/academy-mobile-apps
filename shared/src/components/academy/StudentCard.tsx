@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface StudentInfo {
   id: string;
@@ -57,7 +57,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
   showSessionType = true,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const getPaymentStatusConfig = (status: string) => {
     switch (status) {
@@ -257,7 +257,7 @@ const StudentCard: React.FC<StudentCardProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   card: {
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.xl,
@@ -267,11 +267,8 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginBottom: theme.spacing.sm,
     overflow: 'hidden',
     shadowColor: theme.colors.shadow.default,
-    shadowOffset: { width: 0, height: theme.spacing.xs / 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: theme.elevation?.sm?.shadowRadius || 3.84,
-    elevation: theme.elevation?.sm?.elevation || 2,
-    borderWidth: theme.borderWidth?.thin || 1,
+    ...theme.elevation.sm,
+    borderWidth: theme.borderWidth.sm,
     borderColor: theme.colors.border.primary,
   },
   avatarContainer: {
@@ -400,6 +397,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     bottom: 0,
     width: theme.spacing.xs,
   },
-});
+}));
 
 export default StudentCard;

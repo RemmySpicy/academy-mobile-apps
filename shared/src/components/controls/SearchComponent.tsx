@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface SearchComponentProps {
   onQueryChange?: (text: string) => void;
@@ -23,7 +23,7 @@ export const SearchComponent: React.FC<SearchComponentProps> = ({
   autoFocus = true,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const handleDone = () => {
     onDone?.();
@@ -88,7 +88,7 @@ export const StaticSearchComponent: React.FC<StaticSearchComponentProps> = ({
   doneText = "Done",
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const handleDone = () => {
     onDone?.();
@@ -145,7 +145,7 @@ export const StaticSearchComponent: React.FC<StaticSearchComponentProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -213,7 +213,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text.primary,
     marginTop: theme.spacing.xs,
   },
-});
+}));
 
 export { SearchComponent as SearchComp, StaticSearchComponent as StaticSearchComp };
 export default SearchComponent;

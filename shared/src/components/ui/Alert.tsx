@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
   runOnJS
 } from 'react-native-reanimated';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface AlertProps {
   type: 'success' | 'error' | 'warning' | 'info';
@@ -37,7 +37,7 @@ const Alert: React.FC<AlertProps> = ({
   onActionPress,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(position === 'top' ? -100 : 100);
@@ -177,7 +177,7 @@ const Alert: React.FC<AlertProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     position: 'absolute',
     left: theme.spacing.md,
@@ -240,6 +240,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     padding: theme.spacing.xs,
     borderRadius: theme.borderRadius.sm,
   },
-});
+}));
 
 export default Alert;

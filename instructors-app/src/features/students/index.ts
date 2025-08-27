@@ -7,20 +7,6 @@ export { StudentsNavigator } from './navigation/StudentsNavigator';
 export { StudentsScreen } from './screens/StudentsScreen';
 export { StudentDetailScreen } from './screens/StudentDetailScreen';
 
-// Components
-export { StudentCard } from './components/StudentCard';
-export { StudentList } from './components/StudentList';
-export { StudentFilters } from './components/StudentFilters';
-
-// Hooks
-export { useStudents } from './hooks/useStudents';
-export { useStudentDetail } from './hooks/useStudentDetail';
-export { useStudentProgress } from './hooks/useStudentProgress';
-export { useStudentActions } from './hooks/useStudentActions';
-
-// Services
-export { studentService } from './services/studentService';
-
 // Types
 export type {
   Student,
@@ -29,3 +15,18 @@ export type {
   StudentEnrollment,
   StudentNavigationProps,
 } from './types';
+
+// TODO: Add these exports when components, hooks, and services are implemented
+// Components
+// export { StudentCard } from './components/StudentCard';
+// export { StudentList } from './components/StudentList';
+// export { StudentFilters } from './components/StudentFilters';
+
+// Hooks
+// export { useStudents } from './hooks/useStudents';
+// export { useStudentDetail } from './hooks/useStudentDetail';
+// export { useStudentProgress } from './hooks/useStudentProgress';
+// export { useStudentActions } from './hooks/useStudentActions';
+
+// Services
+// export { studentService } from './services/studentService';

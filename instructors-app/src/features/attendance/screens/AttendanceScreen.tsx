@@ -339,7 +339,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       backgroundColor: theme.colors.background.secondary,
     },
     header: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.sm,
     },
@@ -354,7 +354,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       marginTop: theme.spacing.xs,
     },
     overviewContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.md,
     },
     overviewCard: {
@@ -412,7 +412,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.secondary,
     },
     quickActionsContainer: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.md,
     },
     quickActionsRow: {
@@ -551,7 +551,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.tertiary,
       marginTop: theme.spacing.sm,
       textAlign: 'center',
-      paddingHorizontal: theme.spacing['2xl'],
+      paddingHorizontal: theme.spacing.md,
     },
   })
 );

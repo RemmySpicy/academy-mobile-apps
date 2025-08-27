@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { ScheduleList, ScheduleItem } from './ScheduleList';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface SchedulesProps {
   scheduleData?: {
@@ -89,7 +89,7 @@ export const Schedules: React.FC<SchedulesProps> = ({
   pagingEnabled = true,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
   const flatListRef = useRef<FlatList>(null);
 
   const handleAddSchedule = () => {
@@ -135,11 +135,11 @@ export const Schedules: React.FC<SchedulesProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background.primary,
   },
-});
+}));
 
 export default Schedules;

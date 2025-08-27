@@ -287,7 +287,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       marginVertical: theme.spacing.sm,
       marginHorizontal: theme.spacing.md,
       overflow: 'hidden',
-      borderWidth: theme.borderWidth.thin,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
       ...theme.elevation.sm,
       maxWidth: isTablet ? 600 : undefined,
@@ -300,7 +300,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       alignItems: 'center',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.lg,
-      borderBottomWidth: theme.borderWidth.thin,
+      borderBottomWidth: theme.borderWidth.sm,
       borderBottomColor: theme.colors.border.secondary,
       backgroundColor: theme.colors.background.primary,
     },
@@ -443,7 +443,7 @@ const createStyles = (theme: any, screenDimensions: any) => {
       justifyContent: 'center',
       marginTop: theme.spacing.lg,
       minHeight: theme.safeArea.minTouchTarget.height,
-      ...theme.elevation.xs,
+      ...theme.elevation.sm,
     },
     
     actionButtonPressed: {

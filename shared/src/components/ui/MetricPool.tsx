@@ -223,7 +223,7 @@ const createStyles = (theme: any, width: number, height: number) => StyleSheet.c
     marginVertical: theme.spacing.xs,
   },
   poolNumber: {
-    fontSize: theme.fontSizes.large,
+    fontSize: theme.fontSizes.lg,
     fontWeight: theme.fontConfig.fontWeight.bold,
     textAlign: 'center',
   },

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 import { CustomButton } from '../forms/CustomButton';
 import { SocialAuthGroup } from './index';
 
@@ -47,7 +47,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   logo,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   return (
     <Modal
@@ -144,7 +144,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -237,6 +237,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text.secondary,
     paddingHorizontal: theme.spacing.md,
   },
-});
+}));
 
 export default OnboardingModal;

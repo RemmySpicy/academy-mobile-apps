@@ -38,6 +38,8 @@ export type {
   UserRoleType,
   ProgramAssignment,
   LoginRequest,
+  RegisterRequest,
+  RegisterResponse,
   LoginResponse,
   CurrentUserResponse,
   RefreshTokenRequest,

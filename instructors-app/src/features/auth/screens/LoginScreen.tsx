@@ -108,7 +108,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     
     header: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.xl,
       paddingBottom: theme.spacing.lg,
       borderBottomLeftRadius: theme.borderRadius.xl,
@@ -128,7 +128,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     
     headerTitle: {
       color: theme.colors.text.inverse,
-      ...theme.typography.display.sm,
+      ...theme.typography.display.lg,
       fontWeight: theme.fontConfig.fontWeight.bold,
       marginBottom: theme.spacing.sm,
     },
@@ -141,7 +141,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     
     formContainer: {
       flex: 1,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.lg,
     },
     
@@ -151,7 +151,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     
     welcomeTitle: {
       color: theme.colors.text.primary,
-      ...theme.typography.heading.lg,
+      ...theme.typography.heading.h2,
       fontWeight: theme.fontConfig.fontWeight.semibold,
       marginBottom: theme.spacing.sm,
     },

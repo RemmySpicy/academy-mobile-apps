@@ -39,7 +39,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       flex: 1,
     },
     gradient: {
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing['3xl'],
       paddingBottom: theme.spacing.xl,
       borderBottomLeftRadius: theme.borderRadius['3xl'],
@@ -70,7 +70,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     formContainer: {
       flex: 1,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       paddingTop: theme.spacing.xl,
     },
     submitButton: {

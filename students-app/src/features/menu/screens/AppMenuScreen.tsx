@@ -253,7 +253,7 @@ export const AppMenuScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -328,7 +328,7 @@ export const AppMenuScreen: React.FC = () => {
                       style={{
                         marginLeft: theme.spacing.xs,
                         backgroundColor: theme.colors.background.secondary,
-                        paddingHorizontal: 12,
+                        paddingHorizontal: theme.spacing.sm,
                         paddingVertical: 4,
                         borderRadius: theme.borderRadius.full,
                       }}
@@ -406,7 +406,7 @@ export const AppMenuScreen: React.FC = () => {
         </Animated.View>
 
         {/* Academy Features Section */}
-        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+        <View style={{ marginBottom: theme.spacing.xl }}>
           <Animated.Text
             entering={FadeInDown.delay(200).springify()}
             style={{
@@ -414,12 +414,14 @@ export const AppMenuScreen: React.FC = () => {
               fontSize: theme.fontSizes.lg,
               fontWeight: theme.fontConfig.fontWeight.semibold,
               marginBottom: theme.spacing.md,
+              paddingHorizontal: theme.spacing.md,
             }}
           >
             Academy Features
           </Animated.Text>
 
-          <MenuList
+          <View style={{ paddingHorizontal: theme.spacing.md }}>
+            <MenuList
             items={[
               {
                 id: 'our-courses',
@@ -512,19 +514,19 @@ export const AppMenuScreen: React.FC = () => {
               },
             ]}
             columns={2}
-            columnWidth={160}
             spacing={theme.spacing.md}
-            containerPadding={theme.spacing.lg * 2}
+            containerPadding={theme.spacing.md * 2}
             variant="card"
             scrollEnabled={false}
           />
+          </View>
         </View>
 
         {/* Quick Access Section */}
         <Animated.View
           entering={FadeInDown.delay(400).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -661,7 +663,7 @@ export const AppMenuScreen: React.FC = () => {
         </Animated.View>
 
         {/* Account Section */}
-        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+        <View style={{ paddingHorizontal: theme.spacing.md, marginBottom: theme.spacing.xl }}>
           <Animated.Text
             entering={FadeInDown.delay(500).springify()}
             style={{
@@ -684,7 +686,7 @@ export const AppMenuScreen: React.FC = () => {
         </View>
 
         {/* Preferences Section */}
-        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+        <View style={{ paddingHorizontal: theme.spacing.md, marginBottom: theme.spacing.xl }}>
           <Animated.Text
             entering={FadeInDown.delay(600).springify()}
             style={{
@@ -707,7 +709,7 @@ export const AppMenuScreen: React.FC = () => {
         </View>
 
         {/* Support Section */}
-        <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+        <View style={{ paddingHorizontal: theme.spacing.md, marginBottom: theme.spacing.xl }}>
           <Animated.Text
             entering={FadeInDown.delay(700).springify()}
             style={{
@@ -733,7 +735,7 @@ export const AppMenuScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(800).springify()}
           style={{
-            margin: theme.spacing.lg,
+            margin: theme.spacing.md,
             backgroundColor: theme.colors.interactive.primary,
             borderRadius: theme.borderRadius.xl,
             padding: theme.spacing.lg,
@@ -787,7 +789,7 @@ export const AppMenuScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(900).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -823,7 +825,7 @@ export const AppMenuScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(1000).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.md,
           }}
         >

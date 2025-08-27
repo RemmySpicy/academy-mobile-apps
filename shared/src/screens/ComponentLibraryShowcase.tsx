@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 // Theme
-import { useTheme } from '../theme';
+import { useTheme, createThemedStyles } from '../theme';
 
 // Our newly extracted components
 import { ToggleCard, ControlCard, FilterComponent, OptionMenu, TabBar, StrokeTab, SegmentedControl, IconTabBar, Alert as ToastAlert, MenuList, MetricPool, Stations, LoadingSpinner, NotificationList } from '../components/ui';
@@ -51,7 +51,7 @@ type ShowcaseSection =
 
 const ComponentLibraryShowcase: React.FC = () => {
   const { theme, themeMode, toggleTheme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
   const screenDimensions = useScreenDimensions();
 
   // Component states for demo
@@ -215,7 +215,7 @@ const ComponentLibraryShowcase: React.FC = () => {
 };
 
 // Create styles using theme from context (not direct import)
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
@@ -465,8 +465,8 @@ const createStyles = (theme: any) => StyleSheet.create({
       ...theme.typography.body.base,
       fontWeight: theme.fontConfig.fontWeight.semibold,
     },
-  });
+  }));
 
-// Remove the createThemedStyles wrapper since we're using direct createStyles now
+// Updated to use createThemedStyles pattern for consistency
 
 export default ComponentLibraryShowcase;

@@ -21,6 +21,7 @@ import {
   StatusBar,
   Platform,
   Animated,
+  useWindowDimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { lightColorScheme, darkColorScheme, type ColorScheme } from './colors';
@@ -275,29 +276,44 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Animation value for smooth transitions
   const transitionValue = useMemo(() => new Animated.Value(0), []);
   
-  // Simple screen dimensions fallback to avoid circular dependency
-  const screenDimensions = useMemo(() => ({
-    width: 375, // Default mobile width
-    height: 667, // Default mobile height
-    scale: 1,
-    fontScale: 1,
-    isXSmall: false,
-    isSmall: true,
-    isMedium: false,
-    isLarge: false,
-    isXLarge: false,
-    isPortrait: true,
-    isLandscape: false,
-    isPhone: true,
-    isTablet: false,
-    isDesktop: false,
-    aspectRatio: 0.56,
-    isWideScreen: false,
-    isUltraWide: false,
-    responsiveWidth: (percentage: number) => (375 * percentage) / 100,
-    responsiveHeight: (percentage: number) => (667 * percentage) / 100,
-    responsiveSize: (size: number) => Math.min(375, 667) * (size / 100),
-  }), []);
+  // Real screen dimensions using useWindowDimensions for mobile-first approach
+  const windowDimensions = useWindowDimensions();
+  const screenDimensions = useMemo(() => {
+    const { width, height, scale, fontScale } = windowDimensions;
+    
+    return {
+      width,
+      height,
+      scale,
+      fontScale,
+      
+      // Modern responsive breakpoints
+      isXSmall: width < 360,
+      isSmall: width >= 360 && width < 768,
+      isMedium: width >= 768 && width < 1024,
+      isLarge: width >= 1024 && width < 1440,
+      isXLarge: width >= 1440,
+      
+      // Orientation detection
+      isPortrait: height > width,
+      isLandscape: width > height,
+      
+      // Device type approximations for mobile-first design
+      isPhone: width < 768,
+      isTablet: width >= 768 && width < 1200,
+      isDesktop: width >= 1200,
+      
+      // Aspect ratio calculations
+      aspectRatio: width / height,
+      isWideScreen: (width / height) > 1.5,
+      isUltraWide: (width / height) > 2.0,
+      
+      // Responsive sizing helpers with real dimensions
+      responsiveWidth: (percentage: number) => (width * percentage) / 100,
+      responsiveHeight: (percentage: number) => (height * percentage) / 100,
+      responsiveSize: (size: number) => Math.min(width, height) * (size / 100),
+    };
+  }, [windowDimensions]);
 
   // Get the actual theme based on mode and system preference
   const getTheme = useCallback((mode: ExtendedThemeMode, systemScheme: ColorSchemeName): Theme => {

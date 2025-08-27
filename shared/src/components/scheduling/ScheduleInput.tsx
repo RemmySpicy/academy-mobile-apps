@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 const { width } = Dimensions.get('window');
 
@@ -48,7 +48,7 @@ export const ScheduleInput: React.FC<ScheduleInputProps> = ({
   disabled = false,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showStartPicker, setShowStartPicker] = useState(false);
@@ -183,7 +183,7 @@ export const ScheduleInput: React.FC<ScheduleInputProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     gap: theme.spacing.md,
   },
@@ -253,6 +253,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   disabledText: {
     color: theme.colors.text.disabled,
   },
-});
+}));
 
 export default ScheduleInput;

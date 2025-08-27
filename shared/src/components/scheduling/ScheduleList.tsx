@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 const { width } = Dimensions.get('window');
 
@@ -116,7 +116,7 @@ const ScheduleColumn: React.FC<ScheduleColumnProps> = ({
   onStatusPress,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const renderScheduleItem = ({ item }: { item: ScheduleItem }) => (
     <TouchableOpacity
@@ -237,7 +237,7 @@ export const ScheduleList: React.FC<ScheduleListProps> = ({
   pagingEnabled = true,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const renderColumn = ({ item }: { item: typeof columns[0] }) => (
     <ScheduleColumn
@@ -267,7 +267,7 @@ export const ScheduleList: React.FC<ScheduleListProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   listContainer: {
     padding: theme.spacing.md,
   },
@@ -379,6 +379,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: theme.fontSizes.body,
     color: theme.colors.text.secondary,
   },
-});
+}));
 
 export default ScheduleList;

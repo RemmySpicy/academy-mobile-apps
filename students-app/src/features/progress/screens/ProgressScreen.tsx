@@ -423,7 +423,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.xl,
   },
   title: {
@@ -437,7 +437,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
   periodSelector: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.lg,
   },
   periodButton: {
@@ -455,7 +455,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     fontWeight: theme.fontConfig.fontWeight.medium,
   },
   statsOverview: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.xl,
   },
   statsContainer: {
@@ -498,7 +498,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
   sectionHeader: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.md,
   },
   sectionHeaderContainer: {
@@ -521,10 +521,10 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     fontSize: theme.fontSizes.lg,
     fontWeight: theme.fontConfig.fontWeight.semibold,
     marginBottom: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
   },
   quickActions: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.xl,
   },
   quickActionsContainer: {
@@ -809,7 +809,7 @@ export const ProgressScreen: React.FC = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: theme.spacing.lg }}
+            contentContainerStyle={{ paddingHorizontal: theme.spacing.md }}
           >
             {courseProgress[0]?.skills.map((skill, index) => (
               <SkillCard key={skill.id} skill={skill} index={index} />

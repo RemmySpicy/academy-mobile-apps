@@ -139,3 +139,31 @@ cd shared && npx expo start
 6. **Write tests for new features** - coverage thresholds are enforced
 7. **Use the pre-commit hooks** - they catch issues early
 8. **Keep environment variables in .env files** - never hardcode URLs or keys
+
+## 🎨 Design System Consistency
+
+### Horizontal Padding Standards (Updated 2025)
+
+**✅ PADDING CONSISTENCY ACHIEVED** - All screen files now use standardized horizontal spacing
+
+#### Standard Horizontal Padding
+- **Screen edges**: Always use `theme.spacing.md` (16px) for consistent content alignment
+- **Component internal padding**: Use appropriate theme spacing tokens (`xs`, `sm`, `md`, `lg`, etc.)
+- **Never hardcode**: Avoid hardcoded pixel values like `paddingHorizontal: 24`
+
+#### Fixed Files (35+ screens updated)
+**Students App:** All auth screens, feature screens (Transactions, Schedule, Contact, Store, Referrals, Location, Services, Bookings, Progress, Help, Courses, etc.)
+
+**Instructors App:** All auth screens, feature screens (Performance, Classroom, Students, Attendance, etc.)
+
+#### Best Practices
+```tsx
+// ✅ CORRECT - Use theme spacing tokens
+paddingHorizontal: theme.spacing.md,  // 16px for screen edges
+
+// ❌ WRONG - Hardcoded values
+paddingHorizontal: 24,
+paddingHorizontal: 16,
+```
+
+This ensures visual consistency across all Academy Apps screens and maintains compliance with the design system.

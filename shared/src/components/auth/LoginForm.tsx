@@ -61,43 +61,43 @@ export const LoginForm: React.FC<LoginFormProps> = React.memo(({
       width: '100%' as const,
     },
     form: {
-      gap: theme.spacing?.[4] || 16,
+      gap: theme.spacing.md,
     },
     formActions: {
-      gap: theme.spacing?.[3] || 12,
-      marginTop: theme.spacing?.[2] || 8,
+      gap: theme.spacing.sm * 1.5,
+      marginTop: theme.spacing.sm,
     },
     inputNoMargin: {
       marginBottom: 0,
     },
     forgotPassword: {
       alignSelf: 'flex-end' as const,
-      marginBottom: theme.spacing?.[2] || 8,
+      marginBottom: theme.spacing.sm,
     },
     forgotPasswordText: {
       color: theme.colors.interactive.primary,
-      ...theme.typography?.body?.sm,
-      fontWeight: theme.fontConfig?.fontWeight?.medium || '500',
+      ...theme.typography.body.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
     },
     registerSection: {
       flexDirection: 'row' as const,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
-      marginTop: theme.spacing?.[3] || 12,
+      marginTop: theme.spacing.sm * 1.5,
     },
     registerText: {
       color: theme.colors.text.secondary,
-      ...theme.typography?.body?.base,
+      ...theme.typography.body.base,
     },
     registerLink: {
       color: theme.colors.interactive.primary,
-      ...theme.typography?.body?.base,
-      fontWeight: theme.fontConfig?.fontWeight?.medium || '500',
+      ...theme.typography.body.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
     },
     divider: {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
-      marginVertical: theme.spacing?.[4] || 16,
+      marginVertical: theme.spacing.md,
     },
     dividerLine: {
       flex: 1,
@@ -105,19 +105,19 @@ export const LoginForm: React.FC<LoginFormProps> = React.memo(({
       backgroundColor: theme.colors.border.primary,
     },
     dividerText: {
-      ...theme.typography?.caption?.base,
+      ...theme.typography.caption.base,
       color: theme.colors.text.tertiary,
-      paddingHorizontal: theme.spacing?.[3] || 12,
+      paddingHorizontal: theme.spacing.sm * 1.5,
       backgroundColor: theme.colors.background.elevated,
     },
     termsContainer: {
-      marginTop: theme.spacing?.[4] || 16,
-      paddingHorizontal: theme.spacing?.[2] || 8,
+      marginTop: theme.spacing.md,
+      paddingHorizontal: theme.spacing.sm,
     },
     termsText: {
       textAlign: 'center' as const,
       color: theme.colors.text.tertiary,
-      ...theme.typography?.caption?.base,
+      ...theme.typography.caption.base,
     },
   };
   

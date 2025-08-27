@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface NotificationItem {
   id: string;
@@ -41,7 +41,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   const { theme } = useTheme();
   const [localNotifications, setLocalNotifications] = useState(notifications);
   
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   const unreadNotifications = localNotifications.filter(notification => !notification.isRead);
   const readNotifications = localNotifications.filter(notification => notification.isRead);
@@ -167,7 +167,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background.primary,
@@ -202,7 +202,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginVertical: theme.spacing.md,
   },
   sectionTitle: {
-    fontSize: theme.fontSizes.md,
+    fontSize: theme.fontSizes.base,
     fontWeight: theme.fontConfig.fontWeight.semibold,
     color: theme.colors.text.primary,
     marginBottom: theme.spacing.sm,
@@ -296,6 +296,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     lineHeight: theme.fontSizes.base * 1.5,
   },
-});
+}));
 
 export default NotificationList;

@@ -11,7 +11,7 @@
 import React, { ReactNode } from 'react';
 import { View, Text, Pressable, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 // Base interfaces
 export interface ProfileSettingsSection {
@@ -59,7 +59,7 @@ export const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({
   testID,
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
 
   return (
     <View style={[styles.sectionContainer, containerStyle]} testID={testID}>
@@ -317,7 +317,7 @@ export const PreferencesSupportSection: React.FC<PreferencesSupportSectionProps>
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   sectionContainer: {
     marginVertical: theme.spacing.md,
   },
@@ -388,6 +388,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   disabledText: {
     color: theme.colors.text.disabled,
   },
-});
+}));
 
 export default ProfileSettingsSection;

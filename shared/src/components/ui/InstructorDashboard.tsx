@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, useWindowDimensions, Dimensions } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 import { useProgramContext } from '../program/ProgramContextProvider';
 import PerformanceChart from '../charts/PerformanceChart';
 import StudentCard from './StudentCard';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface DashboardMetric {
   id: string;
@@ -83,16 +81,23 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
 }) => {
   const { theme } = useTheme();
   const { currentProgram } = useProgramContext();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const useThemedStyles = useMemo(() => createResponsiveStyles(screenWidth), [screenWidth]);
   const styles = useThemedStyles();
   const [selectedPeriod, setSelectedPeriod] = useState<
     'week' | 'month' | 'quarter'
   >('month');
 
-  const defaultMetrics: DashboardMetric[] = [
+  // Mobile-optimized responsive breakpoints
+  const isSmallDevice = screenWidth < 380;
+  const isTablet = screenWidth > 768;
+
+  // Memoize default data to prevent recreation and ensure safe prop access
+  const defaultMetrics = useMemo((): DashboardMetric[] => [
     {
       id: 'total_students',
       title: 'Total Students',
-      value: recentStudents.length || 0,
+      value: (recentStudents || []).length,
       icon: 'people-outline',
       color: theme.colors.interactive.primary,
     },
@@ -121,9 +126,9 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       icon: 'checkmark-circle-outline',
       color: theme.colors.status.warning,
     },
-  ];
+  ], [recentStudents, theme]);
 
-  const defaultQuickActions: QuickAction[] = [
+  const defaultQuickActions = useMemo((): QuickAction[] => [
     {
       id: 'take_attendance',
       title: 'Take Attendance',
@@ -152,23 +157,58 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       color: theme.colors.interactive.faded,
       onPress: () => {},
     },
-  ];
+  ], [theme]);
 
-  const displayMetrics = metrics.length > 0 ? metrics : defaultMetrics;
-  const displayQuickActions =
-    quickActions.length > 0 ? quickActions : defaultQuickActions;
+  // Memoize expensive computations for mobile performance
+  const displayMetrics = useMemo(
+    () => (metrics && metrics.length > 0 ? metrics : defaultMetrics),
+    [metrics, defaultMetrics]
+  );
+  
+  const displayQuickActions = useMemo(
+    () => (quickActions && quickActions.length > 0 ? quickActions : defaultQuickActions),
+    [quickActions, defaultQuickActions]
+  );
 
-  const renderMetricsOverview = () => (
+  // Mobile-optimized data slicing
+  const studentsToShow = useMemo(
+    () => (recentStudents || []).slice(0, maxStudentsShown),
+    [recentStudents, maxStudentsShown]
+  );
+
+  const activitiesToShow = useMemo(
+    () => (recentActivities || []).slice(0, maxActivitiesShown),
+    [recentActivities, maxActivitiesShown]
+  );
+
+  // Memoized callbacks for mobile performance
+  const handlePeriodChange = useCallback((period: 'week' | 'month' | 'quarter') => {
+    setSelectedPeriod(period);
+  }, []);
+
+  const handleMetricPressCallback = useCallback((metric: DashboardMetric) => {
+    onMetricPress?.(metric);
+  }, [onMetricPress]);
+
+  const handleStudentPressCallback = useCallback((student: any) => {
+    onStudentPress?.(student);
+  }, [onStudentPress]);
+
+  const renderMetricsOverview = useCallback(() => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Overview</Text>
       <View style={styles.metricsGrid}>
         {displayMetrics.map(metric => (
           <Pressable 
             key={metric.id}
-            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, styles.metricCard]}
-            onPress={() => onMetricPress?.(metric)}
+            style={({ pressed }) => [
+              { opacity: pressed ? 0.8 : 1 }, 
+              styles.metricCard
+            ]}
+            onPress={() => handleMetricPressCallback(metric)}
             accessibilityRole='button'
             accessibilityLabel={`${metric.title}: ${metric.value}`}
+            accessibilityHint={`Tap to view details for ${metric.title}`}
           >
             <View style={styles.metricHeader}>
               <Ionicons
@@ -210,7 +250,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
         ))}
       </View>
     </View>
-  );
+  ), [displayMetrics, styles, handleMetricPressCallback]);
 
   const renderQuickActions = () => (
     <View style={styles.section}>
@@ -281,20 +321,20 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
     );
   };
 
-  const renderRecentStudents = () => {
-    if (!showStudents || recentStudents.length === 0) return null;
-
-    const studentsToShow = recentStudents.slice(0, maxStudentsShown);
+  const renderRecentStudents = useCallback(() => {
+    if (!showStudents || !recentStudents || recentStudents.length === 0) return null;
 
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Recent Students</Text>
-          {recentStudents.length > maxStudentsShown && (
-            <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
+          {recentStudents && recentStudents.length > maxStudentsShown && (
+            <Pressable 
+              style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
               onPress={onViewAllStudents}
               accessibilityRole='button'
               accessibilityLabel='View all students'
+              accessibilityHint='Opens full students list'
             >
               <Text style={styles.viewAllText}>View All</Text>
             </Pressable>
@@ -306,7 +346,7 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
             key={student.id}
             student={student}
             variant='compact'
-            onPress={onStudentPress}
+            onPress={handleStudentPressCallback}
             showQuickActions={false}
             showProgress={false}
             style={styles.compactStudentCard}
@@ -314,18 +354,18 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
         ))}
       </View>
     );
-  };
+  }, [showStudents, recentStudents, studentsToShow, maxStudentsShown, onViewAllStudents, handleStudentPressCallback, styles]);
 
   const renderRecentActivities = () => {
-    if (!showActivities || recentActivities.length === 0) return null;
+    if (!showActivities || !recentActivities || recentActivities.length === 0) return null;
 
-    const activitiesToShow = recentActivities.slice(0, maxActivitiesShown);
+    const activitiesToShow = (recentActivities || []).slice(0, maxActivitiesShown);
 
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Recent Activity</Text>
-          {recentActivities.length > maxActivitiesShown && (
+          {recentActivities && recentActivities.length > maxActivitiesShown && (
             <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })} 
               onPress={onViewAllActivities}
               accessibilityRole='button'
@@ -431,6 +471,8 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       style={styles.container}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
+      removeClippedSubviews={true} // Mobile performance optimization
+      scrollEventThrottle={16} // 60fps scroll performance
     >
       {currentProgram && (
         <View style={styles.programHeader}>
@@ -448,15 +490,22 @@ const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
   );
 };
 
-const useThemedStyles = createThemedStyles(theme =>
-  StyleSheet.create({
+const createResponsiveStyles = (screenWidth: number) => createThemedStyles((theme) => {
+  // Responsive width calculation using passed screen dimensions
+  const containerPadding = theme.spacing.md * 2; // Left + right padding
+  const availableWidth = screenWidth - containerPadding;
+  const cardGap = theme.spacing.sm;
+  const cardWidth = (availableWidth - cardGap) / 2;
+
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
     },
 
     contentContainer: {
-      padding: theme.spacing.md,
+      padding: containerPadding,
+      paddingBottom: theme.spacing['3xl'], // Extra space for tab bar
     },
 
     programHeader: {
@@ -500,25 +549,35 @@ const useThemedStyles = createThemedStyles(theme =>
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
 
-    // Metrics Grid
+    // Metrics Grid - Mobile Responsive
     metricsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: theme.spacing[3],
+      justifyContent: 'space-between',
+      gap: cardGap,
     },
 
     metricCard: {
-      backgroundColor: theme.colors.background.elevated,
-      borderRadius: theme.borderRadius.lg,
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.xl,
       padding: theme.spacing.md,
-      width: (SCREEN_WIDTH - theme.spacing[4] * 2 - theme.spacing[3]) / 2,
+      width: cardWidth,
+      minHeight: 100,
       ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      // Enhanced mobile visibility
+      shadowColor: theme.colors.shadow?.default || '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
+      elevation: 3,
     },
 
     metricHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: theme.spacing[3],
+      marginBottom: theme.spacing.sm,
     },
 
     metricTitle: {
@@ -526,57 +585,73 @@ const useThemedStyles = createThemedStyles(theme =>
       color: theme.colors.text.secondary,
       marginLeft: theme.spacing.sm,
       flex: 1,
+      fontSize: theme.fontSizes.sm,
     },
 
     metricContent: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      flexWrap: 'wrap',
     },
 
     metricValue: {
       ...theme.typography.heading.h3,
       color: theme.colors.text.primary,
       fontWeight: theme.fontConfig.fontWeight.bold,
+      fontSize: theme.fontSizes.xl,
     },
 
     changeIndicator: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: 2,
       borderRadius: theme.borderRadius.sm,
-      gap: theme.spacing.xs,
+      gap: 2,
+      marginTop: theme.spacing.xs / 2,
     },
 
     changeText: {
       ...theme.typography.caption.base,
       fontWeight: theme.fontConfig.fontWeight.semibold,
+      fontSize: theme.fontSizes.xs,
     },
 
-    // Quick Actions
+    // Quick Actions - Mobile Responsive
     quickActionsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: theme.spacing[3],
+      justifyContent: 'space-between',
+      gap: cardGap,
     },
 
     quickActionCard: {
-      backgroundColor: theme.colors.background.elevated,
-      borderRadius: theme.borderRadius.lg,
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.xl,
       padding: theme.spacing.md,
-      width: (SCREEN_WIDTH - theme.spacing[4] * 2 - theme.spacing[3]) / 2,
+      width: cardWidth,
+      minHeight: 100,
       alignItems: 'center',
+      justifyContent: 'center',
       ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      // Enhanced mobile visibility
+      shadowColor: theme.colors.shadow?.default || '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
+      elevation: 3,
     },
 
     quickActionIcon: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: 40,
+      height: 40,
+      borderRadius: 20,
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: theme.spacing[3],
+      marginBottom: theme.spacing.xs,
     },
 
     quickActionTitle: {
@@ -584,6 +659,7 @@ const useThemedStyles = createThemedStyles(theme =>
       color: theme.colors.text.primary,
       textAlign: 'center',
       fontWeight: theme.fontConfig.fontWeight.medium,
+      fontSize: theme.fontSizes.sm,
     },
 
     // Period Selector
@@ -595,9 +671,11 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     periodButton: {
-      paddingHorizontal: theme.spacing[3],
-      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
       borderRadius: theme.borderRadius.md,
+      minWidth: 50,
+      alignItems: 'center',
     },
 
     periodButtonActive: {
@@ -608,6 +686,7 @@ const useThemedStyles = createThemedStyles(theme =>
       ...theme.typography.caption.base,
       color: theme.colors.text.secondary,
       fontWeight: theme.fontConfig.fontWeight.medium,
+      fontSize: theme.fontSizes.xs,
     },
 
     periodButtonTextActive: {
@@ -619,15 +698,24 @@ const useThemedStyles = createThemedStyles(theme =>
       marginBottom: theme.spacing.sm,
     },
 
-    // Activities
+
+    // Activities - Mobile Optimized
     activityItem: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      padding: theme.spacing[3],
-      backgroundColor: theme.colors.background.elevated,
-      borderRadius: theme.borderRadius.md,
+      padding: theme.spacing.md,
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.lg,
       marginBottom: theme.spacing.sm,
-      gap: theme.spacing[3],
+      gap: theme.spacing.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      // Enhanced mobile visibility
+      shadowColor: theme.colors.shadow?.default || '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 2,
     },
 
     activityIcon: {
@@ -646,6 +734,7 @@ const useThemedStyles = createThemedStyles(theme =>
       ...theme.typography.body.sm,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.xs,
+      lineHeight: theme.fontSizes.sm * 1.3,
     },
 
     studentName: {
@@ -656,13 +745,15 @@ const useThemedStyles = createThemedStyles(theme =>
     activityTime: {
       ...theme.typography.caption.base,
       color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.xs,
     },
 
     priorityIndicator: {
       alignItems: 'center',
       justifyContent: 'center',
+      marginLeft: theme.spacing.xs,
     },
-  })
-);
+  });
+});
 
 export default InstructorDashboard;

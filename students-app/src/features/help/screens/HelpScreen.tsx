@@ -481,7 +481,7 @@ export const HelpScreen: React.FC = () => {
             <Animated.View
               entering={FadeInDown.delay(200).springify()}
               style={{
-                paddingHorizontal: theme.spacing.lg,
+                paddingHorizontal: theme.spacing.md,
                 marginBottom: theme.spacing.xl,
               }}
             >
@@ -497,7 +497,7 @@ export const HelpScreen: React.FC = () => {
             </Animated.View>
 
             {/* Popular Articles */}
-            <View style={{ paddingHorizontal: theme.spacing.lg, marginBottom: theme.spacing.xl }}>
+            <View style={{ paddingHorizontal: theme.spacing.md, marginBottom: theme.spacing.xl }}>
               <Animated.Text
                 entering={FadeInDown.delay(300).springify()}
                 style={{
@@ -520,7 +520,7 @@ export const HelpScreen: React.FC = () => {
             </View>
 
             {/* Help Categories */}
-            <View style={{ paddingHorizontal: theme.spacing.lg }}>
+            <View style={{ paddingHorizontal: theme.spacing.md }}>
               <Animated.Text
                 entering={FadeInDown.delay(400).springify()}
                 style={{
@@ -550,7 +550,7 @@ export const HelpScreen: React.FC = () => {
             <Animated.View
               entering={FadeInDown.delay(200).springify()}
               style={{
-                paddingHorizontal: theme.spacing.lg,
+                paddingHorizontal: theme.spacing.md,
                 marginBottom: theme.spacing.xl,
                 alignItems: 'center',
               }}
@@ -575,7 +575,7 @@ export const HelpScreen: React.FC = () => {
             </Animated.View>
 
             {/* Support Options */}
-            <View style={{ paddingHorizontal: theme.spacing.lg }}>
+            <View style={{ paddingHorizontal: theme.spacing.md }}>
               {supportOptions.map((option, index) => (
                 <SupportOptionCard
                   key={option.id}
@@ -649,7 +649,7 @@ export const HelpScreen: React.FC = () => {
           <Animated.View
             entering={FadeInDown.delay(200).springify()}
             style={{
-              paddingHorizontal: theme.spacing.lg,
+              paddingHorizontal: theme.spacing.md,
               alignItems: 'center',
             }}
           >
@@ -681,7 +681,7 @@ export const HelpScreen: React.FC = () => {
             <Pressable style={{
               backgroundColor: theme.colors.interactive.primary,
               borderRadius: theme.borderRadius.lg,
-              paddingHorizontal: theme.spacing['2xl'],
+              paddingHorizontal: theme.spacing.md,
               paddingVertical: theme.spacing.md,
               marginBottom: theme.spacing.lg,
             }}>

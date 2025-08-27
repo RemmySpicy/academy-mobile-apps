@@ -25,7 +25,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme/ThemeProvider';
+import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
 
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const { width } = Dimensions.get('window');
@@ -103,6 +103,7 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
   headerTitle,
 }) => {
   const { theme } = useTheme();
+  const styles = useThemedStyles();
   const [currentMonth, setCurrentMonth] = useState(propCurrentMonth || new Date());
   const [highlightedDates, setHighlightedDates] = useState<Record<string, string>>({});
 
@@ -277,7 +278,7 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
 
     // Add empty spaces for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
-      currentWeek.push(<View key={`empty-${i}`} style={styles.dayContainer} />);
+      currentWeek.push(<View key={`empty-${i}`} style={staticStyles.dayContainer} />);
     }
 
     // Get current date to highlight today
@@ -305,24 +306,24 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
       const dayElement = (
         <DayComponent
           key={`day-${i}`}
-          style={styles.dayContainer}
+          style={staticStyles.dayContainer}
           {...dayProps}
         >
           <View
             style={[
-              createStyles(theme).day,
+              styles.day,
               isHighlighted && {
                 backgroundColor: getHighlightColor(isHighlighted),
               },
-              isToday && createStyles(theme).today,
-              isSelected && createStyles(theme).selected,
+              isToday && styles.today,
+              isSelected && styles.selected,
             ]}
           >
             <Text 
               style={[
-                createStyles(theme).dayText, 
-                isToday && createStyles(theme).todayText,
-                isSelected && createStyles(theme).selectedText,
+                styles.dayText, 
+                isToday && styles.todayText,
+                isSelected && styles.selectedText,
               ]}
             >
               {i}
@@ -343,7 +344,7 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
     // Fill remaining days of last week with empty cells
     if (currentWeek.length > 0) {
       while (currentWeek.length < 7) {
-        currentWeek.push(<View key={`empty-end-${currentWeek.length}`} style={styles.dayContainer} />);
+        currentWeek.push(<View key={`empty-end-${currentWeek.length}`} style={staticStyles.dayContainer} />);
       }
       weeks.push(currentWeek);
     }
@@ -361,7 +362,7 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
     enableDateSelection
   ]);
 
-  const containerStyles = createStyles(theme);
+  const containerStyles = styles;
   const canGoToPrevious = !disablePastNavigation;
   const canGoToNext = !disableFutureNavigation;
 
@@ -437,7 +438,7 @@ const AcademyCalendar: React.FC<AcademyCalendarProps> = ({
 };
 
 // Static styles that don't depend on theme
-const styles = StyleSheet.create({
+const staticStyles = StyleSheet.create({
   dayContainer: {
     flex: 1,
     height: DAY_SIZE,
@@ -447,7 +448,7 @@ const styles = StyleSheet.create({
 });
 
 // Dynamic styles that depend on theme
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
@@ -458,7 +459,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: theme.elevation?.sm?.shadowRadius || 4,
     elevation: theme.elevation?.sm?.elevation || 2,
-    borderWidth: theme.borderWidth?.thin || 1,
+    borderWidth: theme.borderWidth.sm,
     borderColor: theme.colors.border.primary,
   } as ViewStyle,
 
@@ -541,7 +542,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   } as TextStyle,
 
   today: {
-    borderWidth: theme.borderWidth?.medium || 2,
+    borderWidth: theme.borderWidth.md,
     borderColor: theme.colors.interactive.primary, // Academy purple
   } as ViewStyle,
 
@@ -558,6 +559,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text.inverse, // White text on purple background
     fontWeight: theme.fontConfig.fontWeight.bold,
   } as TextStyle,
-});
+}));
 
 export default AcademyCalendar;

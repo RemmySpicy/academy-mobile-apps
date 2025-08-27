@@ -385,8 +385,8 @@ const createStyles = (theme: any) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: theme.spacing[4],
-      paddingVertical: theme.spacing[3],
+      paddingHorizontal: theme.spacing[4] || theme.spacing.md,
+      paddingVertical: theme.spacing[3] || theme.spacing.sm,
       backgroundColor: theme.colors.background.primary,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.primary,
@@ -413,7 +413,7 @@ const createStyles = (theme: any) =>
     programInfo: {
       ...theme.typography.caption.base,
       color: theme.colors.text.secondary,
-      marginTop: theme.spacing[1],
+      marginTop: theme.spacing[1] || theme.spacing.xs,
       textAlign: 'center',
     },
 
@@ -426,7 +426,7 @@ const createStyles = (theme: any) =>
     actionGroup: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing[1],
+      gap: theme.spacing[1] || theme.spacing.xs,
     },
 
     actionButton: {
@@ -473,15 +473,15 @@ const createStyles = (theme: any) =>
 
     notificationBadge: {
       position: 'absolute',
-      top: theme.spacing[1],
-      right: theme.spacing[1],
+      top: theme.spacing[1] || theme.spacing.xs,
+      right: theme.spacing[1] || theme.spacing.xs,
       backgroundColor: theme.colors.status.error,
       borderRadius: theme.borderRadius.full,
       minWidth: theme.spacing[5],
       height: theme.spacing[5],
       alignItems: 'center',
       justifyContent: 'center',
-      paddingHorizontal: theme.spacing[1],
+      paddingHorizontal: theme.spacing[1] || theme.spacing.xs,
     },
 
     notificationCount: {
@@ -517,7 +517,7 @@ const createStyles = (theme: any) =>
     },
 
     dropdownIcon: {
-      marginLeft: theme.spacing[1],
+      marginLeft: theme.spacing[1] || theme.spacing.xs,
     },
 
     // Modal Styles
@@ -545,8 +545,8 @@ const createStyles = (theme: any) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: theme.spacing[4],
-      paddingVertical: theme.spacing[3],
+      paddingHorizontal: theme.spacing[4] || theme.spacing.md,
+      paddingVertical: theme.spacing[3] || theme.spacing.sm,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.primary,
     },
@@ -558,15 +558,15 @@ const createStyles = (theme: any) =>
     },
 
     closeButton: {
-      padding: theme.spacing[1],
+      padding: theme.spacing[1] || theme.spacing.xs,
     },
 
     programOption: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: theme.spacing[4],
-      paddingVertical: theme.spacing[3],
+      paddingHorizontal: theme.spacing[4] || theme.spacing.md,
+      paddingVertical: theme.spacing[3] || theme.spacing.sm,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.primary,
     },
@@ -583,7 +583,7 @@ const createStyles = (theme: any) =>
 
     programOptionName: {
       ...theme.typography.body.sm,
-      marginTop: theme.spacing[1],
+      marginTop: theme.spacing[1] || theme.spacing.xs,
     },
   });
 

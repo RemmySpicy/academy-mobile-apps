@@ -287,7 +287,7 @@ export const StoreScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
@@ -305,7 +305,7 @@ export const StoreScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={{
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.md,
           }}
         >
@@ -321,7 +321,7 @@ export const StoreScreen: React.FC = () => {
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
           style={{ 
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.lg 
           }}
         >
@@ -341,7 +341,7 @@ export const StoreScreen: React.FC = () => {
 
         {/* Products Grid */}
         <View style={{
-          paddingHorizontal: theme.spacing.lg,
+          paddingHorizontal: theme.spacing.md,
         }}>
           <Animated.View
             entering={FadeInDown.delay(400).springify()}

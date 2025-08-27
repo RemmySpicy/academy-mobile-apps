@@ -99,6 +99,36 @@ export interface LoginRequest {
 }
 
 /**
+ * User registration request
+ */
+export interface RegisterRequest {
+  /** User's first name */
+  firstName: string;
+  /** User's last name */
+  lastName: string;
+  /** User's email address */
+  email: string;
+  /** User's password */
+  password: string;
+  /** User's phone number */
+  phone: string;
+  /** Optional program context for registration */
+  program_id?: string;
+}
+
+/**
+ * Registration response from the backend
+ */
+export interface RegisterResponse {
+  /** Success status */
+  success: boolean;
+  /** Success message */
+  message: string;
+  /** User ID if registration was successful */
+  user_id?: string;
+}
+
+/**
  * Login response from the backend
  */
 export interface LoginResponse {
@@ -234,6 +264,8 @@ export interface AuthState {
 export interface AuthActions {
   /** Login action */
   login: (credentials: LoginRequest) => Promise<void>;
+  /** Registration action */
+  register: (userData: RegisterRequest) => Promise<boolean>;
   /** Social login action */
   loginWithSocial: (provider: string, token: string, userInfo: any) => Promise<void>;
   /** Logout action */

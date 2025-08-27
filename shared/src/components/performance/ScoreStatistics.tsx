@@ -10,7 +10,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ViewStyle, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme';
+import { useTheme, createThemedStyles } from '../../theme';
 
 export interface ScoreStatsData {
   /** Number value to display */
@@ -76,7 +76,7 @@ export const ScoreStatistics: React.FC<ScoreStatisticsProps> = ({
   testID = 'score-statistics',
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = useThemedStyles();
   
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod || timePeriods[0]);
   const [showPicker, setShowPicker] = useState(false);
@@ -273,12 +273,12 @@ export const ScoreStatistics: React.FC<ScoreStatisticsProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.lg,
-    borderWidth: theme.borderWidth.thin,
+    borderWidth: theme.borderWidth.sm,
     borderColor: theme.colors.border.primary,
     ...theme.elevation.sm,
     marginVertical: theme.spacing.md,
@@ -319,9 +319,9 @@ const createStyles = (theme: any) => StyleSheet.create({
     borderRadius: theme.borderRadius.md,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
-    borderWidth: theme.borderWidth.thin,
+    borderWidth: theme.borderWidth.sm,
     borderColor: theme.colors.border.secondary,
-    ...theme.elevation.xs,
+    ...theme.elevation.sm,
   },
 
   pickerButtonText: {
@@ -337,7 +337,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     right: 0,
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.md,
-    borderWidth: theme.borderWidth.thin,
+    borderWidth: theme.borderWidth.sm,
     borderColor: theme.colors.border.primary,
     ...theme.elevation.sm,
     zIndex: 1000,
@@ -447,7 +447,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     backgroundColor: theme.colors.interactive.primary,
     borderRadius: theme.borderRadius.sm,
     minHeight: 4,
-    ...theme.elevation.xs,
+    ...theme.elevation.sm,
   },
 
   xAxisContainer: {
@@ -463,6 +463,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     textAlign: 'center',
     flex: 1,
   },
-});
+}));
 
 export default ScoreStatistics;

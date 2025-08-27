@@ -3,7 +3,7 @@ import { View, Text, TextInput, Pressable, KeyboardTypeOptions, StyleSheet, Text
 import { Ionicons } from "@expo/vector-icons";
 import { useController, Control, FieldValues, RegisterOptions } from "react-hook-form";
 import { FormFieldProps } from "../../types";
-import { useTheme } from "../../theme/ThemeProvider";
+import { useTheme, createThemedStyles } from "../../theme/ThemeProvider";
 import { themeUtils } from "../../theme";
 
 
@@ -205,7 +205,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
     setIsPasswordVisible(prev => !prev);
   }, []);
 
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useThemedStyles();
 
   // Get variant-specific styles
   const getVariantStyles = useMemo(() => {
@@ -362,7 +362,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     marginBottom: theme.spacing.md,
     width: '100%',
@@ -510,6 +510,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.status.error,
     fontWeight: theme.fontConfig.fontWeight.bold,
   },
-});
+}));
 
 export { CustomInput };

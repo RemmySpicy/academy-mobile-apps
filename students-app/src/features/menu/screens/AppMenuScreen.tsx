@@ -551,6 +551,8 @@ export const AppMenuScreen: React.FC = () => {
                 marginRight: theme.spacing.sm,
                 alignItems: 'center',
                 ...theme.elevation.sm,
+                borderWidth: 1,
+                borderColor: theme.colors.border.primary,
               }}
             >
               <View style={{
@@ -588,6 +590,8 @@ export const AppMenuScreen: React.FC = () => {
                 marginHorizontal: theme.spacing.xs,
                 alignItems: 'center',
                 ...theme.elevation.sm,
+                borderWidth: 1,
+                borderColor: theme.colors.border.primary,
               }}
             >
               <View style={{
@@ -625,6 +629,8 @@ export const AppMenuScreen: React.FC = () => {
                 marginLeft: theme.spacing.sm,
                 alignItems: 'center',
                 ...theme.elevation.sm,
+                borderWidth: 1,
+                borderColor: theme.colors.border.primary,
               }}
             >
               <View style={{

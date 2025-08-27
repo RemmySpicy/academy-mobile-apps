@@ -15,7 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -53,7 +53,7 @@ interface SkillCardProps {
   index: number;
 }
 
-const createSkillCardStyles = (theme: any) => StyleSheet.create({
+const useSkillCardStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     width: width * 0.7,
     backgroundColor: theme.colors.background.primary,
@@ -61,6 +61,8 @@ const createSkillCardStyles = (theme: any) => StyleSheet.create({
     padding: theme.spacing.md,
     marginRight: theme.spacing.md,
     ...theme.elevation.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.border.primary,
   },
   header: {
     flexDirection: 'row',
@@ -118,11 +120,11 @@ const createSkillCardStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text.tertiary,
     fontSize: theme.fontSizes.xs,
   },
-});
+}));
 
 const SkillCard: React.FC<SkillCardProps> = ({ skill, index }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createSkillCardStyles(theme), [theme]);
+  const styles = useSkillCardStyles();
   const progress = (skill.level / skill.maxLevel) * 100;
   
   return (
@@ -172,7 +174,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ skill, index }) => {
   );
 };
 
-const createProgressCardStyles = (theme: any) => StyleSheet.create({
+const useProgressCardStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.xl,
@@ -180,6 +182,8 @@ const createProgressCardStyles = (theme: any) => StyleSheet.create({
     marginBottom: theme.spacing.md,
     marginHorizontal: theme.spacing.md,
     ...theme.elevation.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.border.primary,
   },
   header: {
     flexDirection: 'row',
@@ -288,11 +292,11 @@ const createProgressCardStyles = (theme: any) => StyleSheet.create({
     fontWeight: theme.fontConfig.fontWeight.medium,
     marginLeft: theme.spacing.xs,
   },
-});
+}));
 
 const ProgressCard: React.FC<ProgressCardProps> = ({ course, index, onPress }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createProgressCardStyles(theme), [theme]);
+  const styles = useProgressCardStyles();
   const scale = useSharedValue(1);
 
   // Simplified for web compatibility
@@ -410,7 +414,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ course, index, onPress }) =
   );
 };
 
-const createScreenStyles = (theme: any) => StyleSheet.create({
+const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background.secondary,
@@ -464,6 +468,8 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
     padding: theme.spacing.md,
     flex: 1,
     ...theme.elevation.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.border.primary,
   },
   statCardLeft: {
     marginRight: theme.spacing.xs,
@@ -532,6 +538,8 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     ...theme.elevation.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.border.primary,
   },
   actionButtonLeft: {
     marginRight: theme.spacing.xs,
@@ -556,7 +564,7 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
     fontSize: theme.fontSizes.sm,
     textAlign: 'center',
   },
-});
+}));
 
 /**
  * Progress Screen - Student Progress Tracking (Simplified)
@@ -571,7 +579,7 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
  */
 export const ProgressScreen: React.FC = () => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createScreenStyles(theme), [theme]);
+  const styles = useScreenStyles();
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'all'>('month');
   const [notificationCount, setNotificationCount] = useState(1);

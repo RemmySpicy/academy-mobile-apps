@@ -9,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { LoginForm, useTheme } from '@academy/mobile-shared';
+import { LoginForm, useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 /**
@@ -27,7 +27,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
   navigation,
 }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useThemedStyles();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -91,7 +91,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
@@ -158,4 +158,4 @@ const createStyles = (theme: any) => StyleSheet.create({
       color: theme.colors.text.secondary,
       fontSize: theme.fontSizes.base,
     },
-});
+}));

@@ -18,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomButton, useTheme, Header } from '@academy/mobile-shared';
+import { CustomButton, useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
 
 interface Booking {
   id: string;
@@ -41,7 +41,7 @@ interface BookingCardProps {
   onPress: (booking: Booking) => void;
 }
 
-const createCardStyles = (theme: any) =>
+const useCardStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     card: {
       backgroundColor: theme.colors.background.primary,
@@ -165,11 +165,12 @@ const createCardStyles = (theme: any) =>
       fontSize: theme.fontSizes.sm,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
-  });
+  })
+);
 
 const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createCardStyles(theme), [theme]);
+  const styles = useCardStyles();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -340,7 +341,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
   );
 };
 
-const createScreenStyles = (theme: any) =>
+const useScreenStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -464,14 +465,15 @@ const createScreenStyles = (theme: any) =>
       marginTop: theme.spacing.md,
     },
     emptySubtitle: {
-      color: theme.colors.text.quaternary,
+      color: theme.colors.text.tertiary,
       fontSize: theme.fontSizes.base,
       marginTop: theme.spacing.xs,
       textAlign: 'center',
       paddingHorizontal: theme.spacing.xl,
       marginBottom: theme.spacing.lg,
     },
-  });
+  })
+);
 
 /**
  * Bookings Screen - Manage Course Bookings
@@ -485,7 +487,7 @@ const createScreenStyles = (theme: any) =>
  */
 export const BookingsScreen: React.FC = () => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createScreenStyles(theme), [theme]);
+  const styles = useScreenStyles();
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
@@ -707,7 +709,7 @@ export const BookingsScreen: React.FC = () => {
             entering={FadeInDown.delay(400).springify()}
             style={styles.emptyContainer}
           >
-            <Ionicons name="calendar-outline" size={64} color={theme.colors.text.quaternary} />
+            <Ionicons name="calendar-outline" size={64} color={theme.colors.text.tertiary} />
             <Text style={styles.emptyTitle}>
               No bookings found
             </Text>

@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
@@ -19,11 +19,11 @@ const createStyles = (theme: any) => StyleSheet.create({
       fontSize: theme.fontSizes.base,
       marginTop: theme.spacing.xs,
     },
-});
+}));
 
 export const ResetPasswordScreen: React.FC = () => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useThemedStyles();
   
   return (
     <View style={styles.container}>

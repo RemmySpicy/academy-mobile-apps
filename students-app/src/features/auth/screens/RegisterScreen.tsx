@@ -14,7 +14,7 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { CustomInput, CustomButton, CustomCheckBox, SocialAuthButtons, validateEmail, useAuthStore, useTheme } from '@academy/mobile-shared';
+import { CustomInput, CustomButton, CustomCheckBox, SocialAuthButtons, isValidEmail, useAuthStore, useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 // Validation schema
@@ -30,7 +30,7 @@ const registerSchema = yup.object({
   email: yup
     .string()
     .required('Email is required')
-    .test('valid-email', 'Please enter a valid email', validateEmail),
+    .test('valid-email', 'Please enter a valid email', isValidEmail),
   password: yup
     .string()
     .required('Password is required')
@@ -54,7 +54,7 @@ const registerSchema = yup.object({
 
 type RegisterFormData = yup.InferType<typeof registerSchema>;
 
-const createStyles = (theme: any) => StyleSheet.create({
+const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
@@ -146,7 +146,7 @@ const createStyles = (theme: any) => StyleSheet.create({
       fontSize: theme.fontSizes.base,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
-});
+}));
 
 /**
  * Student Registration Screen
@@ -165,7 +165,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register, isLoading } = useAuthStore();
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useThemedStyles();
 
   const {
     control,
@@ -285,7 +285,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 placeholder="Email address"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                leftIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
+                startIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -295,7 +295,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 control={control}
                 placeholder="Phone number"
                 keyboardType="phone-pad"
-                leftIcon={<Ionicons name="call-outline" size={20} color={theme.colors.text.tertiary} />}
+                startIcon={<Ionicons name="call-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -306,7 +306,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 placeholder="Create password"
                 secureTextEntry={!showPassword}
                 showPasswordToggle
-                leftIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
+                startIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -317,7 +317,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 placeholder="Confirm password"
                 secureTextEntry={!showConfirmPassword}
                 showPasswordToggle
-                leftIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
+                startIcon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />}
                 variant="outline"
               />
 
@@ -347,9 +347,12 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 </View>
                 
                 <SocialAuthButtons
-                  onGooglePress={() => console.log('Google registration')}
-                  onApplePress={() => console.log('Apple registration')}
-                  onFacebookPress={() => console.log('Facebook registration')}
+                  onAuthSuccess={(provider, result) => {
+                    console.log(`${provider} registration success:`, result);
+                  }}
+                  onAuthError={(provider, error) => {
+                    console.log(`${provider} registration error:`, error);
+                  }}
                 />
               </View>
 

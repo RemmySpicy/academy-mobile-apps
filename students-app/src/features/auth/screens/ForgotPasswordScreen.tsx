@@ -14,19 +14,19 @@ import * as yup from 'yup';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import { CustomInput, CustomButton, validateEmail, useTheme } from '@academy/mobile-shared';
+import { CustomInput, CustomButton, isValidEmail, useTheme, createThemedStyles } from '@academy/mobile-shared';
 import type { AuthNavigationProps } from '../types';
 
 const forgotPasswordSchema = yup.object({
   email: yup
     .string()
     .required('Email is required')
-    .test('valid-email', 'Please enter a valid email', validateEmail),
+    .test('valid-email', 'Please enter a valid email', isValidEmail),
 });
 
 type ForgotPasswordFormData = yup.InferType<typeof forgotPasswordSchema>;
 
-const createStyles = (theme: any) =>
+const useThemedStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -91,7 +91,7 @@ const createStyles = (theme: any) =>
       fontSize: theme.fontSizes.base,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
-});
+}));
 
 /**
  * Forgot Password Screen
@@ -102,7 +102,7 @@ export const ForgotPasswordScreen: React.FC<AuthNavigationProps<'ForgotPassword'
   navigation,
 }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useThemedStyles();
   const {
     control,
     handleSubmit,
@@ -173,7 +173,7 @@ export const ForgotPasswordScreen: React.FC<AuthNavigationProps<'ForgotPassword'
               placeholder="Enter your email"
               keyboardType="email-address"
               autoCapitalize="none"
-              leftIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
+              startIcon={<Ionicons name="mail-outline" size={20} color={theme.colors.text.tertiary} />}
               variant="outline"
             />
 

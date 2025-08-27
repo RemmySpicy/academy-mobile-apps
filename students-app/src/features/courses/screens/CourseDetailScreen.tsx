@@ -16,7 +16,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomButton, useTheme, TabBar } from '@academy/mobile-shared';
+import { CustomButton, useTheme, createThemedStyles, TabBar } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -49,8 +49,7 @@ interface CourseDetail {
   }[];
 }
 
-const createDetailStyles = (theme: any) =>
-  StyleSheet.create({
+const useDetailThemedStyles = createThemedStyles((theme) => StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
@@ -385,14 +384,14 @@ const createDetailStyles = (theme: any) =>
       alignItems: 'center',
     },
     reviewDate: {
-      color: theme.colors.text.quaternary,
+      color: theme.colors.text.tertiary,
       fontSize: theme.fontSizes.xs,
     },
     reviewText: {
       color: theme.colors.text.secondary,
       fontSize: theme.fontSizes.sm,
     },
-  });
+  }));
 
 /**
  * Course Detail Screen
@@ -407,7 +406,7 @@ const createDetailStyles = (theme: any) =>
  */
 export const CourseDetailScreen: React.FC = () => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createDetailStyles(theme), [theme]);
+  const styles = useDetailThemedStyles();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute();

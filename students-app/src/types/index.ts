@@ -15,7 +15,7 @@ export type {
   UserRole,
   ApiError,
   ApiResponse,
-} from '@academy/mobile-shared/types';
+} from '@academy/mobile-shared';
 
 // App-specific types for students mobile app
 export interface StudentProfile {

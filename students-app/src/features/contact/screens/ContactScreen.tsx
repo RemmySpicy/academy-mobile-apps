@@ -45,6 +45,8 @@ const ContactMethodCard: React.FC<{ method: ContactMethod; index: number }> = ({
         padding: theme.spacing.md,
         marginBottom: theme.spacing.md,
         ...theme.elevation.sm,
+        borderWidth: 1,
+        borderColor: theme.colors.border.primary,
       }}
     >
       <Pressable
@@ -113,6 +115,8 @@ const FAQItemComponent: React.FC<{ faq: FAQItem; index: number }> = ({
         padding: theme.spacing.md,
         marginBottom: theme.spacing.md,
         ...theme.elevation.sm,
+        borderWidth: 1,
+        borderColor: theme.colors.border.primary,
       }}
     >
       <Pressable
@@ -376,6 +380,8 @@ export const ContactScreen: React.FC = () => {
             borderRadius: theme.borderRadius.xl,
             padding: theme.spacing.lg,
             ...theme.elevation.sm,
+            borderWidth: 1,
+            borderColor: theme.colors.border.primary,
           }}>
             <View style={{ marginBottom: theme.spacing.md }}>
               <Text style={{
@@ -447,7 +453,11 @@ export const ContactScreen: React.FC = () => {
                 title=""
                 options={subjectOptions}
                 value={selectedSubject}
-                onSelectionChange={setSelectedSubject}
+                onSelectionChange={(selected) => {
+                  // SelectOptions can return string or string[], but we only expect string since multiSelect=false
+                  const value = Array.isArray(selected) ? selected[0] || '' : selected;
+                  setSelectedSubject(value);
+                }}
                 multiSelect={false}
                 size="sm"
                 variant="outlined"

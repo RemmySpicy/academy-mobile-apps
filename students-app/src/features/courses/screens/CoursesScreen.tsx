@@ -18,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, Header } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
 
 const { width } = Dimensions.get('window');
 
@@ -46,7 +46,7 @@ interface CourseCardProps {
   onPress: (course: Course) => void;
 }
 
-const createCardStyles = (theme: any) => StyleSheet.create({
+const useCardStyles = createThemedStyles((theme) => StyleSheet.create({
     cardContainer: {
       marginBottom: theme.spacing.md,
     },
@@ -174,11 +174,11 @@ const createCardStyles = (theme: any) => StyleSheet.create({
       fontWeight: theme.fontConfig.fontWeight.medium,
       marginRight: theme.spacing.xs,
     },
-});
+}));
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createCardStyles(theme), [theme]);
+  const styles = useCardStyles();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -315,7 +315,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
   );
 };
 
-const createScreenStyles = (theme: any) => StyleSheet.create({
+const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
@@ -392,13 +392,13 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
       marginTop: theme.spacing.md,
     },
     emptySubtitle: {
-      color: theme.colors.text.quaternary,
+      color: theme.colors.text.tertiary,
       fontSize: theme.fontSizes.base,
       marginTop: theme.spacing.xs,
       textAlign: 'center',
       paddingHorizontal: theme.spacing.xl,
     },
-});
+}));
 
 /**
  * Courses Screen - Course Catalog
@@ -413,7 +413,7 @@ const createScreenStyles = (theme: any) => StyleSheet.create({
  */
 export const CoursesScreen: React.FC = () => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createScreenStyles(theme), [theme]);
+  const styles = useScreenStyles();
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'kids' | 'adults'>('all');
@@ -635,7 +635,7 @@ export const CoursesScreen: React.FC = () => {
             entering={FadeInDown.delay(400).springify()}
             style={styles.emptyContainer}
           >
-            <Ionicons name="search-outline" size={64} color={theme.colors.text.quaternary} />
+            <Ionicons name="search-outline" size={64} color={theme.colors.text.tertiary} />
             <Text style={styles.emptyTitle}>
               No courses found
             </Text>

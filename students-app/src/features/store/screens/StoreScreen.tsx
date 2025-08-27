@@ -10,7 +10,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme } from '@academy/mobile-shared';
+import { 
+  useTheme, 
+  SearchInput, 
+  SelectOptions, 
+  Badge, 
+  CustomButton 
+} from '@academy/mobile-shared';
 
 interface Product {
   id: string;
@@ -64,26 +70,17 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
         </View>
 
         {product.badge && (
-          <View style={[
-            styles.badge,
-            {
-              backgroundColor: theme.colors.status.error,
-              borderRadius: theme.borderRadius.sm,
-              paddingHorizontal: theme.spacing.sm,
-              paddingVertical: theme.spacing.xs,
+          <Badge
+            text={product.badge}
+            variant={product.badge === 'SALE' ? 'error' : 'primary'}
+            size="sm"
+            style={{
               position: 'absolute',
               top: theme.spacing.sm,
               left: theme.spacing.sm,
-            }
-          ]}>
-            <Text style={{
-              color: 'white',
-              fontSize: theme.fontSizes.xs,
-              fontWeight: theme.fontConfig.fontWeight.bold,
-            }}>
-              {product.badge}
-            </Text>
-          </View>
+              zIndex: 1,
+            }}
+          />
         )}
 
         <Pressable
@@ -150,52 +147,34 @@ const ProductCard: React.FC<{ product: Product; index: number }> = ({
           </Text>
         </View>
 
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.sm }}>
+          <Text style={{
+            color: theme.colors.interactive.primary,
+            fontSize: theme.fontSizes.lg,
+            fontWeight: theme.fontConfig.fontWeight.bold,
+          }}>
+            ₦{product.price.toLocaleString('en-NG')}
+          </Text>
+          {product.originalPrice && (
             <Text style={{
-              color: theme.colors.interactive.primary,
-              fontSize: theme.fontSizes.lg,
-              fontWeight: theme.fontConfig.fontWeight.bold,
-            }}>
-              ₦{product.price.toLocaleString('en-NG')}
-            </Text>
-            {product.originalPrice && (
-              <Text style={{
-                color: theme.colors.text.secondary,
-                fontSize: theme.fontSizes.sm,
-                textDecorationLine: 'line-through',
-                marginLeft: theme.spacing.sm,
-              }}>
-                ₦{product.originalPrice.toLocaleString('en-NG')}
-              </Text>
-            )}
-          </View>
-
-          <Pressable
-            disabled={!product.inStock}
-            style={{
-              backgroundColor: product.inStock
-                ? theme.colors.interactive.primary
-                : theme.colors.background.secondary,
-              borderRadius: theme.borderRadius.lg,
-              paddingHorizontal: theme.spacing.md,
-              paddingVertical: theme.spacing.sm,
-              opacity: product.inStock ? 1 : 0.5,
-            }}
-          >
-            <Text style={{
-              color: product.inStock ? 'white' : theme.colors.text.secondary,
-              fontWeight: theme.fontConfig.fontWeight.medium,
+              color: theme.colors.text.secondary,
               fontSize: theme.fontSizes.sm,
+              textDecorationLine: 'line-through',
+              marginLeft: theme.spacing.sm,
             }}>
-              {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+              ₦{product.originalPrice.toLocaleString('en-NG')}
             </Text>
-          </Pressable>
+          )}
         </View>
+
+        <CustomButton
+          title={product.inStock ? 'Add to Cart' : 'Out of Stock'}
+          variant={product.inStock ? 'primary' : 'gray'}
+          size="sm"
+          disabled={!product.inStock}
+          onPress={() => console.log('Add to cart:', product.id)}
+          style={{ width: '100%' }}
+        />
       </View>
     </Animated.View>
   );
@@ -296,7 +275,6 @@ export const StoreScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     }}>
-
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
@@ -305,7 +283,7 @@ export const StoreScreen: React.FC = () => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header Section */}
+        {/* Header Description */}
         <Animated.View
           entering={FadeInDown.delay(100).springify()}
           style={{
@@ -313,15 +291,6 @@ export const StoreScreen: React.FC = () => {
             marginBottom: theme.spacing.xl,
           }}
         >
-          <Text style={{
-            color: theme.colors.text.primary,
-            fontSize: theme.fontSizes['2xl'],
-            fontWeight: theme.fontConfig.fontWeight.bold,
-            textAlign: 'center',
-            marginBottom: theme.spacing.md,
-          }}>
-            Academy Store
-          </Text>
           <Text style={{
             color: theme.colors.text.secondary,
             fontSize: theme.fontSizes.base,
@@ -337,85 +306,37 @@ export const StoreScreen: React.FC = () => {
           entering={FadeInDown.delay(200).springify()}
           style={{
             paddingHorizontal: theme.spacing.lg,
-            marginBottom: theme.spacing.lg,
+            marginBottom: theme.spacing.md,
           }}
         >
-          <Pressable style={{
-            backgroundColor: theme.colors.background.primary,
-            borderRadius: theme.borderRadius.lg,
-            paddingHorizontal: theme.spacing.md,
-            paddingVertical: theme.spacing.md,
-            flexDirection: 'row',
-            alignItems: 'center',
-            borderWidth: 1,
-            borderColor: theme.colors.border.primary,
-          }}>
-            <Ionicons
-              name="search-outline"
-              size={20}
-              color={theme.colors.icon.secondary}
-              style={{ marginRight: theme.spacing.sm }}
-            />
-            <Text style={{
-              color: theme.colors.text.secondary,
-              fontSize: theme.fontSizes.base,
-              flex: 1,
-            }}>
-              Search products...
-            </Text>
-          </Pressable>
+          <SearchInput
+            placeholder="Search products..."
+            value=""
+            onChangeText={(text) => console.log('Search:', text)}
+            onSearchPress={() => console.log('Search pressed')}
+          />
         </Animated.View>
 
         {/* Category Filter */}
         <Animated.View
           entering={FadeInDown.delay(300).springify()}
-          style={{ marginBottom: theme.spacing.xl }}
+          style={{ 
+            paddingHorizontal: theme.spacing.lg,
+            marginBottom: theme.spacing.lg 
+          }}
         >
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: theme.spacing.lg }}
-          >
-            {categories.map((category, index) => (
-              <Pressable
-                key={category.id}
-                onPress={() => setSelectedCategory(category.id)}
-                style={{
-                  backgroundColor: selectedCategory === category.id
-                    ? theme.colors.interactive.primary
-                    : theme.colors.background.primary,
-                  borderColor: selectedCategory === category.id
-                    ? theme.colors.interactive.primary
-                    : theme.colors.border.primary,
-                  borderWidth: 1,
-                  borderRadius: theme.borderRadius.full,
-                  paddingHorizontal: theme.spacing.lg,
-                  paddingVertical: theme.spacing.md,
-                  marginRight: theme.spacing.md,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <Ionicons
-                  name={category.icon}
-                  size={16}
-                  color={selectedCategory === category.id
-                    ? 'white'
-                    : theme.colors.icon.secondary}
-                  style={{ marginRight: theme.spacing.sm }}
-                />
-                <Text style={{
-                  color: selectedCategory === category.id
-                    ? 'white'
-                    : theme.colors.text.primary,
-                  fontWeight: theme.fontConfig.fontWeight.medium,
-                  fontSize: theme.fontSizes.sm,
-                }}>
-                  {category.title}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
+          <SelectOptions
+            title="Categories"
+            options={categories.map(cat => cat.title)}
+            value={categories.find(cat => cat.id === selectedCategory)?.title || 'All Items'}
+            onSelectionChange={(value) => {
+              const category = categories.find(cat => cat.title === value);
+              if (category) setSelectedCategory(category.id);
+            }}
+            multiSelect={false}
+            variant="minimal"
+            size="md"
+          />
         </Animated.View>
 
         {/* Products Grid */}
@@ -482,20 +403,18 @@ export const StoreScreen: React.FC = () => {
           }}>
             On orders over ₦20,000
           </Text>
-          <Pressable style={{
-            backgroundColor: 'white',
-            borderRadius: theme.borderRadius.lg,
-            paddingHorizontal: theme.spacing.xl,
-            paddingVertical: theme.spacing.md,
-          }}>
-            <Text style={{
+          <CustomButton
+            title="Shop Now"
+            variant="secondary"
+            size="md"
+            onPress={() => console.log('Shop now pressed')}
+            style={{
+              backgroundColor: 'white',
+            }}
+            textStyle={{
               color: theme.colors.interactive.primary,
-              fontWeight: theme.fontConfig.fontWeight.medium,
-              fontSize: theme.fontSizes.base,
-            }}>
-              Shop Now
-            </Text>
-          </Pressable>
+            }}
+          />
         </Animated.View>
       </ScrollView>
     </View>

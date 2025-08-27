@@ -54,6 +54,8 @@ const HelpCategoryCard: React.FC<{ category: HelpCategory; index: number }> = ({
         padding: theme.spacing.lg,
         marginBottom: theme.spacing.md,
         ...theme.elevation.sm,
+        borderWidth: 1,
+        borderColor: theme.colors.border.primary,
       }}
     >
       <Pressable
@@ -137,7 +139,9 @@ const HelpArticleCard: React.FC<{ article: HelpArticle; index: number }> = ({
         borderRadius: theme.borderRadius.lg,
         padding: theme.spacing.md,
         marginBottom: theme.spacing.sm,
-        ...theme.elevation.xs,
+        ...theme.elevation.sm,
+        borderWidth: 1,
+        borderColor: theme.colors.border.primary,
       }}
     >
       <Pressable
@@ -224,6 +228,8 @@ const SupportOptionCard: React.FC<{ option: SupportOption; index: number }> = ({
         marginBottom: theme.spacing.md,
         opacity: option.available === false ? 0.5 : 1,
         ...theme.elevation.sm,
+        borderWidth: 1,
+        borderColor: theme.colors.border.primary,
       }}
     >
       <Pressable
@@ -588,6 +594,8 @@ export const HelpScreen: React.FC = () => {
                 borderRadius: theme.borderRadius.xl,
                 padding: theme.spacing.lg,
                 ...theme.elevation.sm,
+                borderWidth: 1,
+                borderColor: theme.colors.border.primary,
               }}
             >
               <Text style={{
@@ -692,6 +700,8 @@ export const HelpScreen: React.FC = () => {
               padding: theme.spacing.lg,
               width: '100%',
               ...theme.elevation.sm,
+              borderWidth: 1,
+              borderColor: theme.colors.border.primary,
             }}>
               <Text style={{
                 color: theme.colors.text.primary,

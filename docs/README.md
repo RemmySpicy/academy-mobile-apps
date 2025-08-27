@@ -13,6 +13,7 @@ Welcome to the Academy Management System mobile applications documentation. This
 ### 🏗️ Architecture
 - **[System Overview](./architecture/SYSTEM_OVERVIEW.md)** - High-level system architecture and design decisions
 - **[Multi-Program Context](./architecture/MULTI_PROGRAM_CONTEXT.md)** - Multi-program user management and switching
+- **[Navigation Structure](./navigation/NAVIGATION_STRUCTURE.md)** - Complete navigation system documentation
 
 ### 🔐 Authentication
 - **[Authentication System](./authentication/README.md)** - Complete authentication implementation guide
@@ -31,6 +32,12 @@ Welcome to the Academy Management System mobile applications documentation. This
 ### 🌐 API & Services
 - **[API Client](./api/API_CLIENT.md)** - HTTP client and service layer
 - **[Notification System](./api/NOTIFICATIONS.md)** - User notification and alert system
+
+### 🎯 Features
+- **[Help & Support System](./features/HELP_SUPPORT_SYSTEM.md)** - Comprehensive user support and knowledge base
+
+### 🎨 User Experience  
+- **[Support System UX](./ui-ux/SUPPORT_SYSTEM_UX.md)** - UX design patterns for user support interfaces
 
 ### 🚀 Development
 - **[Development Guide](./development/DEVELOPMENT_GUIDE.md)** - Commands, environment, and best practices

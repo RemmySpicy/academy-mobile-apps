@@ -1,10 +1,11 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TabNavigator } from './TabNavigator';
+import { NotificationsNavigator } from '../features/notifications';
 
 export type MainStackParamList = {
   Tabs: undefined;
-  // Add modal screens here if needed
+  Notifications: undefined;
 };
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
@@ -22,6 +23,14 @@ export const MainNavigator: React.FC = () => {
       }}
     >
       <Stack.Screen name="Tabs" component={TabNavigator} />
+      <Stack.Screen 
+        name="Notifications" 
+        component={NotificationsNavigator}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
     </Stack.Navigator>
   );
 };

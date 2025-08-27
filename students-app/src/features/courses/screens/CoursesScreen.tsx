@@ -9,6 +9,7 @@ import { View,
   Dimensions,
   StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   FadeInDown,
@@ -19,6 +20,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
+import type { AppStackParamList } from '../../../navigation/AppNavigator';
 
 const { width } = Dimensions.get('window');
 
@@ -415,6 +417,7 @@ export const CoursesScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useScreenStyles();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'kids' | 'adults'>('all');
   const [notificationCount, setNotificationCount] = useState(2);
@@ -541,7 +544,7 @@ export const CoursesScreen: React.FC = () => {
   };
 
   const handleNotifications = () => {
-    console.log('Notifications pressed');
+    navigation.navigate('Notifications');
     setNotificationCount(0);
   };
 

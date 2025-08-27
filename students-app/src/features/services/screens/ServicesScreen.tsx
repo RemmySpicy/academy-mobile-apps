@@ -372,10 +372,10 @@ export const ServicesScreen: React.FC = () => {
             Contact us for personalized service packages tailored to your specific needs.
           </Text>
           <CustomButton
-            title="Contact Us"
+            title="Get Support"
             variant="primary"
             size="md"
-            onPress={() => console.log('Contact us pressed')}
+            onPress={() => console.log('Navigate to Help & Support')}
           />
         </Animated.View>
       </ScrollView>

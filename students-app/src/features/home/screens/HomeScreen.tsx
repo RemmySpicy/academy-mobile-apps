@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import {
   Header,
-  InstructorDashboard,
   useTheme,
   createThemedStyles,
   useProgramContext,
   useAuthStore,
 } from '@academy/mobile-shared';
+import StudentDashboard from '../components/StudentDashboard';
+import type { AppStackParamList } from '../../../navigation/AppNavigator';
 
 // Sample data for testing
 const sampleCourses = [
@@ -123,6 +125,7 @@ export const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const styles = useScreenStyles();
+  const navigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [notificationCount, setNotificationCount] = useState(3);
 
   const handleSearch = () => {
@@ -136,6 +139,7 @@ export const HomeScreen: React.FC = () => {
   const handleNotifications = () => {
     console.log('Notifications pressed');
     setNotificationCount(0);
+    navigation.navigate('Notifications');
   };
 
   const handleCoursePress = (course: any) => {
@@ -180,22 +184,15 @@ export const HomeScreen: React.FC = () => {
         style={{ paddingTop: insets.top }}
       />
 
-      {/* Student Dashboard - Using InstructorDashboard as base */}
-      <InstructorDashboard
+      {/* Student Dashboard */}
+      <StudentDashboard
         metrics={sampleMetrics}
-        recentStudents={filteredCourses.map(course => ({
-          id: course.id,
-          name: course.title,
-          level: course.level,
-          instructor: course.instructor,
-          progress: course.progress,
-          status: course.status,
-          nextSession: course.nextSession,
-          enrollment_date: course.enrollment_date,
-        }))}
+        courses={filteredCourses}
         recentActivities={filteredActivities}
         onMetricPress={handleMetricPress}
-        onStudentPress={(student) => handleCoursePress(student)}
+        onCoursePress={handleCoursePress}
+        onViewAllCourses={handleViewAllCourses}
+        onViewAllActivities={handleViewAllActivities}
       />
     </View>
   );

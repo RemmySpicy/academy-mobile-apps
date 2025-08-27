@@ -19,7 +19,6 @@ import { TransactionsScreen } from '../../transactions/screens/TransactionsScree
 import { ReferralsScreen } from '../../referrals/screens/ReferralsScreen';
 import { ScheduleScreen } from '../../schedule/screens/ScheduleScreen';
 import { LocationScreen } from '../../location/screens/LocationScreen';
-import { ContactScreen } from '../../contact/screens/ContactScreen';
 import { HelpScreen } from '../../help/screens/HelpScreen';
 
 export type MenuStackParamList = {
@@ -42,7 +41,6 @@ export type MenuStackParamList = {
   MySchedule: undefined;
   ProgressReport: undefined;
   LocateUs: undefined;
-  ContactUs: undefined;
   HelpAndSupport: undefined;
 };
 
@@ -68,7 +66,6 @@ function getScreenTitle(routeName: keyof MenuStackParamList): string {
     MySchedule: 'My Schedule',
     ProgressReport: 'Progress Report',
     LocateUs: 'Locate Us',
-    ContactUs: 'Contact Us',
     HelpAndSupport: 'Help & Support',
   };
   
@@ -150,10 +147,6 @@ export const MenuNavigator: React.FC = () => {
       <Stack.Screen 
         name="LocateUs" 
         component={LocationScreen}
-      />
-      <Stack.Screen 
-        name="ContactUs" 
-        component={ContactScreen}
       />
       <Stack.Screen 
         name="HelpAndSupport" 

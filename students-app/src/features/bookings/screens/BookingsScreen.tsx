@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   FadeInDown,
@@ -19,6 +20,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { CustomButton, useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
+import type { AppStackParamList } from '../../../navigation/AppNavigator';
 
 interface Booking {
   id: string;
@@ -489,6 +491,7 @@ export const BookingsScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useScreenStyles();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
   const [notificationCount, setNotificationCount] = useState(3);
@@ -589,7 +592,7 @@ export const BookingsScreen: React.FC = () => {
   };
 
   const handleNotifications = () => {
-    console.log('Notifications pressed');
+    navigation.navigate('Notifications');
     setNotificationCount(0);
   };
 

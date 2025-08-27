@@ -611,3 +611,293 @@ useEffect(() => {
 ```
 
 The notification system provides a comprehensive, accessible, and performant solution for user feedback throughout the Academy Mobile Apps, with seamless integration to API operations and form validations.
+
+---
+
+# 🔔 Notifications Page Feature
+
+In addition to toast notifications, both Academy apps feature a dedicated **Notifications Page** that provides a centralized view of all user notifications, including app-specific notifications, system updates, and important announcements.
+
+## 🎯 Overview
+
+The Notifications Page feature provides:
+- **Centralized Notification Management** - View all notifications in one place
+- **Read/Unread Status Tracking** - Mark notifications as read or unread
+- **Contextual Notifications** - Different notification content for instructors vs students
+- **Modal Navigation** - Accessed via notification bell icons throughout the app
+- **Academy Theming** - Consistent design with the Academy Design System
+
+## 🏗️ Architecture
+
+### Feature Structure
+```
+features/notifications/
+├── navigation/
+│   └── NotificationsNavigator.tsx    # Stack navigator for notifications
+├── screens/
+│   └── NotificationsScreen.tsx       # Main notifications screen
+└── index.ts                          # Feature exports
+```
+
+### Navigation Integration
+```typescript
+// Main Stack includes notifications as modal
+<Stack.Navigator>
+  <Stack.Screen name="Tabs" component={TabNavigator} />
+  <Stack.Screen 
+    name="Notifications" 
+    component={NotificationsNavigator}
+    options={{
+      presentation: 'modal',
+      animation: 'slide_from_bottom',
+    }}
+  />
+</Stack.Navigator>
+```
+
+## 📱 User Interface
+
+### Notification Bell Integration
+The notification bell icon is integrated into all main screen headers:
+
+```typescript
+// Header with notification bell
+<Header
+  title="Dashboard"
+  showProgramSwitcher={true}
+  showNotifications={true}
+  onNotificationPress={() => navigation.navigate('Notifications')}
+  notificationCount={unreadCount}
+  showProfile={false}
+  variant="instructor"
+/>
+```
+
+### Screen Headers with Notifications
+All main screens in both apps include notification bells:
+
+**Instructor App:**
+- Dashboard (`HomeScreen`)
+- Students (`StudentsScreen`)
+- Attendance (`AttendanceScreen`)
+- Performance (`PerformanceScreen`)
+- Classroom (`ClassroomScreen`)
+
+**Student App:**
+- Home (`HomeScreen`)
+- Courses (`CoursesScreen`)
+- Bookings (`BookingsScreen`)
+- Progress (`ProgressScreen`)
+- Menu (`AppMenuScreen`)
+
+## 🔧 Implementation Details
+
+### NotificationsScreen Component
+
+```typescript
+interface NotificationsScreenProps {}
+
+const NotificationsScreen: React.FC<NotificationsScreenProps> = () => {
+  const navigation = useNavigation();
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
+  const handleMarkAsRead = (notificationId: string) => {
+    // Update notification status
+    // TODO: API call to mark as read
+  };
+
+  return (
+    <View style={styles.container}>
+      <NotificationList
+        notifications={notifications}
+        onClose={handleBackPress}
+        onMarkAsRead={handleMarkAsRead}
+        onMarkAsUnread={handleMarkAsUnread}
+        title="Notifications"
+        showBackButton={true}
+      />
+    </View>
+  );
+};
+```
+
+### Navigation Handler Pattern
+
+```typescript
+const handleNotifications = () => {
+  console.log('Notifications pressed');
+  setNotificationCount(0); // Clear badge
+  navigation.navigate('Notifications'); // Navigate to modal
+};
+```
+
+## 📋 Notification Content
+
+### Instructor App Notifications
+```typescript
+const instructorNotifications = [
+  {
+    id: '1',
+    title: 'New Student Enrolled',
+    message: 'Sarah Johnson has enrolled in your Advanced Swimming class.',
+    timestamp: '2 hours ago',
+    isRead: false,
+    type: 'info',
+    iconName: 'person-add',
+  },
+  {
+    id: '2',
+    title: 'Class Schedule Update',
+    message: 'Your Tuesday 3:00 PM session has been moved to 3:30 PM.',
+    timestamp: '4 hours ago',
+    isRead: false,
+    type: 'update',
+    iconName: 'time',
+  },
+  {
+    id: '3',
+    title: 'Performance Report Ready',
+    message: 'Monthly performance reports are now available to review.',
+    timestamp: '1 day ago',
+    isRead: true,
+    type: 'info',
+    iconName: 'bar-chart',
+  }
+];
+```
+
+### Student App Notifications
+```typescript
+const studentNotifications = [
+  {
+    id: '1',
+    title: 'Class Reminder',
+    message: 'Don\'t forget about your swimming class today at 3:00 PM.',
+    timestamp: '1 hour ago',
+    isRead: false,
+    type: 'reminder',
+    iconName: 'alarm',
+  },
+  {
+    id: '2',
+    title: 'Progress Update',
+    message: 'Great job! You\'ve completed 80% of your current level.',
+    timestamp: '3 hours ago',
+    isRead: false,
+    type: 'update',
+    iconName: 'trophy',
+  },
+  {
+    id: '3',
+    title: 'Achievement Unlocked',
+    message: 'You\'ve earned the "Consistent Learner" badge.',
+    timestamp: '3 days ago',
+    isRead: true,
+    type: 'info',
+    iconName: 'medal',
+  }
+];
+```
+
+## 🎨 Design System Integration
+
+### Academy Theme Usage
+The notifications page uses exact Academy theme variables:
+
+```typescript
+const styles = createStyles(theme: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background.primary,
+  },
+  // Automatically uses Academy purple and theme colors
+});
+```
+
+### NotificationList Component
+Utilizes the shared `NotificationList` component from `@academy/mobile-shared`:
+
+- **Academy Purple** (`theme.colors.interactive.primary`) for unread indicators
+- **Consistent spacing** with `theme.spacing.*` values
+- **Typography** following Academy font system
+- **Icons** using Ionicons with proper theming
+
+## 🚀 Navigation Flow
+
+### User Journey
+1. **User sees notification bell** with badge count on any main screen
+2. **Taps notification bell** icon in header
+3. **Modal slides up** with notification list
+4. **User can:**
+   - View all notifications (unread first, then read)
+   - Mark individual notifications as read/unread
+   - Navigate back with back button or gesture
+5. **Badge count updates** when notifications are marked as read
+
+### Modal Presentation
+- **Animation**: `slide_from_bottom` for natural mobile UX
+- **Presentation**: `modal` for full-screen overlay
+- **Gesture Support**: Supports swipe-to-dismiss on iOS
+
+## 🔧 Future Enhancements
+
+### API Integration
+```typescript
+// TODO: Replace mock data with real API calls
+const loadNotifications = async () => {
+  try {
+    const response = await apiClient.get('/notifications');
+    setNotifications(response.data);
+  } catch (error) {
+    console.error('Failed to load notifications:', error);
+  }
+};
+
+const markAsRead = async (notificationId: string) => {
+  try {
+    await apiClient.patch(`/notifications/${notificationId}/read`);
+    // Update local state
+  } catch (error) {
+    console.error('Failed to mark as read:', error);
+  }
+};
+```
+
+### Push Notification Integration
+```typescript
+// Integration with React Native Push Notifications
+import PushNotification from 'react-native-push-notification';
+
+const handlePushNotification = (notification) => {
+  // Add to notification list
+  addNotification({
+    title: notification.title,
+    message: notification.message,
+    type: 'info',
+    isRead: false,
+    timestamp: new Date().toISOString(),
+  });
+};
+```
+
+### Real-time Updates
+```typescript
+// WebSocket integration for real-time notifications
+useEffect(() => {
+  const socket = io(API_BASE_URL);
+  
+  socket.on('new_notification', (notification) => {
+    setNotifications(prev => [notification, ...prev]);
+    // Update badge count
+    setNotificationCount(prev => prev + 1);
+  });
+  
+  return () => socket.disconnect();
+}, []);
+```
+
+The Notifications Page feature provides a complete notification management experience that integrates seamlessly with the existing Academy Mobile Apps architecture and design system.

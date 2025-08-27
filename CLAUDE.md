@@ -103,6 +103,7 @@ The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT a
 
 ### Advanced Features:
 - **🎯 [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md)** - Program switching system
+- **🔔 [Notifications System](./docs/api/NOTIFICATIONS.md)** - Toast notifications and centralized notification page
 - **🔧 [Component Library](./docs/components/README.md)** - Shared component usage
 - **🌐 [API Client](./docs/api/API_CLIENT.md)** - Backend integration
 

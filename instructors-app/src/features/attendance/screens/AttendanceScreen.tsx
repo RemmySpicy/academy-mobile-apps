@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Animated, {
   FadeInDown,
   FadeInRight,
@@ -18,6 +19,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useTheme, createThemedStyles, Badge, Header } from '@academy/mobile-shared';
+import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 interface Student {
   id: string;
@@ -144,6 +146,7 @@ export const AttendanceScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const [notificationCount, setNotificationCount] = useState(2);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -214,6 +217,7 @@ export const AttendanceScreen: React.FC = () => {
   const handleNotifications = () => {
     console.log('Notifications pressed');
     setNotificationCount(0);
+    navigation.navigate('Notifications');
   };
 
   const completedCount = classes.filter(c => c.attendanceMarked).length;

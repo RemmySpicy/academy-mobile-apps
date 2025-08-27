@@ -7,12 +7,13 @@ import {
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { useAuthStore, useTheme, Header, MenuList } from '@academy/mobile-shared';
 import { MenuStackParamList } from '../navigation/MenuNavigator';
+import type { AppStackParamList } from '../../../navigation/AppNavigator';
 
 type AppMenuScreenNavigationProp = NativeStackNavigationProp<MenuStackParamList, 'MenuMain'>;
 
@@ -112,6 +113,7 @@ export const AppMenuScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuthStore();
   const navigation = useNavigation<AppMenuScreenNavigationProp>();
+  const appNavigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [notificationCount] = useState(0);
   const [isParentMode, setIsParentMode] = useState(user?.role === 'parent');
 
@@ -120,7 +122,7 @@ export const AppMenuScreen: React.FC = () => {
   };
 
   const handleNotifications = () => {
-    console.log('Notifications pressed');
+    appNavigation.navigate('Notifications');
   };
 
   const handleLogout = () => {
@@ -497,14 +499,6 @@ export const AppMenuScreen: React.FC = () => {
                 iconColor: theme.colors.status.error,
               },
               {
-                id: 'contact-us',
-                title: 'Contact Us',
-                icon: 'mail',
-                onPress: () => navigation.navigate('ContactUs'),
-                backgroundColor: theme.isDark ? '#2f4a1a' : '#f1f8e9',
-                iconColor: theme.colors.status.success,
-              },
-              {
                 id: 'help-support',
                 title: 'Help & Support',
                 icon: 'help-circle',
@@ -514,7 +508,7 @@ export const AppMenuScreen: React.FC = () => {
               },
             ]}
             columns={2}
-            spacing={theme.spacing.md}
+            spacing={theme.spacing.sm}
             containerPadding={theme.spacing.md * 2}
             variant="card"
             scrollEnabled={false}

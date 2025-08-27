@@ -8,8 +8,10 @@ import { View,
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Header, StudentCard, useTheme, createThemedStyles, FadeInWrapper, Chip, SearchInput } from '@academy/mobile-shared';
+import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 // Enhanced student data structure to match our StudentCard component
 interface StudentData {
@@ -46,6 +48,7 @@ interface StudentData {
 export const StudentsScreen: React.FC = () => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'excellent' | 'good' | 'needs-attention'>('all');
   const [notificationCount, setNotificationCount] = useState(5);
@@ -200,6 +203,7 @@ export const StudentsScreen: React.FC = () => {
   const handleNotifications = () => {
     console.log('Notifications pressed');
     setNotificationCount(0);
+    navigation.navigate('Notifications');
   };
 
   return (

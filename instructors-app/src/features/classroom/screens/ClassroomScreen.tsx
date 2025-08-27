@@ -8,6 +8,7 @@ import { View,
   StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Animated, {
   FadeInDown,
   FadeInRight,
@@ -16,6 +17,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useAuthStore, useTheme, createThemedStyles, Badge, Header } from '@academy/mobile-shared';
+import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 const { width } = Dimensions.get('window');
 
@@ -158,6 +160,7 @@ export const ClassroomScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const { user, currentProgram } = useAuthStore();
   const [notificationCount, setNotificationCount] = React.useState(1);
 
@@ -203,6 +206,7 @@ export const ClassroomScreen: React.FC = () => {
   const handleNotifications = () => {
     console.log('Notifications pressed');
     setNotificationCount(0);
+    navigation.navigate('Notifications');
   };
 
   return (

@@ -34,6 +34,7 @@ export {
   NavigationHeader,
   StudentCard,
   InstructorDashboard,
+  StudentDashboard,
   // Animation components
   AnimatedWrapper,
   FadeInWrapper,

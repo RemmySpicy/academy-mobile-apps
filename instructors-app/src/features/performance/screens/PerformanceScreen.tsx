@@ -8,6 +8,7 @@ import { View,
   StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Animated, {
   FadeInDown,
   FadeInRight,
@@ -16,6 +17,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
+import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 const { width } = Dimensions.get('window');
 
@@ -194,6 +196,7 @@ export const PerformanceScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter'>('month');
   const [notificationCount, setNotificationCount] = useState(4);
 
@@ -284,6 +287,7 @@ export const PerformanceScreen: React.FC = () => {
   const handleNotifications = () => {
     console.log('Notifications pressed');
     setNotificationCount(0);
+    navigation.navigate('Notifications');
   };
 
   return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Show } from './Show';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme, createThemedStyles } from '../../theme';
 import { themeUtils } from '../../theme';
 
 export interface ErrorMessageProps {

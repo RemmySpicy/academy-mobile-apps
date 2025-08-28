@@ -15,6 +15,7 @@ import { StudentsNavigator } from '../features/students/navigation/StudentsNavig
 import { AttendanceNavigator } from '../features/attendance/navigation/AttendanceNavigator';
 import { PerformanceNavigator } from '../features/performance/navigation/PerformanceNavigator';
 import { ClassroomNavigator } from '../features/classroom/navigation/ClassroomNavigator';
+import { MenuNavigator } from '../features/menu';
 
 // Development-only imports
 import { DesignSystemShowcase, FormExamplesScreen, ComponentLibraryShowcase } from '@academy/mobile-shared';
@@ -25,6 +26,7 @@ export type TabParamList = {
   AttendanceTab: undefined;
   PerformanceTab: undefined;
   ClassroomTab: undefined;
+  MenuTab: undefined;
   DesignSystemTab?: undefined; // Development only
   FormsTab?: undefined; // Development only
   ComponentsTab?: undefined; // Development only
@@ -140,6 +142,9 @@ export const TabNavigator: React.FC = () => {
             case 'ClassroomTab':
               iconName = focused ? 'school' : 'school-outline';
               break;
+            case 'MenuTab':
+              iconName = focused ? 'menu' : 'menu-outline';
+              break;
             case 'DesignSystemTab':
               iconName = focused ? 'color-palette' : 'color-palette-outline';
               break;
@@ -201,6 +206,14 @@ export const TabNavigator: React.FC = () => {
         component={ClassroomNavigator}
         options={{
           tabBarLabel: 'Classroom',
+        }}
+      />
+      
+      <Tab.Screen
+        name="MenuTab"
+        component={MenuNavigator}
+        options={{
+          tabBarLabel: 'Menu',
         }}
       />
       

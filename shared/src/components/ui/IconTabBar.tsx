@@ -15,7 +15,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme/ThemeProvider';
+import { useTheme } from '../../theme';
 
 /** Size variants for IconTabBar */
 export type IconTabBarSize = 'sm' | 'md' | 'lg';

@@ -20,7 +20,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme/ThemeProvider';
+import { useTheme } from '../../theme';
 
 export interface CustomModalWithDotProps {
   /** Whether the modal is visible */

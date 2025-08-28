@@ -2,6 +2,15 @@
 
 This document provides the definitive guide to the Academy Apps design system and theme structure.
 
+## 📱 Mobile-First Design System
+
+The Academy Apps theme system is **mobile-first optimized** with enhanced support for:
+- 📱 Mobile-specific breakpoints and device handling
+- 🎨 High contrast colors for outdoor/sunlight visibility 
+- 🤏 Touch gestures and haptic feedback constants
+- 🔄 Platform-specific shadow optimization (iOS/Android)
+- 📐 Dynamic safe area support for modern devices
+
 ## 🎨 Theme Structure Overview
 
 The Academy Apps use a comprehensive theme system located in `/shared/src/theme/` with the following structure:
@@ -37,6 +46,10 @@ theme.colors.interactive.primaryHover   // Hover state
 theme.colors.interactive.secondary      // White buttons
 theme.colors.interactive.destructive    // Red/danger buttons
 theme.colors.interactive.orange         // Academy orange
+
+// 🌞 NEW: High contrast variants for mobile outdoor visibility
+theme.colors.interactive.primaryHighContrast  // Enhanced contrast
+theme.colors.interactive.primarySunlight      // Maximum contrast for sunlight
 ```
 
 #### **Text Colors**
@@ -68,6 +81,12 @@ theme.colors.status.success   // Green #059669
 theme.colors.status.warning   // Orange #D97706
 theme.colors.status.error     // Red #DC2626
 theme.colors.status.info      // Blue #2563EB
+
+// 🌞 NEW: High contrast variants for outdoor visibility
+theme.colors.status.successHighContrast  // Enhanced green
+theme.colors.status.warningHighContrast  // Enhanced orange
+theme.colors.status.errorHighContrast    // Enhanced red
+theme.colors.status.infoHighContrast     // Enhanced blue
 ```
 
 ## 📏 Spacing and Typography
@@ -133,6 +152,74 @@ theme.borderRadius.md    // 8px
 theme.borderRadius.lg    // 12px
 theme.borderRadius.xl    // 16px
 theme.borderRadius.full  // 9999px (fully rounded)
+```
+
+## 📱 Mobile-First Features
+
+### **Mobile Breakpoints**
+```typescript
+// 📱 Mobile-specific breakpoints (recommended)
+theme.tokens.breakpoints.mobile.phone       // 375px - Standard phone
+theme.tokens.breakpoints.mobile.phoneLarge  // 414px - Large phones
+theme.tokens.breakpoints.mobile.tablet      // 768px - Tablet portrait
+theme.tokens.breakpoints.mobile.foldable    // 673px - Foldable devices
+
+// 🔄 Orientation support
+theme.tokens.breakpoints.orientation.portrait   // Portrait mode
+theme.tokens.breakpoints.orientation.landscape  // Landscape mode
+```
+
+### **Touch & Gesture Constants**
+```typescript
+// 🤏 Touch interactions
+theme.safeArea.mobile.swipeThreshold     // 48px minimum swipe distance
+theme.safeArea.mobile.panThreshold       // 8px minimum pan distance
+theme.safeArea.mobile.longPressDelay     // 500ms long press
+theme.safeArea.mobile.doubleTapDelay     // 300ms double tap window
+
+// 📳 Haptic feedback types
+theme.safeArea.haptic.light      // Light haptic feedback
+theme.safeArea.haptic.medium     // Medium haptic feedback
+theme.safeArea.haptic.success    // Success notification haptic
+theme.safeArea.haptic.selection  // Selection change haptic
+```
+
+### **Dynamic Safe Areas**
+```typescript
+// 📐 Dynamic safe area support (with react-native-safe-area-context)
+theme.safeArea.dynamic.top       // Dynamic top inset
+theme.safeArea.dynamic.bottom    // Dynamic bottom inset
+theme.safeArea.dynamic.left      // Dynamic left inset (landscape)
+theme.safeArea.dynamic.right     // Dynamic right inset (landscape)
+
+// 📱 Legacy static values (fallback)
+theme.safeArea.notch.top         // 44px for devices with notch
+theme.safeArea.notch.bottom      // 32px for home indicator
+```
+
+### **Mobile Animation Timings**
+```typescript
+// ⚡ Mobile-optimized animations
+theme.tokens.animation.mobile.swipe       // 200ms - Quick swipe
+theme.tokens.animation.mobile.transition  // 250ms - Screen transitions
+theme.tokens.animation.mobile.modal       // 300ms - Modal animations
+theme.tokens.animation.mobile.spring      // 500ms - Spring effects
+
+// 🎯 Touch interaction timings
+theme.tokens.mobile.touch.debounceMs      // 50ms - Rapid tap debounce
+theme.tokens.mobile.touch.longPressMs    // 500ms - Long press threshold
+theme.tokens.mobile.touch.doubleTapMs     // 300ms - Double tap window
+```
+
+### **Platform-Optimized Shadows**
+```typescript
+// 🍎 iOS: Softer, more natural shadows
+// 🤖 Android: Elevation-focused with optimized opacity
+// 🌐 Web: Standard box-shadow support
+
+theme.elevation.sm   // Platform-optimized small shadow
+theme.elevation.base // Platform-optimized standard shadow
+theme.elevation.lg   // Platform-optimized large shadow
 ```
 
 ## 🛠️ Implementation Patterns
@@ -298,12 +385,104 @@ The theme system automatically handles dark mode. All theme variables change app
 // Academy purple stays consistent in both modes:
 theme.colors.interactive.primary = "#4F2EC9" (light mode)
 theme.colors.interactive.primary = "#A489FF" (dark mode - adjusted for better contrast)
+
+// 🌞 High contrast variants adapt for both modes:
+theme.colors.interactive.primaryHighContrast  // Light: darker, Dark: lighter
+theme.colors.interactive.primarySunlight      // Maximum contrast for both modes
+```
+
+## 📱 Mobile-First Usage Examples
+
+### **High Contrast for Outdoor Use**
+```typescript
+// 🌞 Use high contrast variants for better outdoor visibility
+const OutdoorButton = () => {
+  const { theme } = useTheme();
+  
+  return (
+    <TouchableOpacity 
+      style={{
+        backgroundColor: theme.colors.interactive.primarySunlight, // Maximum contrast
+        padding: theme.spacing.md,
+        borderRadius: theme.borderRadius.md,
+      }}
+    >
+      <Text style={{ color: theme.colors.text.inverse }}>
+        Outdoor Visible Button
+      </Text>
+    </TouchableOpacity>
+  );
+};
+```
+
+### **Dynamic Safe Area Usage**
+```typescript
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const SafeAreaScreen = () => {
+  const { theme } = useTheme();
+  const insets = useSafeAreaInsets(); // Dynamic insets
+  
+  return (
+    <View style={{
+      paddingTop: insets.top || theme.safeArea.notch.top,        // Dynamic or fallback
+      paddingBottom: insets.bottom || theme.safeArea.notch.bottom, // Dynamic or fallback
+      paddingHorizontal: theme.spacing.md,
+    }}>
+      {/* Content */}
+    </View>
+  );
+};
+```
+
+### **Gesture-Aware Components**
+```typescript
+const SwipeableCard = () => {
+  const { theme } = useTheme();
+  
+  const handleSwipe = (gestureState) => {
+    if (Math.abs(gestureState.dx) > theme.safeArea.mobile.swipeThreshold) {
+      // Trigger swipe action
+      HapticFeedback.trigger(theme.safeArea.haptic.light);
+    }
+  };
+  
+  return (
+    <PanGestureHandler onGestureEvent={handleSwipe}>
+      <View style={{
+        padding: theme.spacing.md,
+        borderRadius: theme.borderRadius.lg,
+        ...theme.elevation.base, // Platform-optimized shadow
+      }}>
+        {/* Swipeable content */}
+      </View>
+    </PanGestureHandler>
+  );
+};
+```
+
+### **Responsive Mobile Layout**
+```typescript
+const ResponsiveLayout = () => {
+  const { theme } = useTheme();
+  const { width } = useWindowDimensions();
+  
+  const isTablet = width >= theme.tokens.breakpoints.mobile.tablet;
+  
+  return (
+    <View style={{
+      paddingHorizontal: isTablet ? theme.spacing.xl : theme.spacing.md,
+      gap: isTablet ? theme.spacing.lg : theme.spacing.md,
+    }}>
+      {/* Responsive content */}
+    </View>
+  );
+};
 ```
 
 ## 🔄 Migration Guide
 
-If you find code using old patterns, migrate like this:
-
+### **Legacy to Mobile-First Migration**
 ```typescript
 // OLD - Replace these:
 color: "#4F2EC9"                    → theme.colors.interactive.primary
@@ -315,6 +494,27 @@ borderRadius: 8                     → theme.borderRadius.md
 // OLD - Non-existent theme references:
 theme.colors.primary.main           → theme.colors.interactive.primary
 theme.colors.academy.purple[500]    → theme.colors.interactive.primary
+
+// 📱 NEW - Mobile-first additions (optional upgrades):
+theme.colors.interactive.primary    → theme.colors.interactive.primarySunlight (for outdoor use)
+static safe area constants          → dynamic safe area with useSafeAreaInsets()
+generic breakpoints                 → theme.tokens.breakpoints.mobile.*
+hardcoded animation timings         → theme.tokens.animation.mobile.*
+```
+
+### **Performance Optimizations**
+```typescript
+// 🚀 Use mobile performance constants
+const optimizedComponent = {
+  // Throttle rapid updates to 60fps
+  throttleMs: theme.tokens.mobile.performance.throttleMs,
+  
+  // Debounce user input
+  debounceMs: theme.tokens.mobile.performance.debounceMs,
+  
+  // Platform-optimized scroll behavior
+  decelerationRate: theme.safeArea.mobile.scroll.decelerationRate,
+};
 ```
 
 ## 📚 Related Files
@@ -328,4 +528,15 @@ theme.colors.academy.purple[500]    → theme.colors.interactive.primary
 
 ---
 
-**🎯 REMEMBER**: Always use `theme.colors.interactive.primary` for Academy purple, never hardcode colors or use non-existent theme paths!
+## 🎯 Mobile-First Best Practices
+
+1. **📱 Use mobile breakpoints** instead of web breakpoints when possible
+2. **🌞 Consider high contrast variants** for outdoor visibility
+3. **🤏 Include gesture support** with proper thresholds and haptic feedback
+4. **📐 Use dynamic safe areas** for modern devices with varied insets
+5. **⚡ Leverage platform-optimized** shadows and animations
+6. **🎯 Always use semantic theme colors** - never hardcode values
+
+**🔥 CRITICAL**: Always use `theme.colors.interactive.primary` for Academy purple, never hardcode colors or use non-existent theme paths!
+
+**📱 NEW**: Consider using `primarySunlight` for outdoor mobile apps and dynamic safe areas for modern device support!

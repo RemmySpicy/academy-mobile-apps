@@ -360,13 +360,17 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
     flexDirection: 'row' as const,
     alignItems: 'flex-start' as const,
     minHeight: 44, // theme.safeArea.minTouchTarget.height
+    flex: 1, // Ensure proper layout
   };
 
   return (
     <View style={[containerStyle, style]}>
       <Pressable onPress={handleToggle}
         disabled={disabled}
-        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, touchableStyle]}
+        style={({ pressed }) => [
+          touchableStyle,
+          { opacity: pressed ? 0.8 : 1 }
+        ]}
         accessibilityRole="checkbox"
         accessibilityLabel={accessibilityLabel || label}
         accessibilityHint={accessibilityHint}

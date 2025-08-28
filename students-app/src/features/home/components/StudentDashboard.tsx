@@ -502,12 +502,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
       removeClippedSubviews={true}
       scrollEventThrottle={16}
     >
-      {currentProgram && (
-        <View style={styles.programHeader}>
-          <Text style={styles.programName}>{currentProgram.name}</Text>
-          <Text style={styles.programSubtitle}>My Dashboard</Text>
-        </View>
-      )}
 
       {renderMetricsOverview()}
       {renderQuickActions()}

@@ -16,7 +16,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme/ThemeProvider';
+import { useTheme } from '../../theme';
 
 export interface StrokeTab {
   /** Unique identifier for the stroke */

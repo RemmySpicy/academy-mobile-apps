@@ -26,12 +26,16 @@ The goal is to rebuild the apps with modern architecture while maintaining featu
 
 ## 🎨 CRITICAL: Theme System Usage
 
-**⚠️ IMPORTANT**: The Academy Apps use a specific theme structure. Always use these exact variable names:
+**⚠️ IMPORTANT**: The Academy Apps use a **mobile-first optimized** theme structure. Always use these exact variable names:
 
 ### Academy Purple (Brand Color)
 ```typescript
 // ✅ CORRECT - Academy brand purple (#4F2EC9)
 theme.colors.interactive.primary
+
+// 🌞 NEW - High contrast variants for outdoor mobile use
+theme.colors.interactive.primaryHighContrast  // Enhanced contrast
+theme.colors.interactive.primarySunlight      // Maximum contrast
 
 // ❌ WRONG - These DO NOT exist:
 theme.colors.primary.main
@@ -49,6 +53,10 @@ theme.colors.background.secondary   // Card backgrounds
 theme.colors.border.primary         // Default borders
 theme.colors.status.error           // Error states
 
+// 🌞 NEW - High contrast status colors
+theme.colors.status.errorHighContrast    // Enhanced error visibility
+theme.colors.status.successHighContrast  // Enhanced success visibility
+
 // Spacing
 theme.spacing.xs                    // 4px
 theme.spacing.sm                    // 8px  
@@ -59,6 +67,27 @@ theme.spacing.lg                    // 24px
 theme.fontSizes.base                // 16px
 theme.fontConfig.fontWeight.medium  // '500'
 theme.borderRadius.lg               // 12px
+```
+
+### 📱 Mobile-First Features
+```typescript
+// Mobile breakpoints (preferred over web breakpoints)
+theme.tokens.breakpoints.mobile.phone       // 375px
+theme.tokens.breakpoints.mobile.tablet      // 768px
+theme.tokens.breakpoints.mobile.foldable    // 673px
+
+// Touch interactions
+theme.safeArea.mobile.swipeThreshold     // 48px swipe minimum
+theme.safeArea.mobile.longPressDelay     // 500ms long press
+theme.safeArea.haptic.selection          // Haptic feedback types
+
+// Dynamic safe areas (recommended)
+theme.safeArea.dynamic.top      // Runtime top inset
+theme.safeArea.dynamic.bottom   // Runtime bottom inset
+
+// Mobile animations
+theme.tokens.animation.mobile.swipe       // 200ms swipe
+theme.tokens.animation.mobile.transition  // 250ms transitions
 ```
 
 ### Implementation Pattern
@@ -80,16 +109,24 @@ const MyComponent = () => {
 };
 ```
 
-**📖 Full Documentation**: See `/docs/THEME_SYSTEM.md` for complete reference.
+**📖 Full Documentation**: See `/docs/THEME_SYSTEM.md` for complete reference including mobile-first features.\n\n### 📱 Mobile-First Usage Recommendations\n- **Use high contrast variants** (`primarySunlight`) for outdoor visibility\n- **Leverage dynamic safe areas** instead of static constants when possible\n- **Include haptic feedback** with `theme.safeArea.haptic.*` constants\n- **Use mobile breakpoints** for device-specific layouts\n- **Consider gesture support** with proper touch thresholds
 
 ## Feature-Based Architecture
 
 Both apps use a feature-based architecture with:
 
-- **features/**: Feature modules (auth, attendance, classroom, performance, scheduling, students) - designed to work across all program types
-- **navigation/**: App navigation components
+- **features/**: Feature modules (auth, attendance, classroom, performance, scheduling, students, menu) - designed to work across all program types
+- **navigation/**: App navigation components with tab-based structure
 - **services/**: API client and service layer
 - **components/**: App-specific components
+
+### App Navigation Structure
+
+#### **Students App Navigation**
+- Dashboard → Students → Attendance → Performance → Menu (+ Dev tabs in development)
+
+#### **Instructors App Navigation** 
+- Dashboard → Students → Attendance → Performance → Classroom → Menu (+ Dev tabs in development)
 
 The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT authentication and role-based access control.
 
@@ -167,6 +204,29 @@ import { FormDropdown } from '@academy/mobile-shared';
 - **Style Utilities**: `getContainerStyles`, `getActionButtonStyles`, `getDayBoxStyles`, `createControlCardStyles`
 - **Type Definitions**: All utility functions include comprehensive TypeScript interfaces
 
+### Menu System Implementation
+The Academy Apps feature comprehensive menu systems with production-ready screens, tailored for each user type:
+
+#### **Student App Menu Features**
+- **Settings Screens**: Notification settings, privacy settings, about screen
+- **Academy Features**: Courses, services, achievements, store, transactions, referrals
+- **Quick Access**: Schedule, achievements, store with visual cards
+- **Profile Management**: Student/parent mode switching, profile editing
+
+#### **Instructor App Menu Features**
+- **Instructor Tools**: Class management, student reports, attendance tracker, grade book
+- **Professional Features**: Lesson plans, communication tools, analytics, resources
+- **Quick Access**: Today's classes, take attendance, grade book
+- **Professional Development**: Training resources and certification programs
+- **Profile Management**: Instructor/coordinator role display, professional credentials
+
+All screens are built with:
+- Academy design system compliance
+- Full TypeScript interfaces
+- Accessibility support
+- Mobile-first responsive design
+- Interactive components and state management
+
 ### Development Commands
 ```bash
 # Install dependencies
@@ -207,6 +267,7 @@ npm run test:all
 - ✅ Type-safe navigation and state management
 - ✅ Both apps building and running successfully
 - ✅ **Complete component extraction from existing code finished**
+- ✅ **Complete menu system with all settings screens implemented**
 
 ## Development Best Practices
 

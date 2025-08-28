@@ -4,7 +4,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotificationStore } from '../../store/notificationStore';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme, createThemedStyles } from '../../theme';
 import { themeUtils } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme, createThemedStyles, colorUtils } from '../../theme';
 import { useProgramContext } from '../program/ProgramContextProvider';
 
 // Student performance levels for quick visual identification
@@ -673,6 +673,7 @@ const useThemedStyles = createThemedStyles(theme =>
     },
 
     avatarPlaceholder: {
+      flexDirection: 'column',
       width: theme.spacing[12],
       height: theme.spacing[12],
       borderRadius: theme.spacing[6],
@@ -707,6 +708,7 @@ const useThemedStyles = createThemedStyles(theme =>
 
     studentInfo: {
       flex: 1,
+      flexDirection: 'column',
       justifyContent: 'flex-start',
     },
 

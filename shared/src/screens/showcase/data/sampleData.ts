@@ -4,6 +4,7 @@
 import type { SelectOption } from '../../../components/ui/SelectOptions';
 import type { DropdownOption } from '../../../components/ui/FormDropdown';
 import type { FilterItem } from '../../../components/search/QuickFilterBar';
+import type { FilterItem as ControlCardFilterItem, QuickFilterItem } from '../../../components/ui/ControlCard';
 
 // Select Options Sample Data
 export const sampleSelectOptions: SelectOption[] = [
@@ -402,4 +403,28 @@ export const sampleTimeMetrics = [
       improvement: -5,
     },
   ]
+];
+
+// ControlCard Sample Data
+export const sampleControlCardQueryFilter: ControlCardFilterItem[] = [
+  { label: 'Total Students', num: '24' },
+  { label: 'Present Today', num: '18' },
+  { label: 'Absent', num: '6' },
+  { label: 'New This Week', num: '3' },
+];
+
+export const sampleControlCardQuickFilter: QuickFilterItem[] = [
+  { label: 'All Students', count: '24' },
+  { label: 'Present', count: '18' },
+  { label: 'Absent', count: '6' },
+  { label: 'Late Arrival', count: '2' },
+  { label: 'Early Departure', count: '1' },
+];
+
+export const sampleControlCardMarkedDates: string[] = [
+  '2024-03-15',
+  '2024-03-18',
+  '2024-03-22',
+  '2024-03-25',
+  '2024-03-29',
 ];

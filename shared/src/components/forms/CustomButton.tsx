@@ -422,12 +422,14 @@ const createStyles = (theme: Theme, screenDimensions: any) => {
 
     // Icon container styles
     startIconContainer: {
+      flexDirection: 'column' as const,
       marginRight: theme.spacing.xs,
       alignItems: 'center' as const,
       justifyContent: 'center' as const,
     },
 
     endIconContainer: {
+      flexDirection: 'column' as const,
       marginLeft: theme.spacing.xs,
       alignItems: 'center' as const,
       justifyContent: 'center' as const,

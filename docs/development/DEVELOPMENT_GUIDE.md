@@ -115,10 +115,20 @@ docker-compose up db backend
 ## 🚀 Academy Shared Components Library
 
 **✅ COMPONENT EXTRACTION COMPLETE** - All components extracted from existing code
+**✅ MENU SYSTEM COMPLETE** - All settings and feature screens implemented
 
-### Total Components: **80+ Production-Ready Components**
+### Total Components: **85+ Production-Ready Components**
 
 The Academy Apps feature a comprehensive shared component library with complete coverage for all mobile app needs.
+
+### Recently Added Features
+- **Settings Management**: NotificationSettings, PrivacySettings, About screens
+- **Analytics Dashboard**: ProgressReport screen with charts and metrics
+- **Complete Menu System**: All menu navigation screens fully implemented
+- **Advanced Data Visualization**: Charts, progress tracking, and export functionality
+- **Profile Management System**: Enhanced EditProfileScreen with cover photo + profile picture dual system
+- **Payment Methods**: Comprehensive payment method management with card/PayPal support
+- **Photo Management**: Professional photo upload system with camera/gallery selection and removal options
 
 ### Testing Components
 ```bash
@@ -126,12 +136,12 @@ The Academy Apps feature a comprehensive shared component library with complete 
 cd shared && npx expo start
 
 # Navigate to "UI" section to see all components in action
-# Interactive demos available for all 80+ components
+# Interactive demos available for all 85+ components
 ```
 
 ## Development Best Practices
 
-1. **Use shared components** - Import from `@academy/mobile-shared` (80+ available)
+1. **Use shared components** - Import from `@academy/mobile-shared` (85+ available)
 2. **Follow Academy theming** - Use `theme.colors.interactive.primary` (#4F2EC9)
 3. **Component extraction complete** - existing-code/ can now be safely removed
 4. **Test your changes** - Run `npm run test` before committing
@@ -167,3 +177,106 @@ paddingHorizontal: 16,
 ```
 
 This ensures visual consistency across all Academy Apps screens and maintains compliance with the design system.
+
+## 👤 Profile Management Development
+
+### **Dual Photo System Implementation**
+
+The Academy Apps feature a comprehensive profile management system with dual photo support:
+
+#### **Cover Photo + Profile Picture Layout**
+```tsx
+// Modern social media-inspired design
+const profileLayoutStyle = {
+  coverPhoto: { height: 240, width: '100%' },
+  profilePicture: { 
+    width: 140, 
+    height: 140, 
+    position: 'absolute',
+    bottom: -40,
+    left: theme.spacing.lg 
+  }
+};
+```
+
+#### **Implementation Guidelines**
+```tsx
+// Profile data structure
+interface UserProfile {
+  // ... existing fields
+  profilePicture?: string;
+  coverPhoto?: string;        // ← New dual photo system
+}
+
+// Photo management functions
+const handleChangeCoverPhoto = () => {
+  // Take photo, choose from gallery, remove (if exists)
+};
+
+const handleChangeProfilePicture = () => {
+  // Take photo, choose from gallery
+};
+```
+
+### **Key Features Implemented**
+- **✅ EditProfileScreen**: Enhanced with cover photo, comprehensive form sections
+- **✅ PaymentMethodsScreen**: Card/PayPal management with default selection
+- **✅ SettingsScreens**: Privacy, Notification, and About screens with local components
+- **✅ Photo Management**: Dual photo system with camera/gallery integration
+- **✅ Professional Layout**: LinkedIn/Facebook inspired design with stats section
+
+### **Development Commands for Profile Features**
+```bash
+# Test profile screens
+cd students-app && npx expo start
+# Navigate to Menu → Account → Edit Profile
+
+# Test payment methods
+# Navigate to Menu → Account → Payment Methods
+
+# Test settings screens
+# Navigate to Menu → Settings → [Privacy/Notifications/About]
+```
+
+### **Photo Upload Integration**
+```tsx
+import * as ImagePicker from 'expo-image-picker';
+
+// Camera permissions
+const requestCameraPermission = async () => {
+  const { status } = await ImagePicker.requestCameraPermissionsAsync();
+  return status === 'granted';
+};
+
+// Photo selection
+const selectPhoto = async (aspectRatio: [number, number]) => {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: aspectRatio, // [16,9] for cover, [1,1] for profile
+    quality: 0.8,
+  });
+  return result;
+};
+```
+
+### **State Management Best Practices**
+```tsx
+// Change tracking for unsaved changes
+const [hasChanges, setHasChanges] = useState(false);
+const [isEditing, setIsEditing] = useState(false);
+
+// Handle input changes with tracking
+const handleInputChange = (field: keyof UserProfile, value: string) => {
+  setProfile(prev => ({ ...prev, [field]: value }));
+  setHasChanges(true);
+};
+
+// Confirmation dialogs for data integrity
+const handleSave = () => {
+  Alert.alert('Save Changes', 'Are you sure?', [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Save', onPress: () => saveProfile() }
+  ]);
+};
+```

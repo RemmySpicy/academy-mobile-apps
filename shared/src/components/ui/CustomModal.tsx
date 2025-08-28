@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { View, Modal, Pressable, StyleSheet, StatusBar, Platform, KeyboardAvoidingView, ScrollView, Animated, BackHandler, AccessibilityRole } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme, createThemedStyles } from '../../theme';
 import { themeUtils } from '../../theme';
 import { useScreenDimensions } from '../../hooks/useScreenDimensions';
 

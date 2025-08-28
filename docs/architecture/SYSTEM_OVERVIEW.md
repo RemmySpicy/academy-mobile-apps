@@ -156,6 +156,68 @@ Mobile Apps ──HTTP/HTTPS──▶ Academy Backend API
 - **Data Filtering**: Backend automatically filters by program context
 - **Role Validation**: Program-specific role validation
 
+## 👤 User Profile Management Architecture
+
+### Profile Management System
+The Academy Apps feature a comprehensive profile management system with modern social media-inspired design:
+
+#### **Dual Photo System**
+```
+┌─────────────────────────────────┐
+│         Cover Photo             │ ← 240px height background
+│  ┌─────┐                       │ ← Camera controls (edit mode)
+│  │ 👤  │ Alex Johnson          │ ← Profile picture (140px, left)
+│  │140px│ Swimming • Intermediate│ ← User information (right)  
+│  └─────┘                       │ ← Stats integration below
+└─────────────────────────────────┘
+```
+
+#### **Key Features**
+- **Enhanced EditProfileScreen**: Cover photo + profile picture management
+- **Comprehensive Forms**: Personal, emergency, address, and Academy information
+- **Professional Layout**: LinkedIn/Facebook inspired design with stats display
+- **State Management**: Edit/view modes with change tracking and confirmations
+- **Photo Management**: Camera/gallery integration with proper permissions
+
+#### **Data Architecture**
+```typescript
+interface UserProfile {
+  // Core Information
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  
+  // Emergency Contact
+  emergencyContact: string;
+  emergencyPhone: string;
+  
+  // Address Information
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  
+  // Photo System
+  profilePicture?: string;    // Circular avatar photo
+  coverPhoto?: string;        // Background cover photo
+  
+  // Academy Information
+  program: string;
+  skillLevel: string;
+  goals: string;
+  medicalConditions: string;
+}
+```
+
+### Account Management Features
+- **Payment Methods**: Comprehensive payment method management with card/PayPal support
+- **Settings Management**: Privacy settings, notification preferences, account information
+- **Security Features**: Photo upload permissions, data validation, change confirmations
+- **Professional Design**: Academy-branded interface with proper theming and accessibility
+
 ## 📊 Performance Considerations
 
 ### Optimization Strategies

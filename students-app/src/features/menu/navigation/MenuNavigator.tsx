@@ -21,6 +21,12 @@ import { ScheduleScreen } from '../../schedule/screens/ScheduleScreen';
 import { LocationScreen } from '../../location/screens/LocationScreen';
 import { HelpScreen } from '../../help/screens/HelpScreen';
 
+// Import settings screens
+import { NotificationSettingsScreen } from '../../settings/screens/NotificationSettingsScreen';
+import { PrivacySettingsScreen } from '../../settings/screens/PrivacySettingsScreen';
+import { AboutScreen } from '../../settings/screens/AboutScreen';
+import { ProgressReportScreen } from '../../progress/screens/ProgressReportScreen';
+
 export type MenuStackParamList = {
   MenuMain: undefined;
   EditProfile: undefined;
@@ -110,6 +116,18 @@ export const MenuNavigator: React.FC = () => {
         name="PaymentMethods" 
         component={PaymentMethodsScreen}
       />
+      <Stack.Screen 
+        name="NotificationSettings" 
+        component={NotificationSettingsScreen}
+      />
+      <Stack.Screen 
+        name="PrivacySettings" 
+        component={PrivacySettingsScreen}
+      />
+      <Stack.Screen 
+        name="About" 
+        component={AboutScreen}
+      />
       
       {/* New feature screens accessible from menu */}
       <Stack.Screen 
@@ -142,7 +160,7 @@ export const MenuNavigator: React.FC = () => {
       />
       <Stack.Screen 
         name="ProgressReport" 
-        component={AchievementsScreen}
+        component={ProgressReportScreen}
       />
       <Stack.Screen 
         name="LocateUs" 

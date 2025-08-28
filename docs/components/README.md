@@ -1,6 +1,6 @@
 # Academy Components Library
 
-The Academy Mobile Apps feature a comprehensive component library with 85+ shared components designed for educational institutions. All components are built with Academy theming, accessibility, and TypeScript support. **Production-verified** - all components are actively used in the live applications.
+The Academy Mobile Apps feature a comprehensive component library with 85+ shared components designed for educational institutions. All components are built with **mobile-first Academy theming**, accessibility, and TypeScript support. **Production-verified** - all components are actively used in the live applications.\n\n## 📱 Mobile-First Design\n\nAll components are optimized for mobile-first usage with:\n- 🌞 **High contrast support** for outdoor visibility\n- 🤏 **Touch-friendly interactions** with proper tap targets\n- 🔄 **Platform-specific optimizations** (iOS/Android)\n- 📐 **Dynamic safe area support** for modern devices\n- ⚡ **Gesture support** with haptic feedback integration
 
 ## 🎯 Component Categories
 
@@ -63,12 +63,30 @@ Comprehensive calendar and scheduling system:
 - **[ClassroomCalendar](./calendar/ClassroomCalendar.md)** - Classroom scheduling
 - **[StudentProfileCalendar](./calendar/StudentProfileCalendar.md)** - Student-specific calendar
 
-### 📱 Navigation Components
-Navigation and layout components:
+### 📱 Navigation & Settings Components
+Navigation, layout, and settings management components:
 
-- **[HeaderComponent](./navigation/HeaderComponent.md)** - Page headers
-- **[MenuList](./navigation/MenuList.md)** - Navigation menus
+- **[Header](./navigation/Header.md)** - Academy header component with program switching and notifications
+- **[MenuList](./navigation/MenuList.md)** - Grid-based navigation menus with customizable cards
+- **[NavigationHeader](./navigation/NavigationHeader.md)** - Stack navigation headers
 - **[BottomSheet](./navigation/BottomSheet.md)** - Bottom sheet interface
+- **[SettingCard](./settings/SettingCard.md)** - Settings interface component
+- **[CustomSwitch](./settings/CustomSwitch.md)** - Toggle switches for settings
+
+### 🍔 Menu System Components
+Complete menu system for both student and instructor applications:
+
+- **[AppMenuScreen](./menu/AppMenuScreen.md)** - Main menu screen with role-based features
+- **[MenuNavigator](./menu/MenuNavigator.md)** - Stack navigator for menu screens
+- **[Menu Features](./menu/MenuFeatures.md)** - Role-specific menu feature documentation
+
+### 👤 Profile & Account Management Components
+Comprehensive user profile and account management system:
+
+- **[EditProfileScreen](./profile/EditProfileScreen.md)** - Enhanced profile editing with cover photo and comprehensive form sections
+- **[PaymentMethodsScreen](./payments/PaymentMethodsScreen.md)** - Payment method management with card/PayPal support
+- **[ProfilePhotoSystem](./profile/ProfilePhotoSystem.md)** - Dual photo system with cover photo and profile picture
+- **[SettingsScreens](./settings/SettingsScreens.md)** - Privacy, notification, and account settings management
 
 ### 🔧 Utility Functions
 Reusable utility functions for component development:

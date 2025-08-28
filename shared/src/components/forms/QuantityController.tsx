@@ -244,6 +244,7 @@ const QuantityController: React.FC<QuantityControllerProps> = ({
 const useThemedStyles = createThemedStyles((theme) =>
   StyleSheet.create({
     container: {
+      flexDirection: 'column',
       marginBottom: theme.componentSpacing.form.fieldGap,
     },
     horizontalContainer: {
@@ -256,6 +257,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       alignItems: 'center',
     },
     button: {
+      flexDirection: 'column',
       borderWidth: 1,
       borderRadius: theme.borderRadius.md,
       justifyContent: 'center',
@@ -272,6 +274,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       // Additional disabled text styling handled by variants
     },
     valueContainer: {
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       marginHorizontal: theme.spacing[4],

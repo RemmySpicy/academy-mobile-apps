@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme, createThemedStyles } from '../../theme';
 import { useProgramContext } from '../program/ProgramContextProvider';
 import PerformanceChart from '../charts/PerformanceChart';
 import StudentCard from './StudentCard';

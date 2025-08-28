@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 
 // Components
-import { ToggleCard, OptionMenu, TabBar, StrokeTab, SegmentedControl, IconTabBar, Alert as ToastAlert, MenuList, MetricPool, Stations, LoadingSpinner, NotificationList, BottomSheet, BottomSheetProvider, useBottomSheet, useBottomSheetActions, useBottomSheetState, useQuickBottomSheet } from '../../../components/ui';
+import { ToggleCard, ControlCard, OptionMenu, TabBar, StrokeTab, SegmentedControl, IconTabBar, Alert as ToastAlert, MenuList, MetricPool, Stations, LoadingSpinner, NotificationList, BottomSheet, BottomSheetProvider, useBottomSheet, useBottomSheetActions, useBottomSheetState, useQuickBottomSheet } from '../../../components/ui';
 import { EmptySearchResult } from '../../../components/ui/EmptySearchResult';
 import { SelectOptions } from '../../../components/ui/SelectOptions';
 import { FormDropdown } from '../../../components/ui/FormDropdown';
@@ -48,6 +48,9 @@ import {
   fixedTabOptions,
   pillTabOptions,
   sampleStrokes,
+  sampleControlCardQueryFilter,
+  sampleControlCardQuickFilter,
+  sampleControlCardMarkedDates,
 } from '../data/sampleData';
 
 const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, screenDimensions }) => {
@@ -249,6 +252,109 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
           
           <Text style={styles.componentDescription}>
             Comprehensive expandable cards with status variants, size options, style variants, and icon styles for Academy Apps
+          </Text>
+        </View>
+
+        <View style={styles.componentGroup}>
+          <Text style={styles.componentTitle}>ControlCard Variants</Text>
+          
+          {/* Basic ControlCard with all features */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginBottom: 8 }]}>
+            Complete ControlCard with All Features
+          </Text>
+          <ControlCard
+            schoolName="Academy Swimming Center"
+            moreInfo={true}
+            onMoreInfoPress={() => console.log('More info pressed')}
+            dateSchedule="Week of March 15-21, 2024"
+            dateSchedule2="Spring Session"
+            markedDates={sampleControlCardMarkedDates}
+            onDateSelect={(date) => console.log('Date selected:', date)}
+            queryFilter={sampleControlCardQueryFilter}
+            onQueryFilterPress={(item, index) => console.log('Query filter pressed:', item, index)}
+            viewName="Class Overview"
+            groupName="Advanced Swimmers"
+            allNames="All Students"
+            onGroupFilterPress={() => console.log('Group filter pressed')}
+            onViewAllPress={() => console.log('View all pressed')}
+            onSearchSubmit={(query) => console.log('Search submitted:', query)}
+            quickFilter={sampleControlCardQuickFilter}
+            filterName="Student Status"
+            onQuickFilterPress={(item, index) => console.log('Quick filter pressed:', item, index)}
+          />
+          
+          {/* Header-only variant */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Header-Only Variant
+          </Text>
+          <ControlCard
+            schoolName="Academy Music Department"
+            moreInfo={true}
+            onMoreInfoPress={() => console.log('Music info pressed')}
+          />
+          
+          {/* Date and calendar variant */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Date & Calendar Focused
+          </Text>
+          <ControlCard
+            dateSchedule="Current Week Schedule"
+            dateSchedule2="February 2024"
+            markedDates={['2024-02-12', '2024-02-15', '2024-02-19']}
+            onDateSelect={(date) => console.log('Calendar date:', date)}
+            viewName="Weekly Schedule"
+          />
+          
+          {/* Query filter variant */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Statistics Overview
+          </Text>
+          <ControlCard
+            schoolName="Academy Stats Dashboard"
+            queryFilter={[
+              { label: 'Active Classes', num: '12' },
+              { label: 'Total Instructors', num: '8' },
+              { label: 'This Month', num: '156' },
+            ]}
+            onQueryFilterPress={(item, index) => console.log('Stat pressed:', item)}
+          />
+          
+          {/* Search and filtering variant */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Search & Filter Controls
+          </Text>
+          <ControlCard
+            viewName="Student Management"
+            groupName="Basketball Team"
+            allNames="All Athletes"
+            onGroupFilterPress={() => console.log('Group filter')}
+            onSearchSubmit={(query) => console.log('Search:', query)}
+            quickFilter={[
+              { label: 'Active', count: '15' },
+              { label: 'Inactive', count: '3' },
+              { label: 'New', count: '5' },
+            ]}
+            filterName="Player Status"
+            onQuickFilterPress={(item) => console.log('Filter:', item)}
+          />
+          
+          {/* Quick filters only */}
+          <Text style={[styles.componentDescription, { fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+            Quick Filters Only
+          </Text>
+          <ControlCard
+            quickFilter={[
+              { label: 'Beginner', count: '8' },
+              { label: 'Intermediate', count: '12' },
+              { label: 'Advanced', count: '6' },
+              { label: 'Expert', count: '2' },
+            ]}
+            filterName="Skill Levels"
+            onQuickFilterPress={(item, index) => console.log('Level filter:', item)}
+          />
+          
+          <Text style={styles.componentDescription}>
+            🎯 **ControlCard**: Comprehensive academy control dashboard with school header, statistical overview, date/calendar navigation, search functionality, group filtering, and quick filter pills. Features Academy theming, interactive components, and modular sections for flexible academy management interfaces.
           </Text>
         </View>
 

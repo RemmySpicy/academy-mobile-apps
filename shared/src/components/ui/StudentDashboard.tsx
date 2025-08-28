@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, createThemedStyles } from '../../theme/ThemeProvider';
+import { useTheme, createThemedStyles } from '../../theme';
 import { useProgramContext } from '../program/ProgramContextProvider';
 import PerformanceChart from '../charts/PerformanceChart';
 
@@ -667,6 +667,7 @@ const createResponsiveStyles = (screenWidth: number) => createThemedStyles((them
     },
 
     quickActionCard: {
+      flexDirection: 'column',
       backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.xl,
       padding: theme.spacing.md,
@@ -680,6 +681,7 @@ const createResponsiveStyles = (screenWidth: number) => createThemedStyles((them
     },
 
     quickActionIcon: {
+      flexDirection: 'column',
       width: 40,
       height: 40,
       borderRadius: 20,
@@ -745,6 +747,7 @@ const createResponsiveStyles = (screenWidth: number) => createThemedStyles((them
 
     courseInfo: {
       flex: 1,
+      flexDirection: 'column',
     },
 
     courseTitle: {
@@ -825,6 +828,7 @@ const createResponsiveStyles = (screenWidth: number) => createThemedStyles((them
     },
 
     activityIcon: {
+      flexDirection: 'column',
       width: 32,
       height: 32,
       borderRadius: 16,
@@ -834,6 +838,7 @@ const createResponsiveStyles = (screenWidth: number) => createThemedStyles((them
 
     activityContent: {
       flex: 1,
+      flexDirection: 'column',
     },
 
     activityMessage: {

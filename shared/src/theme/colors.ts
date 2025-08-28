@@ -242,6 +242,10 @@ export const semanticColors = {
     primaryPressed: baseColors.academy.purple[700],
     primaryDisabled: baseColors.neutral[300],
     
+    // High contrast variants for outdoor/sunlight visibility
+    primaryHighContrast: baseColors.academy.purple[700],  // Darker for better contrast
+    primarySunlight: baseColors.academy.purple[800],      // Maximum contrast for bright conditions
+    
     secondary: baseColors.neutral[0],           // #FFFFFF
     secondaryHover: baseColors.neutral[50],     // #FAFAFA
     secondaryPressed: baseColors.neutral[100],  // #F5F5F5
@@ -282,18 +286,22 @@ export const semanticColors = {
     success: baseColors.success[600],             // Stronger for better contrast
     successBackground: baseColors.success[50],
     successBorder: baseColors.success[300],       // More visible border
+    successHighContrast: baseColors.success[700], // High contrast variant
     
     warning: baseColors.warning[600],             // Stronger for better contrast
     warningBackground: baseColors.warning[50],
     warningBorder: baseColors.warning[300],       // More visible border
+    warningHighContrast: baseColors.warning[700], // High contrast variant
     
     error: baseColors.error[600],                 // Stronger for better contrast
     errorBackground: baseColors.error[50],
     errorBorder: baseColors.error[300],           // More visible border
+    errorHighContrast: baseColors.error[700],     // High contrast variant
     
     info: baseColors.info[600],                   // Stronger for better contrast  
     infoBackground: baseColors.info[50],
     infoBorder: baseColors.info[300],             // More visible border
+    infoHighContrast: baseColors.info[700],       // High contrast variant
   },
 
   // Overlay Colors
@@ -366,6 +374,10 @@ export const darkColors = {
     primaryPressed: baseColors.academy.purple[500],
     primaryDisabled: baseColors.neutral[700],
     
+    // High contrast variants for dark mode
+    primaryHighContrast: baseColors.academy.purple[300],  // Lighter for dark mode contrast
+    primarySunlight: baseColors.academy.purple[200],      // Maximum contrast for dark mode
+    
     secondary: baseColors.neutral[800],
     secondaryHover: baseColors.neutral[700],
     secondaryPressed: baseColors.neutral[600],
@@ -419,18 +431,22 @@ export const darkColors = {
     success: baseColors.success[400],
     successBackground: 'rgba(16, 185, 129, 0.15)',  // Enhanced transparency for dark mode
     successBorder: baseColors.success[600],
+    successHighContrast: baseColors.success[300],    // High contrast for dark mode
     
     warning: baseColors.warning[400],
     warningBackground: 'rgba(245, 158, 11, 0.15)',  // Enhanced transparency for dark mode
     warningBorder: baseColors.warning[600],
+    warningHighContrast: baseColors.warning[300],    // High contrast for dark mode
     
     error: baseColors.error[400],
     errorBackground: 'rgba(239, 68, 68, 0.15)',     // Enhanced transparency for dark mode
     errorBorder: baseColors.error[600],
+    errorHighContrast: baseColors.error[300],        // High contrast for dark mode
     
     info: baseColors.info[400],
     infoBackground: 'rgba(59, 130, 246, 0.15)',     // Enhanced transparency for dark mode
     infoBorder: baseColors.info[600],
+    infoHighContrast: baseColors.info[300],          // High contrast for dark mode
   },
 
   // Overlay Colors
@@ -539,6 +555,8 @@ export interface ColorScheme {
     primaryHover: string;
     primaryPressed: string;
     primaryDisabled: string;
+    primaryHighContrast: string;    // High contrast variant
+    primarySunlight: string;        // Maximum contrast variant
     secondary: string;
     secondaryHover: string;
     secondaryPressed: string;
@@ -581,15 +599,19 @@ export interface ColorScheme {
     success: string;
     successBackground: string;
     successBorder: string;
+    successHighContrast: string;    // High contrast variant
     warning: string;
     warningBackground: string;
     warningBorder: string;
+    warningHighContrast: string;    // High contrast variant
     error: string;
     errorBackground: string;
     errorBorder: string;
+    errorHighContrast: string;      // High contrast variant
     info: string;
     infoBackground: string;
     infoBorder: string;
+    infoHighContrast: string;       // High contrast variant
   };
   overlay: {
     light: string;

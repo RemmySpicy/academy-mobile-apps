@@ -175,7 +175,7 @@ export const borderWidth = {
 
 // Shadow and elevation spacing
 /**
- * Create platform-appropriate shadow styles
+ * Create platform-appropriate shadow styles with enhanced mobile optimization
  */
 const createElevationStyle = (
   offsetHeight: number,
@@ -190,6 +190,28 @@ const createElevationStyle = (
     };
   }
   
+  if (Platform.OS === 'ios') {
+    // iOS optimized shadows - softer, more natural
+    return {
+      shadowOffset: { width: 0, height: offsetHeight },
+      shadowOpacity: opacity * 0.8, // Slightly reduced for iOS
+      shadowRadius: radius,
+      shadowColor: color,
+    };
+  }
+  
+  if (Platform.OS === 'android') {
+    // Android optimized - relies more on elevation
+    return {
+      elevation: Math.max(elevation, 1), // Ensure minimum elevation
+      shadowOffset: { width: 0, height: offsetHeight * 0.5 }, // Reduced offset
+      shadowOpacity: opacity * 0.6, // Lower opacity, elevation handles depth
+      shadowRadius: radius * 0.8,
+      shadowColor: color,
+    };
+  }
+  
+  // Fallback for other platforms
   return {
     shadowOffset: { width: 0, height: offsetHeight },
     shadowOpacity: opacity,
@@ -217,7 +239,7 @@ export const safeArea = {
     height: spacing[11],   // 44px minimum height
   },
 
-  // Status bar and navigation safe areas
+  // Status bar and navigation safe areas (legacy - use dynamic values when possible)
   statusBar: {
     height: spacing[6],    // 24px typical status bar height
   },
@@ -225,12 +247,58 @@ export const safeArea = {
   // Keyboard avoidance
   keyboard: {
     padding: spacing[4],   // 16px padding when keyboard is visible
+    animationDuration: 250, // Standard keyboard animation duration
   },
 
-  // Notch and safe area handling
+  // Notch and safe area handling (legacy - use dynamic values when possible)
   notch: {
     top: spacing[11],      // 44px for devices with notch
     bottom: spacing[8],    // 32px for home indicator
+  },
+
+  // Dynamic safe area support (recommended)
+  dynamic: {
+    // These should be used with react-native-safe-area-context
+    // Values will be populated at runtime by SafeAreaProvider
+    top: 0,        // Dynamic top inset
+    bottom: 0,     // Dynamic bottom inset
+    left: 0,       // Dynamic left inset (landscape, notches)
+    right: 0,      // Dynamic right inset (landscape, notches)
+  },
+
+  // Mobile-specific spacing considerations
+  mobile: {
+    swipeThreshold: spacing[12],      // 48px minimum swipe distance
+    panThreshold: spacing[2],         // 8px minimum pan distance
+    longPressDelay: 500,              // 500ms for long press
+    doubleTapDelay: 300,              // 300ms max between double taps
+    
+    // Gesture areas
+    swipeArea: {
+      edge: spacing[5],               // 20px edge swipe area
+      minWidth: spacing[20],          // 80px minimum swipe width
+    },
+    
+    // Scroll behavior
+    scroll: {
+      decelerationRate: Platform.select({
+        ios: 0.998,                   // iOS natural deceleration
+        android: 0.985,               // Android deceleration
+        default: 0.995,
+      }),
+      snapThreshold: spacing[8],      // 32px snap threshold
+    },
+  },
+
+  // Haptic feedback constants
+  haptic: {
+    light: 'light',                   // Light haptic feedback
+    medium: 'medium',                 // Medium haptic feedback
+    heavy: 'heavy',                   // Heavy haptic feedback
+    success: 'success',               // Success notification haptic
+    warning: 'warning',               // Warning notification haptic
+    error: 'error',                   // Error notification haptic
+    selection: 'selection',           // Selection change haptic
   },
 } as const;
 

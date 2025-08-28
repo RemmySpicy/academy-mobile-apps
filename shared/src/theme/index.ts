@@ -311,6 +311,33 @@ export const tokens = {
     normal: 200,
     slow: 300,
     slower: 500,
+    
+    // Mobile-specific animation durations
+    mobile: {
+      swipe: 200,           // Quick swipe animations
+      transition: 250,      // Screen transitions
+      modal: 300,           // Modal slide in/out
+      bounce: 400,          // Bounce effects
+      spring: 500,          // Spring animations
+    },
+  },
+  
+  // Mobile interaction constants
+  mobile: {
+    // Touch and gesture constants
+    touch: {
+      debounceMs: 50,       // Debounce rapid taps
+      longPressMs: 500,     // Long press threshold
+      doubleTapMs: 300,     // Double tap window
+      swipeVelocity: 0.3,   // Minimum swipe velocity
+    },
+    
+    // Performance constants
+    performance: {
+      throttleMs: 16,       // 60fps throttling
+      debounceMs: 100,      // Input debouncing
+      animationFps: 60,     // Target animation FPS
+    },
   },
 
   // Z-index layers
@@ -327,10 +354,26 @@ export const tokens = {
 
   // Breakpoints (for responsive design)
   breakpoints: {
+    // Web breakpoints (legacy support)
     sm: 576,
     md: 768,
     lg: 992,
     xl: 1200,
+    
+    // Mobile-first breakpoints (recommended for React Native)
+    mobile: {
+      phone: 375,        // Standard phone width
+      phoneLarge: 414,   // Large phone (iPhone Pro Max)
+      tablet: 768,       // Tablet portrait
+      tabletLarge: 1024, // Tablet landscape
+      foldable: 673,     // Galaxy Fold unfolded
+    },
+    
+    // Orientation-based breakpoints
+    orientation: {
+      portrait: 'portrait',
+      landscape: 'landscape',
+    },
   },
 } as const;
 

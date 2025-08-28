@@ -21,31 +21,31 @@ import {
   FlatList,
   Modal,
   Pressable,
-  TextInput,
-  ScrollView,
-  PixelRatio,
   ViewStyle,
   TextStyle,
 } from 'react-native';
 import { Ionicons, Octicons, Entypo } from '@expo/vector-icons';
-// Using native Date API for better compatibility
-// import { Calendar } from 'react-native-calendars';
-// import dayjs from 'dayjs';
 import { useTheme } from '../../theme';
 import type { Theme } from '../../theme';
+import { CustomButton } from '../forms/CustomButton';
+import { QuickFilterBar, FilterItem } from '../search/QuickFilterBar';
+import { SimpleSearchBar } from '../search/SearchBar';
+import { useStyleSheet } from '../../hooks/useComponentStyles';
 
 // =============================================================================
 // TYPES & INTERFACES
 // =============================================================================
 
-export interface FilterItem {
+export interface QueryFilterItem {
   label: string;
-  num: string;
+  value: string;
 }
 
-export interface QuickFilterItem {
+export interface QuickFilterItem extends FilterItem {
   label: string;
-  count: string;
+  count?: number;
+  value: string;
+  id: string;
 }
 
 export interface ControlCardProps {
@@ -61,8 +61,8 @@ export interface ControlCardProps {
   onDateSelect?: (date: string) => void;
 
   // Filter Section
-  queryFilter?: FilterItem[];
-  onQueryFilterPress?: (item: FilterItem, index: number) => void;
+  queryFilter?: QueryFilterItem[];
+  onQueryFilterPress?: (item: QueryFilterItem, index: number) => void;
 
   // View and Search Section
   viewName?: string;
@@ -82,23 +82,11 @@ export interface ControlCardProps {
   containerStyle?: ViewStyle;
 }
 
-interface SearchComponentProps {
-  onQueryChange: (text: string) => void;
-  onSearchToggle: () => void;
-  placeholder?: string;
-}
-
 interface FilterComponentProps {
   groupName?: string;
   allNames?: string;
   onGroupPress?: () => void;
   onSearchToggle: () => void;
-}
-
-interface QuickFilterComponentProps {
-  items: QuickFilterItem[];
-  filterName?: string;
-  onItemPress?: (item: QuickFilterItem, index: number) => void;
 }
 
 // =============================================================================
@@ -189,127 +177,83 @@ const generateCalendarMarkedDates = (
 // SUB-COMPONENTS
 // =============================================================================
 
-const SearchComponent: React.FC<SearchComponentProps> = ({
-  onQueryChange,
-  onSearchToggle,
-  placeholder = 'Search...',
-}) => {
-  const { theme } = useTheme();
-  const styles = createSearchStyles(theme);
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <Octicons
-          name="search"
-          size={theme.iconSize.sm}
-          color={theme.colors.text.tertiary}
-          style={styles.searchIcon}
-        />
-        <TextInput
-          placeholder={placeholder}
-          style={styles.input}
-          onChangeText={onQueryChange}
-          placeholderTextColor={theme.colors.text.tertiary}
-          autoFocus
-        />
-      </View>
-      <TouchableOpacity onPress={onSearchToggle} style={styles.doneButton}>
-        <Text style={styles.doneText}>Done</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
 const FilterComponent: React.FC<FilterComponentProps> = ({
   groupName,
   allNames,
   onGroupPress,
   onSearchToggle,
 }) => {
-  const { theme } = useTheme();
-  const styles = createFilterStyles(theme);
+  const { theme, screenDimensions } = useTheme();
+  const isTablet = screenDimensions?.isTablet || false;
+  const styles = createFilterStyles(theme, isTablet);
 
   return (
     <View style={styles.container}>
       {/* Group Filter */}
-      <TouchableOpacity 
-        style={[styles.filterButton, styles.groupFilter]} 
+      <Pressable 
+        style={({ pressed }) => [
+          styles.filterButton, 
+          styles.groupFilter,
+          pressed && { opacity: 0.8, transform: [{ scale: 0.96 }] }
+        ]} 
         onPress={onGroupPress}
+        android_ripple={{ 
+          color: theme.colors.interactive.primaryPressed,
+          borderless: false 
+        }}
       >
         <Ionicons 
           name="people" 
-          size={theme.iconSize.sm} 
+          size={theme.iconSize?.sm || 16} 
           color={theme.colors.interactive.primary} 
         />
         <Text style={styles.groupFilterText} numberOfLines={1}>
           Group: {groupName || 'All'}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
 
       {/* View Filter */}
-      <TouchableOpacity style={[styles.filterButton, styles.viewFilter]}>
+      <Pressable 
+        style={({ pressed }) => [
+          styles.filterButton, 
+          styles.viewFilter,
+          pressed && { opacity: 0.8, transform: [{ scale: 0.96 }] }
+        ]}
+        android_ripple={{ 
+          color: theme.colors.interactive.primaryPressed,
+          borderless: false 
+        }}
+      >
         <Ionicons 
           name="eye" 
-          size={theme.iconSize.sm} 
+          size={theme.iconSize?.sm || 16} 
           color={theme.colors.text.tertiary} 
         />
         <Text style={styles.viewFilterText} numberOfLines={1}>
           {allNames || 'All Students'}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Search Button */}
-      <TouchableOpacity 
-        style={[styles.filterButton, styles.searchFilter]} 
+      <Pressable 
+        style={({ pressed }) => [
+          styles.filterButton, 
+          styles.searchFilter,
+          pressed && { opacity: 0.8, transform: [{ scale: 0.96 }] }
+        ]} 
         onPress={onSearchToggle}
+        android_ripple={{ 
+          color: theme.colors.interactive.primaryPressed,
+          borderless: false 
+        }}
       >
         <Octicons 
           name="search" 
-          size={theme.iconSize.sm} 
+          size={theme.iconSize?.sm || 16} 
           color={theme.colors.text.tertiary} 
         />
         <Text style={styles.searchFilterText}>Search</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const QuickFilterComponent: React.FC<QuickFilterComponentProps> = ({
-  items,
-  filterName,
-  onItemPress,
-}) => {
-  const { theme } = useTheme();
-  const styles = createQuickFilterStyles(theme);
-
-  if (!items?.length) return null;
-
-  return (
-    <View style={styles.container}>
-      {filterName && (
-        <Text style={styles.filterTitle}>{filterName}</Text>
-      )}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {items.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.filterPill,
-              index === 0 && styles.activeFilterPill,
-            ]}
-            onPress={() => onItemPress?.(item, index)}
-          >
-            <Text style={styles.filterLabel}>{item.label}</Text>
-            <Text style={styles.filterCount}>{item.count}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      </Pressable>
     </View>
   );
 };
@@ -341,7 +285,7 @@ export const ControlCard: React.FC<ControlCardProps> = ({
   containerStyle,
 }) => {
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useStyleSheet((theme, screenDimensions) => createStyles(theme, screenDimensions), []);
 
   // State management
   const today = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
@@ -432,7 +376,7 @@ export const ControlCard: React.FC<ControlCardProps> = ({
               <TouchableOpacity style={styles.moreButton} onPress={onMoreInfoPress}>
                 <Entypo 
                   name="dots-three-horizontal" 
-                  size={theme.iconSize.sm} 
+                  size={theme.iconSize?.sm || 16} 
                   color={theme.colors.text.primary} 
                 />
               </TouchableOpacity>
@@ -444,14 +388,21 @@ export const ControlCard: React.FC<ControlCardProps> = ({
         {queryFilter && queryFilter.length > 0 && (
           <View style={styles.queryFilterContainer}>
             {queryFilter.map((item, index) => (
-              <TouchableOpacity 
+              <Pressable 
                 key={index} 
                 onPress={() => onQueryFilterPress?.(item, index)}
-                style={styles.queryFilterItem}
+                style={({ pressed }) => [
+                  styles.queryFilterItem,
+                  pressed && styles.queryFilterItemPressed
+                ]}
+                android_ripple={{ 
+                  color: theme.colors.interactive.primaryPressed,
+                  borderless: false 
+                }}
               >
                 <Text style={styles.queryFilterLabel}>{item.label}</Text>
-                <Text style={styles.queryFilterValue}>{item.num}</Text>
-              </TouchableOpacity>
+                <Text style={styles.queryFilterValue}>{item.value}</Text>
+              </Pressable>
             ))}
           </View>
         )}
@@ -461,10 +412,13 @@ export const ControlCard: React.FC<ControlCardProps> = ({
           <View style={styles.viewsSection}>
             <Text style={styles.viewsTitle}>{viewName}</Text>
             {activeSearch ? (
-              <SearchComponent
-                onQueryChange={setQueryText}
-                onSearchToggle={handleSearchToggle}
+              <SimpleSearchBar
+                value={queryText}
+                onChangeText={setQueryText}
+                onDonePress={handleSearchToggle}
                 placeholder="Search students..."
+                style={styles.searchBarContainer}
+                testID="control-card-search"
               />
             ) : (
               <FilterComponent
@@ -487,14 +441,21 @@ export const ControlCard: React.FC<ControlCardProps> = ({
                   <Text style={styles.dateSchedule2}>{dateSchedule2}</Text>
                 )}
               </View>
-              <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAllPress}>
-                <Text style={styles.viewAllText}>View all</Text>
-                <Ionicons 
-                  name="arrow-forward" 
-                  size={theme.iconSize.sm} 
-                  color={theme.colors.interactive.primary} 
-                />
-              </TouchableOpacity>
+              <CustomButton
+                title="View all"
+                onPress={handleViewAllPress}
+                variant="ghost"
+                size="sm"
+                endIcon={
+                  <Ionicons 
+                    name="arrow-forward" 
+                    size={theme.iconSize?.sm || 16} 
+                    color={theme.colors.interactive.primary} 
+                  />
+                }
+                style={styles.viewAllButton}
+                textStyle={styles.viewAllText}
+              />
             </View>
 
             {/* Week View */}
@@ -511,11 +472,33 @@ export const ControlCard: React.FC<ControlCardProps> = ({
 
         {/* Quick Filter Section */}
         {quickFilter && quickFilter.length > 0 && (
-          <QuickFilterComponent
-            items={quickFilter}
-            filterName={filterName}
-            onItemPress={onQuickFilterPress}
-          />
+          <View style={styles.quickFilterSection}>
+            {filterName && (
+              <Text style={styles.filterTitle}>{filterName}</Text>
+            )}
+            <QuickFilterBar
+              filters={quickFilter.map(item => ({
+                id: item.id || item.value,
+                label: item.label,
+                value: item.value,
+                count: item.count,
+              }))}
+              onFilterChange={(selectedValues) => {
+                const selectedItem = quickFilter.find(item => 
+                  selectedValues.includes(item.value) || selectedValues.includes(item.id)
+                );
+                if (selectedItem) {
+                  const index = quickFilter.indexOf(selectedItem);
+                  onQuickFilterPress?.(selectedItem, index);
+                }
+              }}
+              showCount={true}
+              multiSelect={false}
+              contentPadding={0}
+              style={styles.quickFilterBar}
+              testID="control-card-quick-filters"
+            />
+          </View>
         )}
       </View>
 
@@ -528,13 +511,20 @@ export const ControlCard: React.FC<ControlCardProps> = ({
       >
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={handleModalClose} style={styles.modalCloseButton}>
-              <Ionicons 
-                name="close" 
-                size={theme.iconSize.lg} 
-                color={theme.colors.text.primary} 
-              />
-            </TouchableOpacity>
+            <CustomButton
+              title=""
+              onPress={handleModalClose}
+              variant="ghost"
+              size="sm"
+              startIcon={
+                <Ionicons 
+                  name="close" 
+                  size={theme.iconSize?.lg || 24} 
+                  color={theme.colors.text.primary} 
+                />
+              }
+              style={styles.modalCloseButton}
+            />
             <Text style={styles.modalTitle}>Select Date</Text>
             <View style={styles.modalHeaderSpacer} />
           </View>
@@ -557,338 +547,307 @@ export const ControlCard: React.FC<ControlCardProps> = ({
 // STYLES
 // =============================================================================
 
-const createStyles = (theme: Theme) => StyleSheet.create({
-  container: {
-    marginHorizontal: theme.spacing.lg,
-    padding: theme.spacing.lg,
-    borderRadius: theme.borderRadius.lg,
-    backgroundColor: theme.colors.background.secondary,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-  },
-  schoolName: {
-    ...theme.typography.body.base,
-    color: theme.colors.text.primary,
-    fontWeight: '500',
-    flex: 1,
-  },
-  moreButton: {
-    backgroundColor: theme.colors.background.primary,
-    height: 32,
-    width: 32,
-    borderRadius: theme.borderRadius.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...theme.elevation.sm,
-  },
-  queryFilterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: theme.spacing.sm,
-    flexWrap: 'wrap',
-  },
-  queryFilterItem: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minWidth: 60,
-    flex: 1,
-  },
-  queryFilterLabel: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.tertiary,
-    fontSize: PixelRatio.getFontScale() * 10,
-  },
-  queryFilterValue: {
-    ...theme.typography.caption.base,
-    color: theme.colors.interactive.primary,
-    fontWeight: '600',
-    fontSize: PixelRatio.getFontScale() * 12,
-  },
-  viewsSection: {
-    marginBottom: theme.spacing.sm,
-  },
-  viewsTitle: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.primary,
-    fontSize: PixelRatio.getFontScale() * 12,
-    marginBottom: theme.spacing.xs,
-  },
-  dateHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: theme.spacing.sm,
-    marginBottom: theme.spacing.xs,
-  },
-  dateInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.xs,
-  },
-  dateSchedule: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.primary,
-    fontWeight: '500',
-  },
-  dateSchedule2: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.secondary,
-    fontSize: PixelRatio.getFontScale() * 10,
-  },
-  viewAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.xs,
-  },
-  viewAllText: {
-    ...theme.typography.caption.base,
-    color: theme.colors.interactive.primary,
-    fontWeight: '500',
-  },
-  weekContainer: {
-    marginTop: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-  },
-  dayBox: {
-    width: 40,
-    height: 64,
-    marginRight: theme.spacing.sm,
-    borderRadius: theme.borderRadius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  todayDayBox: {
-    backgroundColor: theme.colors.interactive.primary,
-  },
-  selectedDayBox: {
-    backgroundColor: theme.colors.interactive.primaryHover,
-  },
-  markedDayBox: {
-    shadowColor: theme.colors.interactive.orange,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  dayNumberContainer: {
-    backgroundColor: theme.colors.background.primary,
-    padding: theme.spacing.xs,
-    borderRadius: theme.borderRadius.full,
-    minWidth: 28,
-    alignItems: 'center',
-  },
-  defaultDayNumberContainer: {
-    backgroundColor: theme.colors.interactive.faded,
-  },
-  dayNumber: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-  },
-  todayDayNumber: {
-    color: theme.colors.text.primary,
-  },
-  selectedDayNumber: {
-    color: theme.colors.text.primary,
-  },
-  dayLabel: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.tertiary,
-    marginTop: theme.spacing.xs,
-    fontSize: PixelRatio.getFontScale() * 10,
-  },
-  todayDayLabel: {
-    color: theme.colors.text.inverse,
-    fontWeight: '500',
-  },
-  selectedDayLabel: {
-    color: theme.colors.text.inverse,
-  },
-  modalContent: {
-    flex: 1,
-    backgroundColor: theme.colors.background.primary,
-    paddingTop: 44 + theme.spacing.lg, // Safe area top
-    paddingHorizontal: theme.spacing.lg,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.lg,
-    paddingBottom: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border.primary,
-  },
-  modalCloseButton: {
-    padding: theme.spacing.xs,
-  },
-  modalTitle: {
-    ...theme.typography.heading.h3,
-    color: theme.colors.text.primary,
-    fontWeight: '600',
-  },
-  modalHeaderSpacer: {
-    width: theme.iconSize.lg + theme.spacing.xs * 2,
-  },
-  calendarPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background.secondary,
-    borderRadius: theme.borderRadius.lg,
-    margin: theme.spacing.lg,
-    padding: theme.spacing.xl,
-  },
-  calendarPlaceholderText: {
-    ...theme.typography.heading.h4,
-    color: theme.colors.text.primary,
-    textAlign: 'center',
-    marginBottom: theme.spacing.sm,
-  },
-  calendarPlaceholderSubtext: {
-    ...theme.typography.body.sm,
-    color: theme.colors.text.secondary,
-    textAlign: 'center',
-  },
-});
+const createStyles = (theme: Theme, screenDimensions: any) => {
+  const isTablet = screenDimensions?.isTablet || false;
+  const responsivePadding = isTablet ? theme.spacing.xl : theme.spacing.lg;
+  const responsiveSpacing = isTablet ? theme.spacing.lg : theme.spacing.md;
+  
+  return StyleSheet.create({
+    container: {
+      marginHorizontal: responsivePadding,
+      padding: responsivePadding,
+      borderRadius: theme.borderRadius.lg,
+      backgroundColor: theme.colors.background.secondary,
+      ...theme.elevation?.sm,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: responsiveSpacing,
+    },
+    schoolName: {
+      fontSize: isTablet ? theme.fontSizes.lg : theme.fontSizes.body,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      flex: 1,
+    },
+    moreButton: {
+      backgroundColor: theme.colors.background.primary,
+      height: isTablet ? 36 : 32,
+      width: isTablet ? 36 : 32,
+      borderRadius: theme.borderRadius.full,
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...theme.elevation?.sm,
+    },
+    queryFilterContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginVertical: responsiveSpacing,
+      flexWrap: 'wrap',
+      gap: theme.spacing.sm,
+    },
+    queryFilterItem: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: isTablet ? 80 : 60,
+      flex: 1,
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.xs,
+      borderRadius: theme.borderRadius.md,
+      minHeight: theme.safeArea?.minTouchTarget?.height || 44,
+    },
+    queryFilterItemPressed: {
+      backgroundColor: theme.colors.interactive.faded,
+      transform: [{ scale: 0.96 }],
+    },
+    queryFilterLabel: {
+      fontSize: isTablet ? theme.fontSizes.caption * 1.1 : theme.fontSizes.caption,
+      color: theme.colors.text.tertiary,
+      fontWeight: theme.fontConfig.fontWeight.regular,
+      textAlign: 'center',
+      marginBottom: theme.spacing.xs,
+    },
+    queryFilterValue: {
+      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      textAlign: 'center',
+    },
+    viewsSection: {
+      marginBottom: responsiveSpacing,
+    },
+    viewsTitle: {
+      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginBottom: theme.spacing.sm,
+    },
+    searchBarContainer: {
+      marginVertical: 0,
+      paddingHorizontal: 0,
+    },
+    dateHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: responsiveSpacing,
+      marginBottom: theme.spacing.sm,
+    },
+    dateInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.xs,
+    },
+    dateSchedule: {
+      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    dateSchedule2: {
+      fontSize: isTablet ? theme.fontSizes.caption : theme.fontSizes.xs,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.regular,
+    },
+    viewAllButton: {
+      paddingHorizontal: 0,
+      paddingVertical: 0,
+      minHeight: 'auto' as any,
+      height: 'auto' as any,
+    },
+    viewAllText: {
+      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    weekContainer: {
+      marginTop: responsiveSpacing,
+      paddingVertical: theme.spacing.sm,
+    },
+    dayBox: {
+      width: isTablet ? 48 : 40,
+      height: isTablet ? 72 : 64,
+      marginRight: responsiveSpacing,
+      borderRadius: theme.borderRadius.lg,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'transparent',
+    },
+    todayDayBox: {
+      backgroundColor: theme.colors.interactive.primary,
+    },
+    selectedDayBox: {
+      backgroundColor: theme.colors.interactive.primaryHover,
+    },
+    markedDayBox: {
+      shadowColor: theme.colors.interactive.orange,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.4,
+      shadowRadius: 3,
+      elevation: 5,
+    },
+    dayNumberContainer: {
+      flexDirection: 'column',
+      backgroundColor: theme.colors.background.primary,
+      padding: isTablet ? theme.spacing.sm : theme.spacing.xs,
+      borderRadius: theme.borderRadius.full,
+      minWidth: isTablet ? 32 : 28,
+      minHeight: isTablet ? 32 : 28,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    defaultDayNumberContainer: {
+      backgroundColor: theme.colors.interactive.faded,
+    },
+    dayNumber: {
+      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    todayDayNumber: {
+      color: theme.colors.text.primary,
+    },
+    selectedDayNumber: {
+      color: theme.colors.text.primary,
+    },
+    dayLabel: {
+      fontSize: isTablet ? theme.fontSizes.caption : theme.fontSizes.xs,
+      color: theme.colors.text.tertiary,
+      marginTop: theme.spacing.xs,
+      fontWeight: theme.fontConfig.fontWeight.regular,
+    },
+    todayDayLabel: {
+      color: theme.colors.text.inverse,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    selectedDayLabel: {
+      color: theme.colors.text.inverse,
+    },
+    modalContent: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+      paddingTop: 44 + responsivePadding,
+      paddingHorizontal: responsivePadding,
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: responsivePadding,
+      paddingBottom: responsiveSpacing,
+      borderBottomWidth: theme.borderWidth?.sm || 1,
+      borderBottomColor: theme.colors.border.primary,
+    },
+    modalCloseButton: {
+      padding: 0,
+      minHeight: 'auto' as any,
+      height: 'auto' as any,
+      width: 'auto' as any,
+      backgroundColor: 'transparent',
+    },
+    modalTitle: {
+      fontSize: isTablet ? theme.fontSizes.h2 : theme.fontSizes.h3,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    modalHeaderSpacer: {
+      width: (theme.iconSize?.lg || 24) + theme.spacing.xs * 2,
+    },
+    calendarPlaceholder: {
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.lg,
+      margin: responsivePadding,
+      padding: isTablet ? theme.spacing.xxl : theme.spacing.xl,
+    },
+    calendarPlaceholderText: {
+      fontSize: isTablet ? theme.fontSizes.h3 : theme.fontSizes.h4,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      textAlign: 'center',
+      marginBottom: responsiveSpacing,
+    },
+    calendarPlaceholderSubtext: {
+      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.regular,
+      textAlign: 'center',
+      lineHeight: isTablet ? theme.lineHeights.relaxed : theme.lineHeights.normal,
+    },
+    
+    // New styles for improved components
+    quickFilterSection: {
+      marginTop: responsiveSpacing,
+    },
+    
+    filterTitle: {
+      fontSize: isTablet ? theme.fontSizes.body : theme.fontSizes.caption,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginBottom: theme.spacing.sm,
+    },
+    
+    quickFilterBar: {
+      marginVertical: 0,
+    },
+  });
+};
 
-const createSearchStyles = (theme: Theme) => StyleSheet.create({
+const createFilterStyles = (theme: Theme, isTablet: boolean) => StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: theme.spacing.xs,
+    marginTop: theme.spacing.sm,
+    gap: theme.spacing.sm,
   },
-  searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.border.primary,
+  filterButton: {
     borderRadius: theme.borderRadius.md,
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.sm,
-    marginRight: theme.spacing.sm,
-    backgroundColor: theme.colors.background.primary,
-  },
-  searchIcon: {
-    marginRight: theme.spacing.sm,
-  },
-  input: {
-    flex: 1,
-    ...theme.typography.caption.base,
-    color: theme.colors.text.primary,
-    paddingVertical: 0,
-  },
-  doneButton: {
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-  },
-  doneText: {
-    ...theme.typography.caption.base,
-    color: theme.colors.interactive.primary,
-    fontWeight: '500',
-  },
-});
-
-const createFilterStyles = (theme: Theme) => StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: theme.spacing.xs,
-    gap: theme.spacing.xs,
-  },
-  filterButton: {
-    borderRadius: theme.borderRadius.sm,
-    padding: theme.spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
     minWidth: 0,
     gap: theme.spacing.xs,
+    minHeight: theme.safeArea?.minTouchTarget?.height || 44,
   },
   groupFilter: {
     backgroundColor: theme.colors.interactive.faded,
     flex: 0.5,
   },
   viewFilter: {
-    borderWidth: 1,
+    borderWidth: theme.borderWidth?.sm || 1,
     borderColor: theme.colors.border.primary,
     backgroundColor: theme.colors.background.primary,
     flex: 0.35,
   },
   searchFilter: {
-    borderWidth: 1,
+    borderWidth: theme.borderWidth?.sm || 1,
     borderColor: theme.colors.border.primary,
     backgroundColor: theme.colors.background.primary,
     flex: 0.25,
   },
   groupFilterText: {
-    ...theme.typography.caption.base,
+    fontSize: isTablet ? theme.fontSizes.caption * 1.1 : theme.fontSizes.caption,
     color: theme.colors.interactive.primary,
-    fontWeight: '600',
-    fontSize: PixelRatio.getFontScale() * 10,
+    fontWeight: theme.fontConfig.fontWeight.semibold,
     flexShrink: 1,
   },
   viewFilterText: {
-    ...theme.typography.caption.base,
+    fontSize: isTablet ? theme.fontSizes.caption * 1.1 : theme.fontSizes.caption,
     color: theme.colors.text.tertiary,
-    fontSize: PixelRatio.getFontScale() * 10,
+    fontWeight: theme.fontConfig.fontWeight.regular,
     flexShrink: 1,
   },
   searchFilterText: {
-    ...theme.typography.caption.base,
+    fontSize: isTablet ? theme.fontSizes.caption * 1.1 : theme.fontSizes.caption,
     color: theme.colors.text.tertiary,
-    fontSize: PixelRatio.getFontScale() * 10,
-  },
-});
-
-const createQuickFilterStyles = (theme: Theme) => StyleSheet.create({
-  container: {
-    marginTop: theme.spacing.md,
-  },
-  filterTitle: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.primary,
-    fontSize: PixelRatio.getFontScale() * 12,
-    marginBottom: theme.spacing.xs,
-  },
-  scrollView: {
-    marginTop: theme.spacing.xs,
-  },
-  scrollContent: {
-    gap: theme.spacing.sm,
-  },
-  filterPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: theme.spacing.xs,
-    paddingHorizontal: theme.spacing.sm,
-    borderRadius: theme.borderRadius.full,
-    borderWidth: 1,
-    borderColor: theme.colors.border.primary,
-    backgroundColor: 'transparent',
-    gap: theme.spacing.xs,
-  },
-  activeFilterPill: {
-    backgroundColor: theme.colors.interactive.faded,
-    borderColor: theme.colors.interactive.primary,
-  },
-  filterLabel: {
-    ...theme.typography.caption.base,
-    color: theme.colors.text.tertiary,
-    fontSize: PixelRatio.getFontScale() * 10,
-  },
-  filterCount: {
-    ...theme.typography.caption.base,
-    color: theme.colors.interactive.primary,
-    fontWeight: '600',
-    fontSize: PixelRatio.getFontScale() * 10,
+    fontWeight: theme.fontConfig.fontWeight.regular,
   },
 });
 

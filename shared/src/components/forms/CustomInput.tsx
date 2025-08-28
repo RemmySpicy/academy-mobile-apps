@@ -459,6 +459,7 @@ const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
 
   // Icon containers
   leftIconContainer: {
+    flexDirection: 'column',
     marginLeft: theme.spacing.sm,
     marginRight: theme.spacing.sm,
     alignItems: 'center',
@@ -466,6 +467,7 @@ const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   },
 
   rightIconContainer: {
+    flexDirection: 'column',
     marginLeft: theme.spacing.sm,
     marginRight: theme.spacing.sm,
     alignItems: 'center',
@@ -473,6 +475,7 @@ const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   },
 
   iconButton: {
+    flexDirection: 'column',
     marginLeft: theme.spacing.sm,
     marginRight: theme.spacing.sm,
     alignItems: 'center',
@@ -482,6 +485,7 @@ const useThemedStyles = createThemedStyles((theme) => StyleSheet.create({
   },
 
   errorIconContainer: {
+    flexDirection: 'column',
     marginLeft: theme.spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',

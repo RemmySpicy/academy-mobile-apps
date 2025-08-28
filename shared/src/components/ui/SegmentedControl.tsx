@@ -17,7 +17,7 @@ import {
   LayoutChangeEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme/ThemeProvider';
+import { useTheme } from '../../theme';
 
 /** Variant styles for SegmentedControl */
 export type SegmentedControlVariant = 'default' | 'primary' | 'secondary' | 'compact';

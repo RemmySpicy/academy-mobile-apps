@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ViewStyle, TextStyle, Modal, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../theme/ThemeProvider';
+import { useTheme } from '../../theme';
 import { useProgramContext } from '../program/ProgramContextProvider';
 import { useAuthStore } from '../../store/authStore';
 import { ProgramContext } from '../../types';
@@ -399,6 +399,7 @@ const createStyles = (theme: any) =>
 
     centerSection: {
       flex: 1,
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -430,6 +431,7 @@ const createStyles = (theme: any) =>
     },
 
     actionButton: {
+      flexDirection: 'column',
       padding: theme.spacing[2],
       borderRadius: theme.borderRadius.sm,
       backgroundColor: theme.colors.background.secondary,
@@ -440,6 +442,7 @@ const createStyles = (theme: any) =>
     },
 
     iconButton: {
+      flexDirection: 'column',
       padding: theme.spacing[2],
       alignItems: 'center',
       justifyContent: 'center',
@@ -449,6 +452,7 @@ const createStyles = (theme: any) =>
     },
 
     profileButton: {
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -461,6 +465,7 @@ const createStyles = (theme: any) =>
     },
 
     profilePlaceholder: {
+      flexDirection: 'column',
       width: theme.safeArea.minTouchTarget.width,
       height: theme.safeArea.minTouchTarget.height,
       borderRadius: theme.safeArea.minTouchTarget.width / 2,
@@ -479,6 +484,7 @@ const createStyles = (theme: any) =>
       borderRadius: theme.borderRadius.full,
       minWidth: theme.spacing[5],
       height: theme.spacing[5],
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       paddingHorizontal: theme.spacing[1] || theme.spacing.xs,

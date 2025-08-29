@@ -77,6 +77,7 @@ export {
   Lessons,
   Badge,
   LoadingSpinner,
+  StatsCard,
   BottomSheet,
   BottomSheetProvider,
   useBottomSheet,
@@ -127,6 +128,17 @@ export {
 export {
   StudentProfile,
 } from './student';
+
+export {
+  ProfileSwitcherBottomSheet,
+} from './profile';
+
+export {
+  SettingsCard,
+  SettingsSection,
+  SettingsSwitch,
+  SettingsPicker,
+} from './settings';
 
 export {
   ClassroomGrading,

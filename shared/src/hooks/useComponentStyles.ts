@@ -190,16 +190,7 @@ export function useStyleDebug(componentName: string, enabled: boolean = __DEV__)
 
   useMemo(() => {
     if (!enabled || Platform.OS === 'web') return;
-
-    console.log(`🎨 ${componentName} Style Debug:`, {
-      screenWidth: screenDimensions.width,
-      screenHeight: screenDimensions.height,
-      isPhone: screenDimensions.isPhone,
-      isTablet: screenDimensions.isTablet,
-      isPortrait: screenDimensions.isPortrait,
-      themeMode: theme.isDark ? 'dark' : 'light',
-      primaryColor: theme.colors.interactive.primary,
-    });
+    // Debug logging removed for production
   }, [componentName, enabled, theme, screenDimensions]);
 }
 

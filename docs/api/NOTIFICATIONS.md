@@ -6,6 +6,7 @@ The Academy Mobile Apps feature a comprehensive notification system built with Z
 
 The notification system provides:
 - **Multiple Notification Types** - Success, error, warning, and info notifications
+- **Unread Count Management** - Centralized tracking of unread notification badges
 - **Automatic API Integration** - Notifications triggered by API responses
 - **Customizable Duration** - Different auto-dismiss times per notification type
 - **Action Support** - Optional action buttons with custom handlers
@@ -29,10 +30,21 @@ The notification system provides:
 ```typescript
 interface NotificationState {
   notifications: Notification[];
+  unreadCount: number; // Count of unread notifications in the notification center/inbox
+  
+  // Toast Notification Actions
   addNotification: (notification) => string;
   removeNotification: (id: string) => void;
   hideNotification: (id: string) => void;
   clearAll: () => void;
+  
+  // Unread Count Management
+  setUnreadCount: (count: number) => void;
+  incrementUnreadCount: () => void;
+  decrementUnreadCount: () => void;
+  clearUnreadCount: () => void;
+  
+  // Convenience Methods
   showSuccess: (message: string, title?: string) => string;
   showError: (message: string, title?: string) => string;
   showWarning: (message: string, title?: string) => string;
@@ -45,10 +57,10 @@ interface NotificationState {
 ### Simple Notifications
 
 ```typescript
-import { useNotifications } from '@shared';
+import { useNotifications } from '@academy/mobile-shared';
 
 function MyComponent() {
-  const { showSuccess, showError, showWarning, showInfo } = useNotifications();
+  const { showSuccess, showError, showWarning, showInfo, unreadCount } = useNotifications();
   
   const handleSave = async () => {
     try {
@@ -77,10 +89,50 @@ function MyComponent() {
 }
 ```
 
+### Unread Count Management
+
+The notification store now includes centralized unread count management for header badges:
+
+```typescript
+import { useNotifications } from '@academy/mobile-shared';
+
+function HeaderWithNotifications() {
+  const { unreadCount, clearUnreadCount, setUnreadCount, incrementUnreadCount } = useNotifications();
+  
+  const handleNotificationPress = () => {
+    clearUnreadCount(); // Clear badge when user opens notifications
+    navigation.navigate('Notifications');
+  };
+  
+  // Use unread count in header
+  return (
+    <Header
+      title="Dashboard" 
+      showNotifications={true}
+      onNotificationPress={handleNotificationPress}
+      notificationCount={unreadCount} // Uses shared count
+      showProfile={false}
+    />
+  );
+}
+
+// Update count when new notifications arrive
+const handleNewNotification = () => {
+  incrementUnreadCount(); // Increment badge count
+  showInfo('You have a new message'); // Show toast
+};
+
+// Set specific count (e.g., from API)
+const syncNotificationCount = async () => {
+  const response = await apiClient.get('/notifications/unread-count');
+  setUnreadCount(response.data.count);
+};
+```
+
 ### Advanced Notifications
 
 ```typescript
-import { useNotificationStore } from '@shared';
+import { useNotificationStore } from '@academy/mobile-shared';
 
 function AdvancedNotifications() {
   const { addNotification } = useNotificationStore();
@@ -581,6 +633,8 @@ addNotification({
 ### Selective Subscriptions
 
 ```typescript
+import { notificationSelectors } from '@academy/mobile-shared';
+
 // Subscribe to specific notification data only
 const visibleNotifications = useNotificationStore(
   notificationSelectors.visibleNotifications
@@ -588,6 +642,15 @@ const visibleNotifications = useNotificationStore(
 
 const hasNotifications = useNotificationStore(
   notificationSelectors.hasNotifications
+);
+
+// Subscribe to unread count only (optimal for header badges)
+const unreadCount = useNotificationStore(
+  notificationSelectors.unreadCount
+);
+
+const hasUnreadNotifications = useNotificationStore(
+  notificationSelectors.hasUnreadNotifications
 );
 
 // Avoid full store subscription
@@ -658,19 +721,31 @@ features/notifications/
 ## 📱 User Interface
 
 ### Notification Bell Integration
-The notification bell icon is integrated into all main screen headers:
+The notification bell icon is integrated into all main screen headers using the centralized unread count:
 
 ```typescript
-// Header with notification bell
-<Header
-  title="Dashboard"
-  showProgramSwitcher={true}
-  showNotifications={true}
-  onNotificationPress={() => navigation.navigate('Notifications')}
-  notificationCount={unreadCount}
-  showProfile={false}
-  variant="instructor"
-/>
+import { useNotifications } from '@academy/mobile-shared';
+
+function DashboardScreen() {
+  const { unreadCount, clearUnreadCount } = useNotifications();
+  
+  const handleNotifications = () => {
+    clearUnreadCount(); // Clear badge when opening notifications
+    navigation.navigate('Notifications');
+  };
+
+  return (
+    <Header
+      title="Dashboard"
+      showProgramSwitcher={true}
+      showNotifications={true}
+      onNotificationPress={handleNotifications}
+      notificationCount={unreadCount} // Uses centralized count
+      showProfile={false}
+      variant="instructor"
+    />
+  );
+}
 ```
 
 ### Screen Headers with Notifications
@@ -728,9 +803,13 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = () => {
 ### Navigation Handler Pattern
 
 ```typescript
+import { useNotifications } from '@academy/mobile-shared';
+
 const handleNotifications = () => {
+  const { clearUnreadCount } = useNotifications();
+  
   console.log('Notifications pressed');
-  setNotificationCount(0); // Clear badge
+  clearUnreadCount(); // Clear badge using centralized store
   navigation.navigate('Notifications'); // Navigate to modal
 };
 ```
@@ -886,18 +965,50 @@ const handlePushNotification = (notification) => {
 
 ### Real-time Updates
 ```typescript
+import { useNotifications } from '@academy/mobile-shared';
+
 // WebSocket integration for real-time notifications
-useEffect(() => {
-  const socket = io(API_BASE_URL);
+function useRealTimeNotifications() {
+  const { incrementUnreadCount } = useNotifications();
   
-  socket.on('new_notification', (notification) => {
-    setNotifications(prev => [notification, ...prev]);
-    // Update badge count
-    setNotificationCount(prev => prev + 1);
-  });
-  
-  return () => socket.disconnect();
-}, []);
+  useEffect(() => {
+    const socket = io(API_BASE_URL);
+    
+    socket.on('new_notification', (notification) => {
+      setNotifications(prev => [notification, ...prev]);
+      // Update badge count using centralized store
+      incrementUnreadCount();
+    });
+    
+    return () => socket.disconnect();
+  }, [incrementUnreadCount]);
+}
 ```
 
 The Notifications Page feature provides a complete notification management experience that integrates seamlessly with the existing Academy Mobile Apps architecture and design system.
+
+---
+
+## 🔄 Recent Updates
+
+### Centralized Unread Count Management
+The notification system now includes centralized unread count management:
+
+- **Unified Badge System**: All headers use the same `unreadCount` from the notification store
+- **Consistent State Management**: No more hardcoded notification counts across different screens
+- **App Menu Header Update**: Menu pages now show notification icons instead of profile icons
+- **Real-time Synchronization**: Unread counts update automatically across all screens when modified
+- **API Ready**: Designed for easy integration with backend notification count endpoints
+
+### Migration from Hardcoded Counts
+All screens have been migrated from individual `useState(count)` implementations to the shared notification store:
+
+```typescript
+// Old pattern (inconsistent across screens)
+const [notificationCount, setNotificationCount] = useState(3); // Different on each screen
+
+// New pattern (consistent across all screens)  
+const { unreadCount, clearUnreadCount } = useNotifications(); // Shared count
+```
+
+This ensures that notification badges display consistent values across the entire application and provide a foundation for real-time notification updates from the backend.

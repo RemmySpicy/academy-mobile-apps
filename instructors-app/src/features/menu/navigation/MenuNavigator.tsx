@@ -1,8 +1,20 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme, NavigationHeader } from '@academy/mobile-shared';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { 
+  useTheme, 
+  NavigationHeader,
+  useSettingsStore,
+  useAuthStore,
+  SettingsCard,
+  SettingsSection,
+  SettingsSwitch,
+  SettingsPicker,
+  PickerOption,
+  formatQuietHours,
+} from '@academy/mobile-shared';
 import { AppMenuScreen } from '../screens/AppMenuScreen';
 import { MenuStackParamList } from '../types';
 
@@ -18,9 +30,344 @@ const EditProfileScreen = () => {
 
 const SettingsScreen = () => {
   const { theme } = useTheme();
+  const {
+    app,
+    notifications,
+    privacy,
+    security,
+    academy,
+    updateAppSettings,
+    updateNotificationSettings,
+    updatePrivacySettings,
+    updateSecuritySettings,
+    updateAcademySettings,
+    resetToDefaults,
+  } = useSettingsStore();
+
+  const { user, logout } = useAuthStore();
+
+  const handleResetSettings = () => {
+    Alert.alert(
+      'Reset Settings',
+      'This will reset all settings to their default values. Are you sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Reset', 
+          style: 'destructive',
+          onPress: () => {
+            resetToDefaults();
+            Alert.alert('Settings Reset', 'All settings have been reset to defaults.');
+          }
+        }
+      ]
+    );
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Sign Out', 
+          style: 'destructive',
+          onPress: logout
+        }
+      ]
+    );
+  };
+
+  const themeOptions: PickerOption[] = [
+    { label: 'Light Mode', value: 'light', description: 'Always use light theme', icon: 'sunny' },
+    { label: 'Dark Mode', value: 'dark', description: 'Always use dark theme', icon: 'moon' },
+    { label: 'System', value: 'system', description: 'Follow device settings', icon: 'phone-portrait' },
+  ];
+
+  const languageOptions: PickerOption[] = [
+    { label: 'English', value: 'en', icon: 'globe' },
+    { label: 'Español', value: 'es', icon: 'globe' },
+    { label: 'Français', value: 'fr', icon: 'globe' },
+  ];
+
+  const fontSizeOptions: PickerOption[] = [
+    { label: 'Small', value: 'small', description: 'Compact text size', icon: 'remove-circle-outline' },
+    { label: 'Medium', value: 'medium', description: 'Standard text size', icon: 'text' },
+    { label: 'Large', value: 'large', description: 'Larger text for readability', icon: 'add-circle-outline' },
+  ];
+
+  const autoLockOptions: PickerOption[] = [
+    { label: 'Never', value: '0', icon: 'ban-outline' },
+    { label: '5 minutes', value: '5', icon: 'time-outline' },
+    { label: '15 minutes', value: '15', icon: 'time-outline' },
+    { label: '30 minutes', value: '30', icon: 'time-outline' },
+    { label: '1 hour', value: '60', icon: 'time-outline' },
+  ];
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background.primary }}>
-      <Text style={{ color: theme.colors.text.primary }}>Settings Screen</Text>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background.secondary }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingTop: theme.spacing.lg,
+          paddingBottom: theme.spacing['3xl'],
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <Animated.View
+          entering={FadeInDown.delay(100).springify()}
+          style={{
+            paddingHorizontal: theme.spacing.md,
+            marginBottom: theme.spacing.xl,
+          }}
+        >
+          <Text style={{
+            color: theme.colors.text.secondary,
+            fontSize: theme.fontSizes.base,
+            textAlign: 'center',
+            lineHeight: 24,
+          }}>
+            Customize your teaching experience and manage your instructor preferences.
+          </Text>
+        </Animated.View>
+
+        {/* Professional Section */}
+        <SettingsSection title="Professional Profile" delay={200}>
+          <SettingsCard
+            icon="school"
+            title={`${user?.name || 'Instructor'} - ${user?.role || 'Teacher'}`}
+            subtitle={user?.email || 'instructor@academy.com'}
+            onPress={() => console.log('Edit Profile')}
+            showChevron
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+          
+          <SettingsCard
+            icon="calendar"
+            title="Teaching Schedule"
+            subtitle="Manage your class schedule and availability"
+            onPress={() => console.log('Teaching Schedule')}
+            showChevron
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <SettingsCard
+            icon="people"
+            title="My Students"
+            subtitle="View and manage your student roster"
+            onPress={() => console.log('My Students')}
+            showChevron
+          />
+        </SettingsSection>
+
+        {/* Teaching Preferences */}
+        <SettingsSection title="Teaching Preferences" delay={300}>
+          <SettingsCard
+            icon="trophy"
+            title="Progress Tracking"
+            subtitle="Show detailed student progress metrics"
+            rightElement={
+              <SettingsSwitch
+                value={academy.progressSharingEnabled}
+                onValueChange={(value) => updateAcademySettings({ progressSharingEnabled: value })}
+              />
+            }
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <SettingsCard
+            icon="bar-chart"
+            title="Skill Level Display"
+            subtitle="Display student skill levels in class view"
+            rightElement={
+              <SettingsSwitch
+                value={academy.skillLevelDisplay}
+                onValueChange={(value) => updateAcademySettings({ skillLevelDisplay: value })}
+              />
+            }
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <SettingsCard
+            icon="shield-checkmark"
+            title="Parental Controls"
+            subtitle="Enhanced safety features for minor students"
+            rightElement={
+              <SettingsSwitch
+                value={academy.parentalControls}
+                onValueChange={(value) => updateAcademySettings({ parentalControls: value })}
+              />
+            }
+          />
+        </SettingsSection>
+
+        {/* App Preferences */}
+        <SettingsSection title="App Preferences" delay={400}>
+          <View style={{ gap: theme.spacing.sm }}>
+            <SettingsPicker
+              title="Theme"
+              options={themeOptions}
+              selectedValue={app.theme}
+              onSelectionChange={(value) => updateAppSettings({ theme: value as any })}
+            />
+
+            <SettingsPicker
+              title="Language"
+              options={languageOptions}
+              selectedValue={app.language}
+              onSelectionChange={(value) => updateAppSettings({ language: value as any })}
+            />
+
+            <SettingsPicker
+              title="Font Size"
+              options={fontSizeOptions}
+              selectedValue={app.fontSize}
+              onSelectionChange={(value) => updateAppSettings({ fontSize: value as any })}
+            />
+          </View>
+        </SettingsSection>
+
+        {/* Notifications for Instructors */}
+        <SettingsSection title="Instructor Notifications" delay={500}>
+          <SettingsCard
+            icon="notifications"
+            title="Class Notifications"
+            subtitle="Updates about your classes and students"
+            rightElement={
+              <SettingsSwitch
+                value={notifications.bookingUpdates}
+                onValueChange={(value) => updateNotificationSettings({ bookingUpdates: value })}
+              />
+            }
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <SettingsCard
+            icon="people"
+            title="Student Notifications"
+            subtitle="Student enrollment and progress updates"
+            rightElement={
+              <SettingsSwitch
+                value={notifications.achievements}
+                onValueChange={(value) => updateNotificationSettings({ achievements: value })}
+              />
+            }
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <SettingsCard
+            icon="warning"
+            title="Emergency Alerts"
+            subtitle="Critical updates and safety notifications"
+            rightElement={
+              <SettingsSwitch
+                value={notifications.emergencyAlerts}
+                onValueChange={(value) => updateNotificationSettings({ emergencyAlerts: value })}
+              />
+            }
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <SettingsCard
+            icon="moon"
+            title="Quiet Hours"
+            subtitle={`${formatQuietHours(notifications.quietHoursStart, notifications.quietHoursEnd)}`}
+            rightElement={
+              <SettingsSwitch
+                value={notifications.quietHoursEnabled}
+                onValueChange={(value) => updateNotificationSettings({ quietHoursEnabled: value })}
+              />
+            }
+          />
+        </SettingsSection>
+
+        {/* Security & Privacy */}
+        <SettingsSection title="Security & Privacy" delay={600}>
+          <SettingsCard
+            icon="lock-closed"
+            title="Biometric Login"
+            subtitle="Use fingerprint or face ID to sign in"
+            rightElement={
+              <SettingsSwitch
+                value={security.biometricLogin}
+                onValueChange={(value) => updateSecuritySettings({ biometricLogin: value })}
+              />
+            }
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <View style={{ marginBottom: theme.spacing.sm }}>
+            <SettingsPicker
+              title="Auto-Lock"
+              options={autoLockOptions}
+              selectedValue={security.autoLockTimeout.toString()}
+              onSelectionChange={(value) => updateSecuritySettings({ autoLockTimeout: parseInt(value) })}
+            />
+          </View>
+
+          <SettingsCard
+            icon="analytics"
+            title="Usage Analytics"
+            subtitle="Help improve the instructor experience"
+            rightElement={
+              <SettingsSwitch
+                value={privacy.usageAnalytics}
+                onValueChange={(value) => updatePrivacySettings({ usageAnalytics: value })}
+              />
+            }
+          />
+        </SettingsSection>
+
+        {/* Professional Development */}
+        <SettingsSection title="Professional Development" delay={700}>
+          <SettingsCard
+            icon="school"
+            title="Training Notifications"
+            subtitle="Get notified about new training opportunities"
+            rightElement={
+              <SettingsSwitch
+                value={notifications.marketingEmails}
+                onValueChange={(value) => updateNotificationSettings({ marketingEmails: value })}
+              />
+            }
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+
+          <SettingsCard
+            icon="certificate"
+            title="Certification Reminders"
+            subtitle="Reminders for certification renewals"
+            rightElement={
+              <SettingsSwitch
+                value={notifications.sessionReminders}
+                onValueChange={(value) => updateNotificationSettings({ sessionReminders: value })}
+              />
+            }
+          />
+        </SettingsSection>
+
+        {/* Account Actions */}
+        <SettingsSection title="Account Actions" delay={800}>
+          <SettingsCard
+            icon="refresh"
+            title="Reset Settings"
+            subtitle="Restore all settings to defaults"
+            onPress={handleResetSettings}
+            variant="warning"
+            style={{ marginBottom: theme.spacing.sm }}
+          />
+          
+          <SettingsCard
+            icon="log-out"
+            title="Sign Out"
+            subtitle="Sign out of your instructor account"
+            onPress={handleLogout}
+            variant="danger"
+          />
+        </SettingsSection>
+      </ScrollView>
     </View>
   );
 };

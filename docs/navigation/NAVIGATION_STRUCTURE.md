@@ -11,9 +11,8 @@ The Students App uses a **Tab-based navigation** with the following main section
 | Tab | Icon | Feature | Description |
 |-----|------|---------|-------------|
 | **Home** | `home` | Home Screen | Dashboard with quick actions, recent activity |
-| **Courses** | `school` | Course Management | Browse courses, view enrolled courses, progress |
 | **Bookings** | `calendar` | Booking System | Schedule classes, view upcoming sessions |
-| **Progress** | `trending-up` | Progress Tracking | View achievements, performance metrics |
+| **Progress** | `trophy` | Progress Tracking | View achievements, performance metrics |
 | **Menu** | `menu` | App Menu | Settings, profile, support, and additional features |
 
 #### 🔧 Menu Navigator (`MenuNavigator.tsx`)
@@ -111,6 +110,14 @@ The Notifications feature is implemented as a **modal navigation** accessible fr
    - Program-specific features and content
 
 #### 🚨 Recent Changes
+
+##### Courses Tab Removal (August 2025)
+- **Removed**: Courses tab from main tab navigation
+- **Enhanced**: Courses moved to Menu → Our Courses as a menu feature
+- **Benefits**: 
+  - Streamlined tab navigation (4 core tabs instead of 5)
+  - Better organization of secondary features in menu
+  - Improved focus on core student activities (Home, Bookings, Progress, Menu)
 
 ##### Contact Us Consolidation (August 2025)
 - **Removed**: Separate "Contact Us" page and navigation routes

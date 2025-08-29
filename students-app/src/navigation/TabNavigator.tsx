@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@academy/mobile-shared';
 
 import { HomeNavigator } from '../features/home/navigation/HomeNavigator';
-import { CoursesNavigator } from '../features/courses/navigation/CoursesNavigator';
 import { BookingsNavigator } from '../features/bookings/navigation/BookingsNavigator';
 import { ProgressNavigator } from '../features/progress/navigation/ProgressNavigator';
 import { MenuNavigator } from '../features/menu/navigation/MenuNavigator';
@@ -14,7 +13,6 @@ import { DesignSystemShowcase, FormExamplesScreen, ComponentLibraryShowcase } fr
 
 export type TabParamList = {
   HomeTab: undefined;
-  CoursesTab: undefined;
   BookingsTab: undefined;
   ProgressTab: undefined;
   MenuTab: undefined;
@@ -38,9 +36,6 @@ export const TabNavigator: React.FC = () => {
           switch (route.name) {
             case 'HomeTab':
               iconName = focused ? 'home' : 'home-outline';
-              break;
-            case 'CoursesTab':
-              iconName = focused ? 'book' : 'book-outline';
               break;
             case 'BookingsTab':
               iconName = focused ? 'calendar' : 'calendar-outline';
@@ -85,11 +80,6 @@ export const TabNavigator: React.FC = () => {
         name="HomeTab" 
         component={HomeNavigator}
         options={{ tabBarLabel: 'Home' }}
-      />
-      <Tab.Screen 
-        name="CoursesTab" 
-        component={CoursesNavigator}
-        options={{ tabBarLabel: 'Courses' }}
       />
       <Tab.Screen 
         name="BookingsTab" 

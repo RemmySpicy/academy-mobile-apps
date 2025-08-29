@@ -31,7 +31,7 @@ export const LocationScreenSimple: React.FC = () => {
           textAlign: 'center',
           marginBottom: theme.spacing.md,
         }}>
-          Find Our Locations
+          Find Our Facilities
         </Text>
         
         <Text style={{
@@ -40,7 +40,7 @@ export const LocationScreenSimple: React.FC = () => {
           textAlign: 'center',
           lineHeight: 24,
         }}>
-          Visit any of our convenient locations for world-class training and facilities. Find directions, hours, and contact information here.
+          Visit any of our convenient facilities for world-class training and amenities. Find directions, hours, and contact information here.
         </Text>
       </View>
     </View>

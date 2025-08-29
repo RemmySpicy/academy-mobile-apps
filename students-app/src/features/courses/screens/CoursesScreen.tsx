@@ -19,7 +19,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, useNotifications } from '@academy/mobile-shared';
 import type { AppStackParamList } from '../../../navigation/AppNavigator';
 
 const { width } = Dimensions.get('window');
@@ -322,21 +322,6 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     },
-    header: {
-      paddingHorizontal: theme.spacing.md,
-      paddingTop: theme.spacing.md,
-      paddingBottom: theme.spacing.xs,
-    },
-    headerTitle: {
-      color: theme.colors.text.primary,
-      fontSize: theme.fontSizes['2xl'],
-      fontWeight: theme.fontConfig.fontWeight.bold,
-    },
-    headerSubtitle: {
-      color: theme.colors.text.tertiary,
-      fontSize: theme.fontSizes.base,
-      marginTop: theme.spacing.xs,
-    },
     searchContainer: {
       paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.md,
@@ -420,7 +405,6 @@ export const CoursesScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'kids' | 'adults'>('all');
-  const [notificationCount, setNotificationCount] = useState(2);
 
   // Mock courses data
   const [courses] = useState<Course[]>([
@@ -543,28 +527,14 @@ export const CoursesScreen: React.FC = () => {
     console.log('Filter pressed');
   };
 
-  const handleNotifications = () => {
-    navigation.navigate('Notifications');
-    setNotificationCount(0);
-  };
 
   return (
     <View style={styles.container}>
-      {/* Header with Program Switcher */}
-      <Header
-        title="Courses"
-        showProgramSwitcher={true}
-        showNotifications={true}
-        onNotificationPress={handleNotifications}
-        notificationCount={notificationCount}
-        showProfile={false}
-        style={{ paddingTop: insets.top }}
-      />
 
       {/* Search Bar */}
       <Animated.View
         entering={FadeInDown.delay(200).springify()}
-        style={styles.searchContainer}
+        style={[styles.searchContainer, { paddingTop: theme.spacing.lg }]}
       >
         <View style={styles.searchBox}>
           <Ionicons name="search" size={20} color={theme.colors.text.tertiary} />

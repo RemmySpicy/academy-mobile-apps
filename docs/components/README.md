@@ -1,6 +1,6 @@
 # Academy Components Library
 
-The Academy Mobile Apps feature a comprehensive component library with 85+ shared components designed for educational institutions. All components are built with **mobile-first Academy theming**, accessibility, and TypeScript support. **Production-verified** - all components are actively used in the live applications.\n\n## 📱 Mobile-First Design\n\nAll components are optimized for mobile-first usage with:\n- 🌞 **High contrast support** for outdoor visibility\n- 🤏 **Touch-friendly interactions** with proper tap targets\n- 🔄 **Platform-specific optimizations** (iOS/Android)\n- 📐 **Dynamic safe area support** for modern devices\n- ⚡ **Gesture support** with haptic feedback integration
+The Academy Mobile Apps feature a comprehensive component library with 90+ shared components designed for educational institutions. All components are built with **mobile-first Academy theming**, accessibility, and TypeScript support. **Production-verified** - all components are actively used in the live applications.\n\n## 📱 Mobile-First Design\n\nAll components are optimized for mobile-first usage with:\n- 🌞 **High contrast support** for outdoor visibility\n- 🤏 **Touch-friendly interactions** with proper tap targets\n- 🔄 **Platform-specific optimizations** (iOS/Android)\n- 📐 **Dynamic safe area support** for modern devices\n- ⚡ **Gesture support** with haptic feedback integration
 
 ## 🎯 Component Categories
 
@@ -11,6 +11,7 @@ Core design system elements with Academy branding:
 - **[LoadingSpinner](./ui/LoadingSpinner.md)** - Animated loading indicators with Academy theming
 - **[Alert](./ui/Alert.md)** - Toast notifications and alert system with animations
 - **[Modal Components](./ui/Modal.md)** - CustomModal, CustomModalWithDot, and BottomSheet with Academy styling
+- **[ProfileSwitcherBottomSheet](./profile/ProfileSwitcherBottomSheet.md)** - Multi-profile management with parent-child relationships
 
 ### 📝 Form & Selection Components
 Comprehensive form system with React Hook Form integration and advanced selection components:
@@ -63,15 +64,22 @@ Comprehensive calendar and scheduling system:
 - **[ClassroomCalendar](./calendar/ClassroomCalendar.md)** - Classroom scheduling
 - **[StudentProfileCalendar](./calendar/StudentProfileCalendar.md)** - Student-specific calendar
 
-### 📱 Navigation & Settings Components
-Navigation, layout, and settings management components:
+### 📱 Navigation Components
+Navigation and layout management components:
 
 - **[Header](./navigation/Header.md)** - Academy header component with program switching and notifications
 - **[MenuList](./navigation/MenuList.md)** - Grid-based navigation menus with customizable cards
 - **[NavigationHeader](./navigation/NavigationHeader.md)** - Stack navigation headers
 - **[BottomSheet](./navigation/BottomSheet.md)** - Bottom sheet interface
-- **[SettingCard](./settings/SettingCard.md)** - Settings interface component
-- **[CustomSwitch](./settings/CustomSwitch.md)** - Toggle switches for settings
+
+### ⚙️ Settings System Components
+Comprehensive user preferences management with persistent storage:
+
+- **[SettingsCard](./settings/SettingsCard.md)** - Interactive setting items with icons and variants
+- **[SettingsSection](./settings/SettingsSection.md)** - Organized setting groups with animations
+- **[SettingsSwitch](./settings/SettingsSwitch.md)** - Themed toggle switches for preferences
+- **[SettingsPicker](./settings/SettingsPicker.md)** - Modal-based option selectors with search
+- **[Settings Store](./settings/SettingsStore.md)** - Zustand store with 5 categories and AsyncStorage persistence
 
 ### 🍔 Menu System Components
 Complete menu system for both student and instructor applications:
@@ -87,6 +95,13 @@ Comprehensive user profile and account management system:
 - **[PaymentMethodsScreen](./payments/PaymentMethodsScreen.md)** - Payment method management with card/PayPal support
 - **[ProfilePhotoSystem](./profile/ProfilePhotoSystem.md)** - Dual photo system with cover photo and profile picture
 - **[SettingsScreens](./settings/SettingsScreens.md)** - Privacy, notification, and account settings management
+
+### 🏆 Gamification Components
+Achievement and progress tracking system for enhanced student engagement:
+
+- **[AchievementsScreen](./gamification/AchievementsScreen.md)** - Comprehensive achievement system with progress tracking, rarity levels, and category filtering
+- **[Achievement Components](./gamification/AchievementComponents.md)** - Individual achievement cards, progress bars, and status indicators
+- **[Gamification System](./gamification/GamificationSystem.md)** - Points system, rarity hierarchy, and motivational elements
 
 ### 🔧 Utility Functions
 Reusable utility functions for component development:

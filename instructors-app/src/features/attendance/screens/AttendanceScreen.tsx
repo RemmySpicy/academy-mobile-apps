@@ -18,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, createThemedStyles, Badge, Header } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Badge, Header, useNotifications } from '@academy/mobile-shared';
 import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 interface Student {
@@ -147,7 +147,7 @@ export const AttendanceScreen: React.FC = () => {
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
-  const [notificationCount, setNotificationCount] = useState(2);
+  const { unreadCount, clearUnreadCount } = useNotifications();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Mock data - replace with real API call
@@ -216,7 +216,7 @@ export const AttendanceScreen: React.FC = () => {
 
   const handleNotifications = () => {
     console.log('Notifications pressed');
-    setNotificationCount(0);
+    clearUnreadCount();
     navigation.navigate('Notifications');
   };
 
@@ -233,7 +233,7 @@ export const AttendanceScreen: React.FC = () => {
         onSearchPress={handleSearch}
         onFilterPress={handleFilter}
         onNotificationPress={handleNotifications}
-        notificationCount={notificationCount}
+        notificationCount={unreadCount}
         showInstructorActions={true}
         showNotifications={true}
         showProfile={false}

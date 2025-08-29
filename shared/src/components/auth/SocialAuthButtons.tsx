@@ -267,26 +267,6 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
   // SOLUTION: Direct inline styles that preserve original theme-based styling
   // TODO: Remove this section when StyleSheet issue is resolved
   
-  // Debug mobile styling issues
-  console.log(`🔍 SocialAuthButton[${provider}]:`, {
-    variant,
-    size,
-    providerConfig: {
-      backgroundColor: providerConfig.backgroundColor,
-      borderColor: providerConfig.borderColor,
-      textColor: providerConfig.textColor,
-    },
-    theme: {
-      backgroundSecondary: theme.colors?.background?.secondary,
-      borderPrimary: theme.colors?.border?.primary,
-      textPrimary: theme.colors?.text?.primary,
-      spacingMd: theme.spacing?.md,
-      spacingLg: theme.spacing?.lg,
-      borderRadiusMd: theme.borderRadius?.md,
-      borderWidthSm: theme.borderWidth?.sm,
-      fontSizesBase: theme.fontSizes?.base,
-    }
-  });
 
   // For Apple Sign In, use the native component on iOS
   if (provider === 'apple' && Platform.OS === 'ios' && config.appleEnabled) {
@@ -334,18 +314,6 @@ const SocialAuthButton: React.FC<SocialAuthButtonProps> = ({
     textAlign: 'center' as const,
   };
 
-  // Log styles being applied for debugging
-  console.log(`🎯 SocialAuthButton[${provider}] FINAL STYLES:`, {
-    backgroundColor: dynamicButtonStyle.backgroundColor,
-    borderWidth: dynamicButtonStyle.borderWidth,
-    borderColor: dynamicButtonStyle.borderColor,
-    height: dynamicButtonStyle.height,
-    paddingHorizontal: dynamicButtonStyle.paddingHorizontal,
-    borderRadius: dynamicButtonStyle.borderRadius,
-    textColor: dynamicTextStyle.color,
-    fontSize: dynamicTextStyle.fontSize,
-    platform: require('react-native').Platform.OS,
-  });
 
 
   return (

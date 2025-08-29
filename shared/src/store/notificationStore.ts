@@ -27,12 +27,19 @@ export interface Notification {
  */
 interface NotificationState {
   notifications: Notification[];
+  unreadCount: number; // Count of unread notifications in the notification center/inbox
   
   // Actions
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'isVisible'>) => string;
   removeNotification: (id: string) => void;
   hideNotification: (id: string) => void;
   clearAll: () => void;
+  
+  // Unread count management
+  setUnreadCount: (count: number) => void;
+  incrementUnreadCount: () => void;
+  decrementUnreadCount: () => void;
+  clearUnreadCount: () => void;
   
   // Convenience methods
   showSuccess: (message: string, title?: string, duration?: number) => string;
@@ -64,6 +71,7 @@ const generateId = (): string => {
 export const useNotificationStore = create<NotificationState>()(
   immer((set, get) => ({
     notifications: [],
+    unreadCount: 5, // Default count - in real app this would be fetched from API
 
     /**
      * Add a new notification to the store
@@ -179,6 +187,42 @@ export const useNotificationStore = create<NotificationState>()(
         duration,
       });
     },
+
+    /**
+     * Set unread notification count
+     */
+    setUnreadCount: (count) => {
+      set((state) => {
+        state.unreadCount = Math.max(0, count);
+      });
+    },
+
+    /**
+     * Increment unread notification count
+     */
+    incrementUnreadCount: () => {
+      set((state) => {
+        state.unreadCount += 1;
+      });
+    },
+
+    /**
+     * Decrement unread notification count
+     */
+    decrementUnreadCount: () => {
+      set((state) => {
+        state.unreadCount = Math.max(0, state.unreadCount - 1);
+      });
+    },
+
+    /**
+     * Clear unread notification count
+     */
+    clearUnreadCount: () => {
+      set((state) => {
+        state.unreadCount = 0;
+      });
+    },
   }))
 );
 
@@ -192,6 +236,8 @@ export const notificationSelectors = {
   hasNotifications: (state: NotificationState) => state.notifications.length > 0,
   latestNotification: (state: NotificationState) => 
     state.notifications[state.notifications.length - 1],
+  unreadCount: (state: NotificationState) => state.unreadCount,
+  hasUnreadNotifications: (state: NotificationState) => state.unreadCount > 0,
 };
 
 /**
@@ -202,6 +248,7 @@ export const useNotifications = () => {
   
   return {
     notifications: store.notifications,
+    unreadCount: store.unreadCount,
     showSuccess: store.showSuccess,
     showError: store.showError,
     showWarning: store.showWarning,
@@ -209,6 +256,10 @@ export const useNotifications = () => {
     removeNotification: store.removeNotification,
     hideNotification: store.hideNotification,
     clearAll: store.clearAll,
+    setUnreadCount: store.setUnreadCount,
+    incrementUnreadCount: store.incrementUnreadCount,
+    decrementUnreadCount: store.decrementUnreadCount,
+    clearUnreadCount: store.clearUnreadCount,
   };
 };
 

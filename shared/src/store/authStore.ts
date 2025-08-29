@@ -703,11 +703,11 @@ export const useAuthStore = create<AuthStoreState>()(
       const isInstructorApp = defaultAppType === 'instructor';
       
       const mockUser: User = {
-        id: `dev_user_${isInstructorApp ? 'instructor' : 'student'}_123`,
-        email: `dev.${isInstructorApp ? 'instructor' : 'student'}@academy.com`,
-        first_name: isInstructorApp ? 'Dev' : 'Student',
-        last_name: isInstructorApp ? 'Instructor' : 'User',
-        role: isInstructorApp ? UserRole.TUTOR : UserRole.STUDENT,
+        id: `dev_user_${isInstructorApp ? 'instructor' : 'parent'}_123`,
+        email: `dev.${isInstructorApp ? 'instructor' : 'parent'}@academy.com`,
+        first_name: isInstructorApp ? 'Dev' : 'Sarah',
+        last_name: isInstructorApp ? 'Instructor' : 'Johnson',
+        role: isInstructorApp ? UserRole.TUTOR : UserRole.PARENT,
         is_active: true,
         is_verified: true,
         program_assignments: [{

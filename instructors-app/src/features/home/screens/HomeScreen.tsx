@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { Header, InstructorDashboard, useTheme, createThemedStyles, useProgramContext, useAuthStore } from '@academy/mobile-shared';
+import { Header, InstructorDashboard, useTheme, createThemedStyles, useProgramContext, useAuthStore, useNotifications } from '@academy/mobile-shared';
 import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 // Sample data for testing
@@ -161,7 +161,7 @@ export const HomeScreen: React.FC = () => {
   const { width } = useWindowDimensions();
   const styles = useScreenStyles();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
-  const [notificationCount, setNotificationCount] = useState(3);
+  const { unreadCount, clearUnreadCount } = useNotifications();
 
   const handleSearch = () => {
     console.log('Search pressed');
@@ -173,7 +173,7 @@ export const HomeScreen: React.FC = () => {
 
   const handleNotifications = () => {
     console.log('Notifications pressed');
-    setNotificationCount(0);
+    clearUnreadCount();
     navigation.navigate('Notifications');
   };
 
@@ -214,7 +214,7 @@ export const HomeScreen: React.FC = () => {
         showProgramSwitcher={true}
         showNotifications={true}
         onNotificationPress={handleNotifications}
-        notificationCount={notificationCount}
+        notificationCount={unreadCount}
         onSearchPress={handleSearch}
         onFilterPress={handleFilter}
         showInstructorActions={true}

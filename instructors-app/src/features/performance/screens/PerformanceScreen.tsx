@@ -16,7 +16,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Header, useNotifications } from '@academy/mobile-shared';
 import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 const { width } = Dimensions.get('window');
@@ -198,7 +198,7 @@ export const PerformanceScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter'>('month');
-  const [notificationCount, setNotificationCount] = useState(4);
+  const { unreadCount, clearUnreadCount } = useNotifications();
 
   const metrics = [
     {
@@ -286,7 +286,7 @@ export const PerformanceScreen: React.FC = () => {
 
   const handleNotifications = () => {
     console.log('Notifications pressed');
-    setNotificationCount(0);
+    clearUnreadCount();
     navigation.navigate('Notifications');
   };
 
@@ -300,7 +300,7 @@ export const PerformanceScreen: React.FC = () => {
         onSearchPress={handleSearch}
         onFilterPress={handleFilter}
         onNotificationPress={handleNotifications}
-        notificationCount={notificationCount}
+        notificationCount={unreadCount}
         showInstructorActions={true}
         showNotifications={true}
         showProfile={false}

@@ -11,7 +11,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useAuthStore, useTheme, Header, MenuList } from '@academy/mobile-shared';
+import { useAuthStore, useTheme, Header, MenuList, useNotifications, ProfileSwitcherBottomSheet, UserRole } from '@academy/mobile-shared';
 import { MenuStackParamList } from '../navigation/MenuNavigator';
 import type { AppStackParamList } from '../../../navigation/AppNavigator';
 
@@ -114,8 +114,9 @@ export const AppMenuScreen: React.FC = () => {
   const { user, logout } = useAuthStore();
   const navigation = useNavigation<AppMenuScreenNavigationProp>();
   const appNavigation = useNavigation<NavigationProp<AppStackParamList>>();
-  const [notificationCount] = useState(0);
-  const [isParentMode, setIsParentMode] = useState(user?.role === 'parent');
+  const { unreadCount } = useNotifications();
+  const [isParentMode, setIsParentMode] = useState(user?.role === UserRole.PARENT);
+  const [showProfileSwitcher, setShowProfileSwitcher] = useState(false);
 
   const handleSearch = () => {
     console.log('Search pressed');
@@ -147,6 +148,21 @@ export const AppMenuScreen: React.FC = () => {
     setIsParentMode(!isParentMode);
   };
 
+  const handleShowProfileSwitcher = () => {
+    setShowProfileSwitcher(true);
+  };
+
+  const handleProfileSwitcherClose = () => {
+    setShowProfileSwitcher(false);
+  };
+
+  const handleProfileSelect = (profile: any) => {
+    console.log('Selected profile:', profile);
+    // Here you would implement the actual profile switching logic
+    // For example, updating the user context or making API calls
+    setShowProfileSwitcher(false);
+  };
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -172,7 +188,7 @@ export const AppMenuScreen: React.FC = () => {
       color: theme.colors.status.success,
       onPress: () => navigation.navigate('PaymentMethods'),
     },
-    ...(user?.role === 'parent' || isParentMode ? [{
+    ...(user?.role === UserRole.PARENT || isParentMode ? [{
       id: 'manage-children',
       title: 'Manage Children',
       subtitle: 'Add or edit child profiles',
@@ -237,9 +253,10 @@ export const AppMenuScreen: React.FC = () => {
       <Header
         title="Menu"
         showProgramSwitcher={true}
-        showNotifications={notificationCount > 0}
+        showNotifications={true}
+        showProfile={false}
         onNotificationPress={handleNotifications}
-        notificationCount={notificationCount}
+        notificationCount={unreadCount}
         style={{ paddingTop: insets.top }}
       />
 
@@ -259,14 +276,17 @@ export const AppMenuScreen: React.FC = () => {
             marginBottom: theme.spacing.xl,
           }}
         >
-          <View style={{
-            backgroundColor: theme.colors.background.primary,
-            borderRadius: theme.borderRadius.xl,
-            padding: theme.spacing.lg,
-            borderWidth: 1,
-            borderColor: theme.colors.border.primary,
-            ...theme.elevation.sm,
-          }}>
+          <Pressable
+            onPress={() => navigation.navigate('EditProfile')}
+            style={{
+              backgroundColor: theme.colors.background.primary,
+              borderRadius: theme.borderRadius.xl,
+              padding: theme.spacing.lg,
+              borderWidth: 1,
+              borderColor: theme.colors.border.primary,
+              ...theme.elevation.sm,
+            }}
+          >
             <View style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -324,7 +344,7 @@ export const AppMenuScreen: React.FC = () => {
                       {isParentMode ? 'Parent' : 'Student'}
                     </Text>
                   </View>
-                  {user?.role === 'parent' && (
+                  {user?.role === UserRole.PARENT && (
                     <Pressable
                       onPress={toggleParentMode}
                       style={{
@@ -348,20 +368,23 @@ export const AppMenuScreen: React.FC = () => {
               </View>
               
               <Pressable 
-                onPress={() => navigation.navigate('EditProfile')}
+                onPress={handleShowProfileSwitcher}
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 48,
+                  height: 48,
                   backgroundColor: theme.colors.background.secondary,
-                  borderRadius: 20,
+                  borderRadius: 24,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  borderWidth: 1.5,
+                  borderColor: theme.colors.interactive.primary,
                 }}
               >
-                <Ionicons name="pencil" size={20} color={theme.colors.icon.secondary} />
+                <Ionicons name="people" size={24} color={theme.colors.interactive.primary} />
               </Pressable>
             </View>
             
+
             {/* Quick Stats */}
             <View style={{
               flexDirection: 'row',
@@ -404,7 +427,7 @@ export const AppMenuScreen: React.FC = () => {
                 }}>Achievements</Text>
               </View>
             </View>
-          </View>
+          </Pressable>
         </Animated.View>
 
         {/* Academy Features Section */}
@@ -832,6 +855,14 @@ export const AppMenuScreen: React.FC = () => {
           </Text>
         </Animated.View>
       </ScrollView>
+
+      {/* Profile Switcher Bottom Sheet */}
+      <ProfileSwitcherBottomSheet
+        visible={showProfileSwitcher}
+        onClose={handleProfileSwitcherClose}
+        onProfileSelect={handleProfileSelect}
+        activeProfileId={isParentMode ? 'parent-profile' : 'student-profile'}
+      />
     </View>
   );
 };

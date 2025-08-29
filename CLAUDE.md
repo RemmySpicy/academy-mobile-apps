@@ -123,7 +123,7 @@ Both apps use a feature-based architecture with:
 ### App Navigation Structure
 
 #### **Students App Navigation**
-- Dashboard → Students → Attendance → Performance → Menu (+ Dev tabs in development)
+- Home → Bookings → Progress → Menu (+ Dev tabs in development)
 
 #### **Instructors App Navigation** 
 - Dashboard → Students → Attendance → Performance → Classroom → Menu (+ Dev tabs in development)
@@ -199,6 +199,67 @@ import { FormDropdown } from '@academy/mobile-shared';
 - **Use search capability** for option sets larger than 10 items
 - **Follow Academy theming** with `theme.colors.interactive.primary` for selections
 
+#### **ProfileSwitcherBottomSheet** - Multi-profile management
+```typescript
+import { ProfileSwitcherBottomSheet } from '@academy/mobile-shared';
+
+// For family account management, parent-child profile switching
+<ProfileSwitcherBottomSheet
+  visible={showProfileSwitcher}
+  onClose={handleClose}
+  onProfileSelect={handleProfileSelect}
+  activeProfileId={currentProfileId}
+/>
+```
+
+**Profile Switching Usage Rules:**
+- **Parents**: See parent profile + children profiles with grade/program details
+- **Students**: See own profile + potential family members
+- **Always show "Create New Profile"** option for adding family members
+- **Use people icon** for switcher trigger (intuitive profile management indicator)
+- **Make profile card clickable** for direct navigation to EditProfile screen
+
+#### **Settings Components** - Comprehensive user preferences
+```typescript
+import { 
+  SettingsCard, 
+  SettingsSection, 
+  SettingsSwitch, 
+  SettingsPicker,
+  useSettingsStore 
+} from '@academy/mobile-shared';
+
+// Organized settings with sections
+<SettingsSection title="App Preferences" delay={300}>
+  <SettingsCard
+    icon="flash"
+    title="Animations"
+    subtitle="Enable smooth transitions"
+    rightElement={
+      <SettingsSwitch
+        value={settings.animations}
+        onValueChange={updateSetting}
+      />
+    }
+  />
+  
+  <SettingsPicker
+    title="Theme"
+    options={themeOptions}
+    selectedValue={settings.theme}
+    onSelectionChange={setTheme}
+  />
+</SettingsSection>
+```
+
+**Settings System Features:**
+- **Persistent Storage**: All settings saved to AsyncStorage with Zustand
+- **Role-Based Customization**: Different options for students vs instructors  
+- **Academy Theming**: Uses `theme.colors.interactive.primary` consistently
+- **Type Safety**: Full TypeScript interfaces with validation
+- **5 Categories**: App, Notifications, Privacy, Academy, Security settings
+- **Mobile-First**: Touch-friendly interactions with smooth animations
+
 #### Available Utilities
 - **Date Utilities**: `getDateRange`, `formatDate`, `isToday`, `getStartOfWeek`, `getMonthBoundaries`, `isDateInRange`
 - **Style Utilities**: `getContainerStyles`, `getActionButtonStyles`, `getDayBoxStyles`, `createControlCardStyles`
@@ -211,7 +272,7 @@ The Academy Apps feature comprehensive menu systems with production-ready screen
 - **Settings Screens**: Notification settings, privacy settings, about screen
 - **Academy Features**: Courses, services, achievements, store, transactions, referrals
 - **Quick Access**: Schedule, achievements, store with visual cards
-- **Profile Management**: Student/parent mode switching, profile editing
+- **Profile Management**: Multi-profile switching with parent-child relationships, profile editing
 
 #### **Instructor App Menu Features**
 - **Instructor Tools**: Class management, student reports, attendance tracker, grade book
@@ -262,7 +323,8 @@ npm run test:all
 
 - ✅ Theme system with Academy branding
 - ✅ Authentication with JWT and program context
-- ✅ **85+ shared components with TypeScript interfaces and utility functions (production-verified)**
+- ✅ **90+ shared components with TypeScript interfaces and utility functions (production-verified)**
+- ✅ **Comprehensive Settings System with persistent storage and role-based customization**
 - ✅ Modern chart system (React 19 compatible)
 - ✅ Type-safe navigation and state management
 - ✅ Both apps building and running successfully

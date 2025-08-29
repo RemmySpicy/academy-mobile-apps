@@ -11,7 +11,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useAuthStore, useTheme, Header, MenuList } from '@academy/mobile-shared';
+import { useAuthStore, useTheme, Header, MenuList, useNotifications } from '@academy/mobile-shared';
 import { MenuStackParamList } from '../types';
 import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
@@ -114,7 +114,7 @@ export const AppMenuScreen: React.FC = () => {
   const { user, logout } = useAuthStore();
   const navigation = useNavigation<AppMenuScreenNavigationProp>();
   const appNavigation = useNavigation<NavigationProp<MainStackParamList>>();
-  const [notificationCount] = useState(0);
+  const { unreadCount } = useNotifications();
 
   const handleSearch = () => {
     console.log('Search pressed');
@@ -232,9 +232,10 @@ export const AppMenuScreen: React.FC = () => {
       <Header
         title="Menu"
         showProgramSwitcher={true}
-        showNotifications={notificationCount > 0}
+        showNotifications={true}
+        showProfile={false}
         onNotificationPress={handleNotifications}
-        notificationCount={notificationCount}
+        notificationCount={unreadCount}
         style={{ paddingTop: insets.top }}
       />
 

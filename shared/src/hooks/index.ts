@@ -17,3 +17,4 @@ export {
   useDebouncedCallback 
 } from './useDebounce';
 export { default as useLocationPermission } from './useLocationPermission';
+export { useDelayedElevation } from './useDelayedElevation';

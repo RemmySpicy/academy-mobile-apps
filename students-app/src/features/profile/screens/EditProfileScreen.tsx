@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useTheme, CustomButton, CustomInput } from '@academy/mobile-shared';
+import { useTheme, CustomButton, CustomInput, DatePicker } from '@academy/mobile-shared';
 
 interface UserProfile {
   id: string;
@@ -172,7 +172,7 @@ export const EditProfileScreen: React.FC = () => {
             backgroundColor: profile.coverPhoto ? 'transparent' : `${theme.colors.interactive.primary}08`,
             overflow: 'hidden',
             position: 'relative',
-            ...theme.elevation.lg,
+            ...theme.elevation.sm,
             borderWidth: 1,
             borderColor: theme.colors.border.primary,
           }}>
@@ -286,7 +286,7 @@ export const EditProfileScreen: React.FC = () => {
             marginTop: -theme.borderRadius.xl,
             borderBottomLeftRadius: theme.borderRadius.xl,
             borderBottomRightRadius: theme.borderRadius.xl,
-            ...theme.elevation.md,
+            ...theme.elevation.sm,
             borderWidth: 1,
             borderTopWidth: 0,
             borderColor: theme.colors.border.primary,
@@ -314,7 +314,7 @@ export const EditProfileScreen: React.FC = () => {
                   justifyContent: 'center',
                   borderWidth: 6,
                   borderColor: theme.colors.background.secondary,
-                  ...theme.elevation.xl,
+                  ...theme.elevation.sm,
                   shadowColor: theme.colors.interactive.primary,
                   shadowOpacity: 0.3,
                   shadowRadius: 12,
@@ -354,7 +354,7 @@ export const EditProfileScreen: React.FC = () => {
                         justifyContent: 'center',
                         borderWidth: 4,
                         borderColor: theme.colors.background.secondary,
-                        ...theme.elevation.lg,
+                        ...theme.elevation.sm,
                       }}
                       onPress={handleChangeProfilePicture}
                     >
@@ -429,7 +429,7 @@ export const EditProfileScreen: React.FC = () => {
               borderRadius: theme.borderRadius.lg,
               flex: 1,
               marginHorizontal: theme.spacing.xs,
-              ...theme.elevation.xs,
+              ...theme.elevation.sm,
               borderWidth: 1,
               borderColor: theme.colors.border.primary,
             }}>
@@ -463,7 +463,7 @@ export const EditProfileScreen: React.FC = () => {
               borderRadius: theme.borderRadius.lg,
               flex: 1,
               marginHorizontal: theme.spacing.xs,
-              ...theme.elevation.xs,
+              ...theme.elevation.sm,
               borderWidth: 1,
               borderColor: theme.colors.border.primary,
             }}>
@@ -497,7 +497,7 @@ export const EditProfileScreen: React.FC = () => {
               borderRadius: theme.borderRadius.lg,
               flex: 1,
               marginHorizontal: theme.spacing.xs,
-              ...theme.elevation.xs,
+              ...theme.elevation.sm,
               borderWidth: 1,
               borderColor: theme.colors.border.primary,
             }}>
@@ -548,7 +548,6 @@ export const EditProfileScreen: React.FC = () => {
             entering={FadeInDown.delay(200).springify()}
             style={{
               flexDirection: 'row',
-              gap: theme.spacing.md,
               marginBottom: theme.spacing.xl,
             }}
           >
@@ -578,7 +577,7 @@ export const EditProfileScreen: React.FC = () => {
             borderRadius: theme.borderRadius.xl,
             padding: theme.spacing.xl,
             marginBottom: theme.spacing.lg,
-            ...theme.elevation.md,
+            ...theme.elevation.sm,
             borderWidth: 1,
             borderColor: theme.colors.border.primary,
           }}
@@ -610,10 +609,10 @@ export const EditProfileScreen: React.FC = () => {
             />
           </View>
 
-          <View style={{ gap: theme.spacing.lg }}>
+          <View style={{ gap: theme.spacing.md }}>
             <View style={{
               flexDirection: 'row',
-              gap: theme.spacing.lg,
+              gap: theme.spacing.md,
             }}>
               <View style={{ flex: 1 }}>
                 <CustomInput
@@ -622,7 +621,7 @@ export const EditProfileScreen: React.FC = () => {
                   onChangeText={(value) => handleInputChange('firstName', value)}
                   placeholder="Enter first name"
                   editable={isEditing}
-                  containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+                  containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
                 />
               </View>
               <View style={{ flex: 1 }}>
@@ -632,7 +631,7 @@ export const EditProfileScreen: React.FC = () => {
                   onChangeText={(value) => handleInputChange('lastName', value)}
                   placeholder="Enter last name"
                   editable={isEditing}
-                  containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+                  containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
                 />
               </View>
             </View>
@@ -644,7 +643,7 @@ export const EditProfileScreen: React.FC = () => {
               placeholder="Enter email address"
               keyboardType="email-address"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
 
             <CustomInput
@@ -654,17 +653,29 @@ export const EditProfileScreen: React.FC = () => {
               placeholder="Enter phone number"
               keyboardType="phone-pad"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
 
-            <CustomInput
-              label="Date of Birth"
-              value={profile.dateOfBirth}
-              onChangeText={(value) => handleInputChange('dateOfBirth', value)}
-              placeholder="YYYY-MM-DD"
-              editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
-            />
+            <View style={!isEditing ? { opacity: 0.7 } : {}}>
+              <Text style={{
+                color: theme.colors.text.secondary,
+                fontSize: theme.fontSizes.sm,
+                fontWeight: theme.fontConfig.fontWeight.medium,
+                marginBottom: theme.spacing.xs,
+              }}>
+                Date of Birth
+              </Text>
+              <DatePicker
+                value={profile.dateOfBirth}
+                onDateChange={(value) => handleInputChange('dateOfBirth', value)}
+                placeholder="Select date of birth"
+                disabled={!isEditing}
+                testID="date-of-birth-picker"
+                modal={true}
+                showClearButton={!!profile.dateOfBirth}
+                onClear={() => handleInputChange('dateOfBirth', '')}
+              />
+            </View>
           </View>
         </Animated.View>
 
@@ -676,7 +687,7 @@ export const EditProfileScreen: React.FC = () => {
             borderRadius: theme.borderRadius.xl,
             padding: theme.spacing.xl,
             marginBottom: theme.spacing.lg,
-            ...theme.elevation.md,
+            ...theme.elevation.sm,
             borderWidth: 1,
             borderColor: theme.colors.border.primary,
           }}
@@ -708,14 +719,14 @@ export const EditProfileScreen: React.FC = () => {
             />
           </View>
 
-          <View style={{ gap: theme.spacing.lg }}>
+          <View style={{ gap: theme.spacing.md }}>
             <CustomInput
               label="Contact Name"
               value={profile.emergencyContact}
               onChangeText={(value) => handleInputChange('emergencyContact', value)}
               placeholder="Enter emergency contact name"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
 
             <CustomInput
@@ -725,7 +736,7 @@ export const EditProfileScreen: React.FC = () => {
               placeholder="Enter emergency contact phone"
               keyboardType="phone-pad"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
           </View>
         </Animated.View>
@@ -738,7 +749,7 @@ export const EditProfileScreen: React.FC = () => {
             borderRadius: theme.borderRadius.xl,
             padding: theme.spacing.xl,
             marginBottom: theme.spacing.lg,
-            ...theme.elevation.md,
+            ...theme.elevation.sm,
             borderWidth: 1,
             borderColor: theme.colors.border.primary,
           }}
@@ -770,19 +781,19 @@ export const EditProfileScreen: React.FC = () => {
             />
           </View>
 
-          <View style={{ gap: theme.spacing.lg }}>
+          <View style={{ gap: theme.spacing.md }}>
             <CustomInput
               label="Street Address"
               value={profile.address}
               onChangeText={(value) => handleInputChange('address', value)}
               placeholder="Enter street address"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
 
             <View style={{
               flexDirection: 'row',
-              gap: theme.spacing.lg,
+              gap: theme.spacing.md,
             }}>
               <View style={{ flex: 1 }}>
                 <CustomInput
@@ -791,7 +802,7 @@ export const EditProfileScreen: React.FC = () => {
                   onChangeText={(value) => handleInputChange('city', value)}
                   placeholder="Enter city"
                   editable={isEditing}
-                  containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+                  containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
                 />
               </View>
               <View style={{ flex: 1 }}>
@@ -801,7 +812,7 @@ export const EditProfileScreen: React.FC = () => {
                   onChangeText={(value) => handleInputChange('zipCode', value)}
                   placeholder="Enter ZIP"
                   editable={isEditing}
-                  containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+                  containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
                 />
               </View>
             </View>
@@ -812,7 +823,7 @@ export const EditProfileScreen: React.FC = () => {
               onChangeText={(value) => handleInputChange('state', value)}
               placeholder="Enter state"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
           </View>
         </Animated.View>
@@ -825,7 +836,7 @@ export const EditProfileScreen: React.FC = () => {
             borderRadius: theme.borderRadius.xl,
             padding: theme.spacing.xl,
             marginBottom: theme.spacing.lg,
-            ...theme.elevation.md,
+            ...theme.elevation.sm,
             borderWidth: 1,
             borderColor: theme.colors.border.primary,
           }}
@@ -857,14 +868,14 @@ export const EditProfileScreen: React.FC = () => {
             />
           </View>
 
-          <View style={{ gap: theme.spacing.lg }}>
+          <View style={{ gap: theme.spacing.md }}>
             <CustomInput
               label="Program"
               value={profile.program}
               onChangeText={(value) => handleInputChange('program', value)}
               placeholder="Enter program"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
 
             <CustomInput
@@ -873,7 +884,7 @@ export const EditProfileScreen: React.FC = () => {
               onChangeText={(value) => handleInputChange('skillLevel', value)}
               placeholder="Enter skill level"
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
 
             <CustomInput
@@ -884,7 +895,7 @@ export const EditProfileScreen: React.FC = () => {
               multiline
               numberOfLines={3}
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
 
             <CustomInput
@@ -895,7 +906,7 @@ export const EditProfileScreen: React.FC = () => {
               multiline
               numberOfLines={2}
               editable={isEditing}
-              containerStyle={!isEditing ? { opacity: 0.7 } : {}}
+              containerStyle={!isEditing ? { opacity: 0.7, marginBottom: 0 } : { marginBottom: 0 }}
             />
           </View>
         </Animated.View>

@@ -97,6 +97,7 @@ export {
 export {
   Calendar,
   DatePicker,
+  SimpleDatePicker,
   ClassroomCalendar,
   StudentProfileCalendar,
 } from './components/calendar';
@@ -126,6 +127,11 @@ export {
 export {
   StudentProfile,
 } from './components/student';
+
+// Profile Components
+export {
+  ProfileSwitcherBottomSheet,
+} from './components/profile';
 
 // Phase 2: Enhanced UI Components
 export {
@@ -157,6 +163,7 @@ export {
   Lessons,
   Badge,
   LoadingSpinner,
+  StatsCard,
   NotificationList,
   BottomSheet,
   BottomSheetProvider,
@@ -174,6 +181,7 @@ export {
   useDebounce,
   useDebouncedCallback,
   useLocationPermission,
+  useDelayedElevation,
 } from './hooks';
 
 // Services - Direct exports
@@ -189,6 +197,10 @@ export type {
   Program,
   ProgramAssignment,
 } from './types';
+
+export {
+  UserRole,
+} from './types/auth';
 
 export type {
   CalendarProps,
@@ -246,10 +258,28 @@ export {
   hasMinimumRoleLevel,
 } from './utils';
 
+// Settings Components
+export {
+  SettingsCard,
+  SettingsSection,
+  SettingsSwitch,
+  SettingsPicker,
+} from './components/settings';
+export type { SettingsCardProps, SettingsSectionProps, SettingsSwitchProps, SettingsPickerProps, PickerOption } from './components/settings';
+
 // Store
 export { useAuthStore, authSelectors } from './store/authStore';
 export { useNotificationStore, notificationSelectors, useNotifications } from './store/notificationStore';
+export { useSettingsStore, getSettingsVersion, validateSettings, formatQuietHours } from './store/settingsStore';
 export type { Notification, NotificationType } from './store/notificationStore';
+export type { 
+  AppSettings,
+  NotificationSettings,
+  PrivacySettings,
+  AcademySettings,
+  SecuritySettings,
+  SettingsState,
+} from './store/settingsStore';
 
 // Theme - All theme exports
 export {

@@ -6,16 +6,14 @@ import {
   Pressable,
   StyleSheet,
   Linking,
-  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { useTheme } from '@academy/mobile-shared';
 
-const { width } = Dimensions.get('window');
 
-interface Location {
+interface Facility {
   id: string;
   name: string;
   address: string;
@@ -25,7 +23,7 @@ interface Location {
   hours: {
     [key: string]: string;
   };
-  facilities: string[];
+  amenities: string[];
   coords: {
     latitude: number;
     longitude: number;
@@ -34,27 +32,27 @@ interface Location {
   isMain?: boolean;
 }
 
-const LocationCard: React.FC<{ location: Location; index: number }> = ({
-  location,
+const FacilityCard: React.FC<{ facility: Facility; index: number }> = ({
+  facility,
   index,
 }) => {
   const { theme } = useTheme();
   
   const handleCall = () => {
-    Linking.openURL(`tel:${location.phone}`);
+    Linking.openURL(`tel:${facility.phone}`);
   };
 
   const handleEmail = () => {
-    Linking.openURL(`mailto:${location.email}`);
+    Linking.openURL(`mailto:${facility.email}`);
   };
 
   const handleDirections = () => {
-    const url = `https://maps.google.com/?daddr=${location.coords.latitude},${location.coords.longitude}`;
+    const url = `https://maps.google.com/?daddr=${facility.coords.latitude},${facility.coords.longitude}`;
     Linking.openURL(url);
   };
 
   const handleOpenMaps = () => {
-    const address = encodeURIComponent(`${location.address}, ${location.city}`);
+    const address = encodeURIComponent(`${facility.address}, ${facility.city}`);
     const url = `https://maps.google.com/?q=${address}`;
     Linking.openURL(url);
   };
@@ -63,7 +61,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
     <Animated.View
       entering={FadeInRight.delay(index * 100).springify()}
       style={[
-        styles.locationCard,
+        styles.facilityCard,
         {
           backgroundColor: theme.colors.background.primary,
           borderColor: theme.colors.border.primary,
@@ -74,7 +72,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
         }
       ]}
     >
-      {location.isMain && (
+      {facility.isMain && (
         <View style={[
           styles.mainBadge,
           {
@@ -93,7 +91,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
             fontSize: theme.fontSizes.xs,
             fontWeight: theme.fontConfig.fontWeight.bold,
           }}>
-            MAIN LOCATION
+            MAIN FACILITY
           </Text>
         </View>
       )}
@@ -105,7 +103,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
           fontWeight: theme.fontConfig.fontWeight.bold,
           marginBottom: theme.spacing.sm,
         }}>
-          {location.name}
+          {facility.name}
         </Text>
         
         <View style={{
@@ -114,7 +112,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
           marginBottom: theme.spacing.sm,
         }}>
           <Ionicons
-            name="location-outline"
+            name="business-outline"
             size={16}
             color={theme.colors.icon.secondary}
             style={{ marginRight: theme.spacing.sm, marginTop: 2 }}
@@ -125,22 +123,22 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
               fontSize: theme.fontSizes.base,
               lineHeight: 20,
             }}>
-              {location.address}
+              {facility.address}
             </Text>
             <Text style={{
               color: theme.colors.text.secondary,
               fontSize: theme.fontSizes.base,
             }}>
-              {location.city}
+              {facility.city}
             </Text>
           </View>
-          {location.distance && (
+          {facility.distance && (
             <Text style={{
               color: theme.colors.interactive.primary,
               fontSize: theme.fontSizes.sm,
               fontWeight: theme.fontConfig.fontWeight.medium,
             }}>
-              {location.distance}
+              {facility.distance}
             </Text>
           )}
         </View>
@@ -160,7 +158,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
             color: theme.colors.text.primary,
             fontSize: theme.fontSizes.base,
           }}>
-            {location.phone}
+            {facility.phone}
           </Text>
         </View>
 
@@ -179,7 +177,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
             color: theme.colors.text.primary,
             fontSize: theme.fontSizes.base,
           }}>
-            {location.email}
+            {facility.email}
           </Text>
         </View>
 
@@ -212,7 +210,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
         </Pressable>
       </View>
 
-      {/* Facilities */}
+      {/* Amenities */}
       <View style={{ marginBottom: theme.spacing.md }}>
         <Text style={{
           color: theme.colors.text.primary,
@@ -220,13 +218,13 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
           fontWeight: theme.fontConfig.fontWeight.semibold,
           marginBottom: theme.spacing.sm,
         }}>
-          Facilities
+          Amenities
         </Text>
         <View style={{
           flexDirection: 'row',
           flexWrap: 'wrap',
         }}>
-          {location.facilities.map((facility, idx) => (
+          {facility.amenities.map((amenity, idx) => (
             <View
               key={idx}
               style={{
@@ -242,7 +240,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
                 color: theme.colors.text.secondary,
                 fontSize: theme.fontSizes.sm,
               }}>
-                {facility}
+                {amenity}
               </Text>
             </View>
           ))}
@@ -260,7 +258,7 @@ const LocationCard: React.FC<{ location: Location; index: number }> = ({
           Hours
         </Text>
         <View>
-          {Object.entries(location.hours).map(([day, hours]) => (
+          {Object.entries(facility.hours).map(([day, hours]) => (
             <View
               key={day}
               style={{
@@ -390,15 +388,15 @@ export const LocationScreen: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
 
   const filters = [
-    { id: 'all', title: 'All Locations' },
+    { id: 'all', title: 'All Facilities' },
     { id: 'pools', title: 'Pools' },
     { id: 'gyms', title: 'Gyms' },
     { id: 'studios', title: 'Studios' },
   ];
 
-  const locations: Location[] = [
+  const facilities: Facility[] = [
     {
-      id: 'loc-001',
+      id: 'fac-001',
       name: 'Academy Main Campus',
       address: '123 Academy Drive',
       city: 'Downtown, CA 90210',
@@ -410,7 +408,7 @@ export const LocationScreen: React.FC = () => {
       },
       distance: '0.8 mi',
       isMain: true,
-      facilities: ['Olympic Pool', 'Fitness Center', 'Yoga Studio', 'Locker Rooms', 'Café'],
+      amenities: ['Multi-Sport Courts', 'Olympic Pool', 'Music Studios', 'Computer Lab', 'Fitness Center', 'Café', 'Auditorium'],
       hours: {
         'Monday': '6:00 AM - 10:00 PM',
         'Tuesday': '6:00 AM - 10:00 PM',
@@ -422,7 +420,7 @@ export const LocationScreen: React.FC = () => {
       },
     },
     {
-      id: 'loc-002',
+      id: 'fac-002',
       name: 'Academy North Branch',
       address: '456 North Street',
       city: 'Northside, CA 90211',
@@ -433,7 +431,7 @@ export const LocationScreen: React.FC = () => {
         longitude: -118.2537,
       },
       distance: '2.3 mi',
-      facilities: ['Training Pool', 'Kids Pool', 'Fitness Center', 'Sauna'],
+      amenities: ['Training Pool', 'Kids Play Area', 'Music Rooms', 'Basketball Court', 'Fitness Center', 'Parent Lounge'],
       hours: {
         'Monday': '6:00 AM - 9:00 PM',
         'Tuesday': '6:00 AM - 9:00 PM',
@@ -445,7 +443,7 @@ export const LocationScreen: React.FC = () => {
       },
     },
     {
-      id: 'loc-003',
+      id: 'fac-003',
       name: 'Academy Westside',
       address: '789 West Boulevard',
       city: 'Westside, CA 90212',
@@ -456,7 +454,7 @@ export const LocationScreen: React.FC = () => {
         longitude: -118.2637,
       },
       distance: '4.1 mi',
-      facilities: ['Competition Pool', 'Gym', 'Dance Studio', 'Physical Therapy'],
+      amenities: ['Competition Pool', 'Professional Gym', 'Dance/Performance Studio', 'Recording Studio', 'Physical Therapy', 'Sports Medicine'],
       hours: {
         'Monday': '5:30 AM - 9:30 PM',
         'Tuesday': '5:30 AM - 9:30 PM',
@@ -507,7 +505,7 @@ export const LocationScreen: React.FC = () => {
             lineHeight: 24,
             marginBottom: theme.spacing.lg,
           }}>
-            Visit any of our convenient locations for world-class training and facilities.
+            Visit any of our convenient facilities for world-class training and amenities.
           </Text>
 
           {/* Quick Stats */}
@@ -535,7 +533,7 @@ export const LocationScreen: React.FC = () => {
                   fontSize: theme.fontSizes.sm,
                   textAlign: 'center',
                 }}>
-                  Locations
+                  Facilities
                 </Text>
               </View>
               
@@ -621,12 +619,12 @@ export const LocationScreen: React.FC = () => {
           </ScrollView>
         </Animated.View>
 
-        {/* Locations List */}
+        {/* Facilities List */}
         <View style={{ paddingHorizontal: theme.spacing.md }}>
-          {locations.map((location, index) => (
-            <LocationCard
-              key={location.id}
-              location={location}
+          {facilities.map((facility, index) => (
+            <FacilityCard
+              key={facility.id}
+              facility={facility}
               index={index}
             />
           ))}
@@ -657,7 +655,7 @@ export const LocationScreen: React.FC = () => {
             textAlign: 'center',
             marginBottom: theme.spacing.sm,
           }}>
-            Questions About Our Locations?
+            Questions About Our Facilities?
           </Text>
           <Text style={{
             color: theme.colors.text.secondary,
@@ -733,7 +731,7 @@ export const LocationScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  locationCard: {
+  facilityCard: {
     borderWidth: 1,
   },
   mainBadge: {

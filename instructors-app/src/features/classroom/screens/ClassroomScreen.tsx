@@ -16,7 +16,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { useAuthStore, useTheme, createThemedStyles, Badge, Header } from '@academy/mobile-shared';
+import { useAuthStore, useTheme, createThemedStyles, Badge, Header, useNotifications } from '@academy/mobile-shared';
 import type { MainStackParamList } from '../../../navigation/MainNavigator';
 
 const { width } = Dimensions.get('window');
@@ -162,7 +162,7 @@ export const ClassroomScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const { user, currentProgram } = useAuthStore();
-  const [notificationCount, setNotificationCount] = React.useState(1);
+  const { unreadCount, clearUnreadCount } = useNotifications();
 
   // Mock data - replace with real API call
   const todaysClasses = [
@@ -205,7 +205,7 @@ export const ClassroomScreen: React.FC = () => {
 
   const handleNotifications = () => {
     console.log('Notifications pressed');
-    setNotificationCount(0);
+    clearUnreadCount();
     navigation.navigate('Notifications');
   };
 
@@ -219,7 +219,7 @@ export const ClassroomScreen: React.FC = () => {
         onSearchPress={handleSearch}
         onFilterPress={handleFilter}
         onNotificationPress={handleNotifications}
-        notificationCount={notificationCount}
+        notificationCount={unreadCount}
         showInstructorActions={true}
         showNotifications={true}
         showProfile={false}

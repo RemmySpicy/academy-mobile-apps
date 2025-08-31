@@ -139,3 +139,9 @@ export {
   PreferencesSupportSection,
   StationProgress,
 } from './academy';
+
+export {
+  AchievementCelebration,
+  AchievementNotificationToast,
+  AchievementLeaderboard,
+} from './achievements';

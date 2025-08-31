@@ -166,6 +166,13 @@ export {
   useQuickBottomSheet,
 } from './components/ui';
 
+// Achievement Components
+export {
+  AchievementCelebration,
+  AchievementNotificationToast,
+  AchievementLeaderboard,
+} from './components/achievements';
+
 // Hooks - Direct exports
 export {
   useApiClient,
@@ -180,6 +187,7 @@ export {
 export {
   apiClient,
   authService,
+  achievementsService,
 } from './services';
 
 // Types - Direct exports
@@ -189,6 +197,29 @@ export type {
   Program,
   ProgramAssignment,
   ApiResponse,
+  // Achievement types
+  AchievementType,
+  AchievementStatus,
+  AchievementRarity,
+  AchievementCriteria,
+  Achievement,
+  AchievementCategory,
+  AchievementProgress,
+  AchievementUnlock,
+  StudentAchievementStats,
+  AchievementLeaderboard,
+  GetAchievementsRequest,
+  GetAchievementsResponse,
+  UnlockAchievementRequest,
+  UnlockAchievementResponse,
+  GetLeaderboardRequest,
+  GetLeaderboardResponse,
+  AchievementFilters,
+  AchievementSortBy,
+  AchievementCelebration,
+  AchievementTemplate,
+  CreateAchievementFromTemplate,
+  AchievementNotification,
 } from './types';
 
 // Class/Enum exports

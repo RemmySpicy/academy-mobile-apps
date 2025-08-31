@@ -34,6 +34,8 @@ Welcome to the Academy Management System mobile applications documentation. This
 - **[Notification System](./api/NOTIFICATIONS.md)** - User notification and alert system
 
 ### 🎯 Features
+- **[Features Overview](./features/README.md)** - Complete feature documentation index
+- **[Achievement System](./features/achievements/README.md)** - ✅ Gamification system with progress tracking and rewards
 - **[Help & Support System](./features/HELP_SUPPORT_SYSTEM.md)** - Comprehensive user support and knowledge base
 
 ### 🎨 User Experience  

@@ -119,3 +119,29 @@ export interface Enrollment {
 export type { Program as AcademyProgram };
 export type { Course as AcademyCourse };
 export type { Enrollment as CourseEnrollment };
+
+// Achievement Types - Export all achievement-related types
+export type {
+  AchievementType,
+  AchievementStatus,
+  AchievementRarity,
+  AchievementCriteria,
+  Achievement,
+  AchievementCategory,
+  AchievementProgress,
+  AchievementUnlock,
+  StudentAchievementStats,
+  AchievementLeaderboard,
+  GetAchievementsRequest,
+  GetAchievementsResponse,
+  UnlockAchievementRequest,
+  UnlockAchievementResponse,
+  GetLeaderboardRequest,
+  GetLeaderboardResponse,
+  AchievementFilters,
+  AchievementSortBy,
+  AchievementCelebration,
+  AchievementTemplate,
+  CreateAchievementFromTemplate,
+  AchievementNotification,
+} from './achievements';

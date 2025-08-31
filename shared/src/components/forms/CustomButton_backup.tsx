@@ -84,23 +84,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 }) => {
   const { theme } = useTheme();
   
-  // Debug logging for mobile issues
-  if (Platform.OS !== 'web') {
-    console.log('🔍 CustomButton render:', {
-      title,
-      variant,
-      size,
-      themeExists: !!theme,
-      colorsExist: !!theme?.colors,
-      primaryColor: theme?.colors?.interactive?.primary,
-      textColor: theme?.colors?.text?.primary,
-      backgroundColor: theme?.colors?.background?.primary,
-      // Log the actual theme object structure
-      themeKeys: theme ? Object.keys(theme) : 'NO_THEME',
-      colorsKeys: theme?.colors ? Object.keys(theme.colors) : 'NO_COLORS',
-      interactiveKeys: theme?.colors?.interactive ? Object.keys(theme.colors.interactive) : 'NO_INTERACTIVE',
-    });
-  }
   
   const styles = useMemo(() => createStyles(theme), [theme]);
 

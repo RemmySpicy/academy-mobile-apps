@@ -208,7 +208,7 @@ cd shared && npx expo start
 - **Never hardcode**: Avoid hardcoded pixel values like `paddingHorizontal: 24`
 
 #### Fixed Files (35+ screens updated)
-**Students App:** All auth screens, feature screens (Transactions, Schedule, Contact, Store, Referrals, Location, Services, Bookings, Progress, Help, Courses, etc.)
+**Students App:** All auth screens, feature screens (Transactions, Schedule, Contact, Store, Referrals, Facilities, Services, Bookings, Progress, Help, Courses, etc.)
 
 **Instructors App:** All auth screens, feature screens (Performance, Classroom, Students, Attendance, etc.)
 

@@ -492,9 +492,9 @@ export const AppMenuScreen: React.FC = () => {
               },
               {
                 id: 'locate-us',
-                title: 'Locate Us',
+                title: 'Our Facilities',
                 icon: 'location',
-                onPress: () => navigation.navigate('LocateUs'),
+                onPress: () => navigation.navigate('OurFacilities'),
                 backgroundColor: theme.isDark ? '#4a1e3d' : '#fce4ec',
                 iconColor: theme.colors.status.error,
               },

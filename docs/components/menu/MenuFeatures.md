@@ -33,7 +33,7 @@ Dashboard → Students → Attendance → Performance → Classroom → Menu
 | **Referrals** | Friend referral program | `Referrals` | Referral tracking and rewards |
 | **My Schedule** | Personal class schedule | `MySchedule` | Schedule management |
 | **Progress Report** | Performance analytics dashboard | `ProgressReport` | Progress visualization |
-| **Our Facilities** | Academy facilities and contact info | `LocateUs` | Facility services |
+| **Our Facilities** | Academy facilities and contact info | `OurFacilities` | Facility services |
 | **Help & Support** | Support resources and contact | `HelpAndSupport` | User assistance |
 
 #### 🚀 Quick Access Cards

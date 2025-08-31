@@ -123,10 +123,12 @@ Both apps use a feature-based architecture with:
 ### App Navigation Structure
 
 #### **Students App Navigation**
-- Dashboard → Students → Attendance → Performance → Menu (+ Dev tabs in development)
+- Home → Bookings → Progress → Menu (+ Dev tabs in development)
 
 #### **Instructors App Navigation** 
 - Dashboard → Students → Attendance → Performance → Classroom → Menu (+ Dev tabs in development)
+
+> **📝 Recent Change**: Courses moved from primary tab navigation to menu system for cleaner UX
 
 The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT authentication and role-based access control.
 

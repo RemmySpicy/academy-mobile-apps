@@ -11,10 +11,11 @@ The Students App uses a **Tab-based navigation** with the following main section
 | Tab | Icon | Feature | Description |
 |-----|------|---------|-------------|
 | **Home** | `home` | Home Screen | Dashboard with quick actions, recent activity |
-| **Courses** | `school` | Course Management | Browse courses, view enrolled courses, progress |
 | **Bookings** | `calendar` | Booking System | Schedule classes, view upcoming sessions |
 | **Progress** | `trending-up` | Progress Tracking | View achievements, performance metrics |
-| **Menu** | `menu` | App Menu | Settings, profile, support, and additional features |
+| **Menu** | `menu` | App Menu | Settings, profile, courses, support, and additional features |
+
+> **📝 Note**: Courses has been moved from the tab navigator to the menu system for better organization and cleaner navigation.
 
 #### 🔧 Menu Navigator (`MenuNavigator.tsx`)
 
@@ -34,7 +35,7 @@ The Menu tab contains a comprehensive **Stack Navigator** with the following sec
 - **Referrals** - Invite friends and earn rewards
 - **My Schedule** - Personal calendar and class timetable
 - **Progress Report** - Detailed performance analytics
-- **Locate Us** - Academy locations and contact information
+- **Our Facilities** - Academy facilities and contact information
 
 ##### Support & Help
 - **Help & Support** - Comprehensive support center with:
@@ -111,6 +112,16 @@ The Notifications feature is implemented as a **modal navigation** accessible fr
    - Program-specific features and content
 
 #### 🚨 Recent Changes
+
+##### Navigation Optimization (August 2025)
+- **Moved**: Courses from bottom tab navigator to menu system
+- **Removed**: Courses tab from `TabNavigator.tsx` 
+- **Enhanced**: Courses accessible as "Our Courses" in app menu
+- **Benefits**:
+  - Cleaner, more focused tab bar with 4 tabs instead of 5
+  - Better visual balance and spacing in navigation
+  - Courses integrated with other academy features in menu
+  - Reduced cognitive load for primary navigation
 
 ##### Contact Us Consolidation (August 2025)
 - **Removed**: Separate "Contact Us" page and navigation routes

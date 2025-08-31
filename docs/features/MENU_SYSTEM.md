@@ -17,7 +17,7 @@ The Academy Mobile Apps feature a comprehensive menu system with production-read
 - **Referrals** → `ReferralsScreen` - Referral program management
 - **My Schedule** → `ScheduleScreen` - Personal scheduling interface
 - **Progress Report** → `ProgressReportScreen` - Advanced analytics dashboard
-- **Locate Us** → `LocationScreen` - Academy location finder
+- **Our Facilities** → `LocationScreen` - Academy facility finder
 - **Help & Support** → `HelpScreen` - Support system integration
 
 #### **Account Management**

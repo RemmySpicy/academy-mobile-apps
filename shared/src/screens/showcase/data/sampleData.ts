@@ -4,7 +4,7 @@
 import type { SelectOption } from '../../../components/ui/SelectOptions';
 import type { DropdownOption } from '../../../components/ui/FormDropdown';
 import type { FilterItem } from '../../../components/search/QuickFilterBar';
-import type { FilterItem as ControlCardFilterItem, QuickFilterItem } from '../../../components/ui/ControlCard';
+import type { QueryFilterItem as ControlCardFilterItem, QuickFilterItem } from '../../../components/ui/ControlCard';
 
 // Select Options Sample Data
 export const sampleSelectOptions: SelectOption[] = [
@@ -407,18 +407,18 @@ export const sampleTimeMetrics = [
 
 // ControlCard Sample Data
 export const sampleControlCardQueryFilter: ControlCardFilterItem[] = [
-  { label: 'Total Students', num: '24' },
-  { label: 'Present Today', num: '18' },
-  { label: 'Absent', num: '6' },
-  { label: 'New This Week', num: '3' },
+  { label: 'Total Students', value: '24', id: 'total' },
+  { label: 'Present Today', value: '18', id: 'present' },
+  { label: 'Absent', value: '6', id: 'absent' },
+  { label: 'New This Week', value: '3', id: 'new-week' },
 ];
 
 export const sampleControlCardQuickFilter: QuickFilterItem[] = [
-  { label: 'All Students', count: '24' },
-  { label: 'Present', count: '18' },
-  { label: 'Absent', count: '6' },
-  { label: 'Late Arrival', count: '2' },
-  { label: 'Early Departure', count: '1' },
+  { label: 'All Students', count: '24', value: 'all', id: 'all' },
+  { label: 'Present', count: '18', value: 'present', id: 'present' },
+  { label: 'Absent', count: '6', value: 'absent', id: 'absent' },
+  { label: 'Late Arrival', count: '2', value: 'late', id: 'late' },
+  { label: 'Early Departure', count: '1', value: 'early', id: 'early' },
 ];
 
 export const sampleControlCardMarkedDates: string[] = [

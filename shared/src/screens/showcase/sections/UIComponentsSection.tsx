@@ -290,7 +290,7 @@ const UIComponentsSection: React.FC<ShowcaseSectionProps> = ({ theme, styles, sc
           <ControlCard
             schoolName="Academy Music Department"
             moreInfo={true}
-            onMoreInfoPress={() => console.log('Music info pressed')}
+            onMoreInfo={() => console.log('Music info pressed')}
           />
           
           {/* Date and calendar variant */}

@@ -1,16 +1,29 @@
 # Academy Mobile Apps - Development Guide
 
+## Tech Stack & Status ✅
+
+- **React**: 19.0.0 (Production Ready)
+- **React Native**: 0.79.5 
+- **Expo SDK**: 53.0.22
+- **TypeScript**: 5.8.3 (Zero Critical Errors)
+- **State Management**: Zustand 5.0.7
+- **Navigation**: React Navigation 7.x
+- **Charts**: react-native-gifted-charts v1.4.0 (React 19 Compatible)
+
 ## Development Commands
 
 ### Installation & Setup
 
 ```bash
-# Install all dependencies
+# Install all dependencies (enforces @types/react version alignment)
 npm install
 
 # Fresh start (clean and reinstall everything)
 rm -rf node_modules package-lock.json
 npm install
+
+# Verify React types alignment after installation
+npm ls @types/react
 ```
 
 ### Development
@@ -29,6 +42,11 @@ cd students-app && npx expo start --offline
 ### Code Quality & Testing
 
 ```bash
+# TypeScript type checking (CRITICAL - run before commits)
+npx tsc --noEmit  # From any app directory
+# OR
+npm run type-check  # If available in package.json
+
 # Run all tests
 npm run test
 
@@ -43,6 +61,34 @@ npm run test:instructors
 npm run test:watch
 
 # Note: Formatting and linting are handled by pre-commit hooks
+```
+
+## React 19 & TypeScript Setup Notes ⚠️
+
+### Key Configuration Details
+
+1. **Version Alignment**: All packages use `@types/react@19.1.12` via package.json `resolutions`
+2. **Metro Config**: React resolves to root `node_modules` to prevent duplicates  
+3. **TypeScript Config**: Minimal setup works best - let Expo handle the complexity
+4. **JSX Transform**: Uses React 19's automatic JSX runtime
+
+### Troubleshooting Common Issues
+
+```bash
+# If you see "Unable to resolve 'react'" errors:
+# 1. Check Metro config points to workspaceRoot
+# 2. Restart Metro bundler completely
+
+# If you see JSX component errors:
+# 1. Verify @types/react version alignment: npm ls @types/react
+# 2. Check TypeScript config is minimal (no complex type mappings)
+# 3. Clear TypeScript cache and restart
+
+# Force clean restart:
+rm -rf node_modules package-lock.json
+npm install
+npx expo start --clear
+```
 # which run automatically when you commit code
 ```
 

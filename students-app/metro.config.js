@@ -22,11 +22,11 @@ config.resolver.unstable_enablePackageExports = true;
 config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
 config.resolver.platforms = ['ios', 'android', 'web', 'native'];
 
-// Force React resolution to specific version to prevent duplicates
+// Force React resolution to root node_modules to prevent duplicates
 config.resolver.alias = {
   ...config.resolver.alias,
-  'react': path.resolve(__dirname, 'node_modules/react'),
-  'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+  'react': path.resolve(workspaceRoot, 'node_modules/react'),
+  'react-dom': path.resolve(workspaceRoot, 'node_modules/react-dom'),
 };
 
 module.exports = withNativeWind(config, { input: './global.css' });

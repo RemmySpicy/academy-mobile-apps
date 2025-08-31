@@ -43,7 +43,7 @@ export interface QueryFilterItem {
 
 export interface QuickFilterItem extends FilterItem {
   label: string;
-  count?: number;
+  count?: string | number;
   value: string;
   id: string;
 }
@@ -764,7 +764,7 @@ const createStyles = (theme: Theme, screenDimensions: any) => {
       backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.lg,
       margin: responsivePadding,
-      padding: isTablet ? theme.spacing.xxl : theme.spacing.xl,
+      padding: isTablet ? theme.spacing['2xl'] : theme.spacing.xl,
     },
     calendarPlaceholderText: {
       fontSize: isTablet ? theme.fontSizes.h3 : theme.fontSizes.h4,

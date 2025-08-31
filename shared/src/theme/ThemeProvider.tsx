@@ -136,6 +136,8 @@ const createNightTheme = (): Theme => ({
       primaryHover: '#9BB0FF',
       primaryPressed: '#6B87E6',
       primaryDisabled: '#444444',
+      primaryHighContrast: '#9BB0FF',  // High contrast for night mode
+      primarySunlight: '#B3C7FF',      // Maximum contrast for night mode
       
       secondary: '#1A1A1A',
       secondaryHover: '#2A2A2A',
@@ -173,18 +175,22 @@ const createNightTheme = (): Theme => ({
       success: '#44AA44',
       successBackground: '#001100',
       successBorder: '#223322',
+      successHighContrast: '#55BB55',  // High contrast for night mode
       
       warning: '#BB8844',
       warningBackground: '#110800',
       warningBorder: '#332211',
+      warningHighContrast: '#CC9955',  // High contrast for night mode
       
       error: '#CC4444',
       errorBackground: '#110000',
       errorBorder: '#332222',
+      errorHighContrast: '#DD5555',    // High contrast for night mode
       
       info: '#7C9AFF',
       infoBackground: '#000011',
       infoBorder: '#222233',
+      infoHighContrast: '#8DAAFF',     // High contrast for night mode
     },
     icon: {
       primary: '#B8B8B8',               // Night mode icon colors

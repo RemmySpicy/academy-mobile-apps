@@ -2,6 +2,9 @@
   "name": "academy-apps-monorepo",
   "private": true,
   "version": "0.0.0",
+  "resolutions": {
+    "@types/react": "19.1.10"
+  },
   "workspaces": [
     "students-app",
     "instructors-app",

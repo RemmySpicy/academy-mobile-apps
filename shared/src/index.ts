@@ -188,6 +188,12 @@ export type {
   AuthState,
   Program,
   ProgramAssignment,
+  ApiResponse,
+} from './types';
+
+// Class/Enum exports
+export {
+  UserRole,
 } from './types';
 
 export type {

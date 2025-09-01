@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,6 @@ import {
   RefreshControl,
   Dimensions,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   FadeInDown,
@@ -22,10 +21,10 @@ import Animated, {
   withSpring,
   withSequence,
   withDelay,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import {
   useTheme,
-  Header,
   LoadingSpinner,
   createThemedStyles,
   achievementsService,
@@ -43,19 +42,126 @@ import type {
 
 const { width } = Dimensions.get('window');
 
+// Custom hook for optimized filtering logic
+const useFilteredAchievements = (
+  achievements: Achievement[], 
+  searchQuery: string, 
+  filters: AchievementFilters, 
+  sortBy: AchievementSortBy
+) => {
+  return useMemo(() => {
+    let filtered = achievements;
+
+    // Search filter - most restrictive first for better performance
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      filtered = filtered.filter(achievement => 
+        achievement.title.toLowerCase().includes(searchLower) ||
+        achievement.description.toLowerCase().includes(searchLower) ||
+        achievement.category.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply other filters progressively
+    if (filters.categories.length > 0) {
+      filtered = filtered.filter(achievement =>
+        filters.categories.includes(achievement.category)
+      );
+    }
+
+    if (filters.types.length > 0) {
+      filtered = filtered.filter(achievement =>
+        filters.types.includes(achievement.type)
+      );
+    }
+
+    if (filters.statuses.length > 0) {
+      filtered = filtered.filter(achievement =>
+        filters.statuses.includes(achievement.status)
+      );
+    }
+
+    if (filters.rarities.length > 0) {
+      filtered = filtered.filter(achievement =>
+        filters.rarities.includes(achievement.rarity)
+      );
+    }
+
+    // Show/hide filters
+    if (!filters.show_locked) {
+      filtered = filtered.filter(achievement => achievement.status !== 'locked');
+    }
+    if (!filters.show_completed) {
+      filtered = filtered.filter(achievement => achievement.status !== 'completed');
+    }
+
+    return achievementsService.sortAchievements(filtered, sortBy);
+  }, [achievements, searchQuery, filters, sortBy]);
+};
+
 interface AchievementCardProps {
   achievement: Achievement;
   onPress: (achievement: Achievement) => void;
   index: number;
 }
 
-const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, onPress, index }) => {
+// Create themed styles for AchievementCard
+const createAchievementCardStyles = (theme: any) => ({
+  container: {
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: theme.borderRadius.xl,
+    padding: theme.spacing.md,
+    marginHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    borderWidth: 1,
+    ...theme.elevation.sm,
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: theme.colors.background.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border.primary,
+  },
+  progressBar: {
+    backgroundColor: theme.colors.background.secondary,
+    height: 6,
+    borderRadius: 3,
+    marginBottom: theme.spacing.sm,
+    overflow: 'hidden',
+  },
+  rarityBadge: {
+    backgroundColor: theme.colors.background.secondary,
+    paddingHorizontal: theme.spacing.xs,
+    paddingVertical: 2,
+    borderRadius: theme.borderRadius.full,
+    marginRight: theme.spacing.xs,
+    borderWidth: 1,
+  },
+});
+
+// Create the styled hook
+const useAchievementCardStyles = createThemedStyles(createAchievementCardStyles);
+
+const AchievementCard = React.memo<AchievementCardProps>(({ achievement, onPress, index }) => {
+  const styles = useAchievementCardStyles();
   const { theme } = useTheme();
   const scaleValue = useSharedValue(1);
   
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scaleValue.value }],
   }));
+
+  // Cleanup animation on unmount
+  useEffect(() => {
+    return () => {
+      cancelAnimation(scaleValue);
+    };
+  }, [scaleValue]);
 
   const handlePressIn = () => {
     scaleValue.value = withSpring(0.98);
@@ -105,29 +211,19 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, onPress,
         onPress={() => onPress(achievement)}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        accessibilityRole="button"
+        accessibilityLabel={`Achievement: ${achievement.title}`}
+        accessibilityHint={`${achievement.status === 'completed' ? 'Completed' : achievement.status === 'locked' ? 'Locked' : 'In progress'} - ${achievement.progress_percentage}% complete. Tap for details.`}
+        accessibilityState={{ selected: achievement.status === 'completed' }}
         style={{
-          backgroundColor: achievement.background_color || theme.colors.background.primary,
-          borderRadius: theme.borderRadius.xl,
-          padding: theme.spacing.md,
-          marginHorizontal: theme.spacing.md,
-          marginBottom: theme.spacing.md,
-          borderWidth: 1,
+          ...styles.container,
           borderColor: achievement.status === 'completed' ? theme.colors.status.success : theme.colors.border.primary,
-          ...theme.elevation.sm,
           opacity: achievement.status === 'locked' ? 0.6 : 1,
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
           {/* Achievement Icon */}
-          <View style={{
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            backgroundColor: `${achievement.icon_color || theme.colors.interactive.primary}15`,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: theme.spacing.md,
-          }}>
+          <View style={styles.iconContainer}>
             <Ionicons
               name={achievement.icon as any}
               size={28}
@@ -182,13 +278,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, onPress,
 
             {/* Progress Bar */}
             {achievement.status !== 'locked' && (
-              <View style={{
-                backgroundColor: theme.colors.background.secondary,
-                height: 6,
-                borderRadius: 3,
-                marginBottom: theme.spacing.sm,
-                overflow: 'hidden',
-              }}>
+              <View style={styles.progressBar}>
                 <View style={{
                   backgroundColor: achievement.status === 'completed' 
                     ? theme.colors.status.success 
@@ -209,11 +299,8 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, onPress,
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 {/* Rarity Badge */}
                 <View style={{
-                  backgroundColor: `${getRarityBadgeColor(achievement.rarity)}15`,
-                  paddingHorizontal: theme.spacing.xs,
-                  paddingVertical: 2,
-                  borderRadius: theme.borderRadius.full,
-                  marginRight: theme.spacing.xs,
+                  ...styles.rarityBadge,
+                  borderColor: getRarityBadgeColor(achievement.rarity),
                 }}>
                   <Text style={{
                     color: getRarityBadgeColor(achievement.rarity),
@@ -250,7 +337,11 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, onPress,
       </Pressable>
     </Animated.View>
   );
-};
+}, (prevProps, nextProps) => 
+  prevProps.achievement.id === nextProps.achievement.id &&
+  prevProps.achievement.status === nextProps.achievement.status &&
+  prevProps.achievement.progress_percentage === nextProps.achievement.progress_percentage
+);
 
 interface FilterChipProps {
   label: string;
@@ -259,43 +350,64 @@ interface FilterChipProps {
   color?: string;
 }
 
-const FilterChip: React.FC<FilterChipProps> = ({ label, isSelected, onPress, color }) => {
+// Create themed styles for FilterChip
+const createFilterChipStyles = (theme: any) => ({
+  container: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.full,
+    marginRight: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+    borderWidth: 1,
+  },
+  text: {
+    fontSize: theme.fontSizes.sm,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+  },
+});
+
+// Create the styled hook
+const useFilterChipStyles = createThemedStyles(createFilterChipStyles);
+
+const FilterChip = React.memo<FilterChipProps>(({ label, isSelected, onPress, color }) => {
+  const styles = useFilterChipStyles();
   const { theme } = useTheme();
   
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`Filter: ${label}`}
+      accessibilityHint={`${isSelected ? 'Selected' : 'Not selected'} filter option`}
+      accessibilityState={{ selected: isSelected }}
       style={{
+        ...styles.container,
         backgroundColor: isSelected 
           ? (color || theme.colors.interactive.primary) 
           : theme.colors.background.secondary,
-        paddingHorizontal: theme.spacing.md,
-        paddingVertical: theme.spacing.sm,
-        borderRadius: theme.borderRadius.full,
-        marginRight: theme.spacing.sm,
-        marginBottom: theme.spacing.sm,
-        borderWidth: 1,
         borderColor: isSelected 
           ? (color || theme.colors.interactive.primary) 
           : theme.colors.border.primary,
       }}
     >
       <Text style={{
+        ...styles.text,
         color: isSelected 
           ? 'white' 
           : theme.colors.text.primary,
-        fontSize: theme.fontSizes.sm,
-        fontWeight: theme.fontConfig.fontWeight.medium,
       }}>
         {label}
       </Text>
     </Pressable>
   );
-};
+}, (prevProps, nextProps) => 
+  prevProps.label === nextProps.label &&
+  prevProps.isSelected === nextProps.isSelected &&
+  prevProps.color === nextProps.color
+);
 
 export const AchievementsScreen: React.FC = () => {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [categories, setCategories] = useState<AchievementCategory[]>([]);
   const [stats, setStats] = useState<StudentAchievementStats | null>(null);
@@ -320,6 +432,14 @@ export const AchievementsScreen: React.FC = () => {
   useEffect(() => {
     loadAchievements();
   }, []);
+
+  // Cleanup animations on unmount
+  useEffect(() => {
+    return () => {
+      cancelAnimation(celebrationScale);
+      cancelAnimation(celebrationOpacity);
+    };
+  }, [celebrationScale, celebrationOpacity]);
 
   const loadAchievements = async () => {
     try {
@@ -346,66 +466,17 @@ export const AchievementsScreen: React.FC = () => {
     setIsRefreshing(false);
   };
 
-  const filteredAchievements = React.useMemo(() => {
-    let filtered = achievements;
+  const filteredAchievements = useFilteredAchievements(achievements, searchQuery, filters, sortBy);
 
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(achievement =>
-        achievement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        achievement.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        achievement.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Category filter
-    if (filters.categories.length > 0) {
-      filtered = filtered.filter(achievement =>
-        filters.categories.includes(achievement.category)
-      );
-    }
-
-    // Type filter
-    if (filters.types.length > 0) {
-      filtered = filtered.filter(achievement =>
-        filters.types.includes(achievement.type)
-      );
-    }
-
-    // Status filter
-    if (filters.statuses.length > 0) {
-      filtered = filtered.filter(achievement =>
-        filters.statuses.includes(achievement.status)
-      );
-    }
-
-    // Rarity filter
-    if (filters.rarities.length > 0) {
-      filtered = filtered.filter(achievement =>
-        filters.rarities.includes(achievement.rarity)
-      );
-    }
-
-    // Show/hide locked and completed
-    if (!filters.show_locked) {
-      filtered = filtered.filter(achievement => achievement.status !== 'locked');
-    }
-    if (!filters.show_completed) {
-      filtered = filtered.filter(achievement => achievement.status !== 'completed');
-    }
-
-    return achievementsService.sortAchievements(filtered, sortBy);
-  }, [achievements, searchQuery, filters, sortBy]);
-
-  const handleAchievementPress = (achievement: Achievement) => {
+  const handleAchievementPress = useCallback((achievement: Achievement) => {
     setSelectedAchievement(achievement);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedAchievement(null);
-  };
+  }, []);
 
-  const toggleFilter = (filterType: keyof AchievementFilters, value: string) => {
+  const toggleFilter = useCallback((filterType: keyof AchievementFilters, value: string) => {
     setFilters(prev => {
       const currentList = prev[filterType] as string[];
       const isSelected = currentList.includes(value);
@@ -417,9 +488,9 @@ export const AchievementsScreen: React.FC = () => {
           : [...currentList, value],
       };
     });
-  };
+  }, []);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilters({
       categories: [],
       types: [],
@@ -429,15 +500,11 @@ export const AchievementsScreen: React.FC = () => {
       show_completed: true,
     });
     setSearchQuery('');
-  };
+  }, []);
 
   if (isLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background.secondary }}>
-        <Header
-          title="Achievements"
-          style={{ paddingTop: insets.top }}
-        />
         <LoadingSpinner />
       </View>
     );
@@ -445,25 +512,6 @@ export const AchievementsScreen: React.FC = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background.secondary }}>
-      <Header
-        title="Achievements"
-        style={{ paddingTop: insets.top }}
-        rightComponent={
-          <Pressable
-            onPress={() => setShowFilters(true)}
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              backgroundColor: theme.colors.background.primary,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Ionicons name="options" size={20} color={theme.colors.icon.primary} />
-          </Pressable>
-        }
-      />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -556,7 +604,7 @@ export const AchievementsScreen: React.FC = () => {
           </Animated.View>
         )}
 
-        {/* Search Bar */}
+        {/* Search Bar with Filter Button */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={{
@@ -567,31 +615,66 @@ export const AchievementsScreen: React.FC = () => {
           <View style={{
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: theme.colors.background.primary,
-            borderRadius: theme.borderRadius.xl,
-            paddingHorizontal: theme.spacing.md,
-            paddingVertical: theme.spacing.sm,
-            borderWidth: 1,
-            borderColor: theme.colors.border.primary,
+            gap: theme.spacing.sm,
           }}>
-            <Ionicons name="search" size={20} color={theme.colors.icon.secondary} />
-            <TextInput
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Search achievements..."
-              placeholderTextColor={theme.colors.text.tertiary}
+            <View style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: theme.colors.background.primary,
+              borderRadius: theme.borderRadius.xl,
+              paddingHorizontal: theme.spacing.md,
+              paddingVertical: theme.spacing.sm,
+              borderWidth: 1,
+              borderColor: theme.colors.border.primary,
+            }}>
+              <Ionicons name="search" size={20} color={theme.colors.icon.secondary} />
+              <TextInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search achievements..."
+                placeholderTextColor={theme.colors.text.tertiary}
+                accessibilityLabel="Search achievements"
+                accessibilityHint="Type to search through your achievements"
+                style={{
+                  flex: 1,
+                  marginLeft: theme.spacing.sm,
+                  color: theme.colors.text.primary,
+                  fontSize: theme.fontSizes.base,
+                }}
+              />
+              {searchQuery.length > 0 && (
+                <Pressable 
+                  onPress={() => setSearchQuery('')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear search"
+                  accessibilityHint="Clear the search text"
+                >
+                  <Ionicons name="close-circle" size={20} color={theme.colors.icon.secondary} />
+                </Pressable>
+              )}
+            </View>
+            
+            {/* Filter Button */}
+            <Pressable
+              onPress={() => setShowFilters(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Filter achievements"
+              accessibilityHint="Open filters and sorting options"
               style={{
-                flex: 1,
-                marginLeft: theme.spacing.sm,
-                color: theme.colors.text.primary,
-                fontSize: theme.fontSizes.base,
+                width: 44,
+                height: 44,
+                borderRadius: theme.borderRadius.xl,
+                backgroundColor: theme.colors.background.primary,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: theme.colors.border.primary,
+                ...theme.elevation.sm,
               }}
-            />
-            {searchQuery.length > 0 && (
-              <Pressable onPress={() => setSearchQuery('')}>
-                <Ionicons name="close-circle" size={20} color={theme.colors.icon.secondary} />
-              </Pressable>
-            )}
+            >
+              <Ionicons name="options" size={20} color={theme.colors.icon.primary} />
+            </Pressable>
           </View>
         </Animated.View>
 
@@ -679,7 +762,6 @@ export const AchievementsScreen: React.FC = () => {
           <View style={{
             flex: 1,
             backgroundColor: theme.colors.background.secondary,
-            paddingTop: insets.top,
           }}>
             {/* Modal Header */}
             <View style={{
@@ -721,11 +803,13 @@ export const AchievementsScreen: React.FC = () => {
                   width: 100,
                   height: 100,
                   borderRadius: 50,
-                  backgroundColor: selectedAchievement.background_color || `${theme.colors.interactive.primary}15`,
+                  backgroundColor: theme.colors.background.primary,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: theme.spacing.md,
                   ...theme.elevation.md,
+                  borderWidth: 2,
+                  borderColor: theme.colors.interactive.primary,
                 }}>
                   <Ionicons
                     name={selectedAchievement.icon as any}
@@ -883,7 +967,6 @@ export const AchievementsScreen: React.FC = () => {
         <View style={{
           flex: 1,
           backgroundColor: theme.colors.background.secondary,
-          paddingTop: insets.top,
         }}>
           {/* Filters Header */}
           <View style={{

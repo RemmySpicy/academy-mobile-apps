@@ -92,6 +92,146 @@ npx expo start --clear
 # which run automatically when you commit code
 ```
 
+## ⚡ Performance Optimization Patterns
+
+### Component-Level Performance
+
+**1. Use React.memo for List Components**
+
+```typescript
+// ✅ Optimized list item with custom comparison
+const AchievementCard = React.memo<AchievementCardProps>(({ achievement, onPress, index }) => {
+  // Component implementation
+}, (prevProps, nextProps) => 
+  prevProps.achievement.id === nextProps.achievement.id &&
+  prevProps.achievement.status === nextProps.achievement.status &&
+  prevProps.achievement.progress_percentage === nextProps.achievement.progress_percentage
+);
+
+// ❌ Avoid shallow comparison for complex objects
+const BadComponent = React.memo(Component); // Will re-render unnecessarily
+```
+
+**2. Custom Hooks for Complex Logic**
+
+```typescript
+// ✅ Extract filtering logic to custom hook
+const useFilteredData = (data: T[], filters: Filters) => {
+  return useMemo(() => {
+    // Apply most restrictive filters first for performance
+    return data.filter(item => /* filtering logic */);
+  }, [data, filters]);
+};
+
+// Usage in component
+const filteredResults = useFilteredData(achievements, filters);
+```
+
+**3. useCallback for Event Handlers**
+
+```typescript
+// ✅ Memoize event handlers to prevent child re-renders
+const handlePress = useCallback((item: Item) => {
+  setSelectedItem(item);
+}, []);
+
+const handleToggle = useCallback((key: string, value: any) => {
+  setFilters(prev => ({ ...prev, [key]: value }));
+}, []);
+```
+
+**4. Themed Styles with createThemedStyles**
+
+```typescript
+// ✅ Use createThemedStyles for consistent theming
+const createCardStyles = (theme: Theme) => ({
+  container: {
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: theme.borderRadius.xl,
+  },
+});
+
+const useCardStyles = createThemedStyles(createCardStyles);
+
+// In component
+const styles = useCardStyles();
+```
+
+### Memory Management
+
+**Animation Cleanup**
+
+```typescript
+// ✅ Always cleanup animations to prevent memory leaks
+useEffect(() => {
+  return () => {
+    cancelAnimation(scaleValue);
+    cancelAnimation(fadeValue);
+  };
+}, [scaleValue, fadeValue]);
+```
+
+**Large List Optimization**
+
+```typescript
+// ✅ Consider FlashList for large datasets
+import { FlashList } from "@shopify/flash-list";
+
+<FlashList
+  data={items}
+  renderItem={({ item }) => <ItemComponent item={item} />}
+  estimatedItemSize={100}
+  keyExtractor={(item) => item.id}
+/>
+```
+
+### Accessibility Best Practices
+
+**Comprehensive A11y Labels**
+
+```typescript
+// ✅ Provide meaningful accessibility information
+<Pressable
+  accessibilityRole="button"
+  accessibilityLabel={`${item.title} - ${item.status}`}
+  accessibilityHint={`${item.progress}% complete. Tap for details.`}
+  accessibilityState={{ selected: item.isSelected }}
+>
+```
+
+**Touch Target Optimization**
+
+```typescript
+// ✅ Ensure minimum 44px touch targets
+const buttonStyle = {
+  minWidth: 44,
+  minHeight: 44,
+  padding: theme.spacing.md,
+};
+```
+
+### Performance Monitoring
+
+**Measure Component Performance**
+
+```bash
+# Use React DevTools Profiler to measure render performance
+# Enable in development:
+npx expo start --offline
+
+# Then use React DevTools Profiler tab to identify:
+# - Slow rendering components
+# - Unnecessary re-renders
+# - Memory usage patterns
+```
+
+**Performance Metrics to Track**
+
+- **List scrolling FPS**: Target 60 FPS for smooth scrolling
+- **Memory usage**: Monitor for memory leaks in long-running screens
+- **Bundle size**: Keep feature additions under 50KB per feature
+- **Animation performance**: Use native driver where possible
+
 ### Building & Deployment
 
 ```bash

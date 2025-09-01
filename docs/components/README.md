@@ -309,13 +309,47 @@ import { StudentCard, CustomButton } from '@academy/mobile-shared';
 
 ## ♿ Accessibility Features
 
-All Academy components include:
+All Academy components include **comprehensive WCAG 2.1 accessibility support**:
 
-- **Screen Reader Support**: Proper accessibility labels and hints
-- **Keyboard Navigation**: Full keyboard support with focus management
-- **Color Contrast**: WCAG 2.1 AA compliant color combinations
-- **Touch Targets**: Minimum 44px touch targets for mobile accessibility
-- **Focus Indicators**: Clear focus states with Academy theming
+### Core Accessibility Features
+- **Screen Reader Support**: Comprehensive accessibility labels, hints, and state information for iOS VoiceOver and Android TalkBack
+- **Keyboard Navigation**: Full keyboard support with focus management and logical tab order
+- **Color Contrast**: WCAG 2.1 AA compliant color combinations with enhanced high contrast variants
+- **Touch Targets**: Minimum 44px touch targets optimized for mobile accessibility
+- **Focus Indicators**: Clear focus states with Academy theming and proper focus management
+
+### Enhanced Mobile Accessibility
+- **Dynamic Content Announcements**: Proper aria-live regions for real-time status updates
+- **Gesture Support**: Alternative interaction methods with haptic feedback integration
+- **Reduced Motion Support**: Respects user's motion preferences for animations
+- **Text Scaling**: Support for system font size preferences up to 200% scaling
+
+### Implementation Examples
+```typescript
+// ✅ Comprehensive accessibility implementation
+<Pressable
+  accessibilityRole="button"
+  accessibilityLabel="View achievement details"
+  accessibilityHint="Completed achievement worth 100 points. Double tap to view full details and progress"
+  accessibilityState={{ 
+    selected: isSelected,
+    disabled: isDisabled 
+  }}
+  accessibilityValue={{
+    now: progressValue,
+    min: 0,
+    max: 100,
+    text: `${progressValue} percent complete`
+  }}
+>
+  <Text accessibilityRole="text">Achievement Title</Text>
+</Pressable>
+```
+
+### Accessibility Performance Optimizations
+- **Optimized Screen Reader Flow**: Efficient navigation patterns that don't impact performance
+- **Smart Focus Management**: Automated focus handling for modal and navigation transitions
+- **Accessibility Testing**: Components tested with automated tools and manual testing on real devices
 
 ## 📱 Multi-Program Support
 

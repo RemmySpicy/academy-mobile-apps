@@ -206,14 +206,40 @@ import { FormDropdown } from '@academy/mobile-shared';
 - **Style Utilities**: `getContainerStyles`, `getActionButtonStyles`, `getDayBoxStyles`, `createControlCardStyles`
 - **Type Definitions**: All utility functions include comprehensive TypeScript interfaces
 
+### Enhanced Profile Card System
+The Academy Apps feature a modern, interactive profile card system with advanced UI patterns:
+
+#### **Profile Card Features**
+- **Cover Photo with Expansion**: Clickable cover image that expands to full-screen modal
+- **Overlapping Profile Picture**: Large profile avatar (84px) that overlaps the cover photo
+- **Expandable Profile Picture**: Profile picture expands to 200px with enhanced details
+- **Profile Switcher Integration**: Quick access to switch between multiple profiles
+- **Academic Progress Display**: Level, class, and achievement progress indicators
+- **Performance Metrics Access**: Direct link to detailed performance analytics
+
+#### **Profile Switching System**
+- **Multi-Profile Support**: Parents can manage multiple child profiles
+- **Bottom Sheet Interface**: Smooth bottom sheet with profile selection
+- **Visual Profile Cards**: Each profile shows name, level, program, and active status
+- **Create Child Profile**: Easy access to add new student profiles
+- **Academy Theming**: Consistent with Academy purple brand colors
+
+#### **Image Expansion Modal**
+- **Full-Screen Experience**: Dark overlay with centered image display
+- **Touch Interactions**: Tap anywhere to close, dedicated close button
+- **Safe Area Handling**: Proper insets for notched devices
+- **Responsive Sizing**: Images scale appropriately for different screen sizes
+- **Contextual Information**: Shows relevant details (cover photo context, student name)
+
 ### Menu System Implementation
 The Academy Apps feature comprehensive menu systems with production-ready screens, tailored for each user type:
 
 #### **Student App Menu Features**
+- **Enhanced Profile Card**: Modern card with cover photo, profile switching, and expansion modals
 - **Settings Screens**: Notification settings, privacy settings, about screen
 - **Academy Features**: Courses, services, achievements, store, transactions, referrals
 - **Quick Access**: Schedule, achievements, store with visual cards
-- **Profile Management**: Student/parent mode switching, profile editing
+- **Profile Management**: Advanced profile switching, profile editing, multi-user support
 
 #### **Instructor App Menu Features**
 - **Instructor Tools**: Class management, student reports, attendance tracker, grade book
@@ -228,6 +254,7 @@ All screens are built with:
 - Accessibility support
 - Mobile-first responsive design
 - Interactive components and state management
+- Modern UI patterns (expandable images, bottom sheets, smooth animations)
 
 ### Development Commands
 ```bash
@@ -270,6 +297,9 @@ npm run test:all
 - ✅ Both apps building and running successfully
 - ✅ **Complete component extraction from existing code finished**
 - ✅ **Complete menu system with all settings screens implemented**
+- ✅ **Enhanced Profile Card System with expandable images and profile switching**
+- ✅ **ProfileSwitcherBottomSheet component for multi-user support**
+- ✅ **Modern UI patterns: image expansion modals, overlapping layouts, smooth animations**
 
 ## Development Best Practices
 

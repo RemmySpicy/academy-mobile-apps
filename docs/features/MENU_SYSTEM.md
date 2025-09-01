@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Academy Mobile Apps feature a comprehensive menu system with production-ready screens covering settings management, analytics, and feature access. All screens are built with Academy design system compliance, full TypeScript support, and accessibility features.
+The Academy Mobile Apps feature a comprehensive menu system with production-ready screens covering settings management, analytics, feature access, and enhanced profile management. All screens are built with Academy design system compliance, full TypeScript support, accessibility features, and modern UI patterns including expandable images and profile switching.
 
 ## Menu Structure
 
@@ -20,10 +20,13 @@ The Academy Mobile Apps feature a comprehensive menu system with production-read
 - **Our Facilities** → `FacilityScreen` - Academy facility finder
 - **Help & Support** → `HelpScreen` - Support system integration
 
-#### **Account Management**
+#### **Enhanced Profile System**
+- **Interactive Profile Card** → Enhanced profile card with cover photo and expansion modals
+- **Profile Switching** → Multi-profile support with ProfileSwitcherBottomSheet
+- **Image Expansion** → Full-screen modals for cover photo and profile picture viewing
 - **Edit Profile** → `EditProfileScreen` - Personal information management
 - **Payment Methods** → `PaymentMethodsScreen` - Payment card management
-- **Manage Children** → Parent-specific child profile management
+- **Manage Children** → Parent-specific child profile management with creation workflow
 
 #### **Settings & Preferences**
 - **Notifications** → `NotificationSettingsScreen` - Notification preferences
@@ -35,6 +38,91 @@ The Academy Mobile Apps feature a comprehensive menu system with production-read
 - **About Academy** → `AboutScreen` - App information and legal
 
 ## Screen Implementations
+
+### Enhanced Profile System
+
+#### Interactive Profile Card
+**Location**: `students-app/src/features/menu/screens/AppMenuScreen.tsx`
+
+**Features:**
+- **Cover Photo with Expansion**: Clickable cover image (120px height) that expands to full-screen modal
+- **Overlapping Profile Picture**: Large profile avatar (84px) positioned to overlap the cover photo
+- **Expandable Profile Picture**: Profile picture expands to 200px with enhanced details in modal
+- **Academic Progress Display**: Level, class, and achievement progress indicators (18/36 format)
+- **Profile Switcher Integration**: Quick access button using "people" icon
+- **Performance Metrics Access**: Direct button to detailed performance analytics
+
+**Key Components:**
+```typescript
+// Enhanced profile card structure
+<ImageBackground source={{ uri: coverPhotoUri }}>
+  <Pressable onPress={handleExpandCoverPhoto}>
+    <CoverPhotoOverlay />
+  </Pressable>
+</ImageBackground>
+
+<Pressable onPress={handleExpandProfilePicture}>
+  <OverlappingAvatar size={84} />
+</Pressable>
+
+<ProfileSwitcherButton onPress={handleProfileSwitch}>
+  <Ionicons name="people" />
+</ProfileSwitcherButton>
+```
+
+#### ProfileSwitcherBottomSheet
+**Location**: `students-app/src/features/menu/components/ProfileSwitcherBottomSheet.tsx`
+
+**Features:**
+- **Multi-Profile Display**: Visual list with active profile highlighting
+- **Profile Cards**: Name, email, level, program, and active status
+- **Child Profile Creation**: Dedicated creation button with dashed border design
+- **Bottom Sheet Interface**: Smooth Academy-themed bottom sheet with snap points
+- **Information Panel**: User guidance about profile management
+
+**Key Components:**
+```typescript
+import { BottomSheet, useTheme } from '@academy/mobile-shared';
+
+<ProfileSwitcherBottomSheet
+  visible={showProfileSwitcher}
+  profiles={userProfiles}
+  onProfileSelect={handleProfileSelect}
+  onCreateChildProfile={handleCreateChildProfile}
+>
+  <ProfileCard active={profile.isActive}>
+    <ProfileAvatar size={48} />
+    <ProfileInfo />
+    <ActiveIndicator />
+  </ProfileCard>
+</ProfileSwitcherBottomSheet>
+```
+
+#### Image Expansion Modal
+**Location**: `students-app/src/features/menu/screens/AppMenuScreen.tsx`
+
+**Features:**
+- **Full-Screen Experience**: Dark overlay (rgba(0,0,0,0.9)) with centered image
+- **Responsive Sizing**: Cover photos scale with screen width, profile pictures fixed at 200px
+- **Touch Interactions**: Tap anywhere to close, dedicated close button
+- **Safe Area Handling**: Proper insets for notched devices
+- **Contextual Information**: Shows relevant details (cover context, student name)
+
+**Key Components:**
+```typescript
+<Modal visible={showImageModal} transparent animationType="fade">
+  <DarkOverlay>
+    <CloseButton />
+    {selectedImage.type === 'cover' ? (
+      <ExpandedCoverPhoto />
+    ) : (
+      <ExpandedProfilePicture />
+    )}
+    <ImageInfo />
+    <TapToCloseHint />
+  </DarkOverlay>
+</Modal>
+```
 
 ### Settings Screens
 

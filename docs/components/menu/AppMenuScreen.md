@@ -10,7 +10,9 @@ The `AppMenuScreen` is a comprehensive menu interface that adapts to different u
 
 ### 🎯 Core Features
 - **Role-based content** - Different menu items and features based on user role
-- **Profile header** - Shows user information, role, and quick stats
+- **Enhanced Profile Card** - Interactive profile header with cover photo and expansion modals
+- **Profile Switching** - Multi-profile support with bottom sheet interface
+- **Expandable Images** - Cover photo and profile picture expand to full-screen modals
 - **Categorized sections** - Organized menu items in logical groups
 - **Quick access cards** - Prominent access to frequently used features
 - **Animated transitions** - Smooth entrance animations with staggered timing
@@ -64,9 +66,12 @@ import { MenuNavigator } from '../features/menu/navigation/MenuNavigator';
 ## Role-Specific Content
 
 ### Student App Features
+- **Enhanced Profile Card**: Cover photo, overlapping profile picture (84px), profile switcher
+- **Profile Switching**: Bottom sheet with multi-profile support and child profile creation
+- **Academic Display**: Level, class, progress indicators (18/36 achievements)
 - **Academy Features**: Courses, services, achievements, store, transactions, referrals
 - **Quick Access**: Today's schedule, achievements, store
-- **Profile Stats**: Active courses, sessions completed, achievements earned
+- **Image Expansion**: Clickable cover photo and profile picture with full-screen modals
 - **Parent Mode**: Switch between student and parent views (for parent users)
 
 ### Instructor App Features
@@ -78,15 +83,58 @@ import { MenuNavigator } from '../features/menu/navigation/MenuNavigator';
 
 ## Component Structure
 
-### Profile Header
+### Enhanced Profile Card
 ```typescript
-// Profile section with user info and stats
-<ProfileHeader>
-  <UserAvatar />
-  <UserInfo />
-  <RoleBadge />
-  <QuickStats />
-</ProfileHeader>
+// Modern profile card with cover photo and interactive elements
+<EnhancedProfileCard>
+  <Pressable onPress={handleExpandCoverPhoto}>
+    <CoverPhoto />
+  </Pressable>
+  <Pressable onPress={handleExpandProfilePicture}>
+    <OverlappingAvatar size={84} />
+  </Pressable>
+  <StudentDetails>
+    <UserName />
+    <AcademicLevel icon="school" />
+    <ProgressIndicator stars="18/36" />
+  </StudentDetails>
+  <ProfileSwitcher icon="people" onPress={handleProfileSwitch} />
+  <PerformanceMetricsButton />
+</EnhancedProfileCard>
+```
+
+### Profile Switching System
+```typescript
+// Bottom sheet for profile management
+<ProfileSwitcherBottomSheet
+  visible={showProfileSwitcher}
+  profiles={userProfiles}
+  onProfileSelect={handleProfileSelect}
+  onCreateChildProfile={handleCreateChildProfile}
+>
+  <ProfileCard active={profile.isActive}>
+    <ProfileAvatar />
+    <ProfileInfo level={profile.level} program={profile.program} />
+    <ActiveIndicator />
+  </ProfileCard>
+  <CreateChildProfileCard />
+</ProfileSwitcherBottomSheet>
+```
+
+### Image Expansion Modal
+```typescript
+// Full-screen image viewer
+<ImageExpansionModal visible={showImageModal}>
+  <DarkOverlay />
+  <CloseButton />
+  {selectedImage.type === 'cover' ? (
+    <ExpandedCoverPhoto />
+  ) : (
+    <ExpandedProfilePicture size={200} />
+  )}
+  <ImageInfo />
+  <TapToCloseHint />
+</ImageExpansionModal>
 ```
 
 ### Feature Sections

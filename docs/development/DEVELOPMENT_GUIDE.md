@@ -466,3 +466,288 @@ const handleSave = () => {
   ]);
 };
 ```
+
+## 🎨 Modern UI Patterns & Interactions
+
+### **Enhanced Profile Card System**
+The Academy Apps now feature sophisticated profile card interactions with modern mobile patterns.
+
+#### **Expandable Image System**
+```tsx
+// Image expansion modal pattern
+const [showImageModal, setShowImageModal] = useState(false);
+const [selectedImage, setSelectedImage] = useState<{
+  uri: string; 
+  type: 'cover' | 'profile' 
+} | null>(null);
+
+// Cover photo expansion
+const handleExpandCoverPhoto = () => {
+  setSelectedImage({
+    uri: 'https://example.com/cover-photo-hd.jpg',
+    type: 'cover'
+  });
+  setShowImageModal(true);
+};
+
+// Full-screen modal with dark overlay
+<Modal visible={showImageModal} transparent animationType="fade">
+  <View style={{ 
+    flex: 1, 
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center' 
+  }}>
+    <Image 
+      source={{ uri: selectedImage.uri }}
+      style={{ 
+        width: Dimensions.get('window').width - 40,
+        height: (Dimensions.get('window').width - 40) * 0.6
+      }}
+      resizeMode="cover"
+    />
+  </View>
+</Modal>
+```
+
+#### **Overlapping Layout Patterns**
+```tsx
+// Profile picture overlapping cover photo
+<View style={{ position: 'relative' }}>
+  <CoverPhoto height={120} />
+  
+  <Pressable 
+    onPress={handleExpandProfilePicture}
+    style={{
+      position: 'absolute',
+      top: -40, // Half of avatar height for overlap effect
+      left: theme.spacing.lg,
+      width: 84,
+      height: 84,
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: 42,
+      padding: 3,
+      zIndex: 1,
+      ...theme.elevation.md,
+    }}
+  >
+    <Avatar size={78} />
+  </Pressable>
+</View>
+```
+
+#### **Bottom Sheet Profile Switching**
+```tsx
+// ProfileSwitcherBottomSheet implementation
+import { BottomSheet } from '@academy/mobile-shared';
+
+const ProfileSwitcherBottomSheet = ({ visible, profiles, onProfileSelect }) => (
+  <BottomSheet
+    visible={visible}
+    title="Switch Profile"
+    snapPoints={['medium', 'large']}
+    scrollable
+  >
+    <FlatList
+      data={profiles}
+      renderItem={({ item: profile }) => (
+        <ProfileCard
+          profile={profile}
+          isActive={profile.isActive}
+          onPress={() => onProfileSelect(profile)}
+        />
+      )}
+    />
+    
+    <CreateChildProfileButton />
+    <InfoPanel />
+  </BottomSheet>
+);
+```
+
+### **Interactive Touch Patterns**
+
+#### **Profile Switcher Icon Design**
+```tsx
+// Modern profile switcher with proper theming
+<Pressable 
+  onPress={handleProfileSwitch}
+  style={{
+    width: 40,
+    height: 40,
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: theme.colors.border.secondary,
+    ...theme.elevation.sm,
+  }}
+>
+  <Ionicons 
+    name="people" 
+    size={20} 
+    color={theme.colors.interactive.primary}
+    style={{ opacity: 1 }}
+  />
+</Pressable>
+```
+
+#### **Touch Feedback Best Practices**
+```tsx
+// Proper touch states for cards
+const createTouchableCard = (onPress: () => void) => (
+  <Pressable
+    onPress={onPress}
+    style={({ pressed }) => [
+      baseCardStyle,
+      {
+        opacity: pressed ? 0.7 : 1,
+        transform: [{ scale: pressed ? 0.98 : 1 }],
+      }
+    ]}
+  >
+    <CardContent />
+  </Pressable>
+);
+```
+
+### **Modal & Overlay Patterns**
+
+#### **Full-Screen Image Viewer**
+```tsx
+// Modern image viewer with safe areas
+const ImageExpansionModal = ({ visible, image, onClose }) => (
+  <Modal visible={visible} transparent animationType="fade">
+    <View style={styles.darkOverlay}>
+      {/* Close button with safe area */}
+      <Pressable
+        onPress={onClose}
+        style={[styles.closeButton, { top: insets.top + 20 }]}
+      >
+        <Ionicons name="close" size={24} color="white" />
+      </Pressable>
+      
+      {/* Responsive image display */}
+      <Image 
+        source={{ uri: image.uri }}
+        style={styles.expandedImage}
+        resizeMode="cover"
+      />
+      
+      {/* Information overlay */}
+      <View style={[styles.infoPanel, { bottom: insets.bottom + 40 }]}>
+        <Text style={styles.imageTitle}>
+          {image.type === 'cover' ? 'Cover Photo' : 'Profile Picture'}
+        </Text>
+      </View>
+    </View>
+  </Modal>
+);
+
+const styles = {
+  darkOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 20,
+    width: 44,
+    height: 44,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  expandedImage: {
+    width: Dimensions.get('window').width - 40,
+    height: (Dimensions.get('window').width - 40) * 0.6,
+    borderRadius: 12,
+  }
+};
+```
+
+### **Animation & Transitions**
+
+#### **Staggered Entry Animations**
+```tsx
+import Animated, { FadeInDown } from 'react-native-reanimated';
+
+// Profile card sections with delayed animations
+<Animated.View entering={FadeInDown.delay(100).springify()}>
+  <ProfileCard />
+</Animated.View>
+
+<Animated.View entering={FadeInDown.delay(200).springify()}>
+  <StudentDetails />
+</Animated.View>
+
+<Animated.View entering={FadeInDown.delay(300).springify()}>
+  <AcademicProgress />
+</Animated.View>
+```
+
+#### **Spring Physics for Natural Movement**
+```tsx
+// Natural spring animations for interactive elements
+const animatedStyle = useAnimatedStyle(() => ({
+  transform: [
+    {
+      scale: withSpring(pressed.value ? 0.95 : 1, {
+        damping: 15,
+        stiffness: 150,
+      })
+    }
+  ]
+}));
+```
+
+### **Development Commands for UI Patterns**
+```bash
+# Test enhanced profile system
+cd students-app && npx expo start
+# Navigate to Menu → Profile Card → Test all interactions
+
+# Test image expansion
+# 1. Tap cover photo → should expand to full screen
+# 2. Tap profile picture → should show enlarged avatar
+# 3. Test close interactions (tap anywhere, close button)
+
+# Test profile switching
+# 1. Tap profile switcher icon (people icon)
+# 2. View bottom sheet with profiles
+# 3. Test profile selection and creation flow
+```
+
+### **Performance Considerations**
+
+#### **Image Optimization**
+- **Cover Photos**: Load at 400x200 for cards, 800x600 for expanded view
+- **Profile Pictures**: 84x84 for cards, 200x200 for expanded view
+- **Caching**: Use proper image caching for smooth expansion animations
+
+#### **Modal Performance**
+- **Lazy Loading**: Modals only render when visible
+- **Memory Management**: Proper cleanup of event listeners
+- **Animation Performance**: 60fps maintained during transitions
+
+### **Testing UI Patterns**
+```bash
+# Visual regression testing
+npx expo start --offline
+# Test all touch states, animations, and transitions
+
+# Accessibility testing
+# 1. Enable screen reader
+# 2. Test all interactive elements
+# 3. Verify proper focus management in modals
+
+# Performance testing
+# 1. Monitor frame rates during animations
+# 2. Test on lower-end devices
+# 3. Verify smooth transitions at 60fps
+```

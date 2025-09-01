@@ -5,6 +5,10 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  ImageBackground,
+  Modal,
+  Image,
+  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
@@ -14,6 +18,7 @@ import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { useAuthStore, useTheme, Header, MenuList } from '@academy/mobile-shared';
 import { MenuStackParamList } from '../navigation/MenuNavigator';
 import type { AppStackParamList } from '../../../navigation/AppNavigator';
+import { ProfileSwitcherBottomSheet } from '../components/ProfileSwitcherBottomSheet';
 
 type AppMenuScreenNavigationProp = NativeStackNavigationProp<MenuStackParamList, 'MenuMain'>;
 
@@ -116,6 +121,9 @@ export const AppMenuScreen: React.FC = () => {
   const appNavigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [notificationCount] = useState(0);
   const [isParentMode, setIsParentMode] = useState(user?.role === 'parent');
+  const [showProfileSwitcher, setShowProfileSwitcher] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<{ uri: string; type: 'cover' | 'profile' } | null>(null);
 
   const handleSearch = () => {
     console.log('Search pressed');
@@ -145,6 +153,84 @@ export const AppMenuScreen: React.FC = () => {
 
   const toggleParentMode = () => {
     setIsParentMode(!isParentMode);
+  };
+
+  const handleProfileSwitch = () => {
+    setShowProfileSwitcher(true);
+  };
+
+  // Mock profiles data - in real app, this would come from the backend
+  const mockProfiles = [
+    {
+      id: '1',
+      name: `${user?.first_name || 'Benson'} ${user?.last_name || 'Adeyemi'}`,
+      email: user?.email || 'benson.adeyemi@example.com',
+      role: 'student' as const,
+      isActive: true,
+      level: 'Level 2: Fundamental Aquatic Skills',
+      program: 'Swimming',
+      module: 'Module 3: Introduction to Breaststroke',
+      achievements: '18/36',
+      attendance: '95%',
+      badges: '3',
+    },
+    {
+      id: '2',
+      name: 'Kemi Adeyemi',
+      email: 'kemi.adeyemi@example.com',
+      role: 'student' as const,
+      isActive: false,
+      level: 'Level 1: Water Safety',
+      program: 'Swimming',
+      module: 'Module 2: Floating Techniques',
+      achievements: '24/30',
+      attendance: '92%',
+      badges: '5',
+    },
+    {
+      id: '3',
+      name: 'Tunde Adeyemi',
+      email: 'tunde.adeyemi@example.com',
+      role: 'parent' as const,
+      isActive: false,
+    },
+  ];
+
+  const handleProfileSelect = (profile: any) => {
+    console.log('Selected profile:', profile.name);
+    // TODO: Implement actual profile switching logic
+    Alert.alert(
+      'Profile Selected',
+      `Switching to ${profile.name}`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleCreateChildProfile = () => {
+    console.log('Create child profile');
+    // TODO: Navigate to create child profile screen
+    Alert.alert(
+      'Create Child Profile',
+      'This will navigate to create child profile screen',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleExpandCoverPhoto = () => {
+    setSelectedImage({
+      uri: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop&crop=center',
+      type: 'cover'
+    });
+    setShowImageModal(true);
+  };
+
+  const handleExpandProfilePicture = () => {
+    // For profile picture, we'll show a larger version of the initials or actual photo if available
+    setSelectedImage({
+      uri: 'placeholder', // This would be actual profile image URI in real app
+      type: 'profile'
+    });
+    setShowImageModal(true);
   };
 
   const getInitials = (name: string) => {
@@ -262,147 +348,318 @@ export const AppMenuScreen: React.FC = () => {
           <View style={{
             backgroundColor: theme.colors.background.primary,
             borderRadius: theme.borderRadius.xl,
-            padding: theme.spacing.lg,
+            overflow: 'hidden',
             borderWidth: 1,
             borderColor: theme.colors.border.primary,
             ...theme.elevation.sm,
           }}>
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: theme.spacing.md,
-            }}>
-              <View style={{
-                width: 64,
-                height: 64,
-                backgroundColor: `${theme.colors.interactive.accent}15`,
-                borderRadius: 32,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: theme.spacing.md,
-              }}>
-                <Text style={{
-                  color: theme.colors.interactive.accent,
-                  fontWeight: theme.fontConfig.fontWeight.bold,
-                  fontSize: theme.fontSizes.xl,
-                }}>
-                  {getInitials(user?.first_name + ' ' + user?.last_name || 'User')}
-                </Text>
-              </View>
-              
-              <View style={{ flex: 1 }}>
-                <Text style={{
-                  color: theme.colors.text.primary,
-                  fontWeight: theme.fontConfig.fontWeight.bold,
-                  fontSize: theme.fontSizes.xl,
-                }}>
-                  {user?.first_name} {user?.last_name}
-                </Text>
-                <Text style={{
-                  color: theme.colors.text.secondary,
-                  fontSize: theme.fontSizes.base,
-                  marginTop: 4,
-                }}>
-                  {user?.email}
-                </Text>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 8,
-                }}>
-                  <View style={{
-                    backgroundColor: theme.colors.status.infoBackground,
-                    paddingHorizontal: theme.spacing.sm,
-                    paddingVertical: theme.spacing.xs,
-                    borderRadius: theme.borderRadius.full,
-                  }}>
-                    <Text style={{
-                      color: theme.colors.interactive.accent,
-                      fontWeight: theme.fontConfig.fontWeight.medium,
-                      fontSize: theme.fontSizes.sm,
-                    }}>
-                      {isParentMode ? 'Parent' : 'Student'}
-                    </Text>
-                  </View>
-                  {user?.role === 'parent' && (
-                    <Pressable
-                      onPress={toggleParentMode}
-                      style={{
-                        marginLeft: theme.spacing.xs,
-                        backgroundColor: theme.colors.background.secondary,
-                        paddingHorizontal: theme.spacing.sm,
-                        paddingVertical: 4,
-                        borderRadius: theme.borderRadius.full,
-                      }}
-                    >
-                      <Text style={{
-                        color: theme.colors.text.secondary,
-                        fontWeight: theme.fontConfig.fontWeight.medium,
-                        fontSize: theme.fontSizes.sm,
-                      }}>
-                        Switch to {isParentMode ? 'Student' : 'Parent'}
-                      </Text>
-                    </Pressable>
-                  )}
-                </View>
-              </View>
-              
-              <Pressable 
-                onPress={() => navigation.navigate('EditProfile')}
+            {/* Cover Image Background */}
+            <Pressable onPress={handleExpandCoverPhoto}>
+              <ImageBackground
+                source={{
+                  uri: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=200&fit=crop&crop=center'
+                }}
                 style={{
-                  width: 40,
-                  height: 40,
-                  backgroundColor: theme.colors.background.secondary,
-                  borderRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  height: 120,
+                  justifyContent: 'flex-end',
+                  paddingBottom: theme.spacing.md,
+                  paddingHorizontal: theme.spacing.md,
+                }}
+                imageStyle={{
+                  opacity: 0.8,
                 }}
               >
-                <Ionicons name="pencil" size={20} color={theme.colors.icon.secondary} />
+                {/* Gradient overlay for better text contrast */}
+                <View style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0,0,0,0.3)',
+                }} />
+              </ImageBackground>
+            </Pressable>
+
+            {/* Profile Info Section */}
+            <View style={{ padding: theme.spacing.lg, paddingTop: 0 }}>
+              {/* Profile Picture overlapping cover - positioned absolutely */}
+              <Pressable 
+                onPress={handleExpandProfilePicture}
+                style={{
+                  position: 'absolute',
+                  top: -40, // Adjusted for larger profile picture
+                  left: theme.spacing.lg,
+                  width: 84,
+                  height: 84,
+                  backgroundColor: theme.colors.background.primary,
+                  borderRadius: 42,
+                  padding: 3,
+                  zIndex: 1,
+                  ...theme.elevation.md,
+                }}
+              >
+                <View style={{
+                  width: 78,
+                  height: 78,
+                  backgroundColor: `${theme.colors.interactive.accent}15`,
+                  borderRadius: 39,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Text style={{
+                    color: theme.colors.interactive.accent,
+                    fontWeight: theme.fontConfig.fontWeight.bold,
+                    fontSize: theme.fontSizes['2xl'],
+                  }}>
+                    {getInitials(user?.first_name + ' ' + user?.last_name || 'User')}
+                  </Text>
+                </View>
               </Pressable>
-            </View>
-            
-            {/* Quick Stats */}
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              borderTopWidth: 1,
-              borderTopColor: theme.colors.border.primary,
-              paddingTop: theme.spacing.md,
-            }}>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={{
-                  color: theme.colors.text.primary,
-                  fontWeight: theme.fontConfig.fontWeight.bold,
-                  fontSize: theme.fontSizes.lg,
-                }}>2</Text>
+
+              {/* Student Details Section - below profile picture */}
+              <View style={{
+                marginTop: 48, // Space for larger overlapping profile picture
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                marginBottom: theme.spacing.md,
+              }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{
+                    color: theme.colors.text.primary,
+                    fontWeight: theme.fontConfig.fontWeight.bold,
+                    fontSize: theme.fontSizes.xl,
+                  }}>
+                    {user?.first_name} {user?.last_name}
+                  </Text>
+                  
+                  {/* Academic Progress Path - Level → Module */}
+                  <View style={{
+                    marginTop: 6,
+                    backgroundColor: theme.colors.interactive.primaryBackground,
+                    paddingHorizontal: theme.spacing.sm,
+                    paddingVertical: theme.spacing.sm,
+                    borderRadius: theme.borderRadius.lg,
+                    alignSelf: 'flex-start',
+                  }}>
+                    {/* Header with school icon */}
+                    <View style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginBottom: 4,
+                    }}>
+                      <Ionicons name="school" size={14} color={theme.colors.interactive.primary} />
+                      <Text style={{
+                        color: theme.colors.interactive.primary,
+                        fontSize: theme.fontSizes.xs,
+                        fontWeight: theme.fontConfig.fontWeight.semibold,
+                        marginLeft: 4,
+                      }}>
+                        Academic Progress
+                      </Text>
+                    </View>
+                    
+                    {/* Level → Module Path */}
+                    <View style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      {/* Level */}
+                      <Text style={{
+                        color: theme.colors.interactive.primary,
+                        fontSize: theme.fontSizes.sm,
+                        fontWeight: theme.fontConfig.fontWeight.bold,
+                      }}>
+                        Level 2
+                      </Text>
+                      
+                      {/* Arrow connector */}
+                      <Ionicons 
+                        name="chevron-forward" 
+                        size={12} 
+                        color={theme.colors.interactive.primary}
+                        style={{ marginHorizontal: 4 }}
+                      />
+                      
+                      {/* Module */}
+                      <Text style={{
+                        color: theme.colors.interactive.primary,
+                        fontSize: theme.fontSizes.sm,
+                        fontWeight: theme.fontConfig.fontWeight.bold,
+                      }}>
+                        Module 3
+                      </Text>
+                    </View>
+                    
+                    {/* Course Title */}
+                    <Text style={{
+                      color: theme.colors.text.primary,
+                      fontSize: theme.fontSizes.xs,
+                      marginTop: 4,
+                      fontStyle: 'italic',
+                    }}>
+                      "Introduction to Breaststroke"
+                    </Text>
+                  </View>
+                  
+                  {/* Progress and Achievement Row */}
+                  <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 8,
+                    gap: theme.spacing.sm,
+                  }}>
+                    {/* Achievement Progress */}
+                    <View style={{
+                      backgroundColor: theme.colors.status.warningBackground,
+                      paddingHorizontal: theme.spacing.sm,
+                      paddingVertical: theme.spacing.xs,
+                      borderRadius: theme.borderRadius.full,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      <Text style={{
+                        color: theme.colors.status.warning,
+                        fontSize: 10,
+                        marginRight: 2,
+                      }}>
+                        ⭐
+                      </Text>
+                      <Text style={{
+                        color: theme.colors.status.warning,
+                        fontWeight: theme.fontConfig.fontWeight.bold,
+                        fontSize: theme.fontSizes.xs,
+                      }}>
+                        18 / 36
+                      </Text>
+                    </View>
+                    
+                    {/* Attendance Badge */}
+                    <View style={{
+                      backgroundColor: theme.colors.status.successBackground,
+                      paddingHorizontal: theme.spacing.sm,
+                      paddingVertical: theme.spacing.xs,
+                      borderRadius: theme.borderRadius.full,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      <Ionicons 
+                        name="checkmark-circle" 
+                        size={10} 
+                        color={theme.colors.status.success} 
+                        style={{ marginRight: 3 }}
+                      />
+                      <Text style={{
+                        color: theme.colors.status.success,
+                        fontWeight: theme.fontConfig.fontWeight.medium,
+                        fontSize: theme.fontSizes.xs,
+                      }}>
+                        95% Attendance
+                      </Text>
+                    </View>
+                    
+                    {/* Badges/Certificates Count */}
+                    <View style={{
+                      backgroundColor: theme.colors.interactive.accentBackground,
+                      paddingHorizontal: theme.spacing.sm,
+                      paddingVertical: theme.spacing.xs,
+                      borderRadius: theme.borderRadius.full,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      <Ionicons 
+                        name="medal" 
+                        size={10} 
+                        color={theme.colors.interactive.accent} 
+                        style={{ marginRight: 3 }}
+                      />
+                      <Text style={{
+                        color: theme.colors.interactive.accent,
+                        fontWeight: theme.fontConfig.fontWeight.medium,
+                        fontSize: theme.fontSizes.xs,
+                      }}>
+                        3 Badges
+                      </Text>
+                    </View>
+                  </View>
+                  
+                  {/* Parent Mode Switch */}
+                  {user?.role === 'parent' && (
+                    <View style={{
+                      marginTop: theme.spacing.sm,
+                    }}>
+                      <Pressable
+                        onPress={toggleParentMode}
+                        style={{
+                          backgroundColor: theme.colors.background.secondary,
+                          paddingHorizontal: theme.spacing.sm,
+                          paddingVertical: 4,
+                          borderRadius: theme.borderRadius.full,
+                          alignSelf: 'flex-start',
+                        }}
+                      >
+                        <Text style={{
+                          color: theme.colors.text.secondary,
+                          fontWeight: theme.fontConfig.fontWeight.medium,
+                          fontSize: theme.fontSizes.sm,
+                        }}>
+                          Switch to {isParentMode ? 'Student' : 'Parent'}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                </View>
+
+                {/* Profile switcher icon beside student details */}
+                <Pressable 
+                  onPress={handleProfileSwitch}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    backgroundColor: theme.colors.background.primary,
+                    borderRadius: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginLeft: theme.spacing.sm,
+                    borderWidth: 2,
+                    borderColor: theme.colors.border.secondary,
+                    ...theme.elevation.sm,
+                  }}
+                >
+                  <Ionicons 
+                    name="people" 
+                    size={20} 
+                    color={theme.colors.interactive.primary}
+                    style={{ opacity: 1 }}
+                  />
+                </Pressable>
+              </View>
+
+              {/* Performance Metrics Button */}
+              <Pressable
+                onPress={() => navigation.navigate('ProgressReport')}
+                style={{
+                  backgroundColor: theme.colors.background.secondary,
+                  borderRadius: theme.borderRadius.lg,
+                  padding: theme.spacing.md,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: theme.colors.border.primary,
+                }}
+              >
+                <Ionicons name="analytics" size={16} color={theme.colors.icon.secondary} />
                 <Text style={{
                   color: theme.colors.text.secondary,
                   fontSize: theme.fontSizes.sm,
-                }}>Active Courses</Text>
-              </View>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={{
-                  color: theme.colors.text.primary,
-                  fontWeight: theme.fontConfig.fontWeight.bold,
-                  fontSize: theme.fontSizes.lg,
-                }}>15</Text>
-                <Text style={{
-                  color: theme.colors.text.secondary,
-                  fontSize: theme.fontSizes.sm,
-                }}>Sessions</Text>
-              </View>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={{
-                  color: theme.colors.text.primary,
-                  fontWeight: theme.fontConfig.fontWeight.bold,
-                  fontSize: theme.fontSizes.lg,
-                }}>3</Text>
-                <Text style={{
-                  color: theme.colors.text.secondary,
-                  fontSize: theme.fontSizes.sm,
-                }}>Achievements</Text>
-              </View>
+                  fontWeight: theme.fontConfig.fontWeight.medium,
+                  marginLeft: theme.spacing.xs,
+                }}>
+                  See Performance metrics
+                </Text>
+              </Pressable>
             </View>
           </View>
         </Animated.View>
@@ -832,6 +1089,128 @@ export const AppMenuScreen: React.FC = () => {
           </Text>
         </Animated.View>
       </ScrollView>
+
+      {/* Profile Switcher Bottom Sheet */}
+      <ProfileSwitcherBottomSheet
+        visible={showProfileSwitcher}
+        onClose={() => setShowProfileSwitcher(false)}
+        profiles={mockProfiles}
+        onProfileSelect={handleProfileSelect}
+        onCreateChildProfile={handleCreateChildProfile}
+      />
+
+      {/* Image Expansion Modal */}
+      <Modal
+        visible={showImageModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowImageModal(false)}
+      >
+        <View style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.9)',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          {/* Close button */}
+          <Pressable
+            onPress={() => setShowImageModal(false)}
+            style={{
+              position: 'absolute',
+              top: insets.top + 20,
+              right: 20,
+              width: 44,
+              height: 44,
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: 22,
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1,
+            }}
+          >
+            <Ionicons name="close" size={24} color="white" />
+          </Pressable>
+
+          {selectedImage?.type === 'cover' ? (
+            /* Expanded Cover Photo */
+            <Image
+              source={{ uri: selectedImage.uri }}
+              style={{
+                width: Dimensions.get('window').width - 40,
+                height: (Dimensions.get('window').width - 40) * 0.6,
+                borderRadius: theme.borderRadius.lg,
+              }}
+              resizeMode="cover"
+            />
+          ) : (
+            /* Expanded Profile Picture */
+            <View style={{
+              width: 200,
+              height: 200,
+              backgroundColor: `${theme.colors.interactive.accent}15`,
+              borderRadius: 100,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 4,
+              borderColor: 'white',
+            }}>
+              <Text style={{
+                color: theme.colors.interactive.accent,
+                fontWeight: theme.fontConfig.fontWeight.bold,
+                fontSize: 64,
+              }}>
+                {getInitials(user?.first_name + ' ' + user?.last_name || 'User')}
+              </Text>
+            </View>
+          )}
+
+          {/* Image info */}
+          <View style={{
+            position: 'absolute',
+            bottom: insets.bottom + 40,
+            left: 20,
+            right: 20,
+            alignItems: 'center',
+          }}>
+            <Text style={{
+              color: 'white',
+              fontSize: theme.fontSizes.lg,
+              fontWeight: theme.fontConfig.fontWeight.semibold,
+              textAlign: 'center',
+            }}>
+              {selectedImage?.type === 'cover' ? 'Cover Photo' : `${user?.first_name} ${user?.last_name}`}
+            </Text>
+            {selectedImage?.type === 'cover' && (
+              <Text style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: theme.fontSizes.sm,
+                textAlign: 'center',
+                marginTop: 4,
+              }}>
+                Swimming Academy Students
+              </Text>
+            )}
+          </View>
+
+          {/* Tap to close hint */}
+          <Pressable
+            onPress={() => setShowImageModal(false)}
+            style={{
+              position: 'absolute',
+              bottom: insets.bottom + 10,
+              alignSelf: 'center',
+            }}
+          >
+            <Text style={{
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: theme.fontSizes.xs,
+              textAlign: 'center',
+            }}>
+              Tap anywhere to close
+            </Text>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 };

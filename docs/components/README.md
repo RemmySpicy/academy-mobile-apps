@@ -30,6 +30,13 @@ Educational institution focused components:
 - **[CourseProgression](./academy/CourseProgression.md)** - Course progress visualization
 - **[MyClassroom](./academy/MyClassroom.md)** - Classroom overview component
 
+### 👤 Profile & User Management Components
+Advanced profile management with modern UI patterns:
+
+- **[ProfileSwitcherBottomSheet](./profile/ProfileSwitcherBottomSheet.md)** - Multi-profile switching with bottom sheet interface
+- **[EnhancedProfileCard](./profile/EnhancedProfileCard.md)** - Interactive profile card with cover photo and expansion modals
+- **[ImageExpansionModal](./profile/ImageExpansionModal.md)** - Full-screen image viewer for profile and cover photos
+
 ### 📊 Performance Components
 Sports and performance tracking components:
 

@@ -44,7 +44,7 @@ interface Booking {
   recurringDay?: string;
 }
 
-interface ParticipantBookingCardProps {
+interface BookingCardProps {
   booking: Booking;
   index: number;
   onPress: (booking: Booking) => void;
@@ -229,7 +229,7 @@ const useCardStyles = createThemedStyles((theme) =>
   })
 );
 
-export const ParticipantBookingCard: React.FC<ParticipantBookingCardProps> = ({
+export const BookingCard: React.FC<BookingCardProps> = ({
   booking,
   index,
   onPress,
@@ -490,4 +490,4 @@ export const ParticipantBookingCard: React.FC<ParticipantBookingCardProps> = ({
   );
 };
 
-export default ParticipantBookingCard;
+export default BookingCard;

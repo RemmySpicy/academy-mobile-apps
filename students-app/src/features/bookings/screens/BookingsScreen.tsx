@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { CustomButton, useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
 import type { AppStackParamList } from '../../../navigation/AppNavigator';
-import { ParticipantBookingCard } from '../components/ParticipantBookingCard';
+import { BookingCard } from '../components/BookingCard';
 
 interface Participant {
   id: string;
@@ -46,320 +46,12 @@ interface Booking {
   color: string;
   participants?: Participant[];
   maxParticipants?: number;
-  variant?: 'default' | 'participant';
   isRecurring?: boolean;
   recurringDay?: string;
 }
 
-interface BookingCardProps {
-  booking: Booking;
-  index: number;
-  onPress: (booking: Booking) => void;
-}
 
-const useCardStyles = createThemedStyles((theme) =>
-  StyleSheet.create({
-    card: {
-      backgroundColor: theme.colors.background.primary,
-      borderRadius: theme.borderRadius.xl,
-      padding: theme.spacing.md,
-      ...theme.elevation.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.border.primary,
-      marginBottom: theme.spacing.sm,
-      marginHorizontal: theme.spacing.md,
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      justifyContent: 'space-between',
-      marginBottom: theme.spacing.sm,
-    },
-    content: {
-      flex: 1,
-      marginRight: theme.spacing.sm,
-    },
-    title: {
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-      fontSize: theme.fontSizes.lg,
-    },
-    level: {
-      color: theme.colors.text.secondary,
-      fontSize: theme.fontSizes.sm,
-    },
-    instructor: {
-      color: theme.colors.text.tertiary,
-      fontSize: theme.fontSizes.sm,
-      marginTop: theme.spacing.xs / 2,
-    },
-    iconContainer: {
-      width: 48,
-      height: 48,
-      borderRadius: theme.borderRadius.full,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    progressContainer: {
-      marginBottom: theme.spacing.sm,
-    },
-    progressHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: theme.spacing.xs,
-    },
-    progressLabel: {
-      color: theme.colors.text.tertiary,
-      fontSize: theme.fontSizes.xs,
-    },
-    progressText: {
-      color: theme.colors.text.secondary,
-      fontSize: theme.fontSizes.xs,
-    },
-    progressBar: {
-      backgroundColor: theme.colors.border.secondary,
-      borderRadius: theme.borderRadius.full,
-      height: 8,
-    },
-    progressFill: {
-      height: 8,
-      borderRadius: theme.borderRadius.full,
-    },
-    detailRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: theme.spacing.sm,
-    },
-    detailItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    detailText: {
-      color: theme.colors.text.secondary,
-      fontSize: theme.fontSizes.sm,
-      marginLeft: theme.spacing.xs,
-    },
-    price: {
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-    },
-    statusRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    statusItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    statusText: {
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-      marginLeft: theme.spacing.xs,
-    },
-    actionsRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    actionButton: {
-      marginRight: theme.spacing.sm,
-    },
-    rescheduleText: {
-      color: theme.colors.status.warning,
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-    cancelText: {
-      color: theme.colors.status.error,
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-    reviewText: {
-      color: theme.colors.interactive.primary,
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-  })
-);
 
-const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) => {
-  const { theme } = useTheme();
-  const styles = useCardStyles();
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const getStatusColor = (status: Booking['status']) => {
-    switch (status) {
-      case 'upcoming':
-        return theme.colors.interactive.primary;
-      case 'completed':
-        return theme.colors.status.success;
-      case 'cancelled':
-        return theme.colors.status.error;
-      case 'rescheduled':
-        return theme.colors.status.warning;
-      default:
-        return theme.colors.text.tertiary;
-    }
-  };
-
-  const getStatusText = (status: Booking['status']) => {
-    switch (status) {
-      case 'upcoming':
-        return 'Upcoming';
-      case 'completed':
-        return 'Completed';
-      case 'cancelled':
-        return 'Cancelled';
-      case 'rescheduled':
-        return 'Rescheduled';
-      default:
-        return 'Unknown';
-    }
-  };
-
-  const getStatusIcon = (status: Booking['status']) => {
-    switch (status) {
-      case 'upcoming':
-        return 'time-outline';
-      case 'completed':
-        return 'checkmark-circle';
-      case 'cancelled':
-        return 'close-circle';
-      case 'rescheduled':
-        return 'refresh-circle';
-      default:
-        return 'help-circle';
-    }
-  };
-
-  return (
-    <Animated.View
-      layout={Layout.springify()}
-      entering={FadeInRight.delay(index * 50).springify()}
-      style={animatedStyle}
-    >
-      <Pressable
-        onPress={() => onPress(booking)}
-        onPressIn={() => {
-          scale.value = withSpring(0.98);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1);
-        }}
-        style={styles.card}
-      >
-        <View style={styles.header}>
-          <View style={styles.content}>
-            <Text style={styles.title}>
-              {booking.scheduleTitle}
-            </Text>
-            <Text style={styles.level}>{booking.scheduleType}</Text>
-            <Text style={styles.instructor}>
-              with {booking.instructor}
-            </Text>
-          </View>
-          
-          <View
-            style={[
-              styles.iconContainer,
-              { backgroundColor: `${booking.color}15` }
-            ]}
-          >
-            <Ionicons name="water" size={24} color={booking.color} />
-          </View>
-        </View>
-
-        {/* Session Progress */}
-        <View style={styles.progressContainer}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressLabel}>Progress</Text>
-            <Text style={styles.progressText}>
-              {booking.sessionNumber}/{booking.totalSessions} sessions
-            </Text>
-          </View>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${(booking.sessionNumber / booking.totalSessions) * 100}%`,
-                  backgroundColor: booking.color,
-                }
-              ]}
-            />
-          </View>
-        </View>
-
-        {/* Date and Time */}
-        <View style={styles.detailRow}>
-          <View style={styles.detailItem}>
-            <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
-            <Text style={styles.detailText}>
-              {booking.isRecurring && booking.recurringDay 
-                ? `Every ${booking.recurringDay}` 
-                : booking.date}
-            </Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Ionicons name="time-outline" size={16} color={theme.colors.text.tertiary} />
-            <Text style={styles.detailText}>{booking.time}</Text>
-          </View>
-        </View>
-
-        <View style={styles.detailRow}>
-          <View style={styles.detailItem}>
-            <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
-            <Text style={styles.detailText}>{booking.location}</Text>
-          </View>
-          <Text style={styles.price}>₦{booking.price.toLocaleString('en-NG')}</Text>
-        </View>
-
-        {/* Status and Actions */}
-        <View style={styles.statusRow}>
-          <View style={styles.statusItem}>
-            <Ionicons 
-              name={getStatusIcon(booking.status) as any} 
-              size={16} 
-              color={getStatusColor(booking.status)} 
-            />
-            <Text
-              style={[
-                styles.statusText,
-                { color: getStatusColor(booking.status) }
-              ]}
-            >
-              {getStatusText(booking.status)}
-            </Text>
-          </View>
-          
-          <View style={styles.actionsRow}>
-            {booking.status === 'upcoming' && (
-              <>
-                <Pressable style={styles.actionButton}>
-                  <Text style={styles.rescheduleText}>Reschedule</Text>
-                </Pressable>
-                <Pressable>
-                  <Text style={styles.cancelText}>Cancel</Text>
-                </Pressable>
-              </>
-            )}
-            {booking.status === 'completed' && (
-              <Pressable>
-                <Text style={styles.reviewText}>Review</Text>
-              </Pressable>
-            )}
-          </View>
-        </View>
-      </Pressable>
-    </Animated.View>
-  );
-};
 
 const useScreenStyles = createThemedStyles((theme) =>
   StyleSheet.create({
@@ -529,7 +221,16 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 3,
       totalSessions: 8,
       color: theme.colors.interactive.accent,
-      variant: 'default',
+      maxParticipants: 1,
+      participants: [
+        {
+          id: 'p24',
+          firstName: 'Emma',
+          lastName: 'Johnson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
     },
     {
       id: '2',
@@ -546,7 +247,6 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 2,
       totalSessions: 12,
       color: theme.colors.status.success,
-      variant: 'participant',
       maxParticipants: 6,
       participants: [
         {
@@ -585,7 +285,6 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 5,
       totalSessions: 8,
       color: theme.colors.interactive.primary,
-      variant: 'participant',
       maxParticipants: 8,
       participants: [
         {
@@ -647,7 +346,30 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 1,
       totalSessions: 8,
       color: theme.colors.interactive.accent,
-      variant: 'default',
+      maxParticipants: 6,
+      participants: [
+        {
+          id: 'p25',
+          firstName: 'Tommy',
+          lastName: 'Anderson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p26',
+          firstName: 'Lucy',
+          lastName: 'Davis',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p27',
+          firstName: 'Max',
+          lastName: 'Wilson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
     },
     {
       id: '5',
@@ -662,7 +384,6 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 1,
       totalSessions: 1,
       color: theme.colors.status.success,
-      variant: 'participant',
       maxParticipants: 15,
       participants: [
         {
@@ -752,7 +473,6 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 4,
       totalSessions: 8,
       color: theme.colors.status.info || theme.colors.interactive.accent,
-      variant: 'participant',
       maxParticipants: 12,
       participants: [
         {
@@ -798,9 +518,18 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 6,
       totalSessions: 12,
       color: theme.colors.interactive.primary,
-      variant: 'default',
       isRecurring: true,
       recurringDay: 'Tuesday',
+      maxParticipants: 1,
+      participants: [
+        {
+          id: 'p28',
+          firstName: 'John',
+          lastName: 'Mitchell',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
     },
     {
       id: '8',
@@ -815,7 +544,23 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 1,
       totalSessions: 10,
       color: theme.colors.interactive.purple,
-      variant: 'default',
+      maxParticipants: 8,
+      participants: [
+        {
+          id: 'p29',
+          firstName: 'Sarah',
+          lastName: 'Miller',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p30',
+          firstName: 'David',
+          lastName: 'Thomas',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
     },
   ]);
 
@@ -962,22 +707,15 @@ export const BookingsScreen: React.FC = () => {
         data={filteredBookings}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => {
-          if (item.variant === 'participant' && item.participants) {
-            return (
-              <ParticipantBookingCard
-                booking={item}
-                index={index}
-                onPress={handleBookingPress}
-                onManageParticipants={handleManageParticipants}
-              />
-            );
-          }
-          
           return (
             <BookingCard
-              booking={item}
+              booking={{
+                ...item,
+                participants: item.participants || []
+              }}
               index={index}
               onPress={handleBookingPress}
+              onManageParticipants={handleManageParticipants}
             />
           );
         }}

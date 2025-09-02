@@ -235,20 +235,15 @@ The Academy Apps feature a modern, interactive profile card system with advanced
 - **Contextual Information**: Shows relevant details (cover photo context, student name)
 
 ### Booking Card System
-The Academy Apps feature flexible booking card variants for different scheduling scenarios:
+The Academy Apps use a unified **BookingCard** component that displays participant information for all booking types:
 
-#### **Booking Card Variants**
-1. **Default Booking Card**: Traditional booking display with progress tracking
-   - Session progress bar (e.g., "3/8 sessions")
-   - Price display for paid bookings
-   - Individual lesson tracking
-   - Reschedule/Cancel actions
-
-2. **Participant Booking Card**: Group session management with participant tracking
-   - Overlapping participant avatars (first 5 visible)
-   - Overflow indicator ("+N" for additional participants)
-   - Capacity counter (e.g., "10/15 participants")
-   - Single "Add/Remove Participant" management button
+#### **BookingCard Features**
+- **Overlapping participant avatars** (first 5 visible)
+- **Overflow indicator** ("+N" for additional participants)  
+- **Capacity counter** (e.g., "10/15 participants")
+- **Single "Add/Remove Participant" management button**
+- **Price display** for paid bookings
+- **Reschedule/Cancel actions** for upcoming sessions
 
 #### **Schedule Types**
 - **One-time Schedules**: Show specific dates (e.g., "Friday, Jan 12", "Tomorrow")
@@ -271,26 +266,13 @@ The Academy Apps feature flexible booking card variants for different scheduling
 
 #### **Usage Examples**
 ```typescript
-// Default booking card (with progress)
+// Unified booking card for all session types
 <BookingCard
   booking={{
-    variant: 'default',
-    sessionNumber: 3,
-    totalSessions: 8,
-    price: 14000,
-    isRecurring: true,
-    recurringDay: 'Wednesday',
-  }}
-  onPress={handleBookingPress}
-/>
-
-// Participant booking card (group sessions)
-<ParticipantBookingCard
-  booking={{
-    variant: 'participant',
     participants: familyMembers,
     maxParticipants: 6,
     instructor: 'Mike Wilson & Sarah Johnson',
+    price: 14000,
     isRecurring: true,
     recurringDay: 'Friday',
   }}

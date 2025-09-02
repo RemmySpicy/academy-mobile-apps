@@ -2,36 +2,13 @@
 
 ## Overview
 
-The Academy Apps feature two types of booking cards to handle different scheduling scenarios:
-
-1. **Default Booking Card** - For individual lessons with progress tracking
-2. **Participant Booking Card** - For group sessions with participant management
+The Academy Apps use a unified **BookingCard** component that displays participant information for all booking types, providing a consistent experience focused on showing who's enrolled in each session.
 
 ## Components
 
-### BookingCard (Default)
+### BookingCard
 
-Traditional booking display for individual lessons.
-
-**Features:**
-- Session progress bar (e.g., "3/8 sessions")
-- Price display for paid bookings
-- Individual lesson tracking
-- Reschedule/Cancel actions
-- Support for recurring schedules
-
-**Usage:**
-```typescript
-<BookingCard
-  booking={bookingData}
-  index={index}
-  onPress={handleBookingPress}
-/>
-```
-
-### ParticipantBookingCard
-
-Group session management with participant tracking capabilities.
+Unified booking card component with participant management capabilities.
 
 **Features:**
 - Overlapping participant avatars (first 5 visible)
@@ -40,11 +17,13 @@ Group session management with participant tracking capabilities.
 - Single "Add/Remove Participant" management button
 - Bottom sheet interface for participant management
 - Support for multiple instructors
-- No price display (schedule-focused)
+- Price display for paid bookings
+- Reschedule/Cancel actions
+- Support for recurring schedules
 
 **Usage:**
 ```typescript
-<ParticipantBookingCard
+<BookingCard
   booking={bookingData}
   index={index}
   onPress={handleBookingPress}
@@ -114,10 +93,10 @@ Cards support flexible instructor display:
 ```
 src/features/bookings/
 ├── components/
-│   ├── ParticipantBookingCard.tsx           # Group session card
+│   ├── BookingCard.tsx                      # Unified booking card component
 │   └── ParticipantManagementBottomSheet.tsx # Participant management
 ├── screens/
-│   └── BookingsScreen.tsx                   # Main booking screen with both card types
+│   └── BookingsScreen.tsx                   # Main booking screen
 └── README.md                                # This documentation
 ```
 
@@ -147,7 +126,6 @@ interface Booking {
   color: string;
   participants?: Participant[];
   maxParticipants?: number;
-  variant?: 'default' | 'participant';
   isRecurring?: boolean;
   recurringDay?: string; // e.g., "Friday", "Tuesday"
 }

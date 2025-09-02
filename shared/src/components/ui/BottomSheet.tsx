@@ -184,8 +184,9 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(({
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return Math.abs(gestureState.dy) > 10 && Math.abs(gestureState.dx) < Math.abs(gestureState.dy);
+        return Math.abs(gestureState.dy) > 5;
       },
+      onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (evt, gestureState) => {
         if (gestureState.dy > 0) {
           // Dragging down

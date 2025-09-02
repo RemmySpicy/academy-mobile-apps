@@ -21,11 +21,20 @@ import Animated, {
 } from 'react-native-reanimated';
 import { CustomButton, useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
 import type { AppStackParamList } from '../../../navigation/AppNavigator';
+import { ParticipantBookingCard } from '../components/ParticipantBookingCard';
+
+interface Participant {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl?: string;
+  role: 'student' | 'parent' | 'instructor';
+}
 
 interface Booking {
   id: string;
-  courseTitle: string;
-  courseLevel: string;
+  scheduleTitle: string;
+  scheduleType: string;
   instructor: string;
   date: string;
   time: string;
@@ -35,6 +44,11 @@ interface Booking {
   sessionNumber: number;
   totalSessions: number;
   color: string;
+  participants?: Participant[];
+  maxParticipants?: number;
+  variant?: 'default' | 'participant';
+  isRecurring?: boolean;
+  recurringDay?: string;
 }
 
 interface BookingCardProps {
@@ -243,9 +257,9 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
         <View style={styles.header}>
           <View style={styles.content}>
             <Text style={styles.title}>
-              {booking.courseTitle}
+              {booking.scheduleTitle}
             </Text>
-            <Text style={styles.level}>{booking.courseLevel}</Text>
+            <Text style={styles.level}>{booking.scheduleType}</Text>
             <Text style={styles.instructor}>
               with {booking.instructor}
             </Text>
@@ -286,7 +300,11 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, index, onPress }) =>
         <View style={styles.detailRow}>
           <View style={styles.detailItem}>
             <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
-            <Text style={styles.detailText}>{booking.date}</Text>
+            <Text style={styles.detailText}>
+              {booking.isRecurring && booking.recurringDay 
+                ? `Every ${booking.recurringDay}` 
+                : booking.date}
+            </Text>
           </View>
           <View style={styles.detailItem}>
             <Ionicons name="time-outline" size={16} color={theme.colors.text.tertiary} />
@@ -478,7 +496,7 @@ const useScreenStyles = createThemedStyles((theme) =>
 );
 
 /**
- * Bookings Screen - Manage Course Bookings
+ * Bookings Screen - Manage Session Bookings
  * 
  * Features:
  * - View all bookings with status filtering
@@ -500,8 +518,8 @@ export const BookingsScreen: React.FC = () => {
   const [bookings] = useState<Booking[]>([
     {
       id: '1',
-      courseTitle: 'Learn to Swim',
-      courseLevel: 'Beginner Level 2',
+      scheduleTitle: 'Learn to Swim',
+      scheduleType: 'Kids • Private • Beginner',
       instructor: 'Sarah Johnson',
       date: 'Tomorrow',
       time: '3:00 PM - 3:45 PM',
@@ -511,41 +529,285 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 3,
       totalSessions: 8,
       color: theme.colors.interactive.accent,
+      variant: 'default',
     },
     {
       id: '2',
-      courseTitle: 'Swimming Club',
-      courseLevel: 'Intermediate Training',
-      instructor: 'Mike Wilson',
-      date: 'Friday, Jan 12',
+      scheduleTitle: 'Family Swimming Session',
+      scheduleType: 'Adults • Group • Intermediate',
+      instructor: 'Mike Wilson & Sarah Johnson',
+      date: 'Friday, Jan 12', // Will show "Every Friday"
       time: '4:00 PM - 5:00 PM',
       location: 'Pool B',
       status: 'upcoming',
-      price: 18000,
+      price: 0, // No price display for schedule cards
+      isRecurring: true,
+      recurringDay: 'Friday',
       sessionNumber: 2,
       totalSessions: 12,
       color: theme.colors.status.success,
+      variant: 'participant',
+      maxParticipants: 6,
+      participants: [
+        {
+          id: 'p1',
+          firstName: 'Emma',
+          lastName: 'Wilson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p2',
+          firstName: 'James',
+          lastName: 'Wilson',
+          role: 'parent',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p3',
+          firstName: 'Sophie',
+          lastName: 'Wilson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
     },
     {
       id: '3',
-      courseTitle: 'Learn to Swim',
-      courseLevel: 'Beginner Level 2',
-      instructor: 'Sarah Johnson',
+      scheduleTitle: 'Open Water Training',
+      scheduleType: 'Adults • Group • Swim Team',
+      instructor: 'David Smith & Lisa Chen',
       date: 'Monday, Jan 8',
-      time: '3:00 PM - 3:45 PM',
-      location: 'Pool A',
+      time: '6:00 AM - 7:30 AM',
+      location: 'Outdoor Pool',
       status: 'completed',
-      price: 14000,
-      sessionNumber: 2,
+      price: 35000,
+      sessionNumber: 5,
       totalSessions: 8,
-      color: theme.colors.interactive.accent,
+      color: theme.colors.interactive.primary,
+      variant: 'participant',
+      maxParticipants: 8,
+      participants: [
+        {
+          id: 'p4',
+          firstName: 'Alex',
+          lastName: 'Johnson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p5',
+          firstName: 'Maria',
+          lastName: 'Garcia',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p6',
+          firstName: 'John',
+          lastName: 'Doe',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p7',
+          firstName: 'Lisa',
+          lastName: 'Brown',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p8',
+          firstName: 'Michael',
+          lastName: 'Davis',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p9',
+          firstName: 'Sarah',
+          lastName: 'Wilson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
     },
     {
       id: '4',
-      courseTitle: 'Adult Swimming',
-      courseLevel: 'Beginner Adult',
+      scheduleTitle: 'Kids Swimming Lessons',
+      scheduleType: 'Kids • Group • Beginner',
+      instructor: 'Sarah Johnson',
+      date: 'Wednesday, Jan 10', // Will show "Every Wednesday"
+      time: '2:00 PM - 2:45 PM',
+      location: 'Pool A',
+      status: 'upcoming',
+      price: 12000,
+      isRecurring: true,
+      recurringDay: 'Wednesday',
+      sessionNumber: 1,
+      totalSessions: 8,
+      color: theme.colors.interactive.accent,
+      variant: 'default',
+    },
+    {
+      id: '5',
+      scheduleTitle: 'Community Swim Meet',
+      scheduleType: 'All Ages • Group • All Levels',
+      instructor: 'David Smith, Sarah Johnson & Mike Wilson',
+      date: 'Saturday, Jan 13',
+      time: '10:00 AM - 12:00 PM',
+      location: 'Main Pool Complex',
+      status: 'upcoming',
+      price: 0, // No price display for schedule cards
+      sessionNumber: 1,
+      totalSessions: 1,
+      color: theme.colors.status.success,
+      variant: 'participant',
+      maxParticipants: 15,
+      participants: [
+        {
+          id: 'p10',
+          firstName: 'Emma',
+          lastName: 'Thompson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p11',
+          firstName: 'Liam',
+          lastName: 'Johnson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p12',
+          firstName: 'Olivia',
+          lastName: 'Williams',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p13',
+          firstName: 'Noah',
+          lastName: 'Brown',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p14',
+          firstName: 'Ava',
+          lastName: 'Davis',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p15',
+          firstName: 'William',
+          lastName: 'Miller',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p16',
+          firstName: 'Sophia',
+          lastName: 'Wilson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p17',
+          firstName: 'James',
+          lastName: 'Moore',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p18',
+          firstName: 'Isabella',
+          lastName: 'Taylor',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p19',
+          firstName: 'Benjamin',
+          lastName: 'Anderson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
+    },
+    {
+      id: '6',
+      scheduleTitle: 'Water Aerobics Class',
+      scheduleType: 'Adults • Group • Beginner & Intermediate',
+      instructor: 'Lisa Chen & Maria Garcia',
+      date: 'Thursday, Jan 11', // Will show "Every Thursday"
+      time: '6:00 PM - 7:00 PM',
+      location: 'Therapy Pool',
+      status: 'upcoming',
+      price: 0, // No price display for schedule cards
+      isRecurring: true,
+      recurringDay: 'Thursday',
+      sessionNumber: 4,
+      totalSessions: 8,
+      color: theme.colors.status.info || theme.colors.interactive.accent,
+      variant: 'participant',
+      maxParticipants: 12,
+      participants: [
+        {
+          id: 'p20',
+          firstName: 'Mary',
+          lastName: 'Johnson',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p21',
+          firstName: 'Robert',
+          lastName: 'Smith',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p22',
+          firstName: 'Patricia',
+          lastName: 'Williams',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+        {
+          id: 'p23',
+          firstName: 'Michael',
+          lastName: 'Brown',
+          role: 'student',
+          avatarUrl: undefined,
+        },
+      ],
+    },
+    {
+      id: '7',
+      scheduleTitle: 'Morning Swim Training',
+      scheduleType: 'Adults • Private • Intermediate',
+      instructor: 'David Smith',
+      date: 'Tuesday, Jan 9', // Will show "Every Tuesday"
+      time: '7:00 AM - 8:00 AM',
+      location: 'Pool C',
+      status: 'upcoming',
+      price: 15000,
+      sessionNumber: 6,
+      totalSessions: 12,
+      color: theme.colors.interactive.primary,
+      variant: 'default',
+      isRecurring: true,
+      recurringDay: 'Tuesday',
+    },
+    {
+      id: '8',
+      scheduleTitle: 'Adult Swimming',
+      scheduleType: 'Adults • Group • Beginner',
       instructor: 'Lisa Chen',
-      date: 'Friday, Jan 5',
+      date: 'Friday, Jan 5', // One-time schedule (specific date)
       time: '7:00 PM - 7:50 PM',
       location: 'Pool C',
       status: 'cancelled',
@@ -553,6 +815,7 @@ export const BookingsScreen: React.FC = () => {
       sessionNumber: 1,
       totalSessions: 10,
       color: theme.colors.interactive.purple,
+      variant: 'default',
     },
   ]);
 
@@ -594,6 +857,11 @@ export const BookingsScreen: React.FC = () => {
   const handleNotifications = () => {
     navigation.navigate('Notifications');
     setNotificationCount(0);
+  };
+
+  const handleManageParticipants = (bookingId: string) => {
+    console.log('Manage participants for booking:', bookingId);
+    // TODO: This could trigger a refresh of booking data or update state
   };
 
   return (
@@ -693,13 +961,26 @@ export const BookingsScreen: React.FC = () => {
       <FlatList
         data={filteredBookings}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => (
-          <BookingCard
-            booking={item}
-            index={index}
-            onPress={handleBookingPress}
-          />
-        )}
+        renderItem={({ item, index }) => {
+          if (item.variant === 'participant' && item.participants) {
+            return (
+              <ParticipantBookingCard
+                booking={item}
+                index={index}
+                onPress={handleBookingPress}
+                onManageParticipants={handleManageParticipants}
+              />
+            );
+          }
+          
+          return (
+            <BookingCard
+              booking={item}
+              index={index}
+              onPress={handleBookingPress}
+            />
+          );
+        }}
         contentContainerStyle={{
           paddingBottom: theme.spacing['3xl'], // Space for tab bar
         }}

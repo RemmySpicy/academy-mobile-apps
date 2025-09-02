@@ -1,0 +1,493 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  StyleSheet,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+  FadeInRight,
+  Layout,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
+import { useTheme, createThemedStyles } from '@academy/mobile-shared';
+import { ParticipantManagementBottomSheet } from './ParticipantManagementBottomSheet';
+
+interface Participant {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl?: string;
+  role: 'student' | 'parent' | 'instructor';
+}
+
+interface Booking {
+  id: string;
+  scheduleTitle: string;
+  scheduleType: string;
+  instructor: string;
+  date: string;
+  time: string;
+  location: string;
+  status: 'upcoming' | 'completed' | 'cancelled' | 'rescheduled';
+  price: number;
+  sessionNumber: number;
+  totalSessions: number;
+  color: string;
+  participants: Participant[];
+  maxParticipants?: number;
+  isRecurring?: boolean;
+  recurringDay?: string;
+}
+
+interface ParticipantBookingCardProps {
+  booking: Booking;
+  index: number;
+  onPress: (booking: Booking) => void;
+  onManageParticipants: (bookingId: string) => void;
+}
+
+const useCardStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      marginBottom: theme.spacing.sm,
+      marginHorizontal: theme.spacing.md,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    content: {
+      flex: 1,
+      marginRight: theme.spacing.sm,
+    },
+    title: {
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      fontSize: theme.fontSizes.lg,
+    },
+    level: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+    },
+    instructor: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+      marginTop: theme.spacing.xs / 2,
+    },
+    iconContainer: {
+      width: 48,
+      height: 48,
+      borderRadius: theme.borderRadius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    
+    // Participants section
+    participantsContainer: {
+      marginBottom: theme.spacing.sm,
+    },
+    participantsHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.xs,
+    },
+    participantsLabel: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    participantsCount: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.xs,
+    },
+    participantsRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    participantsList: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    participantAvatar: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: theme.colors.background.secondary,
+      borderWidth: 2,
+      borderColor: theme.colors.background.primary,
+    },
+    participantAvatarOverlap: {
+      marginLeft: -theme.spacing.sm, // Less aggressive overlap
+    },
+    participantPlaceholder: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background.tertiary,
+    },
+    overflowIndicator: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.interactive.primary + '20', // Semi-transparent Academy purple
+      borderColor: theme.colors.interactive.primary,
+    },
+    overflowText: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+    participantActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    actionButton: {
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+    },
+    addButton: {
+      backgroundColor: theme.colors.interactive.primary,
+      borderColor: theme.colors.interactive.primary,
+    },
+    addButtonText: {
+      color: 'white',
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    
+    // Detail rows
+    detailRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.sm,
+    },
+    detailItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    detailText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      marginLeft: theme.spacing.xs,
+    },
+    
+    // Status and actions
+    statusRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    statusItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    statusText: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginLeft: theme.spacing.xs,
+    },
+    actionsRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    actionTextButton: {
+      marginRight: theme.spacing.sm,
+    },
+    rescheduleText: {
+      color: theme.colors.status.warning,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    cancelText: {
+      color: theme.colors.status.error,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    reviewText: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+  })
+);
+
+export const ParticipantBookingCard: React.FC<ParticipantBookingCardProps> = ({
+  booking,
+  index,
+  onPress,
+  onManageParticipants,
+}) => {
+  const { theme } = useTheme();
+  const styles = useCardStyles();
+  const scale = useSharedValue(1);
+  const [showParticipantSheet, setShowParticipantSheet] = useState(false);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const getStatusColor = (status: Booking['status']) => {
+    switch (status) {
+      case 'upcoming':
+        return theme.colors.interactive.primary;
+      case 'completed':
+        return theme.colors.status.success;
+      case 'cancelled':
+        return theme.colors.status.error;
+      case 'rescheduled':
+        return theme.colors.status.warning;
+      default:
+        return theme.colors.text.tertiary;
+    }
+  };
+
+  const getStatusText = (status: Booking['status']) => {
+    switch (status) {
+      case 'upcoming':
+        return 'Upcoming';
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      case 'rescheduled':
+        return 'Rescheduled';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const getStatusIcon = (status: Booking['status']) => {
+    switch (status) {
+      case 'upcoming':
+        return 'time-outline';
+      case 'completed':
+        return 'checkmark-circle';
+      case 'cancelled':
+        return 'close-circle';
+      case 'rescheduled':
+        return 'refresh-circle';
+      default:
+        return 'help-circle';
+    }
+  };
+
+  const renderParticipantAvatar = (participant: Participant, index: number) => {
+    const isOverlapping = index > 0;
+    return (
+      <View
+        key={participant.id}
+        style={[
+          styles.participantAvatar,
+          isOverlapping && styles.participantAvatarOverlap,
+        ]}
+      >
+        {participant.avatarUrl ? (
+          <Image
+            source={{ uri: participant.avatarUrl }}
+            style={styles.participantAvatar}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.participantAvatar, styles.participantPlaceholder]}>
+            <Ionicons
+              name="person"
+              size={16}
+              color={theme.colors.text.tertiary}
+            />
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  const maxParticipants = booking.maxParticipants || 6;
+
+  // Handler functions for participant management
+  const handleAddParticipant = (participantId: string) => {
+    console.log('Add participant:', participantId, 'to booking:', booking.id);
+    // TODO: Implement add participant logic
+    onManageParticipants(booking.id);
+  };
+
+  const handleRemoveParticipant = (participantId: string, reason: string) => {
+    console.log('Remove participant:', participantId, 'from booking:', booking.id, 'reason:', reason);
+    // TODO: Implement remove participant logic
+    onManageParticipants(booking.id);
+  };
+
+  return (
+    <Animated.View
+      layout={Layout.springify()}
+      entering={FadeInRight.delay(index * 50).springify()}
+      style={animatedStyle}
+    >
+      <Pressable
+        onPress={() => onPress(booking)}
+        onPressIn={() => {
+          scale.value = withSpring(0.98);
+        }}
+        onPressOut={() => {
+          scale.value = withSpring(1);
+        }}
+        style={styles.card}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.content}>
+            <Text style={styles.title}>
+              {booking.scheduleTitle}
+            </Text>
+            <Text style={styles.level}>{booking.scheduleType}</Text>
+            <Text style={styles.instructor}>
+              with {booking.instructor}
+            </Text>
+          </View>
+          
+          <View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: `${booking.color}15` }
+            ]}
+          >
+            <Ionicons name="water" size={24} color={booking.color} />
+          </View>
+        </View>
+
+        {/* Participants Section */}
+        <View style={styles.participantsContainer}>
+          <View style={styles.participantsHeader}>
+            <Text style={styles.participantsLabel}>Participants</Text>
+            <Text style={styles.participantsCount}>
+              {booking.participants.length}/{maxParticipants}
+            </Text>
+          </View>
+          
+          <View style={styles.participantsRow}>
+            <View style={styles.participantsList}>
+              {booking.participants.slice(0, 5).map((participant, index) => 
+                renderParticipantAvatar(participant, index)
+              )}
+              {booking.participants.length > 5 && (
+                <View style={[styles.participantAvatar, styles.overflowIndicator, styles.participantAvatarOverlap]}>
+                  <Text style={styles.overflowText}>
+                    +{booking.participants.length - 5}
+                  </Text>
+                </View>
+              )}
+              {booking.participants.length === 0 && (
+                <Text style={{
+                  color: theme.colors.text.tertiary,
+                  fontSize: theme.fontSizes.sm,
+                  fontStyle: 'italic'
+                }}>
+                  No participants yet
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.participantActions}>
+              <Pressable
+                style={[styles.actionButton, styles.addButton]}
+                onPress={() => setShowParticipantSheet(true)}
+              >
+                <Text style={styles.addButtonText}>Add/Remove</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+
+        {/* Date and Time */}
+        <View style={styles.detailRow}>
+          <View style={styles.detailItem}>
+            <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>
+              {booking.isRecurring && booking.recurringDay 
+                ? `Every ${booking.recurringDay}` 
+                : booking.date}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Ionicons name="time-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{booking.time}</Text>
+          </View>
+        </View>
+
+        {/* Location */}
+        <View style={styles.detailRow}>
+          <View style={styles.detailItem}>
+            <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{booking.location}</Text>
+          </View>
+        </View>
+
+        {/* Status and Actions */}
+        <View style={styles.statusRow}>
+          <View style={styles.statusItem}>
+            <Ionicons 
+              name={getStatusIcon(booking.status) as any} 
+              size={16} 
+              color={getStatusColor(booking.status)} 
+            />
+            <Text
+              style={[
+                styles.statusText,
+                { color: getStatusColor(booking.status) }
+              ]}
+            >
+              {getStatusText(booking.status)}
+            </Text>
+          </View>
+          
+          <View style={styles.actionsRow}>
+            {booking.status === 'upcoming' && (
+              <>
+                <Pressable style={styles.actionTextButton}>
+                  <Text style={styles.rescheduleText}>Reschedule</Text>
+                </Pressable>
+                <Pressable>
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </Pressable>
+              </>
+            )}
+            {booking.status === 'completed' && (
+              <Pressable>
+                <Text style={styles.reviewText}>Review</Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+      </Pressable>
+
+      {/* Participant Management Bottom Sheet */}
+      <ParticipantManagementBottomSheet
+        visible={showParticipantSheet}
+        onClose={() => setShowParticipantSheet(false)}
+        bookingTitle={booking.scheduleTitle}
+        currentParticipants={booking.participants}
+        maxParticipants={maxParticipants}
+        onAddParticipant={handleAddParticipant}
+        onRemoveParticipant={handleRemoveParticipant}
+      />
+    </Animated.View>
+  );
+};
+
+export default ParticipantBookingCard;

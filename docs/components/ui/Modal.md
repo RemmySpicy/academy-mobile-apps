@@ -256,7 +256,8 @@ import { BottomSheet, CustomButton } from '@academy/mobile-shared';
 ### Features
 
 - **Snap Points**: Dynamic height with predefined stops (small, medium, large, full)
-- **Advanced Gestures**: Drag handle, swipe controls, and pan gestures
+- **Advanced Gestures**: Drag handle with improved mobile touch response, swipe controls, and pan gestures  
+- **Mobile-Optimized**: Enhanced gesture detection for both upward and downward dragging on mobile devices
 - **Provider Support**: Global state management for multiple sheets
 - **Scrollable Content**: Built-in scroll view support
 - **Header Management**: Optional titles and close buttons
@@ -264,17 +265,35 @@ import { BottomSheet, CustomButton } from '@academy/mobile-shared';
 
 ### **⚠️ Important Configuration**
 
-To prevent modal closing when dragging down from larger snap points:
+Control drag-to-close behavior based on your use case:
 
 ```typescript
+// Allow drag-to-close (recommended for most cases)
+<BottomSheet
+  snapPoints={['medium', 'large']}
+  initialSnapPoint="medium"
+  enablePanDownToClose={true}   // Enables drag down to close
+  showDragHandle={true}         // Shows resize handle
+  closeOnBackdrop={true}        // Allows backdrop close
+>
+
+// Prevent drag-to-close (for critical actions)
 <BottomSheet
   snapPoints={['medium', 'large']}
   initialSnapPoint="medium"
   enablePanDownToClose={false}  // Prevents accidental closing
-  showDragHandle={true}         // Shows resize handle
-  closeOnBackdrop={true}        // Allows backdrop close
+  showDragHandle={true}         // Shows resize handle (resize only)
+  closeOnBackdrop={true}        // Still allows backdrop close
 >
 ```
+
+### **🎯 Mobile Gesture Improvements**
+
+Recent updates improve mobile gesture handling:
+
+- **Enhanced Touch Detection**: Lower thresholds for more responsive dragging
+- **Bidirectional Dragging**: Supports both upward expansion and downward closing/resizing
+- **Cross-Platform Compatibility**: Works consistently on iOS, Android, and web platforms
 
 ---
 

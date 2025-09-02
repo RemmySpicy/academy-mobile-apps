@@ -77,7 +77,7 @@ Several showcased components could enhance the production apps:
 - **Search Components**: QuickFilterBar, SearchBar
 - **Calendar Components**: DatePicker, ClassroomCalendar
 - **Performance Components**: PerformanceChart, WorkoutCard
-- **UI Enhancements**: MenuList, NotificationList, BottomSheet
+- **UI Enhancements**: MenuList, NotificationList, BottomSheet (with mobile gesture improvements)
 
 ### 3. Documentation Excellence
 The ComponentLibraryShowcase serves as both:

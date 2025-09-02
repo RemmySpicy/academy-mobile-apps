@@ -234,6 +234,71 @@ The Academy Apps feature a modern, interactive profile card system with advanced
 - **Responsive Sizing**: Images scale appropriately for different screen sizes
 - **Contextual Information**: Shows relevant details (cover photo context, student name)
 
+### Booking Card System
+The Academy Apps feature flexible booking card variants for different scheduling scenarios:
+
+#### **Booking Card Variants**
+1. **Default Booking Card**: Traditional booking display with progress tracking
+   - Session progress bar (e.g., "3/8 sessions")
+   - Price display for paid bookings
+   - Individual lesson tracking
+   - Reschedule/Cancel actions
+
+2. **Participant Booking Card**: Group session management with participant tracking
+   - Overlapping participant avatars (first 5 visible)
+   - Overflow indicator ("+N" for additional participants)
+   - Capacity counter (e.g., "10/15 participants")
+   - Single "Add/Remove Participant" management button
+
+#### **Schedule Types**
+- **One-time Schedules**: Show specific dates (e.g., "Friday, Jan 12", "Tomorrow")
+- **Recurring Schedules**: Show recurring patterns (e.g., "Every Friday", "Every Tuesday")
+- **Special Events**: Specific dates for swim meets, workshops, competitions
+
+#### **Participant Management**
+- **Bottom Sheet Interface**: Comprehensive participant management using shared `BottomSheet` component
+- **Family Member Support**: Add/remove self, children, spouse with relationship labels
+- **Enrollment Status**: Clear indication of who's already enrolled
+- **Capacity Management**: Visual feedback when sessions are full
+- **One-tap Access**: Single button opens full management interface
+
+#### **Multiple Instructor Support**
+- **Flexible Display**: Supports single or multiple instructors per session
+- **Natural Formatting**: Uses "&" and "," for multiple instructor names
+- **Co-teaching Scenarios**: Two instructors working together
+- **Large Events**: Multiple instructors for community events and competitions
+- **Team Coordination**: Different instructor combinations for variety
+
+#### **Usage Examples**
+```typescript
+// Default booking card (with progress)
+<BookingCard
+  booking={{
+    variant: 'default',
+    sessionNumber: 3,
+    totalSessions: 8,
+    price: 14000,
+    isRecurring: true,
+    recurringDay: 'Wednesday',
+  }}
+  onPress={handleBookingPress}
+/>
+
+// Participant booking card (group sessions)
+<ParticipantBookingCard
+  booking={{
+    variant: 'participant',
+    participants: familyMembers,
+    maxParticipants: 6,
+    instructor: 'Mike Wilson & Sarah Johnson',
+    isRecurring: true,
+    recurringDay: 'Friday',
+  }}
+  onPress={handleBookingPress}
+  onManageParticipants={handleManageParticipants}
+/>
+```
+
 ### Menu System Implementation
 The Academy Apps feature comprehensive menu systems with production-ready screens, tailored for each user type:
 

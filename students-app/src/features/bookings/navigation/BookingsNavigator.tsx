@@ -7,7 +7,7 @@ import { CreateBookingScreen } from '../screens/CreateBookingScreen';
 export type BookingsStackParamList = {
   BookingsList: undefined;
   BookingDetail: { bookingId: string };
-  CreateBooking: { courseId?: string };
+  CreateBooking: { sessionId?: string };
   BookingConfirmation: { bookingId: string };
   RescheduleBooking: { bookingId: string };
 };

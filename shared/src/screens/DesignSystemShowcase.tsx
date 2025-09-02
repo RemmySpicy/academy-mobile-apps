@@ -486,7 +486,7 @@ const DesignSystemShowcase: React.FC = () => {
           />
         </View>
         <Text style={styles.componentDescription}>
-          Enhanced bottom sheet with snap points (small, medium, large), advanced gesture handling, scrollable content support, and provider-based state management.
+          Enhanced bottom sheet with snap points (small, medium, large), mobile-optimized gesture handling with improved touch response, scrollable content support, and provider-based state management.
         </Text>
       </View>
 
@@ -581,7 +581,7 @@ const DesignSystemShowcase: React.FC = () => {
         initialSnapPoint="medium"
         closeOnBackdrop={true}
         showDragHandle={true}
-        enablePanDownToClose={false}
+        enablePanDownToClose={true}
       >
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Advanced Features</Text>

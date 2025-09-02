@@ -14,18 +14,20 @@ const Stack = createNativeStackNavigator<CoursesStackParamList>();
 
 export const CoursesNavigator: React.FC = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Stack.Navigator>
       <Stack.Screen 
         name="CoursesList" 
         component={CoursesScreen}
+        options={{
+          headerShown: false, // Let MenuNavigator handle the header
+        }}
       />
       <Stack.Screen 
         name="CourseDetail" 
         component={CourseDetailScreen}
+        options={{
+          headerShown: false, // CourseDetail has its own custom header
+        }}
       />
     </Stack.Navigator>
   );

@@ -19,9 +19,16 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useTheme, createThemedStyles } from '@academy/mobile-shared';
-import type { AppStackParamList } from '../../../navigation/AppNavigator';
+import type { CoursesStackParamList } from '../navigation/CoursesNavigator';
 
 const { width } = Dimensions.get('window');
+
+interface PricingTier {
+  id: string;
+  ageRange: string;
+  price: number;
+  description?: string;
+}
 
 interface Course {
   id: string;
@@ -32,13 +39,12 @@ interface Course {
   duration: string;
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   price: number;
+  pricingTiers?: PricingTier[];
   image: string;
   color: string;
   features: string[];
   sessions: number;
-  maxStudents: number;
-  rating: number;
-  reviews: number;
+  totalEnrolled?: number; // Total students who have ever enrolled
 }
 
 interface CourseCardProps {
@@ -182,6 +188,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
   const styles = useCardStyles();
   const scale = useSharedValue(1);
 
+  // Helper function to safely format enrollment numbers
+  const formatEnrollment = (enrollment?: number): string => {
+    const count = enrollment ?? 0;
+    return count.toLocaleString('en-NG');
+  };
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
@@ -252,6 +264,11 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
           </View>
           
           <View style={styles.detailItem}>
+            <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{course.sessions} sessions</Text>
+          </View>
+          
+          <View style={styles.detailItem}>
             <View
               style={[
                 styles.levelBadge,
@@ -293,15 +310,19 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
         <View style={styles.bottomRow}>
           <View style={styles.leftSection}>
             <View style={styles.ratingSection}>
-              <Ionicons name="star" size={16} color={theme.colors.status.warning} />
+              <Ionicons name="people" size={16} color={theme.colors.status.success} />
               <Text style={styles.ratingText}>
-                {course.rating} ({course.reviews})
+                {formatEnrollment(course.totalEnrolled)} students
               </Text>
             </View>
             <Text style={styles.priceText}>
-              ₦{course.price.toLocaleString('en-NG')}
+              {course.pricingTiers && course.pricingTiers.length > 1 ? (
+                `From ₦${Math.min(...course.pricingTiers.map(t => t.price)).toLocaleString('en-NG')}`
+              ) : (
+                `₦${course.price.toLocaleString('en-NG')}`
+              )}
             </Text>
-            <Text style={styles.priceUnit}>/session</Text>
+            <Text style={styles.priceUnit}>/term</Text>
           </View>
           
           <View style={styles.rightSection}>
@@ -406,17 +427,18 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
  * Courses Screen - Course Catalog
  * 
  * Features:
- * - Comprehensive course listing
+ * - Comprehensive course listing with unlimited enrollment tracking
  * - Advanced search and filtering
  * - Course categories
- * - Detailed course information
- * - Booking integration
- * - Rating and reviews
+ * - Age-based pricing tiers
+ * - Term-based pricing (per course package)
+ * - Total student enrollment metrics (cumulative count)
+ * - Enrollment integration
  */
 export const CoursesScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useScreenStyles();
-  const navigation = useNavigation<NavigationProp<AppStackParamList>>();
+  const navigation = useNavigation<NavigationProp<CoursesStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'beginner' | 'intermediate' | 'advanced' | 'kids' | 'adults'>('all');
 
@@ -435,9 +457,7 @@ export const CoursesScreen: React.FC = () => {
       color: theme.colors.interactive.accent,
       features: ['Water Safety', 'Basic Strokes', 'Floating', 'Breathing'],
       sessions: 8,
-      maxStudents: 6,
-      rating: 4.8,
-      reviews: 124,
+      totalEnrolled: 1247,
     },
     {
       id: '2',
@@ -447,31 +467,61 @@ export const CoursesScreen: React.FC = () => {
       ageRange: '5-30 years',
       duration: '60 min',
       level: 'Advanced',
-      price: 18000,
+      price: 16000,
+      pricingTiers: [
+        {
+          id: 'youth',
+          ageRange: '5-17 years',
+          price: 16000,
+          description: 'Youth competitive training program'
+        },
+        {
+          id: 'adult',
+          ageRange: '18-30 years',
+          price: 20000,
+          description: 'Adult competitive training program'
+        }
+      ],
       image: 'swimming-club',
       color: theme.colors.status.success,
       features: ['Technique', 'Endurance', 'Competition Prep', 'Stroke Analysis'],
       sessions: 12,
-      maxStudents: 8,
-      rating: 4.9,
-      reviews: 89,
+      totalEnrolled: 892,
     },
     {
       id: '3',
       title: 'Adult Swimming',
       subtitle: 'Swimming for Adults 30+',
       description: 'Specialized program for adults looking to learn or improve their swimming skills in a comfortable environment.',
-      ageRange: '30+ years',
+      ageRange: '18+ years',
       duration: '50 min',
       level: 'Beginner',
-      price: 16000,
+      price: 15000,
+      pricingTiers: [
+        {
+          id: 'young-adult',
+          ageRange: '18-35 years',
+          price: 15000,
+          description: 'Young adult swimming program'
+        },
+        {
+          id: 'senior',
+          ageRange: '36-60 years',
+          price: 18000,
+          description: 'Senior adult swimming program with enhanced support'
+        },
+        {
+          id: 'mature',
+          ageRange: '60+ years',
+          price: 14000,
+          description: 'Gentle swimming program for mature adults with senior discount'
+        }
+      ],
       image: 'adult-swimming',
       color: theme.colors.interactive.purple,
       features: ['Adult-Friendly', 'Flexible Pace', 'Health Focus', 'Stress Relief'],
       sessions: 10,
-      maxStudents: 4,
-      rating: 4.7,
-      reviews: 67,
+      totalEnrolled: 2156,
     },
     {
       id: '4',
@@ -486,9 +536,7 @@ export const CoursesScreen: React.FC = () => {
       color: theme.colors.status.warning,
       features: ['Parent-Child', 'Water Safety', 'Gentle Approach', 'Fun Activities'],
       sessions: 6,
-      maxStudents: 4,
-      rating: 4.9,
-      reviews: 156,
+      totalEnrolled: 3421,
     },
   ]);
 
@@ -530,7 +578,7 @@ export const CoursesScreen: React.FC = () => {
   });
 
   const handleCoursePress = (course: Course) => {
-    console.log('Navigate to course detail:', course.id);
+    navigation.navigate('CourseDetail', { courseId: course.id });
   };
 
   const handleSearch = () => {

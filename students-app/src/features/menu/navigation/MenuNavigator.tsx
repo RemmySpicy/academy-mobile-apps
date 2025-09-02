@@ -9,7 +9,7 @@ import { SettingsScreen } from '../../settings/screens/SettingsScreen';
 import { PaymentMethodsScreen } from '../../payments/screens/PaymentMethodsScreen';
 
 // Import screens from existing features
-import { CoursesScreen } from '../../courses/screens/CoursesScreen';
+import { CoursesNavigator } from '../../courses/navigation/CoursesNavigator';
 import { AchievementsScreen } from '../../progress/screens/AchievementsScreen';
 
 // Import new feature screens - using full-featured versions
@@ -132,7 +132,7 @@ export const MenuNavigator: React.FC = () => {
       {/* New feature screens accessible from menu */}
       <Stack.Screen 
         name="OurCourses" 
-        component={CoursesScreen}
+        component={CoursesNavigator}
       />
       <Stack.Screen 
         name="OurServices" 

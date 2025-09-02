@@ -676,7 +676,6 @@ const tabs = [
   { key: 'overview', label: 'Overview' },
   { key: 'curriculum', label: 'Curriculum' },
   { key: 'schedule', label: 'Schedule' },
-  { key: 'reviews', label: 'Reviews' },
 ];
 
 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -706,7 +705,6 @@ const tabs = [
   { value: 'overview', label: 'Overview', icon: 'information-circle-outline' },
   { value: 'curriculum', label: 'Curriculum', icon: 'book-outline' },
   { value: 'schedule', label: 'Schedule', icon: 'calendar-outline' },
-  { value: 'reviews', label: 'Reviews', icon: 'star-outline', badge: courseDetail.reviews },
 ];
 
 <TabBar
@@ -724,9 +722,12 @@ const tabs = [
 ```
 
 #### Benefits
-- **88% code reduction** (64 → 8 lines for tab implementation)
+- **88% code reduction** (64 → 8 lines for tab implementation)  
 - **Added icons** for better visual hierarchy
-- **Added badge** showing review count
+- **Age-based pricing tiers** with interactive selection
+- **Unlimited enrollment tracking** instead of reviews
+- **Term-based pricing** display (per course package)
+- **Enhanced user experience** with "Enroll Now" CTA
 - **Removed custom styles** - handled by component
 - **Better accessibility** - built into TabBar
 - **Consistent Academy theming** - automatic

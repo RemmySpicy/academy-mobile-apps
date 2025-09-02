@@ -324,6 +324,62 @@ All screens are built with:
 - Interactive components and state management
 - Modern UI patterns (expandable images, bottom sheets, smooth animations)
 
+### Course System Implementation
+The Academy Apps feature a comprehensive course catalog and detail system with modern enrollment tracking:
+
+#### **Course Catalog Features**
+- **Course Listing**: Comprehensive catalog with search and filtering
+- **Age-Based Pricing Tiers**: Multiple pricing options per course (e.g., Youth 5-17 years: ₦16,000, Adult 18-30 years: ₦20,000)
+- **Term-Based Pricing**: Pricing shown per term/package (8 sessions) rather than per session
+- **Unlimited Enrollment Tracking**: Shows total students who have ever enrolled (e.g., "1,247 students")
+- **Interactive Course Cards**: Modern design with enrollment stats, pricing, and course details
+- **Category Filtering**: Filter by skill level, age group, and course type
+
+#### **Course Detail System**
+- **Comprehensive Course Information**: Full descriptions, instructor profiles, schedules
+- **Interactive Pricing Selection**: Users can select their age-appropriate pricing tier
+- **Dynamic Price Updates**: Real-time price display based on selected tier
+- **Tabbed Interface**: Overview, Curriculum, and Schedule tabs for organized content
+- **Enrollment Integration**: "Enroll Now" button with pricing tier data passed to enrollment flow
+
+#### **Pricing System Examples**
+```typescript
+// Course with multiple pricing tiers
+{
+  id: '2',
+  title: 'Swimming Club',
+  price: 16000, // Starting price for display
+  pricingTiers: [
+    {
+      id: 'youth',
+      ageRange: '5-17 years',
+      price: 16000,
+      description: 'Youth competitive training program'
+    },
+    {
+      id: 'adult',
+      ageRange: '18-30 years', 
+      price: 20000,
+      description: 'Adult competitive training program'
+    }
+  ],
+  totalEnrolled: 892,
+  sessions: 12
+}
+```
+
+#### **Navigation Flow**
+- **Menu** → **Our Courses** (course catalog with header)
+- **Course Card Press** → **Course Detail** (custom header with back button)
+- **Enroll Now** → **Enrollment Flow** (with selected pricing tier data)
+
+#### **Key Implementation Notes**
+- **Header Management**: Course list inherits menu header, detail page has custom header
+- **Error Handling**: Graceful fallbacks for missing enrollment data (`totalEnrolled ?? 0`)
+- **Number Formatting**: Nigerian locale formatting for enrollment numbers (e.g., "1,247")
+- **Pricing Display**: "From ₦16,000/term" for multi-tier courses, "₦12,000/term" for single pricing
+- **Mobile Optimized**: Touch-friendly cards, smooth animations, responsive design
+
 ### Development Commands
 ```bash
 # Install dependencies

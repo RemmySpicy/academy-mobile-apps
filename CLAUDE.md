@@ -373,12 +373,29 @@ The Academy Apps feature a comprehensive course catalog and detail system with m
 - **Course Card Press** → **Course Detail** (custom header with back button)
 - **Enroll Now** → **Enrollment Flow** (with selected pricing tier data)
 
-#### **Key Implementation Notes**
-- **Header Management**: Course list inherits menu header, detail page has custom header
-- **Error Handling**: Graceful fallbacks for missing enrollment data (`totalEnrolled ?? 0`)
-- **Number Formatting**: Nigerian locale formatting for enrollment numbers (e.g., "1,247")
-- **Pricing Display**: "From ₦16,000/term" for multi-tier courses, "₦12,000/term" for single pricing
-- **Mobile Optimized**: Touch-friendly cards, smooth animations, responsive design
+#### **Course System Implementation**
+The Academy Apps feature a comprehensive course catalog and detail system with modern enrollment tracking:
+
+**Key Features:**
+- **Enhanced Course Detail Screen**: Video introductions, comprehensive pricing options, location availability
+- **Age-Based Pricing Tiers**: Multiple pricing options per course (e.g., Youth 5-17 years: ₦16,000, Adult 18-30 years: ₦20,000)
+- **Term-Based Pricing**: Pricing shown per term/package (8 sessions) rather than per session
+- **Unlimited Enrollment Tracking**: Shows total students who have ever enrolled (e.g., "1,247 students")
+- **Location Options**: Both facility-based and mobile instruction availability
+- **Multiple Lesson Types**: Group, private, and semi-private options with dynamic pricing
+
+**Navigation Flow:**
+- **Menu** → **Our Courses** (course catalog with header)
+- **Course Card Press** → **Course Detail** (comprehensive course information)
+- **Enroll Now** → **Enrollment Flow** (with selected pricing tier data)
+
+**Implementation Notes:**
+- Course-specific location availability (some courses facility-only)
+- Universal "From ₦X" pricing format for all courses (shows lowest available price)
+- Social proof integration with enrollment numbers on course cards
+- Nigerian locale formatting for prices and enrollment numbers
+- Mobile-optimized design with touch-friendly interactions
+- See `/docs/features/COURSE_SYSTEM.md` for detailed technical documentation
 
 ### Development Commands
 ```bash

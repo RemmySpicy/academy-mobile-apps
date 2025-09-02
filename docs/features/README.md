@@ -33,6 +33,21 @@ Comprehensive menu system with production-ready screens for both students and in
 - Settings screens with notifications and privacy
 - Quick access cards for common actions
 
+### 📚 [Course System](./COURSE_SYSTEM.md)
+**Status**: ✅ **COMPLETE & PRODUCTION READY**
+
+Comprehensive course catalog and detail system with modern enrollment tracking and enhanced user experience.
+
+**Features**:
+- Video introduction with clickable hero images
+- Multi-tier pricing system with age-based options
+- Location availability (facility vs mobile instruction)
+- Multiple lesson types (group, private, semi-private)
+- Perks & benefits display
+- Contact integration for enrollment assistance
+
+**Integration**: Menu → Our Courses → Course Detail → Enrollment Flow
+
 ### 🆘 [Help & Support System](./HELP_SUPPORT_SYSTEM.md) 
 **Status**: ✅ **COMPLETE**
 
@@ -49,6 +64,7 @@ Complete help and support system with FAQ, contact forms, and live chat integrat
 | Feature | Students App | Instructors App | Shared Components | Documentation |
 |---------|--------------|-----------------|-------------------|---------------|
 | Achievement System | ✅ Complete | ➡️ Ready for integration | ✅ Complete | ✅ Complete |
+| Course System | ✅ Complete | ➡️ Ready for integration | ✅ Complete | ✅ Complete |
 | Menu System | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete |
 | Help & Support | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete |
 
@@ -61,6 +77,7 @@ docs/features/
 │   ├── README.md                       # Achievement system overview
 │   ├── IMPLEMENTATION.md               # Technical implementation guide
 │   └── TROUBLESHOOTING.md              # Common issues and solutions
+├── COURSE_SYSTEM.md                    # Course catalog and detail system
 ├── MENU_SYSTEM.md                      # Menu system documentation
 └── HELP_SUPPORT_SYSTEM.md              # Help & support documentation
 ```

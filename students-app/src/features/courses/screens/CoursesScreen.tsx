@@ -259,13 +259,15 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
           </View>
           
           <View style={styles.detailItem}>
-            <Ionicons name="time-outline" size={16} color={theme.colors.text.tertiary} />
-            <Text style={styles.detailText}>{course.duration}</Text>
+            <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
+            <Text style={styles.detailText}>{course.sessions} sessions</Text>
           </View>
           
           <View style={styles.detailItem}>
-            <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
-            <Text style={styles.detailText}>{course.sessions} sessions</Text>
+            <Ionicons name="people" size={16} color={theme.colors.status.success} />
+            <Text style={styles.detailText}>
+              {(course.totalEnrolled || 0).toLocaleString('en-NG')} enrolled
+            </Text>
           </View>
           
           <View style={styles.detailItem}>
@@ -309,18 +311,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index, onPress }) => {
         {/* Bottom Row */}
         <View style={styles.bottomRow}>
           <View style={styles.leftSection}>
-            <View style={styles.ratingSection}>
-              <Ionicons name="people" size={16} color={theme.colors.status.success} />
-              <Text style={styles.ratingText}>
-                {formatEnrollment(course.totalEnrolled)} students
-              </Text>
-            </View>
             <Text style={styles.priceText}>
-              {course.pricingTiers && course.pricingTiers.length > 1 ? (
-                `From ₦${Math.min(...course.pricingTiers.map(t => t.price)).toLocaleString('en-NG')}`
-              ) : (
-                `₦${course.price.toLocaleString('en-NG')}`
-              )}
+              {`From ₦${course.pricingTiers && course.pricingTiers.length > 0 ? 
+                Math.min(...course.pricingTiers.map(t => t.price)).toLocaleString('en-NG') : 
+                course.price.toLocaleString('en-NG')}`}
             </Text>
             <Text style={styles.priceUnit}>/term</Text>
           </View>

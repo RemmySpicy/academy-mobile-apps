@@ -30,6 +30,21 @@ Educational institution focused components:
 - **[CourseProgression](./academy/CourseProgression.md)** - Course progress visualization
 - **[MyClassroom](./academy/MyClassroom.md)** - Classroom overview component
 
+### 🏆 Achievement System Components
+**Multi-program gamification system with contextual achievements:**
+
+- **[AchievementsScreen](./achievements/AchievementsScreen.md)** - Main achievement screen with program-aware filtering, search, and modals
+- **[AchievementCelebration](./achievements/AchievementCelebration.md)** - Animated celebration modal with confetti and sparkles
+- **[AchievementNotificationToast](./achievements/AchievementNotificationToast.md)** - Toast notification for achievement progress updates
+- **[AchievementLeaderboard](./achievements/AchievementLeaderboard.md)** - Competitive leaderboard with podium display
+- **[AchievementsService](./achievements/AchievementsService.md)** - Service layer with program-aware achievement generation
+
+**Multi-Program Support:**
+- **7+ Program Types**: Swimming, Basketball, Football, Music, Coding, Dance, Martial Arts
+- **Dynamic Generation**: 25+ unique achievements per program with contextual categories
+- **Visual Theming**: Program-specific colors, icons, and themes
+- **Smart Fallbacks**: Automatic support for custom program types
+
 ### 👤 Profile & User Management Components
 Advanced profile management with modern UI patterns:
 

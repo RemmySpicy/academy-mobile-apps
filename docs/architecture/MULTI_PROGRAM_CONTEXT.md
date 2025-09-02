@@ -135,13 +135,56 @@ function StudentsScreen() {
 }
 ```
 
+### 5. Use Program Context in Achievement System:
+
+```typescript
+import { useProgramContext, achievementsService } from '@shared';
+
+function AchievementsScreen() {
+  const { currentProgram, isLoading: programLoading } = useProgramContext();
+
+  // Achievement data automatically adapts to current program
+  const achievements = achievementsService.generateMockAchievements(currentProgram);
+  const categories = achievementsService.generateMockCategories(currentProgram);
+  const stats = achievementsService.generateMockStats(currentProgram);
+
+  // Program type provides visual theming
+  const programType = achievementsService.getProgramType(currentProgram);
+  
+  if (programLoading || !currentProgram) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    <AchievementDisplay 
+      achievements={achievements}
+      categories={categories}
+      themeColor={programType.colors.primary}
+      primaryIcon={programType.icons.primary}
+    />
+  );
+}
+```
+
 ## 🔒 Automatic Features
 
 - **API Header Injection**: All API requests automatically include `X-Program-Context` header
 - **Data Filtering**: Backend filters all data by user's current program context
+- **Achievement Adaptation**: Achievement system automatically adapts to current program
+- **Visual Theming**: Program-specific colors, icons, and themes applied automatically
 - **Role-Based Access**: Components automatically respect user's role within the current program
 - **Persistent Context**: Program selection is stored and restored between app sessions
 - **Error Handling**: Graceful fallbacks when programs are unavailable
+
+### 🏆 **Achievement System Integration**
+
+The achievement system seamlessly integrates with program context:
+
+- **Dynamic Achievement Generation**: Each program gets unique, contextual achievements
+- **Program-Specific Categories**: Categories automatically match program focus areas
+- **Visual Identity**: Colors and icons adapt to program type (e.g., blue water theme for Swimming)
+- **Smart Fallbacks**: Unknown program types get appropriate default configurations
+- **Performance Optimized**: Achievement data refreshes efficiently on program switch
 
 ## 📱 App-Specific Roles
 

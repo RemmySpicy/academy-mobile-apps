@@ -28,6 +28,7 @@ import {
   LoadingSpinner,
   createThemedStyles,
   achievementsService,
+  useProgramContext,
 } from '@academy/mobile-shared';
 import type {
   Achievement,
@@ -408,6 +409,7 @@ const FilterChip = React.memo<FilterChipProps>(({ label, isSelected, onPress, co
 
 export const AchievementsScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { currentProgram, isLoading: programLoading } = useProgramContext();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [categories, setCategories] = useState<AchievementCategory[]>([]);
   const [stats, setStats] = useState<StudentAchievementStats | null>(null);
@@ -430,8 +432,10 @@ export const AchievementsScreen: React.FC = () => {
   const celebrationOpacity = useSharedValue(0);
 
   useEffect(() => {
-    loadAchievements();
-  }, []);
+    if (!programLoading && currentProgram) {
+      loadAchievements();
+    }
+  }, [currentProgram, programLoading]);
 
   // Cleanup animations on unmount
   useEffect(() => {
@@ -444,10 +448,12 @@ export const AchievementsScreen: React.FC = () => {
   const loadAchievements = async () => {
     try {
       setIsLoading(true);
-      // Using mock data for development
-      const mockAchievements = achievementsService.generateMockAchievements();
-      const mockCategories = achievementsService.generateMockCategories();
-      const mockStats = achievementsService.generateMockStats();
+      if (!currentProgram) return;
+      
+      // Using mock data for development - now program-aware
+      const mockAchievements = achievementsService.generateMockAchievements(currentProgram);
+      const mockCategories = achievementsService.generateMockCategories(currentProgram);
+      const mockStats = achievementsService.generateMockStats(currentProgram);
       
       setAchievements(mockAchievements);
       setCategories(mockCategories);
@@ -502,10 +508,35 @@ export const AchievementsScreen: React.FC = () => {
     setSearchQuery('');
   }, []);
 
-  if (isLoading) {
+  if (isLoading || programLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background.secondary }}>
         <LoadingSpinner />
+      </View>
+    );
+  }
+
+  if (!currentProgram) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.colors.background.secondary, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.xl }}>
+        <Ionicons name="school" size={48} color={theme.colors.icon.tertiary} />
+        <Text style={{
+          color: theme.colors.text.secondary,
+          fontSize: theme.fontSizes.lg,
+          fontWeight: theme.fontConfig.fontWeight.medium,
+          textAlign: 'center',
+          marginTop: theme.spacing.md,
+        }}>
+          No Program Selected
+        </Text>
+        <Text style={{
+          color: theme.colors.text.tertiary,
+          fontSize: theme.fontSizes.base,
+          textAlign: 'center',
+          marginTop: theme.spacing.sm,
+        }}>
+          Please select a program to view achievements
+        </Text>
       </View>
     );
   }

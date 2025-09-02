@@ -141,7 +141,10 @@ The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT a
 - **🔐 [Authentication](./docs/authentication/README.md)** - Auth system and roles
 
 ### Advanced Features:
+- **🏆 [Achievement System](./docs/features/achievements/README.md)** - Multi-program achievement system with dynamic generation
 - **🎯 [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md)** - Program switching system
+- **🎨 [Multi-Program Achievements](./docs/features/achievements/MULTI_PROGRAM_SUPPORT.md)** - Program-specific achievement templates and theming
+- **🚀 [Achievements API](./docs/api/ACHIEVEMENTS_API.md)** - Program-aware achievement API integration
 - **🔔 [Notifications System](./docs/api/NOTIFICATIONS.md)** - Toast notifications and centralized notification page
 - **🔧 [Component Library](./docs/components/README.md)** - Shared component usage
 - **🌐 [API Client](./docs/api/API_CLIENT.md)** - Backend integration
@@ -299,6 +302,8 @@ npm run test:all
 - ✅ **Complete menu system with all settings screens implemented**
 - ✅ **Enhanced Profile Card System with expandable images and profile switching**
 - ✅ **ProfileSwitcherBottomSheet component for multi-user support**
+- ✅ **Multi-Program Achievement System with 7+ program types and 25+ achievements each**
+- ✅ **Dynamic program-aware achievement generation with contextual theming**
 - ✅ **Modern UI patterns: image expansion modals, overlapping layouts, smooth animations**
 
 ## Development Best Practices

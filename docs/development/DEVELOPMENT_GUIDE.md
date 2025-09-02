@@ -308,6 +308,10 @@ docker-compose up db backend
 The Academy Apps feature a comprehensive shared component library with complete coverage for all mobile app needs.
 
 ### Recently Added Features
+- **🏆 Multi-Program Achievement System**: Complete rewrite with program-aware achievements for Swimming, Basketball, Football, Music, Coding, Dance, and Martial Arts
+- **🎯 Dynamic Achievement Generation**: 25+ unique achievements per program with contextual categories, icons, and colors
+- **🔄 Program Context Integration**: Seamless program switching with automatic achievement data refresh
+- **🎨 Program-Specific Theming**: Visual identity adaptation (colors, icons, themes) based on program type
 - **Settings Management**: NotificationSettings, PrivacySettings, About screens
 - **Analytics Dashboard**: ProgressReport screen with charts and metrics
 - **Complete Menu System**: All menu navigation screens fully implemented

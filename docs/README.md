@@ -24,9 +24,12 @@ Welcome to the Academy Management System mobile applications documentation. This
 - **[Design System](./design-system/README.md)** - Colors, typography, spacing, and component patterns
 
 ### 🧩 Components  
-- **[Component Library](./components/README.md)** - Complete component library with 80+ Academy components
+- **[Component Library](./components/README.md)** - Complete component library with 85+ Academy components
 - **[Form Components](./components/forms/README.md)** - Form components and usage patterns
 - **[Control Components](./components/controls/ControlCard.md)** - ControlCard and management interfaces
+- **[UI Components](./components/ui/)** - Modal, SelectOptions, FormDropdown, SegmentedControl, TabBar
+- **[Profile Components](./components/profile/)** - Enhanced Profile Card System with expandable images
+- **[Menu Components](./components/menu/)** - Complete menu system with all settings screens
 - **[Utility Functions](./components/utilities/)** - Reusable utility functions (date, style utilities)
 
 ### 🌐 API & Services
@@ -35,7 +38,8 @@ Welcome to the Academy Management System mobile applications documentation. This
 
 ### 🎯 Features
 - **[Features Overview](./features/README.md)** - Complete feature documentation index
-- **[Achievement System](./features/achievements/README.md)** - ✅ Optimized gamification system with performance enhancements and accessibility
+- **[Achievement System](./features/achievements/README.md)** - Multi-Program Achievement System with 7+ program types and 25+ achievements each
+- **[Menu System](./features/MENU_SYSTEM.md)** - Complete menu system with all settings screens implemented
 - **[Help & Support System](./features/HELP_SUPPORT_SYSTEM.md)** - Comprehensive user support and knowledge base
 
 ### 🎨 User Experience  
@@ -68,11 +72,14 @@ When working on the mobile apps, ensure you:
 ## 🎯 Key Features
 
 - **Multi-Program Support** - Handle multiple academy programs with context switching
-- **Academy Theming** - Consistent branding with light/dark/night modes
-- **Component Library** - 80+ Academy-themed components with utility functions
+- **Academy Theming** - Consistent branding with mobile-first optimizations and high contrast variants
+- **Component Library** - 85+ Academy-themed components with TypeScript interfaces and utility functions
+- **Enhanced Profile System** - Profile Card System with expandable images, cover photos, and profile switching
+- **Complete Menu System** - Comprehensive menu systems with production-ready screens for both apps
+- **Modern UI Patterns** - Image expansion modals, overlapping layouts, smooth animations, bottom sheets
 - **Performance Optimized** - React.memo, custom hooks, memoization, and memory management
 - **Accessibility Compliant** - Full WCAG 2.1 support with screen reader compatibility
-- **Type Safety** - Full TypeScript support with zero compilation errors
+- **Type Safety** - Full TypeScript support with zero compilation errors (React 19 compatible)
 - **Modern Architecture** - React 19, Zustand, React Navigation 6
 - **Production Ready** - Complete authentication, error handling, and testing
 

@@ -2500,7 +2500,7 @@ export const CourseCurriculumScreen: React.FC = () => {
                   styles.levelFilterTab,
                   getLevelTabStyle(level, selectedLevel === level.id)
                 ]}
-                onPress={() => level.isUnlocked && setSelectedLevel(level.id)}
+                onPress={() => setSelectedLevel(level.id)}
               >
                 <Text style={[
                   styles.levelFilterText,

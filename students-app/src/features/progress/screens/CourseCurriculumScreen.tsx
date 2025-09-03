@@ -196,7 +196,9 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     backgroundColor: theme.colors.interactive.accent,
   },
   completedLevelFilterTab: {
-    backgroundColor: theme.colors.status.success,
+    backgroundColor: `${theme.colors.status.success}20`,
+    borderColor: theme.colors.status.success,
+    borderWidth: 1,
   },
   lockedLevelFilterTab: {
     backgroundColor: theme.colors.background.tertiary,
@@ -205,6 +207,11 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     color: theme.colors.text.secondary,
     fontSize: theme.fontSizes.sm,
     fontWeight: theme.fontConfig.fontWeight.medium,
+  },
+  currentLevelIndicator: {
+    fontSize: theme.fontSizes.xs,
+    fontWeight: theme.fontConfig.fontWeight.normal,
+    color: theme.colors.text.tertiary,
   },
   activeLevelFilterText: {
     color: 'white',
@@ -2500,16 +2507,15 @@ export const CourseCurriculumScreen: React.FC = () => {
                   selectedLevel === level.id && styles.activeLevelFilterText
                 ]}>
                   {level.shortTitle}
+                  {level.isCurrentLevel && (
+                    <Text style={[
+                      styles.currentLevelIndicator,
+                      selectedLevel === level.id && styles.activeLevelFilterText
+                    ]}>
+                      {' • Current'}
+                    </Text>
+                  )}
                 </Text>
-                {level.isCurrentLevel && (
-                  <Text style={[
-                    styles.levelFilterText,
-                    selectedLevel === level.id && styles.activeLevelFilterText,
-                    { fontSize: theme.fontSizes.xs, marginTop: 2 }
-                  ]}>
-                    Current
-                  </Text>
-                )}
               </Pressable>
             ))}
           </ScrollView>

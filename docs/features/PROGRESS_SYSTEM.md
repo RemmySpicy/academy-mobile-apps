@@ -48,13 +48,14 @@ Course → Levels (3-5) → Modules (5 per level) → Sections (2-3 per module) 
 - **Objective Assessment**: Consistent evaluation criteria across instructors
 
 #### 🌟 Swipeable Level Navigation
-- **Horizontal Filter Bar**: Touch-friendly level selection
+- **Horizontal Filter Bar**: Touch-friendly level selection with 7 total levels
+- **Interactive Locked Levels**: Users can click on any level (including locked ones) to see information
 - **Status Indicators**: 
   - **Active** (purple): Currently selected level
-  - **Current** (accent): Student's current learning level  
-  - **Completed** (green): Fully completed levels
-  - **Locked** (gray): Levels not yet unlocked
-- **Scalable Design**: Supports 5+ course levels efficiently
+  - **Current** (accent with inline "• Current"): Student's current learning level  
+  - **Completed** (subtle green background with green border): Fully completed levels
+  - **Locked** (gray): Levels showing informative locked state with requirements
+- **Enhanced UX**: Inline current level indicator prevents layout shifts between buttons
 
 #### 🌟 Enhanced Module Organization
 - **Structured Naming**: "Module X: [Descriptive Title]" format
@@ -68,6 +69,8 @@ Course → Levels (3-5) → Modules (5 per level) → Sections (2-3 per module) 
 - **Star-Based Scoring**: Each assessment item rated with 0-3 stars
 - **Overall Performance**: Percentage scores with visual progress indicators
 - **Detailed Breakdowns**: Individual item performance tracking
+- **Expandable Assessment Cards**: Click to expand/collapse detailed assessment items with smooth animations
+- **Consolidated Star Display**: Assessment headers show consolidated star counts (e.g., "4/12 stars") for clean, non-overflowing interface
 
 ### 📊 Technical Implementation
 

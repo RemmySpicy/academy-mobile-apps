@@ -204,17 +204,24 @@ The **Course Curriculum Screen** provides students with detailed progress tracki
 Course → Levels → Modules → Section Tabs → Individual Lessons
 ```
 
-**Example: Learn to Swim Course**
-- **Level 1**: Water Familiarization (5 modules, 36 lessons)
-- **Level 2**: Basic Swimming Skills (5 modules, 38 lessons) 
-- **Level 3**: Advanced Techniques (locked until Level 2 completion)
+**Example: Learn to Swim Course (7 Levels)**
+- **Level 1**: Water Familiarization (5 modules, 36 lessons) - Completed
+- **Level 2**: Basic Swimming Skills (5 modules, 38 lessons) - Current
+- **Level 3**: Advanced Techniques (locked) - Interactive locked state
+- **Level 4**: Competitive Strokes (locked) - Competitive swimming techniques
+- **Level 5**: Speed & Endurance (locked) - Building swimming speed and endurance
+- **Level 6**: Advanced Training (locked) - Advanced training methods and optimization  
+- **Level 7**: Expert Mastery (locked) - Expert techniques and coaching fundamentals
 
 #### Swipeable Level Filter System
-- **Horizontal Scroll Navigation**: Touch-friendly level selection
+- **Horizontal Scroll Navigation**: Touch-friendly level selection with 7 total levels
+- **Interactive Locked Levels**: All levels clickable to show progression requirements
 - **Visual Status Indicators**: 
-  - Active (purple), Current (accent), Completed (green), Locked (gray)
-- **Scalable Design**: Supports 5+ course levels
-- **Mobile Optimized**: Smooth scrolling and haptic feedback
+  - Active (purple): Currently selected level
+  - Current (accent with "• Current"): Student's current learning level
+  - Completed (subtle green with border): Fully completed levels  
+  - Locked (gray): Informative locked state with level descriptions
+- **Enhanced UX**: Inline current indicator prevents button height inconsistencies
 
 #### Enhanced Module Organization
 - **Module X Format**: "Module 1: Water Safety & Pool Rules"

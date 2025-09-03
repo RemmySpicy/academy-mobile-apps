@@ -427,6 +427,13 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     padding: theme.spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border.primary,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  assessmentInfo: {
+    flex: 1,
+    marginRight: theme.spacing.md,
   },
   assessmentTitle: {
     color: theme.colors.text.primary,
@@ -624,7 +631,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
     subtitle: 'Complete Beginner Swimming Program',
     overallProgress: 65,
     currentLevel: 2,
-    totalLevels: 3,
+    totalLevels: 7,
     levels: [
       {
         id: '1',
@@ -2123,7 +2130,63 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         isCurrentLevel: false,
         isCompleted: false,
         isUnlocked: false,
-        modules: [], // Simplified for now
+        modules: [],
+      },
+      // Level 4 (Locked)
+      {
+        id: '4',
+        title: 'Level 4: Competitive Strokes',
+        shortTitle: 'Level 4',
+        description: 'Learning competitive swimming techniques and turns',
+        totalModules: 5,
+        completedModules: 0,
+        progress: 0,
+        isCurrentLevel: false,
+        isCompleted: false,
+        isUnlocked: false,
+        modules: [],
+      },
+      // Level 5 (Locked)
+      {
+        id: '5',
+        title: 'Level 5: Speed & Endurance',
+        shortTitle: 'Level 5',
+        description: 'Building swimming speed, endurance, and training techniques',
+        totalModules: 5,
+        completedModules: 0,
+        progress: 0,
+        isCurrentLevel: false,
+        isCompleted: false,
+        isUnlocked: false,
+        modules: [],
+      },
+      // Level 6 (Locked)
+      {
+        id: '6',
+        title: 'Level 6: Advanced Training',
+        shortTitle: 'Level 6',
+        description: 'Advanced training methods and performance optimization',
+        totalModules: 5,
+        completedModules: 0,
+        progress: 0,
+        isCurrentLevel: false,
+        isCompleted: false,
+        isUnlocked: false,
+        modules: [],
+      },
+      // Level 7 (Locked)
+      {
+        id: '7',
+        title: 'Level 7: Expert Mastery',
+        shortTitle: 'Level 7',
+        description: 'Expert level techniques and coaching fundamentals',
+        totalModules: 5,
+        completedModules: 0,
+        progress: 0,
+        isCurrentLevel: false,
+        isCompleted: false,
+        isUnlocked: false,
+        modules: [],
       },
     ],
   };
@@ -2329,13 +2392,24 @@ export const CourseCurriculumScreen: React.FC = () => {
   const { courseId } = route.params;
 
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [isAssessmentExpanded, setIsAssessmentExpanded] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState('2'); // Start with current level
+  
+  const assessmentRotation = useSharedValue(0);
 
   // Get curriculum data
   const curriculum = useMemo(() => getMockCurriculumData(courseId), [courseId]);
 
   // Get current level data
   const currentLevel = curriculum.levels.find(level => level.id === selectedLevel);
+
+  // Assessment arrow animation
+  const assessmentAnimatedIconStyle = useAnimatedStyle(() => {
+    assessmentRotation.value = withSpring(isAssessmentExpanded ? 180 : 0);
+    return {
+      transform: [{ rotate: `${assessmentRotation.value}deg` }],
+    };
+  });
 
   const handleToggleModule = (moduleId: string) => {
     setExpandedModules(prev => {
@@ -2347,6 +2421,10 @@ export const CourseCurriculumScreen: React.FC = () => {
       }
       return newSet;
     });
+  };
+
+  const handleToggleAssessment = () => {
+    setIsAssessmentExpanded(prev => !prev);
   };
 
   const handleLessonPress = (lesson: Lesson) => {
@@ -2468,76 +2546,94 @@ export const CourseCurriculumScreen: React.FC = () => {
             entering={FadeInDown.delay(600)}
             style={styles.assessmentCard}
           >
-            <View style={styles.assessmentHeader}>
-              <Text style={styles.assessmentTitle}>{currentLevel.assessment.title}</Text>
-              <Text style={styles.assessmentDescription}>
-                {currentLevel.assessment.description}
-              </Text>
-              <View style={styles.assessmentStats}>
-                <View style={styles.assessmentStat}>
-                  <Ionicons name="document-text-outline" size={16} color={theme.colors.text.secondary} />
-                  <Text style={styles.assessmentStatText}>
-                    {currentLevel.assessment.completedItems}/{currentLevel.assessment.totalItems} items
-                  </Text>
-                </View>
-                <View style={styles.assessmentStat}>
-                  <Ionicons name="star" size={14} color={theme.colors.status.warning} />
-                  <Text style={styles.assessmentStatText}>
-                    {currentLevel.assessment.earnedStars}/{currentLevel.assessment.totalStars} stars
-                  </Text>
-                </View>
-                {currentLevel.assessment.isCompleted && (
-                  <View style={styles.assessmentScore}>
-                    <Text style={styles.assessmentScoreText}>
-                      {currentLevel.assessment.overallScore}%
+            <Pressable style={styles.assessmentHeader} onPress={handleToggleAssessment}>
+              <View style={styles.assessmentInfo}>
+                <Text style={styles.assessmentTitle}>{currentLevel.assessment.title}</Text>
+                <Text style={styles.assessmentDescription}>
+                  {currentLevel.assessment.description}
+                </Text>
+                <View style={styles.assessmentStats}>
+                  <View style={styles.assessmentStat}>
+                    <Ionicons name="document-text-outline" size={16} color={theme.colors.text.secondary} />
+                    <Text style={styles.assessmentStatText}>
+                      {currentLevel.assessment.completedItems}/{currentLevel.assessment.totalItems} items
                     </Text>
                   </View>
-                )}
+                  <View style={styles.assessmentStat}>
+                    <Ionicons name="star" size={14} color={theme.colors.status.warning} />
+                    <Text style={styles.assessmentStatText}>
+                      {currentLevel.assessment.earnedStars}/{currentLevel.assessment.totalStars} stars
+                    </Text>
+                  </View>
+                  {currentLevel.assessment.isCompleted && (
+                    <View style={styles.assessmentScore}>
+                      <Text style={styles.assessmentScoreText}>
+                        {currentLevel.assessment.overallScore}%
+                      </Text>
+                    </View>
+                  )}
+                </View>
               </View>
-            </View>
+              <Animated.View style={[styles.expandButton, assessmentAnimatedIconStyle]}>
+                <Ionicons name="chevron-down" size={20} color={theme.colors.text.secondary} />
+              </Animated.View>
+            </Pressable>
             
-            <View style={styles.assessmentContent}>
-              {currentLevel.assessment.items.map((item, index) => (
-                <View
-                  key={item.id}
-                  style={[
-                    styles.assessmentItem,
-                    item.isCompleted && styles.completedAssessmentItem
-                  ]}
-                >
-                  <View style={styles.assessmentItemContent}>
-                    <Text style={styles.assessmentItemTitle}>
-                      {index + 1}. {item.title}
-                    </Text>
-                    <Text style={styles.assessmentItemDescription}>
-                      {item.description}
-                    </Text>
+            {isAssessmentExpanded && (
+              <Animated.View 
+                entering={FadeInDown.duration(300)}
+                style={styles.assessmentContent}
+              >
+                {currentLevel.assessment.items.map((item, index) => (
+                  <View
+                    key={item.id}
+                    style={[
+                      styles.assessmentItem,
+                      item.isCompleted && styles.completedAssessmentItem
+                    ]}
+                  >
+                    <View style={styles.assessmentItemContent}>
+                      <Text style={styles.assessmentItemTitle}>
+                        {index + 1}. {item.title}
+                      </Text>
+                      <Text style={styles.assessmentItemDescription}>
+                        {item.description}
+                      </Text>
+                    </View>
+                    <View style={styles.assessmentItemStars}>
+                      <StarRating 
+                        starsEarned={item.starsEarned} 
+                        maxStars={item.maxStars} 
+                        size={14} 
+                      />
+                    </View>
                   </View>
-                  <View style={styles.assessmentItemStars}>
-                    <StarRating 
-                      starsEarned={item.starsEarned} 
-                      maxStars={item.maxStars} 
-                      size={14} 
-                    />
-                  </View>
-                </View>
-              ))}
-            </View>
+                ))}
+              </Animated.View>
+            )}
           </Animated.View>
         )}
 
         {/* Empty state for locked levels */}
-        {currentLevel && currentLevel.modules.length === 0 && (
+        {currentLevel && !currentLevel.isUnlocked && (
           <Animated.View
             entering={FadeInDown.delay(500)}
-            style={[styles.courseHeader, { alignItems: 'center' }]}
+            style={[styles.courseHeader, { alignItems: 'center', paddingVertical: theme.spacing.xl }]}
           >
-            <Ionicons name="lock-closed-outline" size={48} color={theme.colors.text.tertiary} />
-            <Text style={[styles.moduleTitle, { textAlign: 'center', marginTop: theme.spacing.md }]}>
-              Level {selectedLevel} Content Coming Soon
+            <Ionicons name="lock-closed-outline" size={64} color={theme.colors.text.tertiary} />
+            <Text style={[styles.moduleTitle, { textAlign: 'center', marginTop: theme.spacing.lg }]}>
+              {currentLevel.title} is Locked
             </Text>
-            <Text style={[styles.moduleDescription, { textAlign: 'center' }]}>
-              Complete the previous levels to unlock this content.
+            <Text style={[styles.moduleDescription, { textAlign: 'center', marginTop: theme.spacing.sm }]}>
+              {currentLevel.description}
+            </Text>
+            <Text style={[styles.moduleDescription, { 
+              textAlign: 'center', 
+              marginTop: theme.spacing.md,
+              color: theme.colors.interactive.primary,
+              fontWeight: theme.fontConfig.fontWeight.medium 
+            }]}>
+              Complete previous levels to unlock this content.
             </Text>
           </Animated.View>
         )}

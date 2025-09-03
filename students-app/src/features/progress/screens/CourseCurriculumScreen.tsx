@@ -2442,7 +2442,6 @@ export const CourseCurriculumScreen: React.FC = () => {
   const getLevelTabStyle = (level: CourseLevel, isSelected: boolean) => {
     if (isSelected) return styles.activeLevelFilterTab;
     if (level.isCompleted) return styles.completedLevelFilterTab;
-    if (level.isCurrentLevel) return styles.currentLevelFilterTab;
     if (!level.isUnlocked) return styles.lockedLevelFilterTab;
     return {};
   };

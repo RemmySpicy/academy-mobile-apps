@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
 import type { AppStackParamList } from '../../../navigation/AppNavigator';
+import type { ProgressStackParamList } from '../navigation/ProgressNavigator';
 
 const { width } = Dimensions.get('window');
 
@@ -583,7 +584,7 @@ export const ProgressScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useScreenStyles();
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NavigationProp<AppStackParamList>>();
+  const navigation = useNavigation<NavigationProp<ProgressStackParamList>>();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'all'>('month');
   const [notificationCount, setNotificationCount] = useState(1);
 
@@ -682,7 +683,7 @@ export const ProgressScreen: React.FC = () => {
   ];
 
   const handleCoursePress = (course: CourseProgress) => {
-    console.log('Navigate to course progress detail:', course.id);
+    navigation.navigate('CourseCurriculum', { courseId: course.id });
   };
 
   const totalSkills = courseProgress.reduce((acc, course) => acc + course.skills.length, 0);
@@ -698,7 +699,8 @@ export const ProgressScreen: React.FC = () => {
   };
 
   const handleNotifications = () => {
-    navigation.navigate('Notifications');
+    // Navigate to notifications through the app navigator
+    (navigation as any).navigate('Notifications');
     setNotificationCount(0);
   };
 

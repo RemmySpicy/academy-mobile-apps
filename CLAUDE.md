@@ -322,7 +322,18 @@ The Academy Apps feature a comprehensive course catalog and detail system with m
 - **Interactive Pricing Selection**: Users can select their age-appropriate pricing tier
 - **Dynamic Price Updates**: Real-time price display based on selected tier
 - **Tabbed Interface**: Overview, Curriculum, and Schedule tabs for organized content
+- **Enhanced Curriculum Screen**: Detailed course progression with levels, modules, lessons, and assessments
 - **Enrollment Integration**: "Enroll Now" button with pricing tier data passed to enrollment flow
+
+#### **Course Curriculum Features** ⭐ NEW
+- **3-Star Instructor Grading System**: Each lesson rated 0-3 stars by instructor based on student performance
+- **Hierarchical Structure**: Course levels → Modules → Section tabs → Individual lessons
+- **Swipeable Level Filter**: Horizontal scrollable filter bar supporting 5+ course levels
+- **Module Organization**: "Module X: [Title]" format with progress tracking and difficulty indicators
+- **Comprehensive Assessments**: Level-based assessments with 6-10 items, each with star ratings
+- **Visual Progress Tracking**: Star ratings, completion status, and progress percentages throughout
+- **Interactive Lesson Cards**: Expandable modules with tabbed sections and detailed lesson information
+- **Mobile-Optimized Navigation**: Smooth animations, touch-friendly interactions, swipeable filters
 
 #### **Pricing System Examples**
 ```typescript
@@ -353,6 +364,7 @@ The Academy Apps feature a comprehensive course catalog and detail system with m
 #### **Navigation Flow**
 - **Menu** → **Our Courses** (course catalog with header)
 - **Course Card Press** → **Course Detail** (custom header with back button)
+- **Progress Screen** → **Course Progress Card Press** → **Course Curriculum** (detailed lesson progression)
 - **Enroll Now** → **Enrollment Flow** (with selected pricing tier data)
 
 #### **Course System Implementation**

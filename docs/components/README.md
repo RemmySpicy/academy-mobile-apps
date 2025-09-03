@@ -28,6 +28,7 @@ Educational institution focused components:
 - **[StudentCard](./academy/StudentCard.md)** - Modern student display with progress tracking
 - **[ClassroomCard](./academy/ClassroomCard.md)** - Classroom management interface
 - **[CourseProgression](./academy/CourseProgression.md)** - Course progress visualization
+- **[StarRating](./academy/StarRating.md)** ⭐ NEW - Instructor grading system with 3-star rating display for lesson performance
 - **[MyClassroom](./academy/MyClassroom.md)** - Classroom overview component
 
 ### 🏆 Achievement System Components

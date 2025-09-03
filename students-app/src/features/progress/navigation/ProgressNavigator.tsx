@@ -3,10 +3,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProgressScreen } from '../screens/ProgressScreen';
 import { ProgressDetailScreen } from '../screens/ProgressDetailScreen';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
+import { CourseCurriculumScreen } from '../screens/CourseCurriculumScreen';
 
 export type ProgressStackParamList = {
   ProgressMain: undefined;
   ProgressDetail: { courseId: string; level?: string };
+  CourseCurriculum: { courseId: string };
   Achievements: undefined;
   ProgressHistory: undefined;
   GoalSetting: undefined;
@@ -28,6 +30,10 @@ export const ProgressNavigator: React.FC = () => {
       <Stack.Screen 
         name="ProgressDetail" 
         component={ProgressDetailScreen}
+      />
+      <Stack.Screen 
+        name="CourseCurriculum" 
+        component={CourseCurriculumScreen}
       />
       <Stack.Screen 
         name="Achievements" 

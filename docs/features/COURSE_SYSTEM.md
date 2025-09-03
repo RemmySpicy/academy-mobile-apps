@@ -186,14 +186,201 @@ const displayPrice = `From ₦${course.pricingTiers && course.pricingTiers.lengt
    - Contact support for questions via call/WhatsApp
    - Proceed to enrollment with selected options
 
+## Course Curriculum System ⭐ NEW
+
+### Overview
+The **Course Curriculum Screen** provides students with detailed progress tracking through a comprehensive, hierarchical learning structure with instructor-based star ratings and comprehensive assessments.
+
+### 🌟 Key Features
+
+#### 3-Star Instructor Grading System
+- **Individual Lesson Rating**: Each lesson rated 0-3 stars by instructor based on student performance
+- **Visual Feedback**: Filled stars for earned ratings, outline stars for unearned
+- **Performance Tracking**: Clear indication of lesson mastery level
+- **Instructor Assessment**: Objective grading system for consistent evaluation
+
+#### Hierarchical Course Structure
+```
+Course → Levels → Modules → Section Tabs → Individual Lessons
+```
+
+**Example: Learn to Swim Course**
+- **Level 1**: Water Familiarization (5 modules, 36 lessons)
+- **Level 2**: Basic Swimming Skills (5 modules, 38 lessons) 
+- **Level 3**: Advanced Techniques (locked until Level 2 completion)
+
+#### Swipeable Level Filter System
+- **Horizontal Scroll Navigation**: Touch-friendly level selection
+- **Visual Status Indicators**: 
+  - Active (purple), Current (accent), Completed (green), Locked (gray)
+- **Scalable Design**: Supports 5+ course levels
+- **Mobile Optimized**: Smooth scrolling and haptic feedback
+
+#### Enhanced Module Organization
+- **Module X Format**: "Module 1: Water Safety & Pool Rules"
+- **Progress Indicators**: Visual progress bars and completion percentages
+- **Difficulty Badges**: Beginner/Intermediate/Advanced indicators
+- **Expandable Content**: Smooth animation reveals lesson details
+- **Estimated Time**: Duration estimates for planning
+
+#### Comprehensive Assessment System
+- **Level-Based Assessments**: 6-10 assessment items per level
+- **Individual Star Ratings**: Each assessment item rated 0-3 stars
+- **Overall Scoring**: Percentage scores with visual progress indication
+- **Progress Tracking**: Completed vs total items tracking
+
+### 📊 Technical Implementation
+
+#### Data Structure
+```typescript
+interface CourseCurriculum {
+  id: string;
+  title: string;
+  subtitle: string;
+  overallProgress: number;
+  currentLevel: number;
+  totalLevels: number;
+  levels: CourseLevel[];
+}
+
+interface CourseLevel {
+  id: string;
+  title: string;
+  shortTitle: string; // For filter tabs
+  modules: Module[];
+  assessment?: LevelAssessment;
+}
+
+interface Module {
+  id: string;
+  moduleNumber: number;
+  title: string;
+  sections: Section[];
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  progress: number;
+}
+
+interface Lesson {
+  id: string;
+  title: string;
+  duration: string;
+  type: 'theory' | 'practical' | 'assessment' | 'review';
+  starsEarned: number; // 0-3 stars earned by instructor grading
+  maxStars: number; // Always 3 by default
+  isCompleted: boolean;
+  progress: number;
+}
+
+interface LevelAssessment {
+  id: string;
+  title: string;
+  totalItems: number;
+  completedItems: number;
+  totalStars: number; // Sum of all possible stars
+  earnedStars: number; // Sum of all earned stars
+  overallScore: number; // Percentage score
+  items: AssessmentItem[];
+}
+```
+
+#### StarRating Component
+```typescript
+const StarRating: React.FC<StarRatingProps> = ({ 
+  starsEarned, 
+  maxStars, 
+  size = 12, 
+  showCount = false 
+}) => {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {Array.from({ length: maxStars }).map((_, index) => (
+        <Ionicons
+          key={index}
+          name={index < starsEarned ? "star" : "star-outline"}
+          size={size}
+          color={index < starsEarned ? theme.colors.status.warning : theme.colors.text.tertiary}
+        />
+      ))}
+    </View>
+  );
+};
+```
+
+### 🎯 User Experience Features
+
+#### Interactive Navigation
+- **Swipeable Level Filters**: Horizontal scrolling for level selection
+- **Expandable Modules**: Tap to expand/collapse module details
+- **Section Tabs**: Multiple sections within each module
+- **Lesson Cards**: Detailed lesson information with progress indicators
+
+#### Visual Progress Tracking
+- **Course Progress Bar**: Overall completion percentage
+- **Module Progress**: Individual module completion status  
+- **Star Display**: Visual representation of instructor ratings
+- **Assessment Scoring**: Comprehensive evaluation progress
+- **Status Icons**: Checkmarks, play buttons, lock icons for lesson states
+
+#### Real-time Data Examples
+```typescript
+// Level 1 Assessment - Completed
+{
+  totalItems: 8,
+  completedItems: 8,
+  totalStars: 24,
+  earnedStars: 22,
+  overallScore: 92, // Excellent performance
+  isCompleted: true
+}
+
+// Level 2 Assessment - In Progress  
+{
+  totalItems: 10,
+  completedItems: 4,
+  totalStars: 30,
+  earnedStars: 11,
+  overallScore: 37, // Room for improvement
+  isCompleted: false
+}
+```
+
+### 📱 Mobile-First Design
+
+#### Touch Interactions
+- **Swipe Navigation**: Level filter bar with smooth scrolling
+- **Tap to Expand**: Module cards with spring animations
+- **Touch Targets**: 48px minimum for accessibility
+- **Visual Feedback**: Immediate response to user actions
+
+#### Performance Optimizations
+- **Lazy Loading**: Module content loaded on expansion
+- **Smooth Animations**: React Native Reanimated for fluid motion
+- **Memory Efficient**: Proper state management with useState/useMemo
+- **Responsive Design**: Adapts to different screen sizes
+
+### 🔗 Integration Points
+
+#### Navigation Flow
+- **Progress Screen** → **Course Progress Card** → **Course Curriculum**
+- **Level Selection** → **Module Expansion** → **Lesson Details**
+- **Assessment Cards** → **Individual Item Scoring** → **Overall Progress**
+
+#### Data Sources
+- **Student Progress API**: Real-time lesson completion data
+- **Instructor Grading API**: Star rating submissions
+- **Assessment API**: Level-based evaluation results
+- **Course Content API**: Curriculum structure and lesson details
+
 ## Navigation Integration
 
 - **Entry Point**: Course catalog screen (`CoursesScreen`)
 - **Detail Screen**: `CourseDetailScreen` with custom header
+- **Progress Navigation**: `ProgressScreen` → `CourseCurriculumScreen` (detailed lesson progression)
 - **Exit Points**: 
   - Enrollment flow (with selected pricing data)
   - Contact support (call/WhatsApp)
   - Back to course catalog
+  - Back to progress overview
 
 ## Key Implementation Notes
 
@@ -209,9 +396,23 @@ const displayPrice = `From ₦${course.pricingTiers && course.pricingTiers.lengt
 
 ## Future Enhancements
 
+### Course Catalog & Detail Enhancements
 - Video player integration for course introductions
 - Real-time availability checking for locations
 - Dynamic pricing based on location selection
 - Advanced filtering and search capabilities
 - Course comparison features
 - Social proof and reviews integration
+
+### Course Curriculum System Enhancements
+- **Lesson Content Integration**: Rich media lesson content (videos, documents, interactive elements)
+- **Offline Content Access**: Download lessons for offline study
+- **Progress Synchronization**: Real-time sync across devices
+- **Gamification Elements**: Achievement badges, progress streaks, completion celebrations
+- **Social Features**: Peer progress comparison, study groups, discussion forums
+- **Advanced Assessments**: Interactive quizzes, skill demonstrations, peer evaluations
+- **Personalized Learning Paths**: AI-driven content recommendations based on performance
+- **Parent/Guardian Access**: Progress monitoring for dependent students
+- **Instructor Dashboard**: Grading interface, performance analytics, lesson planning tools
+- **Accessibility Features**: Screen reader support, high contrast mode, text scaling
+- **Multi-language Support**: Localized content and assessment in multiple languages

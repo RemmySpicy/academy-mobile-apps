@@ -53,13 +53,21 @@ const mockEventDetail: SwimmingEventDetail = {
       achieved: false,
     },
     {
-      id: 'personal_goal',
-      targetTime: '00:26.00',
-      targetTimeInSeconds: 26.00,
-      label: 'Personal Goal',
+      id: 'personal_best',
+      targetTime: '00:26.30',
+      targetTimeInSeconds: 26.30,
+      label: 'Personal Best',
       type: 'personal',
       achieved: true,
-      achievedDate: '04 Feb 2023',
+      achievedDate: '15 Mar 2025',
+    },
+    {
+      id: 'club_record',
+      targetTime: '00:24.85',
+      targetTimeInSeconds: 24.85,
+      label: 'Club Record',
+      type: 'club',
+      achieved: false,
     },
   ],
   allTimes: [
@@ -67,27 +75,45 @@ const mockEventDetail: SwimmingEventDetail = {
       id: '1',
       time: '00:26.30',
       timeInSeconds: 26.30,
-      date: '04 Feb 2023',
+      date: '15 Mar 2025',
       venue: 'Academy Pool',
-      heat: 'Heat 13',
+      heat: 'Heat 12',
       isPB: true,
     },
     {
       id: '2',
-      time: '00:26.30',
-      timeInSeconds: 26.30,
-      date: '28 Jan 2023',
-      venue: 'East London Meet',
-      heat: 'Heat 12',
+      time: '00:26.46',
+      timeInSeconds: 26.46,
+      date: '10 Mar 2025',
+      venue: 'East Lothian Meet',
+      heat: 'Heat 11',
       isPB: false,
     },
     {
       id: '3',
-      time: '00:26.30',
-      timeInSeconds: 26.30,
-      date: '21 Jan 2023',
-      venue: 'Fast London Meet',
-      heat: 'Heat 11',
+      time: '00:26.62',
+      timeInSeconds: 26.62,
+      date: '05 Mar 2025',
+      venue: 'Regional Championship',
+      heat: 'Heat 8',
+      isPB: false,
+    },
+    {
+      id: '4',
+      time: '00:26.78',
+      timeInSeconds: 26.78,
+      date: '28 Feb 2025',
+      venue: 'Training Time Trial',
+      heat: 'Heat 6',
+      isPB: false,
+    },
+    {
+      id: '5',
+      time: '00:26.85',
+      timeInSeconds: 26.85,
+      date: '20 Feb 2025',
+      venue: 'Club Championship',
+      heat: 'Heat 9',
       isPB: false,
     },
   ],
@@ -119,6 +145,38 @@ const mockEventDetail: SwimmingEventDetail = {
 
 type SwimmingEventDetailScreenRouteProp = RouteProp<PerformanceStackParamList, 'SwimmingEventDetail'>;
 
+// Helper functions for time calculations
+const processAllTimes = (allTimes: SwimmingTimeDetail[]): SwimmingTimeDetail[] => {
+  // Sort times by date (newest first) to ensure chronological order
+  const sortedTimes = [...allTimes].sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  // Find the personal best (lowest time)
+  const bestTimeValue = Math.min(...sortedTimes.map(t => t.timeInSeconds));
+  
+  // Mark PB and return processed times
+  return sortedTimes.map(time => ({
+    ...time,
+    isPB: time.timeInSeconds === bestTimeValue
+  }));
+};
+
+const calculateTimeComparison = (currentTime: SwimmingTimeDetail, previousTime: SwimmingTimeDetail | null) => {
+  if (!previousTime) return null;
+  
+  const timeDifference = currentTime.timeInSeconds - previousTime.timeInSeconds;
+  const isImprovement = timeDifference < 0; // Negative means faster (improvement)
+  
+  return {
+    isImprovement,
+    difference: Math.abs(timeDifference),
+    sign: isImprovement ? '-' : '+'
+  };
+};
+
 export const SwimmingEventDetailScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
@@ -130,6 +188,9 @@ export const SwimmingEventDetailScreen: React.FC = () => {
   
   const [eventDetail, setEventDetail] = useState<SwimmingEventDetail>(mockEventDetail);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Process times to ensure correct PB calculation and chronological order
+  const processedTimes = processAllTimes(eventDetail.allTimes);
 
   useEffect(() => {
     loadEventDetail();
@@ -236,20 +297,21 @@ export const SwimmingEventDetailScreen: React.FC = () => {
       style={styles.goalsCard}
     >
       <Text style={styles.sectionTitle}>Goals & Targets</Text>
-      <View style={styles.goalsContainer}>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.goalsScrollContainer}
+      >
         {eventDetail.goals.map((goal, index) => (
           <Animated.View
             key={goal.id}
             entering={FadeInRight.delay(350 + index * 50).springify()}
+            style={styles.goalCardWrapper}
           >
-            <Pressable
-              onPress={() => handleGoalPress(goal)}
-              style={({ pressed }) => [
-                styles.goalCard,
-                goal.achieved && styles.goalCardAchieved,
-                pressed && styles.goalCardPressed,
-              ]}
-            >
+            <View style={[
+              styles.goalCard,
+              goal.achieved && styles.goalCardAchieved,
+            ]}>
               <View style={styles.goalIndicator}>
                 <View style={[
                   styles.goalBadge,
@@ -265,21 +327,16 @@ export const SwimmingEventDetailScreen: React.FC = () => {
               
               <View style={styles.goalContent}>
                 <Text style={styles.goalTime}>{goal.targetTime}</Text>
-                <Text style={styles.goalLabel}>{goal.label}</Text>
-                {goal.achieved && goal.achievedDate && (
-                  <Text style={styles.goalAchievedDate}>Achieved {goal.achievedDate}</Text>
+                {goal.achieved && goal.achievedDate ? (
+                  <Text style={styles.goalAchievedDate}>{goal.achievedDate}</Text>
+                ) : (
+                  <Text style={styles.goalLabel}>{goal.label}</Text>
                 )}
               </View>
-
-              <Ionicons 
-                name="chevron-forward" 
-                size={20} 
-                color={theme.colors.text.secondary}
-              />
-            </Pressable>
+            </View>
           </Animated.View>
         ))}
-      </View>
+      </ScrollView>
     </Animated.View>
   );
 
@@ -291,20 +348,19 @@ export const SwimmingEventDetailScreen: React.FC = () => {
     >
       <Text style={styles.sectionTitle}>ALL TIMES</Text>
       <View style={styles.timesContainer}>
-        {eventDetail.allTimes.map((timeDetail, index) => (
-          <Animated.View
-            key={timeDetail.id}
-            entering={FadeInRight.delay(450 + index * 75).springify()}
-          >
-            <Pressable
-              onPress={() => handleTimePress(timeDetail)}
-              style={({ pressed }) => [
-                styles.timeCard,
-                pressed && styles.timeCardPressed,
-              ]}
+        {processedTimes.map((timeDetail, index) => {
+          // For chronological comparison, we need the older time (next in array since it's sorted newest first)
+          const olderTime = index < processedTimes.length - 1 ? processedTimes[index + 1] : null;
+          const comparison = calculateTimeComparison(timeDetail, olderTime);
+          
+          return (
+            <Animated.View
+              key={timeDetail.id}
+              entering={FadeInRight.delay(450 + index * 75).springify()}
             >
-              <View style={styles.timeCardContent}>
-                <View style={styles.timeCardMain}>
+              <View style={styles.timeCard}>
+                {/* Left side - Time info */}
+                <View style={styles.timeCardLeft}>
                   <View style={styles.timeContainer}>
                     <Text style={styles.timeText}>{timeDetail.time}</Text>
                     {timeDetail.isPB && (
@@ -314,25 +370,36 @@ export const SwimmingEventDetailScreen: React.FC = () => {
                     )}
                   </View>
                   
-                  <Text style={styles.timeDate}>{timeDetail.date}</Text>
+                  {/* Progression indicator below time */}
+                  {comparison && (
+                    <View style={[
+                      styles.timeProgressionBadge,
+                      comparison.isImprovement 
+                        ? { backgroundColor: theme.colors.status.success } 
+                        : { backgroundColor: theme.colors.status.error }
+                    ]}>
+                      <Text style={styles.timeProgressionText}>
+                        {comparison.sign}{comparison.difference.toFixed(2)}
+                      </Text>
+                    </View>
+                  )}
+                  
+                  {/* FINA Points */}
+                  <Text style={styles.finaPoints}>484 FINA Points</Text>
                 </View>
 
-                <View style={styles.timeCardDetails}>
-                  <Text style={styles.timeVenue}>{timeDetail.venue}</Text>
+                {/* Right side - Date and venue info */}
+                <View style={styles.timeCardRight}>
+                  <Text style={styles.timeDate}>{timeDetail.date}</Text>
                   {timeDetail.heat && (
                     <Text style={styles.timeHeat}>{timeDetail.heat}</Text>
                   )}
+                  <Text style={styles.timeVenue}>{timeDetail.venue}</Text>
                 </View>
               </View>
-
-              <Ionicons 
-                name="chevron-forward" 
-                size={20} 
-                color={theme.colors.text.secondary}
-              />
-            </Pressable>
-          </Animated.View>
-        ))}
+            </Animated.View>
+          );
+        })}
       </View>
     </Animated.View>
   );
@@ -511,28 +578,29 @@ const useThemedStyles = createThemedStyles((theme) =>
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.sm,
     },
-    goalsContainer: {
-      gap: theme.spacing.sm,
+    goalsScrollContainer: {
+      paddingRight: theme.spacing.md,
+    },
+    goalCardWrapper: {
+      marginRight: theme.spacing.sm,
     },
     goalCard: {
-      flexDirection: 'row',
+      flexDirection: 'column',
       alignItems: 'center',
       backgroundColor: theme.colors.background.elevated,
       borderRadius: theme.borderRadius.xl,
       padding: theme.spacing.md,
       borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.secondary,
+      width: 140,
+      minHeight: 120,
     },
     goalCardAchieved: {
       backgroundColor: theme.colors.status.success + '10',
       borderColor: theme.colors.status.success + '30',
     },
-    goalCardPressed: {
-      opacity: 0.8,
-      transform: [{ scale: 0.98 }],
-    },
     goalIndicator: {
-      marginRight: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
     },
     goalBadge: {
       width: 32,
@@ -549,18 +617,25 @@ const useThemedStyles = createThemedStyles((theme) =>
       borderWidth: 2,
       borderColor: theme.colors.interactive.primary,
     },
+    goalBadgeMissed: {
+      backgroundColor: theme.colors.status.error,
+    },
     goalContent: {
       flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     goalTime: {
       fontSize: theme.fontSizes.h5,
       fontWeight: theme.fontConfig.fontWeight.semibold,
       color: theme.colors.text.primary,
+      textAlign: 'center',
     },
     goalLabel: {
-      fontSize: theme.fontSizes.body,
+      fontSize: theme.fontSizes.caption,
       color: theme.colors.text.secondary,
       marginTop: theme.spacing.xs,
+      textAlign: 'center',
     },
     goalAchievedDate: {
       fontSize: theme.fontSizes.caption,
@@ -583,22 +658,21 @@ const useThemedStyles = createThemedStyles((theme) =>
     },
     timeCard: {
       flexDirection: 'row',
-      alignItems: 'center',
       backgroundColor: theme.colors.background.elevated,
       borderRadius: theme.borderRadius.xl,
       padding: theme.spacing.md,
       borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.secondary,
     },
-    timeCardPressed: {
-      opacity: 0.8,
-      transform: [{ scale: 0.98 }],
-    },
-    timeCardContent: {
+    timeCardLeft: {
       flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
     },
-    timeCardMain: {
-      marginBottom: theme.spacing.sm,
+    timeCardRight: {
+      flex: 1,
+      alignItems: 'flex-end',
+      justifyContent: 'flex-start',
     },
     timeContainer: {
       flexDirection: 'row',
@@ -626,18 +700,40 @@ const useThemedStyles = createThemedStyles((theme) =>
       fontSize: theme.fontSizes.body,
       color: theme.colors.text.primary,
       fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-    timeCardDetails: {
-      gap: theme.spacing.xs,
+      textAlign: 'right',
+      marginBottom: theme.spacing.xs,
     },
     timeVenue: {
       fontSize: theme.fontSizes.caption,
       color: theme.colors.text.secondary,
+      textAlign: 'right',
+      marginBottom: theme.spacing.xs,
     },
     timeHeat: {
       fontSize: theme.fontSizes.caption,
       color: theme.colors.text.secondary,
       fontWeight: theme.fontConfig.fontWeight.medium,
+      textAlign: 'right',
+      marginBottom: theme.spacing.xs,
+    },
+    timeProgressionBadge: {
+      backgroundColor: theme.colors.interactive.primary,
+      borderRadius: theme.borderRadius.full,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      marginTop: theme.spacing.xs,
+      marginBottom: theme.spacing.xs,
+      alignSelf: 'flex-start',
+    },
+    timeProgressionText: {
+      color: theme.colors.text.inverse,
+      fontSize: theme.fontSizes.caption,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+    finaPoints: {
+      fontSize: theme.fontSizes.caption,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
     },
     
     // Loading state

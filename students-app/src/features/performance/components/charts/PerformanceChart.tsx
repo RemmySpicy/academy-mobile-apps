@@ -61,8 +61,9 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       const originalValue = typeof point.value === 'number' ? point.value : parseFloat(point.value.toString());
       
       // For swimming times, invert the values so lower times appear higher on chart
+      // Simple inversion: subtract from max + min to flip the scale
       const displayValue = isSwimmingChart && valueRange > 0 
-        ? maxValue - (originalValue - minValue)  // Invert the value
+        ? (maxValue + minValue) - originalValue  // Simple inversion formula
         : originalValue;
         
       return {
@@ -79,7 +80,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       
       // If this is a swimming chart, convert back to original value for display
       if (isSwimmingChart && valueRange > 0) {
-        const originalValue = maxValue - (numValue - minValue);
+        const originalValue = (maxValue + minValue) - numValue;
         return originalValue.toFixed(2);
       }
       
@@ -142,8 +143,9 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       const originalValue = typeof point.value === 'number' ? point.value : parseFloat(point.value.toString());
       
       // For swimming times, invert the values so lower times appear higher on chart
+      // Simple inversion: subtract from max + min to flip the scale
       const displayValue = isSwimmingChart && valueRange > 0 
-        ? maxValue - (originalValue - minValue)  // Invert the value
+        ? (maxValue + minValue) - originalValue  // Simple inversion formula
         : originalValue;
         
       return {
@@ -161,7 +163,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       
       // If this is a swimming chart, convert back to original value for display
       if (isSwimmingChart && valueRange > 0) {
-        const originalValue = maxValue - (numValue - minValue);
+        const originalValue = (maxValue + minValue) - numValue;
         return originalValue.toFixed(2);
       }
       

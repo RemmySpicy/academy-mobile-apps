@@ -328,6 +328,17 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
   activeSectionTabText: {
     color: 'white',
   },
+  // Section Header
+  sectionHeader: {
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.sm,
+  },
+  sectionDescription: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSizes.sm,
+    marginTop: theme.spacing.xs,
+    lineHeight: 20,
+  },
   // Section Content
   sectionContent: {
     padding: theme.spacing.md,
@@ -406,6 +417,17 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
   lessonProgressText: {
     color: theme.colors.text.tertiary,
     fontSize: theme.fontSizes.xs,
+    marginLeft: theme.spacing.xs / 2,
+  },
+  completionIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: theme.spacing.xs,
+  },
+  completedText: {
+    color: theme.colors.status.success,
+    fontSize: theme.fontSizes.xs,
+    fontWeight: theme.fontConfig.fontWeight.medium,
     marginLeft: theme.spacing.xs / 2,
   },
   statusIcon: {
@@ -2238,10 +2260,8 @@ const LessonCard: React.FC<LessonCardProps> = ({ lesson, onLessonPress }) => {
         </View>
 
         <View style={styles.statusIcon}>
-          {lesson.isCompleted ? (
-            <Ionicons name="checkmark-circle" size={20} color={theme.colors.status.success} />
-          ) : lesson.progress > 0 ? (
-            <Ionicons name="play-circle-outline" size={20} color={theme.colors.interactive.primary} />
+          {lesson.progress > 0 || lesson.isCompleted ? (
+            <Ionicons name="play-circle-outline" size={24} color={theme.colors.interactive.primary} />
           ) : (
             <Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />
           )}
@@ -2257,6 +2277,12 @@ const LessonCard: React.FC<LessonCardProps> = ({ lesson, onLessonPress }) => {
             size={12} 
           />
         </View>
+        {lesson.isCompleted && (
+          <View style={styles.completionIndicator}>
+            <Ionicons name="checkmark-circle" size={12} color={theme.colors.status.success} />
+            <Text style={styles.completedText}>Completed</Text>
+          </View>
+        )}
         {lesson.progress > 0 && lesson.progress < 100 && (
           <View style={styles.lessonProgress}>
             <Ionicons name="time-outline" size={12} color={theme.colors.text.tertiary} />
@@ -2358,6 +2384,13 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
                   </Text>
                 </Pressable>
               ))}
+            </View>
+          )}
+
+          {/* Section Description */}
+          {currentSection && currentSection.description && (
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionDescription}>{currentSection.description}</Text>
             </View>
           )}
 

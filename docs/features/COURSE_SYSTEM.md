@@ -276,6 +276,7 @@ interface Lesson {
   maxStars: number; // Always 3 by default
   isCompleted: boolean;
   progress: number;
+  // Enhanced UI: Play button always available, completion in metadata
 }
 
 interface LevelAssessment {
@@ -326,7 +327,8 @@ const StarRating: React.FC<StarRatingProps> = ({
 - **Module Progress**: Individual module completion status  
 - **Star Display**: Visual representation of instructor ratings
 - **Assessment Scoring**: Comprehensive evaluation progress
-- **Status Icons**: Checkmarks, play buttons, lock icons for lesson states
+- **Enhanced Lesson Status**: Play buttons always available for video access, completion status in metadata row
+- **Section Context**: Descriptive text below section tabs explaining section focus
 
 #### Real-time Data Examples
 ```typescript
@@ -364,6 +366,45 @@ const StarRating: React.FC<StarRatingProps> = ({
 - **Smooth Animations**: React Native Reanimated for fluid motion
 - **Memory Efficient**: Proper state management with useState/useMemo
 - **Responsive Design**: Adapts to different screen sizes
+
+### ⭐ Recent UI Improvements (September 2025)
+
+#### Enhanced Lesson Card Interaction
+**Play Button Always Available** - Improved educational UX where students can rewatch completed lessons:
+- **Before**: Play button replaced with checkmark for completed lessons
+- **After**: Play button always visible for video access, checkmark moved to metadata row
+- **Benefits**: Students can revisit completed content, better learning retention
+
+**Section Context Display** - Added descriptive context below section tabs:
+- **Implementation**: Section description appears below tab navigation
+- **Purpose**: Provides clear context about what each section covers
+- **Example**: "Building confidence in swimming abilities" for confidence-focused sections
+- **Styling**: Consistent with Academy design system, proper spacing and typography
+
+#### Technical Implementation Details
+```typescript
+// Lesson status icon logic - always show play for accessible lessons
+{lesson.progress > 0 || lesson.isCompleted ? (
+  <Ionicons name="play-circle-outline" size={24} color={theme.colors.interactive.primary} />
+) : (
+  <Ionicons name="lock-closed-outline" size={20} color={theme.colors.text.tertiary} />
+)}
+
+// Completion indicator in metadata row
+{lesson.isCompleted && (
+  <View style={styles.completionIndicator}>
+    <Ionicons name="checkmark-circle" size={12} color={theme.colors.status.success} />
+    <Text style={styles.completedText}>Completed</Text>
+  </View>
+)}
+
+// Section description display
+{currentSection && currentSection.description && (
+  <View style={styles.sectionHeader}>
+    <Text style={styles.sectionDescription}>{currentSection.description}</Text>
+  </View>
+)}
+```
 
 ### 🔗 Integration Points
 

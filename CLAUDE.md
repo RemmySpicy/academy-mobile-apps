@@ -294,6 +294,20 @@ The Academy Apps use a unified **BookingCard** component that displays participa
 - **Large Events**: Multiple instructors for community events and competitions
 - **Team Coordination**: Different instructor combinations for variety
 
+#### **Term Progress System** ⭐ NEW
+The Academy Apps feature intelligent term progress tracking in the bookings screen:
+
+- **Term-Based Analytics**: Displays progress for 8-session terms (industry standard)
+- **Smart Session Categorization**: Automatically categorizes sessions as completed, scheduled, or remaining
+- **Visual Progress Indicators**: Color-coded progress with Academy brand colors
+  - **Completed Sessions**: Green (`theme.colors.status.success`)
+  - **Scheduled Sessions**: Academy purple (`theme.colors.interactive.primary`)
+  - **Remaining Sessions**: Gray (`theme.colors.text.tertiary`)
+- **Responsive Layout**: Optimized card layout with 60/140 width ratio for mobile
+- **Real-time Updates**: Dynamically calculates progress based on current booking statuses
+
+**Implementation**: Bookings Screen → Stats Cards → "This Term" card shows detailed progress breakdown
+
 #### **Usage Examples**
 ```typescript
 // Unified booking card for all session types
@@ -309,6 +323,14 @@ The Academy Apps use a unified **BookingCard** component that displays participa
   onPress={handleBookingPress}
   onManageParticipants={handleManageParticipants}
 />
+
+// Term progress calculation example
+const termStats = {
+  completed: 3,    // Sessions already completed
+  scheduled: 2,    // Sessions booked/upcoming  
+  remaining: 3,    // Sessions left in term
+  total: 8         // Standard term size
+};
 ```
 
 ### Menu System Implementation

@@ -163,11 +163,14 @@ const useCardStyles = createThemedStyles((theme) =>
       borderWidth: 1,
     },
     addButton: {
-      backgroundColor: theme.colors.interactive.primary,
+      backgroundColor: 'transparent',
       borderColor: theme.colors.interactive.primary,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.xs,
     },
     addButtonText: {
-      color: 'white',
+      color: theme.colors.interactive.primary,
       fontSize: theme.fontSizes.xs,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
@@ -198,11 +201,16 @@ const useCardStyles = createThemedStyles((theme) =>
     statusItem: {
       flexDirection: 'row',
       alignItems: 'center',
+      gap: theme.spacing.xs / 2,
+      paddingHorizontal: theme.spacing.sm + theme.spacing.xs / 2,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.md,
     },
     statusText: {
       fontSize: theme.fontSizes.sm,
       fontWeight: theme.fontConfig.fontWeight.medium,
       marginLeft: theme.spacing.xs,
+      textTransform: 'capitalize',
     },
     actionsRow: {
       flexDirection: 'row',
@@ -408,6 +416,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({
                 style={[styles.actionButton, styles.addButton]}
                 onPress={() => setShowParticipantSheet(true)}
               >
+                <Ionicons 
+                  name="people-outline" 
+                  size={14} 
+                  color={theme.colors.interactive.primary} 
+                />
                 <Text style={styles.addButtonText}>Add/Remove</Text>
               </Pressable>
             </View>
@@ -440,7 +453,10 @@ export const BookingCard: React.FC<BookingCardProps> = ({
 
         {/* Status and Actions */}
         <View style={styles.statusRow}>
-          <View style={styles.statusItem}>
+          <View style={[
+            styles.statusItem,
+            { backgroundColor: getStatusColor(booking.status) + '20' }
+          ]}>
             <Ionicons 
               name={getStatusIcon(booking.status) as any} 
               size={16} 

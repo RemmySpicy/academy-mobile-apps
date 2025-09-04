@@ -19,7 +19,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { CustomButton, useTheme, createThemedStyles, Header } from '@academy/mobile-shared';
+import { CustomButton, useTheme, createThemedStyles, Header, SegmentedControl } from '@academy/mobile-shared';
 import type { AppStackParamList } from '../../../navigation/AppNavigator';
 import { BookingCard } from '../components/BookingCard';
 
@@ -111,9 +111,11 @@ const useScreenStyles = createThemedStyles((theme) =>
     },
     statCardLeft: {
       marginRight: theme.spacing.xs,
+      flex: 0.6, // Smaller card for Next Session
     },
     statCardRight: {
       marginLeft: theme.spacing.xs,
+      flex: 1.4, // Larger card for Term Progress
     },
     statHeader: {
       flexDirection: 'row',
@@ -139,6 +141,38 @@ const useScreenStyles = createThemedStyles((theme) =>
       color: theme.colors.status.success,
       fontSize: theme.fontSizes.sm,
       marginTop: theme.spacing.xs / 2,
+    },
+    termProgressContainer: {
+      marginTop: theme.spacing.xs,
+    },
+    termProgressRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing.xs / 2,
+    },
+    termProgressItem: {
+      alignItems: 'center',
+      flex: 1,
+    },
+    termProgressValue: {
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      marginBottom: 2,
+    },
+    termProgressLabel: {
+      fontSize: theme.fontSizes.xs,
+      textAlign: 'center',
+      lineHeight: theme.fontSizes.xs * 1.2,
+    },
+    completedColor: {
+      color: theme.colors.status.success,
+    },
+    scheduledColor: {
+      color: theme.colors.interactive.primary,
+    },
+    remainingColor: {
+      color: theme.colors.text.tertiary,
     },
     filtersContainer: {
       marginBottom: theme.spacing.md,
@@ -184,6 +218,16 @@ const useScreenStyles = createThemedStyles((theme) =>
       paddingHorizontal: theme.spacing.xl,
       marginBottom: theme.spacing.lg,
     },
+    segmentedControlContainer: {
+      paddingHorizontal: theme.spacing.md,
+      marginBottom: theme.spacing.md,
+    },
+    customSegmentedControl: {
+      borderRadius: theme.borderRadius.full,
+      borderWidth: 1,
+      borderColor: theme.colors.interactive.primary,
+      overflow: 'hidden', // This will help with the inner rounded corners
+    },
   })
 );
 
@@ -205,6 +249,13 @@ export const BookingsScreen: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
   const [notificationCount, setNotificationCount] = useState(3);
+  const [scheduleType, setScheduleType] = useState<'my-schedules' | 'facility-schedules'>('my-schedules');
+
+  // Segmented control options
+  const scheduleOptions = [
+    { value: 'my-schedules', label: 'My Schedules' },
+    { value: 'facility-schedules', label: 'Facility Schedules' },
+  ];
 
   // Mock bookings data
   const [bookings] = useState<Booking[]>([
@@ -576,6 +627,47 @@ export const BookingsScreen: React.FC = () => {
     return booking.status === selectedFilter;
   });
 
+  // Calculate term progress statistics
+  const termStats = useMemo(() => {
+    // Assuming a standard term of 8 sessions as mentioned in the requirements
+    const STANDARD_TERM_SESSIONS = 8;
+    
+    // Get all unique bookings (not individual sessions)
+    const uniqueBookings = bookings.filter(booking => booking.totalSessions > 0);
+    
+    let completedSessions = 0;
+    let scheduledSessions = 0;
+    let totalTermSessions = 0;
+    
+    uniqueBookings.forEach(booking => {
+      if (booking.status === 'completed') {
+        completedSessions += 1;
+      } else if (booking.status === 'upcoming') {
+        scheduledSessions += 1;
+      }
+      // Use the minimum of totalSessions and standard term to avoid overcount
+      totalTermSessions += Math.min(booking.totalSessions, STANDARD_TERM_SESSIONS);
+    });
+    
+    // For demo purposes, let's simulate term progress more realistically
+    // Assuming current active bookings represent ongoing terms
+    const activeBookings = uniqueBookings.filter(b => b.status === 'upcoming' || b.status === 'completed');
+    const avgProgress = activeBookings.length > 0 
+      ? activeBookings.reduce((sum, b) => sum + (b.sessionNumber / b.totalSessions), 0) / activeBookings.length 
+      : 0;
+    
+    const estimatedCompletedInTerm = Math.round(avgProgress * STANDARD_TERM_SESSIONS);
+    const estimatedScheduledInTerm = Math.max(1, Math.min(3, STANDARD_TERM_SESSIONS - estimatedCompletedInTerm)); // 1-3 upcoming
+    const remainingSessions = Math.max(0, STANDARD_TERM_SESSIONS - estimatedCompletedInTerm - estimatedScheduledInTerm);
+    
+    return {
+      completed: estimatedCompletedInTerm,
+      scheduled: estimatedScheduledInTerm, 
+      remaining: remainingSessions,
+      total: STANDARD_TERM_SESSIONS
+    };
+  }, [bookings]);
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -641,6 +733,30 @@ export const BookingsScreen: React.FC = () => {
         </Pressable>
       </Animated.View>
 
+      {/* Schedule Type Selector */}
+      <Animated.View
+        entering={FadeInDown.delay(150).springify()}
+        style={styles.segmentedControlContainer}
+      >
+        <View style={{
+          borderRadius: theme.borderRadius.full,
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: theme.colors.interactive.primary,
+        }}>
+          <SegmentedControl
+            options={scheduleOptions}
+            selectedValue={scheduleType}
+            onChange={(value) => setScheduleType(value as 'my-schedules' | 'facility-schedules')}
+            variant="primary"
+            style={{
+              borderWidth: 0, // Remove the inner border since we have the outer one
+              borderRadius: 0, // Remove inner border radius since wrapper handles it
+            }}
+          />
+        </View>
+      </Animated.View>
+
       {/* Stats Overview */}
       <Animated.View
         entering={FadeInDown.delay(200).springify()}
@@ -658,11 +774,40 @@ export const BookingsScreen: React.FC = () => {
           
           <View style={[styles.statCard, styles.statCardRight]}>
             <View style={styles.statHeader}>
-              <Text style={styles.statLabel}>This Month</Text>
+              <Text style={styles.statLabel}>This Term</Text>
               <Ionicons name="calendar" size={16} color={theme.colors.status.success} />
             </View>
-            <Text style={styles.statValue}>8</Text>
-            <Text style={styles.statSessions}>Sessions</Text>
+            <View style={styles.termProgressContainer}>
+              <View style={styles.termProgressRow}>
+                <View style={styles.termProgressItem}>
+                  <Text style={[styles.termProgressValue, styles.completedColor]}>
+                    {termStats.completed}
+                  </Text>
+                  <Text style={[styles.termProgressLabel, styles.completedColor]}>
+                    Completed
+                  </Text>
+                </View>
+                <View style={styles.termProgressItem}>
+                  <Text style={[styles.termProgressValue, styles.scheduledColor]}>
+                    {termStats.scheduled}
+                  </Text>
+                  <Text style={[styles.termProgressLabel, styles.scheduledColor]}>
+                    Scheduled
+                  </Text>
+                </View>
+                <View style={styles.termProgressItem}>
+                  <Text style={[styles.termProgressValue, styles.remainingColor]}>
+                    {termStats.remaining}
+                  </Text>
+                  <Text style={[styles.termProgressLabel, styles.remainingColor]}>
+                    Remaining
+                  </Text>
+                </View>
+              </View>
+              <Text style={[styles.statSessions, { textAlign: 'center', marginTop: theme.spacing.xs / 2 }]}>
+                {termStats.completed + termStats.scheduled}/{termStats.total} sessions
+              </Text>
+            </View>
           </View>
         </View>
       </Animated.View>

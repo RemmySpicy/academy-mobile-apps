@@ -27,6 +27,9 @@ import { PrivacySettingsScreen } from '../../settings/screens/PrivacySettingsScr
 import { AboutScreen } from '../../settings/screens/AboutScreen';
 import { ProgressReportScreen } from '../../progress/screens/ProgressReportScreen';
 
+// Import performance feature
+import { PerformanceNavigator } from '../../performance/navigation/PerformanceNavigator';
+
 export type MenuStackParamList = {
   MenuMain: undefined;
   EditProfile: undefined;
@@ -46,6 +49,7 @@ export type MenuStackParamList = {
   Referrals: undefined;
   MySchedule: undefined;
   ProgressReport: undefined;
+  Performance: undefined;
   OurFacilities: undefined;
   HelpAndSupport: undefined;
 };
@@ -71,6 +75,7 @@ function getScreenTitle(routeName: keyof MenuStackParamList): string {
     Referrals: 'Referrals',
     MySchedule: 'My Schedule',
     ProgressReport: 'Progress Report',
+    Performance: 'Performance',
     OurFacilities: 'Our Facilities',
     HelpAndSupport: 'Help & Support',
   };
@@ -161,6 +166,10 @@ export const MenuNavigator: React.FC = () => {
       <Stack.Screen 
         name="ProgressReport" 
         component={ProgressReportScreen}
+      />
+      <Stack.Screen 
+        name="Performance" 
+        component={PerformanceNavigator}
       />
       <Stack.Screen 
         name="OurFacilities" 

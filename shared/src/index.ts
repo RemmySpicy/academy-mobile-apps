@@ -157,6 +157,7 @@ export {
   Lessons,
   Badge,
   LoadingSpinner,
+  StatsCard,
   NotificationList,
   BottomSheet,
   BottomSheetProvider,

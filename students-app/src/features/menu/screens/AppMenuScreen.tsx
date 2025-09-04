@@ -638,7 +638,7 @@ export const AppMenuScreen: React.FC = () => {
 
               {/* Performance Metrics Button */}
               <Pressable
-                onPress={() => navigation.navigate('ProgressReport')}
+                onPress={() => navigation.navigate('Performance')}
                 style={{
                   backgroundColor: theme.colors.background.secondary,
                   borderRadius: theme.borderRadius.lg,
@@ -738,6 +738,14 @@ export const AppMenuScreen: React.FC = () => {
                 onPress: () => navigation.navigate('MySchedule'),
                 backgroundColor: theme.isDark ? '#3a2f1f' : '#fef7e0',
                 iconColor: theme.colors.status.warning,
+              },
+              {
+                id: 'performance',
+                title: 'Performance',
+                icon: 'analytics',
+                onPress: () => navigation.navigate('Performance'),
+                backgroundColor: theme.isDark ? '#2d1b4e' : '#f3e8ff',
+                iconColor: theme.colors.interactive.purple,
               },
               {
                 id: 'progress-report',

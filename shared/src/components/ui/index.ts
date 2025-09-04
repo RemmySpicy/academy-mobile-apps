@@ -191,6 +191,9 @@ export type { BadgeProps } from './Badge';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export type { LoadingSpinnerProps } from './LoadingSpinner';
 
+export { default as StatsCard } from './StatsCard';
+export type { StatsCardProps } from './StatsCard';
+
 export { default as NotificationList } from './NotificationList';
 export type { NotificationListProps, NotificationItem } from './NotificationList';
 

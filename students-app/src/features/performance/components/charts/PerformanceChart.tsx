@@ -84,6 +84,12 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       return numValue.toFixed(2).padStart(5, '0');
     };
 
+    // Set Y-axis range for swimming charts to avoid showing the sum value
+    const yAxisConfig = isSwimmingChart ? {
+      yAxisOffset: minValue - 0.1, // Start slightly below the transformed max value (which is minValue)
+      maxValue: maxValue + 0.1,     // End slightly above the transformed min value (which is maxValue)
+    } : {};
+
     return (
       <LineChart
         data={data}
@@ -119,6 +125,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
         stripColor={theme.colors.border.secondary}
         stripOpacity={0.5}
         onPress={(item: any, index: number) => onDataPointPress?.(item, index)}
+        {...yAxisConfig}
       />
     );
   };
@@ -164,6 +171,12 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       return numValue.toFixed(2);
     };
 
+    // Set Y-axis range for swimming charts to avoid showing the sum value
+    const yAxisConfig = isSwimmingChart ? {
+      yAxisOffset: minValue - 0.1, // Start slightly below the transformed max value (which is minValue)
+      maxValue: maxValue + 0.1,     // End slightly above the transformed min value (which is maxValue)
+    } : {};
+
     return (
       <BarChart
         data={data}
@@ -183,6 +196,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
         roundedTop
         roundedBottom
         onPress={(item: any, index: number) => onDataPointPress?.(item, index)}
+        {...yAxisConfig}
       />
     );
   };

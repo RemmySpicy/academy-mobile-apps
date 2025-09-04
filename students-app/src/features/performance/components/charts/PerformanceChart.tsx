@@ -45,45 +45,16 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
   };
 
   const renderLineChart = () => {
-    // For swimming times, we want to invert the Y-axis so lower times appear at top
-    const isSwimmingChart = chartData.yAxisLabel?.toLowerCase().includes('time') || 
-                           chartData.title?.toLowerCase().includes('time');
-    
-    // Find min and max values for inversion calculation
-    const values = chartData.data.map(point => 
-      typeof point.value === 'number' ? point.value : parseFloat(point.value.toString())
-    );
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
-    const valueRange = maxValue - minValue;
-    
-    const data = chartData.data.map((point, index) => {
-      const originalValue = typeof point.value === 'number' ? point.value : parseFloat(point.value.toString());
-      
-      // For swimming times, invert the values so lower times appear higher on chart
-      // Simple inversion: subtract from max + min to flip the scale
-      const displayValue = isSwimmingChart && valueRange > 0 
-        ? (maxValue + minValue) - originalValue  // Simple inversion formula
-        : originalValue;
-        
-      return {
-        value: displayValue,
-        label: point.label,
-        dataPointText: point.formattedValue || point.value.toString(), // Show original value in tooltip
-      };
-    });
+    const data = chartData.data.map((point, index) => ({
+      value: typeof point.value === 'number' ? point.value : parseFloat(point.value.toString()),
+      label: point.label,
+      dataPointText: point.value.toString(),
+    }));
 
-    // Format y-axis values - show original values even though chart uses inverted data
+    // Format y-axis values with leading zeros for consistency  
     const formatYAxisValue = (value: any) => {
       const numValue = typeof value === 'number' ? value : parseFloat(value);
       if (isNaN(numValue)) return value.toString();
-      
-      // If this is a swimming chart, convert back to original value for display
-      if (isSwimmingChart && valueRange > 0) {
-        const originalValue = (maxValue + minValue) - numValue;
-        return originalValue.toFixed(2);
-      }
-      
       return numValue.toFixed(2).padStart(5, '0');
     };
 
@@ -127,48 +98,12 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
   };
 
   const renderBarChart = () => {
-    // For swimming times, we want to invert the Y-axis so lower times appear at top
-    const isSwimmingChart = chartData.yAxisLabel?.toLowerCase().includes('time') || 
-                           chartData.title?.toLowerCase().includes('time');
-    
-    // Find min and max values for inversion calculation
-    const values = chartData.data.map(point => 
-      typeof point.value === 'number' ? point.value : parseFloat(point.value.toString())
-    );
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
-    const valueRange = maxValue - minValue;
-    
-    const data = chartData.data.map((point, index) => {
-      const originalValue = typeof point.value === 'number' ? point.value : parseFloat(point.value.toString());
-      
-      // For swimming times, invert the values so lower times appear higher on chart
-      // Simple inversion: subtract from max + min to flip the scale
-      const displayValue = isSwimmingChart && valueRange > 0 
-        ? (maxValue + minValue) - originalValue  // Simple inversion formula
-        : originalValue;
-        
-      return {
-        value: displayValue,
-        label: point.label,
-        frontColor: point.color || chartData.color || theme.colors.interactive.primary,
-        gradientColor: `${point.color || chartData.color || theme.colors.interactive.primary}80`,
-      };
-    });
-
-    // Format y-axis values - show original values even though chart uses inverted data
-    const formatYAxisValue = (value: any) => {
-      const numValue = typeof value === 'number' ? value : parseFloat(value);
-      if (isNaN(numValue)) return value.toString();
-      
-      // If this is a swimming chart, convert back to original value for display
-      if (isSwimmingChart && valueRange > 0) {
-        const originalValue = (maxValue + minValue) - numValue;
-        return originalValue.toFixed(2);
-      }
-      
-      return numValue.toFixed(2);
-    };
+    const data = chartData.data.map((point, index) => ({
+      value: typeof point.value === 'number' ? point.value : parseFloat(point.value.toString()),
+      label: point.label,
+      frontColor: point.color || chartData.color || theme.colors.interactive.primary,
+      gradientColor: `${point.color || chartData.color || theme.colors.interactive.primary}80`,
+    }));
 
     return (
       <BarChart
@@ -184,7 +119,6 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
         xAxisColor={theme.colors.border.primary}
         yAxisTextStyle={{ color: theme.colors.text.secondary, fontSize: 12 }}
         xAxisLabelTextStyle={{ color: theme.colors.text.secondary, fontSize: 10 }}
-        formatYLabel={formatYAxisValue}
         showGradient={true}
         roundedTop
         roundedBottom

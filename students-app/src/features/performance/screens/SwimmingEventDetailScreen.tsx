@@ -119,13 +119,12 @@ const mockEventDetail: SwimmingEventDetail = {
   ],
   chartData: {
     data: [
-      { label: '08:15', value: 26.80, formattedValue: '00:26.80' },
-      { label: '08:23', value: 26.60, formattedValue: '00:26.60' },
-      { label: '08:31', value: 26.45, formattedValue: '00:26.45' },
-      { label: '09:14', value: 26.35, formattedValue: '00:26.35' },
-      { label: '09:23', value: 26.30, formattedValue: '00:26.30' },
-      { label: '09:31', value: 26.30, formattedValue: '00:26.30' },
-      { label: '10:14', value: 26.30, formattedValue: '00:26.30' },
+      { label: '20 Feb', value: 26.85, formattedValue: '00:26.85' }, // First/oldest entry
+      { label: '28 Feb', value: 26.78, formattedValue: '00:26.78' },
+      { label: '05 Mar', value: 26.62, formattedValue: '00:26.62' },
+      { label: '10 Mar', value: 26.46, formattedValue: '00:26.46' },
+      { label: '15 Mar', value: 26.30, formattedValue: '00:26.30' }, // Current PB
+      { label: 'Goal', value: 25.50, formattedValue: '00:25.50' },   // Target goal - lowest point
     ],
     goalLine: 25.50,
     personalBestLine: 26.30,

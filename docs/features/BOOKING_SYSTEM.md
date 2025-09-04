@@ -35,10 +35,10 @@ The Academy Apps use a unified **BookingCard** component that displays participa
 - **Overlapping participant avatars** (first 5 visible)
 - **Overflow indicator** ("+N" for additional participants)  
 - **Capacity counter** (e.g., "10/15 participants")
-- **Single "Add/Remove Participant" management button**
+- **Outline-style Add/Remove button** with people icon for better visual hierarchy ⭐ **NEW**
 - **Price display** for paid bookings
 - **Reschedule/Cancel actions** for upcoming sessions
-- **Status indicators** with color-coded badges
+- **Status indicators** with rounded background badges ⭐ **ENHANCED**
 - **Instructor information** with multi-instructor support
 
 ### **Visual Design**
@@ -105,6 +105,46 @@ const termStats = {
 - **Capacity Counter**: "X/Y participants" display
 - **Role Indicators**: Student, parent, instructor labels
 
+## 🎛️ Custom Schedule Type Selector ⭐ **NEW**
+
+The Academy Apps feature a custom-built schedule type selector that allows users to toggle between personal bookings and facility-wide schedules.
+
+### **Design Features**
+- **Clean Tab Design**: Inspired by Course Curriculum screen section tabs
+- **Smooth Visual Feedback**: Purple active state with white text
+- **Mobile-Optimized**: Responsive layout with proper touch targets
+- **Academy Theming**: Consistent with design system colors and typography
+
+### **Tab States**
+- **Active Tab**: `theme.colors.interactive.primary` background with white text
+- **Inactive Tab**: `theme.colors.background.tertiary` background with secondary text
+- **Container**: Subtle tertiary background with rounded corners
+
+### **Implementation**
+```typescript
+// Custom tab styling
+const scheduleTypeTabs = {
+  flexDirection: 'row',
+  backgroundColor: theme.colors.background.tertiary,
+  borderRadius: theme.borderRadius.lg,
+  padding: theme.spacing.xs,
+};
+
+const scheduleTypeTab = {
+  flex: 1,
+  paddingVertical: theme.spacing.xs,
+  paddingHorizontal: theme.spacing.sm,
+  borderRadius: theme.borderRadius.md,
+  alignItems: 'center',
+};
+```
+
+### **User Experience**
+- **My Schedules**: Shows user's personal bookings and family member sessions
+- **Facility Schedules**: Displays available facility-wide sessions and events
+- **Smooth Transitions**: Instant switching between schedule types
+- **Visual Clarity**: Clear indication of active selection
+
 ## 📅 Schedule Types
 
 ### **Recurring Schedules**
@@ -128,11 +168,15 @@ const termStats = {
 
 ```
 BookingsScreen
-├── Stats Cards (Term Progress + Next Session)
-├── Schedule Type Selector (My/Facility Schedules)
+├── Header (Program Switcher + Notifications)
+├── Add Booking Button Row
+├── Stats Cards (Next Session + Term Progress)
+├── Custom Schedule Type Selector ⭐ NEW
+│   ├── My Schedules Tab
+│   └── Facility Schedules Tab
 ├── Filter Tabs (All/Upcoming/Completed/Cancelled)
 └── BookingCard List
-    ├── BookingCard Component
+    ├── BookingCard Component (Enhanced Status Badges)
     └── ParticipantManagementBottomSheet
 ```
 

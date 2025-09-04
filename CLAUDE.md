@@ -214,16 +214,22 @@ The Academy Apps feature a modern, interactive profile card system with advanced
 **📖 Full Documentation**: See **[Profile System Documentation](./docs/features/PROFILE_SYSTEM.md)** for comprehensive technical details, implementation examples, and UI patterns.
 
 ### Booking System Implementation
-The Academy Apps feature a comprehensive booking and session management system with term progress tracking.
+The Academy Apps feature a comprehensive booking and session management system with enhanced UI components and term progress tracking.
 
 **Key Features:**
-- **Unified BookingCard Component**: Displays participant info for all booking types
-- **Term Progress System**: 8-session term tracking with visual progress indicators ⭐ NEW
+- **Enhanced BookingCard Component**: Displays participant info with improved status badges and outline-style action buttons ⭐ **UPDATED**
+- **Custom Schedule Type Selector**: Toggle between "My Schedules" and "Facility Schedules" with clean tab design ⭐ **NEW**
+- **Term Progress System**: 8-session term tracking with visual progress indicators
 - **Participant Management**: Bottom sheet interface for add/remove family members
 - **Multi-Program Support**: Works across all academy programs
 - **Schedule Flexibility**: One-time and recurring sessions with multi-instructor support
 
-**Implementation**: Home → Bookings → BookingCard with term progress stats
+**Recent Enhancements:**
+- **Status Badge Styling**: Rounded background badges with proper padding and capitalization
+- **Action Button Design**: Outline-style Add/Remove button with people icon for better visual hierarchy
+- **Custom Segmented Control**: Academy-themed tab selector inspired by Course Curriculum design patterns
+
+**Implementation**: Home → Bookings → Enhanced BookingCard with custom schedule selector
 
 **📖 Full Documentation**: See **[Booking System Documentation](./docs/features/BOOKING_SYSTEM.md)** for comprehensive technical details, API reference, and implementation examples.
 

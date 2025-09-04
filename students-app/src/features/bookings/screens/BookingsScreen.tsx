@@ -64,34 +64,6 @@ const useScreenStyles = createThemedStyles((theme) =>
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.xs,
     },
-    headerRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: theme.spacing.md,
-    },
-    headerContent: {
-      // No specific styles needed
-    },
-    headerTitle: {
-      color: theme.colors.text.primary,
-      fontSize: theme.fontSizes.xl,
-      fontWeight: theme.fontConfig.fontWeight.bold,
-    },
-    headerSubtitle: {
-      color: theme.colors.text.tertiary,
-      fontSize: theme.fontSizes.base,
-      marginTop: theme.spacing.xs,
-    },
-    addButton: {
-      backgroundColor: theme.colors.interactive.primary,
-      width: 48,
-      height: 48,
-      borderRadius: theme.borderRadius.full,
-      alignItems: 'center',
-      justifyContent: 'center',
-      ...theme.elevation.sm,
-    },
     statsContainer: {
       paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
@@ -222,11 +194,29 @@ const useScreenStyles = createThemedStyles((theme) =>
       paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.md,
     },
-    customSegmentedControl: {
-      borderRadius: theme.borderRadius.full,
-      borderWidth: 1,
-      borderColor: theme.colors.interactive.primary,
-      overflow: 'hidden', // This will help with the inner rounded corners
+    scheduleTypeTabs: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.background.tertiary,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.xs,
+    },
+    scheduleTypeTab: {
+      flex: 1,
+      paddingVertical: theme.spacing.xs,
+      paddingHorizontal: theme.spacing.sm,
+      borderRadius: theme.borderRadius.md,
+      alignItems: 'center',
+    },
+    activeScheduleTypeTab: {
+      backgroundColor: theme.colors.interactive.primary,
+    },
+    scheduleTypeTabText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    activeScheduleTypeTabText: {
+      color: 'white',
     },
   })
 );
@@ -679,9 +669,6 @@ export const BookingsScreen: React.FC = () => {
     console.log('Navigate to booking detail:', booking.id);
   };
 
-  const handleNewBooking = () => {
-    console.log('Navigate to create booking');
-  };
 
   const handleSearch = () => {
     console.log('Search pressed');
@@ -714,46 +701,30 @@ export const BookingsScreen: React.FC = () => {
         style={{ paddingTop: insets.top }}
       />
 
-      {/* Add Booking Button Row */}
-      <Animated.View
-        entering={FadeInDown.delay(100).springify()}
-        style={[styles.headerRow, { paddingHorizontal: theme.spacing.md, paddingTop: theme.spacing.md }]}
-      >
-        <View>
-          <Text style={[styles.headerSubtitle, { marginTop: 0 }]}>
-            Manage your swimming sessions
-          </Text>
-        </View>
-        
-        <Pressable
-          onPress={handleNewBooking}
-          style={styles.addButton}
-        >
-          <Ionicons name="add" size={24} color="white" />
-        </Pressable>
-      </Animated.View>
 
       {/* Schedule Type Selector */}
       <Animated.View
         entering={FadeInDown.delay(150).springify()}
         style={styles.segmentedControlContainer}
       >
-        <View style={{
-          borderRadius: theme.borderRadius.full,
-          overflow: 'hidden',
-          borderWidth: 1,
-          borderColor: theme.colors.interactive.primary,
-        }}>
-          <SegmentedControl
-            options={scheduleOptions}
-            selectedValue={scheduleType}
-            onChange={(value) => setScheduleType(value as 'my-schedules' | 'facility-schedules')}
-            variant="primary"
-            style={{
-              borderWidth: 0, // Remove the inner border since we have the outer one
-              borderRadius: 0, // Remove inner border radius since wrapper handles it
-            }}
-          />
+        <View style={styles.scheduleTypeTabs}>
+          {scheduleOptions.map((option) => (
+            <Pressable
+              key={option.value}
+              style={[
+                styles.scheduleTypeTab,
+                scheduleType === option.value && styles.activeScheduleTypeTab
+              ]}
+              onPress={() => setScheduleType(option.value as 'my-schedules' | 'facility-schedules')}
+            >
+              <Text style={[
+                styles.scheduleTypeTabText,
+                scheduleType === option.value && styles.activeScheduleTypeTabText
+              ]}>
+                {option.label}
+              </Text>
+            </Pressable>
+          ))}
         </View>
       </Animated.View>
 

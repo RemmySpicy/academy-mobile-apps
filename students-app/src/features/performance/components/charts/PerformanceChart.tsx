@@ -45,16 +45,42 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
   };
 
   const renderLineChart = () => {
-    const data = chartData.data.map((point, index) => ({
-      value: typeof point.value === 'number' ? point.value : parseFloat(point.value.toString()),
-      label: point.label,
-      dataPointText: point.value.toString(),
-    }));
+    // Check if this is a swimming time chart that needs inversion
+    const isSwimmingChart = chartData.yAxisLabel?.toLowerCase().includes('time') || 
+                           chartData.title?.toLowerCase().includes('time');
+    
+    // Get all values to find the range
+    const values = chartData.data.map(point => 
+      typeof point.value === 'number' ? point.value : parseFloat(point.value.toString())
+    );
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    
+    const data = chartData.data.map((point, index) => {
+      const originalValue = typeof point.value === 'number' ? point.value : parseFloat(point.value.toString());
+      
+      // For swimming times, invert by subtracting from max + a small offset
+      const displayValue = isSwimmingChart 
+        ? (maxValue + minValue) - originalValue
+        : originalValue;
+      
+      return {
+        value: displayValue,
+        label: point.label,
+        dataPointText: point.formattedValue || originalValue.toString(),
+      };
+    });
 
-    // Format y-axis values with leading zeros for consistency  
+    // Format y-axis values - convert back to original times for swimming charts
     const formatYAxisValue = (value: any) => {
       const numValue = typeof value === 'number' ? value : parseFloat(value);
       if (isNaN(numValue)) return value.toString();
+      
+      if (isSwimmingChart) {
+        const originalValue = (maxValue + minValue) - numValue;
+        return originalValue.toFixed(2);
+      }
+      
       return numValue.toFixed(2).padStart(5, '0');
     };
 
@@ -98,12 +124,45 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
   };
 
   const renderBarChart = () => {
-    const data = chartData.data.map((point, index) => ({
-      value: typeof point.value === 'number' ? point.value : parseFloat(point.value.toString()),
-      label: point.label,
-      frontColor: point.color || chartData.color || theme.colors.interactive.primary,
-      gradientColor: `${point.color || chartData.color || theme.colors.interactive.primary}80`,
-    }));
+    // Check if this is a swimming time chart that needs inversion
+    const isSwimmingChart = chartData.yAxisLabel?.toLowerCase().includes('time') || 
+                           chartData.title?.toLowerCase().includes('time');
+    
+    // Get all values to find the range
+    const values = chartData.data.map(point => 
+      typeof point.value === 'number' ? point.value : parseFloat(point.value.toString())
+    );
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    
+    const data = chartData.data.map((point, index) => {
+      const originalValue = typeof point.value === 'number' ? point.value : parseFloat(point.value.toString());
+      
+      // For swimming times, invert by subtracting from max + min
+      const displayValue = isSwimmingChart 
+        ? (maxValue + minValue) - originalValue
+        : originalValue;
+      
+      return {
+        value: displayValue,
+        label: point.label,
+        frontColor: point.color || chartData.color || theme.colors.interactive.primary,
+        gradientColor: `${point.color || chartData.color || theme.colors.interactive.primary}80`,
+      };
+    });
+
+    // Format y-axis values - convert back to original times for swimming charts
+    const formatYAxisValue = (value: any) => {
+      const numValue = typeof value === 'number' ? value : parseFloat(value);
+      if (isNaN(numValue)) return value.toString();
+      
+      if (isSwimmingChart) {
+        const originalValue = (maxValue + minValue) - numValue;
+        return originalValue.toFixed(2);
+      }
+      
+      return numValue.toFixed(2);
+    };
 
     return (
       <BarChart
@@ -119,6 +178,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
         xAxisColor={theme.colors.border.primary}
         yAxisTextStyle={{ color: theme.colors.text.secondary, fontSize: 12 }}
         xAxisLabelTextStyle={{ color: theme.colors.text.secondary, fontSize: 10 }}
+        formatYLabel={formatYAxisValue}
         showGradient={true}
         roundedTop
         roundedBottom

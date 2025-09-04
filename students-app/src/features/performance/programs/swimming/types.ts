@@ -192,9 +192,9 @@ export interface PoolConfig {
 }
 
 /**
- * Performance event card data (for main performance screen cards)
+ * Performance card data (for main performance screen cards)
  */
-export interface SwimmingEventCard {
+export interface SwimmingPerformanceCard {
   id: string;
   title: string; // e.g., "50m Freestyle", "100m Breaststroke"
   distance: number;
@@ -268,10 +268,10 @@ export interface SwimmingPerformanceGoal {
 }
 
 /**
- * Comprehensive event details for detailed progression screen
+ * Comprehensive performance details for detailed progression screen
  */
-export interface SwimmingEventDetail {
-  event: {
+export interface SwimmingPerformanceDetail {
+  performance: {
     title: string; // e.g., "50m Breaststroke"
     distance: number;
     stroke: SwimmingStroke;
@@ -335,7 +335,7 @@ export interface SwimmingPerformanceFilters {
  */
 export interface SwimmingPerformanceScreenData {
   // For Times tab
-  eventCards: SwimmingEventCard[];
+  performanceCards: SwimmingPerformanceCard[];
   
   // For Stroke analysis tab  
   strokeCards: SwimmingStrokeCard[];

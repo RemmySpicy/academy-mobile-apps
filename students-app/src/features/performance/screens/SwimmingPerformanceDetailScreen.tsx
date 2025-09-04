@@ -16,15 +16,15 @@ import { PerformanceChart } from '../components/charts/PerformanceChart';
 import type { PerformanceStackParamList } from '../navigation/PerformanceNavigator';
 
 import {
-  SwimmingEventDetail,
+  SwimmingPerformanceDetail,
   SwimmingTimeDetail,
   SwimmingPerformanceGoal,
 } from '../programs/swimming/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Mock detailed swimming event data (based on third screenshot)
-const mockEventDetail: SwimmingEventDetail = {
+// Mock detailed swimming performance data (based on third screenshot)
+const mockPerformanceDetail: SwimmingPerformanceDetail = {
   event: {
     title: '50m Breaststroke',
     distance: 50,
@@ -141,7 +141,7 @@ const mockEventDetail: SwimmingEventDetail = {
   },
 };
 
-type SwimmingEventDetailScreenRouteProp = RouteProp<PerformanceStackParamList, 'SwimmingEventDetail'>;
+type SwimmingPerformanceDetailScreenRouteProp = RouteProp<PerformanceStackParamList, 'SwimmingPerformanceDetail'>;
 
 // Helper functions for time calculations
 const processAllTimes = (allTimes: SwimmingTimeDetail[]): SwimmingTimeDetail[] => {
@@ -175,30 +175,30 @@ const calculateTimeComparison = (currentTime: SwimmingTimeDetail, previousTime: 
   };
 };
 
-export const SwimmingEventDetailScreen: React.FC = () => {
+export const SwimmingPerformanceDetailScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp<PerformanceStackParamList>>();
-  const route = useRoute<SwimmingEventDetailScreenRouteProp>();
+  const route = useRoute<SwimmingPerformanceDetailScreenRouteProp>();
   
   const { eventId } = route.params;
   
-  const [eventDetail, setEventDetail] = useState<SwimmingEventDetail>(mockEventDetail);
+  const [performanceDetail, setPerformanceDetail] = useState<SwimmingPerformanceDetail>(mockPerformanceDetail);
   const [isLoading, setIsLoading] = useState(false);
   
   // Process times to ensure correct PB calculation and chronological order
-  const processedTimes = processAllTimes(eventDetail.allTimes);
+  const processedTimes = processAllTimes(performanceDetail.allTimes);
 
   useEffect(() => {
-    loadEventDetail();
+    loadPerformanceDetail();
   }, [eventId]);
 
-  const loadEventDetail = async () => {
+  const loadPerformanceDetail = async () => {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
-      setEventDetail(mockEventDetail);
+      setPerformanceDetail(mockPerformanceDetail);
       setIsLoading(false);
     }, 500);
   };
@@ -228,8 +228,8 @@ export const SwimmingEventDetailScreen: React.FC = () => {
         />
       </Pressable>
       <View style={styles.headerContent}>
-        <Text style={styles.headerTitle}>{eventDetail.event.title}</Text>
-        <Text style={styles.headerSubtitle}>{eventDetail.event.poolSize} pool</Text>
+        <Text style={styles.headerTitle}>{performanceDetail.performance.title}</Text>
+        <Text style={styles.headerSubtitle}>{performanceDetail.performance.poolSize} pool</Text>
       </View>
     </View>
   );
@@ -243,11 +243,11 @@ export const SwimmingEventDetailScreen: React.FC = () => {
       <View style={styles.bestTimeContent}>
         <View style={styles.bestTimeMain}>
           <Text style={styles.bestTimeLabel}>BEST TIME</Text>
-          <Text style={styles.bestTimeValue}>{eventDetail.bestTime.time}</Text>
-          <Text style={styles.bestTimeDate}>{eventDetail.bestTime.date}</Text>
+          <Text style={styles.bestTimeValue}>{performanceDetail.bestTime.time}</Text>
+          <Text style={styles.bestTimeDate}>{performanceDetail.bestTime.date}</Text>
         </View>
 
-        {eventDetail.clubRecord && (
+        {performanceDetail.clubRecord && (
           <View style={styles.clubRecordSection}>
             <View style={styles.recordIndicator}>
               <View style={styles.recordBadge}>
@@ -255,7 +255,7 @@ export const SwimmingEventDetailScreen: React.FC = () => {
               </View>
             </View>
             <View style={styles.clubRecordContent}>
-              <Text style={styles.clubRecordTime}>{eventDetail.clubRecord.time}</Text>
+              <Text style={styles.clubRecordTime}>{performanceDetail.clubRecord.time}</Text>
               <Text style={styles.clubRecordLabel}>Club Record</Text>
             </View>
           </View>
@@ -274,7 +274,7 @@ export const SwimmingEventDetailScreen: React.FC = () => {
           id: 'progression',
           title: 'Time Progression',
           type: 'line',
-          data: eventDetail.chartData.data,
+          data: performanceDetail.chartData.data,
           xAxisLabel: 'Date',
           yAxisLabel: 'Time (sec)',
           color: theme.colors.interactive.primary,
@@ -300,7 +300,7 @@ export const SwimmingEventDetailScreen: React.FC = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.goalsScrollContainer}
       >
-        {eventDetail.goals.map((goal, index) => (
+        {performanceDetail.goals.map((goal, index) => (
           <Animated.View
             key={goal.id}
             entering={FadeInRight.delay(350 + index * 50).springify()}

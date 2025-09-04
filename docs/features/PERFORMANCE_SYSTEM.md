@@ -22,7 +22,7 @@ The system uses a modular, program-aware architecture that supports multiple aca
 students-app/src/features/performance/
 ├── screens/
 │   ├── PerformanceScreen.tsx           # Main performance dashboard
-│   └── SwimmingEventDetailScreen.tsx   # Detailed progression view
+│   └── SwimmingPerformanceDetailScreen.tsx   # Detailed progression view
 ├── navigation/
 │   └── PerformanceNavigator.tsx        # Performance stack navigation
 ├── programs/
@@ -54,7 +54,7 @@ students-app/src/features/performance/
 - **Performance Cards**: Display current times, personal bests, and improvement metrics
 - **Navigation**: Direct access to detailed event progression
 
-### 2. Event Detail Screen (SwimmingEventDetailScreen)
+### 2. Performance Detail Screen (SwimmingPerformanceDetailScreen)
 
 **Comprehensive Performance Analysis:**
 - **Best Time Display**: Large, prominent time with achievement date
@@ -74,7 +74,7 @@ students-app/src/features/performance/
 
 **Swimming-Specific Types:**
 ```typescript
-interface SwimmingEventCard {
+interface SwimmingPerformanceCard {
   id: string;
   title: string;              // e.g., "50m Freestyle"
   distance: number;
@@ -136,7 +136,7 @@ strokeFilterButton: {
 ```typescript
 type PerformanceStackParamList = {
   Performance: undefined;
-  SwimmingEventDetail: { eventId: string };
+  SwimmingPerformanceDetail: { eventId: string };
 };
 ```
 
@@ -147,7 +147,7 @@ type PerformanceStackParamList = {
 const [viewMode, setViewMode] = useState<PerformanceViewMode>('times');
 const [selectedPoolSize, setSelectedPoolSize] = useState<PoolSize>('17m');
 const [selectedStrokes, setSelectedStrokes] = useState<SwimmingStroke[]>(['freestyle']);
-const [eventCards, setEventCards] = useState<SwimmingEventCard[]>([]);
+const [performanceCards, setPerformanceCards] = useState<SwimmingPerformanceCard[]>([]);
 const [strokeCards, setStrokeCards] = useState<SwimmingStrokeCard[]>([]);
 ```
 

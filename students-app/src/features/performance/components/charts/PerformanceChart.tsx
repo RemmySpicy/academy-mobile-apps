@@ -99,10 +99,15 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       });
     }
 
-    // Set Y-axis range for swimming charts to include goal line
-    const yAxisConfig = isSwimmingChart ? {
-      yAxisOffset: Math.min(minValue, chartData.goalLine || minValue) - 0.1,
-      maxValue: Math.max(maxValue, chartData.goalLine || maxValue) + 0.1,
+    // Set Y-axis range for swimming charts - goal should be at top unless swimmer has better time
+    const yAxisConfig = isSwimmingChart && chartData.goalLine ? {
+      // The top of the chart should show the best achievable time (goal or better)
+      yAxisOffset: (maxValue + Math.min(minValue, chartData.goalLine)) - Math.max(maxValue, chartData.goalLine) - 0.1,
+      // The bottom should show the worst recorded time
+      maxValue: (maxValue + Math.min(minValue, chartData.goalLine)) - Math.min(minValue, chartData.goalLine) + 0.1,
+    } : isSwimmingChart ? {
+      yAxisOffset: minValue - 0.1,
+      maxValue: maxValue + 0.1,
     } : {};
 
     return (
@@ -202,10 +207,15 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       });
     }
 
-    // Set Y-axis range for swimming charts to include goal line
-    const yAxisConfig = isSwimmingChart ? {
-      yAxisOffset: Math.min(minValue, chartData.goalLine || minValue) - 0.1,
-      maxValue: Math.max(maxValue, chartData.goalLine || maxValue) + 0.1,
+    // Set Y-axis range for swimming charts - goal should be at top unless swimmer has better time
+    const yAxisConfig = isSwimmingChart && chartData.goalLine ? {
+      // The top of the chart should show the best achievable time (goal or better)
+      yAxisOffset: (maxValue + Math.min(minValue, chartData.goalLine)) - Math.max(maxValue, chartData.goalLine) - 0.1,
+      // The bottom should show the worst recorded time
+      maxValue: (maxValue + Math.min(minValue, chartData.goalLine)) - Math.min(minValue, chartData.goalLine) + 0.1,
+    } : isSwimmingChart ? {
+      yAxisOffset: minValue - 0.1,
+      maxValue: maxValue + 0.1,
     } : {};
 
     return (

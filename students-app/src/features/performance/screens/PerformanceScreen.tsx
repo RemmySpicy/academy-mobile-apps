@@ -26,7 +26,7 @@ import {
   SwimmingStroke,
   PoolSize,
   PoolConfig,
-  SwimmingEventCard,
+  SwimmingPerformanceCard,
   SwimmingStrokeCard,
   SwimmingPerformanceFilters,
   PerformanceViewMode,
@@ -34,8 +34,8 @@ import {
 } from '../programs/swimming/types';
 
 
-// Mock swimming event cards (Times view) - based on screenshot design
-const mockSwimmingEventCards: SwimmingEventCard[] = [
+// Mock swimming performance cards (Times view) - based on screenshot design
+const mockSwimmingPerformanceCards: SwimmingPerformanceCard[] = [
   {
     id: '17m_freestyle',
     title: '17m',
@@ -213,7 +213,7 @@ export const PerformanceScreen: React.FC = () => {
   const [viewMode, setViewMode] = useState<PerformanceViewMode>('times');
   const [selectedPoolSize, setSelectedPoolSize] = useState<PoolSize>('17m');
   const [selectedStrokes, setSelectedStrokes] = useState<SwimmingStroke[]>(['freestyle']);
-  const [eventCards, setEventCards] = useState<SwimmingEventCard[]>(mockSwimmingEventCards);
+  const [performanceCards, setPerformanceCards] = useState<SwimmingPerformanceCard[]>(mockSwimmingPerformanceCards);
   const [strokeCards, setStrokeCards] = useState<SwimmingStrokeCard[]>(mockSwimmingStrokeCards);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -246,14 +246,14 @@ export const PerformanceScreen: React.FC = () => {
     setTimeout(() => {
       // In real app, this would fetch data based on viewMode, poolSize, and selectedStrokes
       // Filter data based on current selections
-      const filteredEventCards = mockSwimmingEventCards.filter(card => 
+      const filteredPerformanceCards = mockSwimmingPerformanceCards.filter(card => 
         selectedStrokes.includes(card.stroke) && card.poolSize === selectedPoolSize
       );
       const filteredStrokeCards = mockSwimmingStrokeCards.filter(card =>
         selectedStrokes.includes(card.stroke) && card.poolSize === selectedPoolSize
       );
       
-      setEventCards(filteredEventCards);
+      setPerformanceCards(filteredPerformanceCards);
       setStrokeCards(filteredStrokeCards);
       setIsLoading(false);
     }, 500);
@@ -279,8 +279,8 @@ export const PerformanceScreen: React.FC = () => {
     setSelectedPoolSize(poolSize);
   };
 
-  const handleEventCardPress = (eventCard: SwimmingEventCard) => {
-    navigation.navigate('SwimmingEventDetail', { eventId: eventCard.id });
+  const handlePerformanceCardPress = (performanceCard: SwimmingPerformanceCard) => {
+    navigation.navigate('SwimmingPerformanceDetail', { eventId: performanceCard.id });
   };
 
   const handleStrokeCardPress = (strokeCard: SwimmingStrokeCard) => {
@@ -396,7 +396,7 @@ export const PerformanceScreen: React.FC = () => {
     >
       <Text style={styles.sectionTitle}>Swimming Times</Text>
       <View style={styles.cardsContainer}>
-        {eventCards.map((eventCard, index) => (
+        {performanceCards.map((performanceCard, index) => (
           <Animated.View
             key={eventCard.id}
             entering={FadeInRight.delay(index * 50).springify()}
@@ -406,7 +406,7 @@ export const PerformanceScreen: React.FC = () => {
                 styles.eventCard,
                 pressed && styles.cardPressed,
               ]}
-              onPress={() => handleEventCardPress(eventCard)}
+              onPress={() => handlePerformanceCardPress(performanceCard)}
             >
               <View style={styles.eventCardContent}>
                 <View style={styles.eventCardDistance}>

@@ -1,7 +1,7 @@
 import {
-  SwimmingEventCard,
+  SwimmingPerformanceCard,
   SwimmingStrokeCard,
-  SwimmingEventDetail,
+  SwimmingPerformanceDetail,
   SwimmingTimeDetail,
   SwimmingPerformanceGoal,
   SwimmingPerformanceStats,
@@ -22,20 +22,20 @@ import {
  * - MusicDataAdapter
  */
 
-export interface PerformanceDataAdapter<TEventCard, TEventDetail, TStats> {
-  transformEventCard(rawData: any): TEventCard;
-  transformEventDetail(rawData: any): TEventDetail;
+export interface PerformanceDataAdapter<TPerformanceCard, TPerformanceDetail, TStats> {
+  transformPerformanceCard(rawData: any): TPerformanceCard;
+  transformPerformanceDetail(rawData: any): TPerformanceDetail;
   transformStats(rawData: any): TStats;
   filterByPeriod(data: any[], period: string): any[];
   generateChartData(rawData: any[]): any;
 }
 
-export class SwimmingDataAdapter implements PerformanceDataAdapter<SwimmingEventCard, SwimmingEventDetail, SwimmingPerformanceStats> {
+export class SwimmingDataAdapter implements PerformanceDataAdapter<SwimmingPerformanceCard, SwimmingPerformanceDetail, SwimmingPerformanceStats> {
   
   /**
-   * Transform raw swimming event data into SwimmingEventCard format
+   * Transform raw swimming performance data into SwimmingPerformanceCard format
    */
-  transformEventCard(rawData: any): SwimmingEventCard {
+  transformPerformanceCard(rawData: any): SwimmingPerformanceCard {
     return {
       id: rawData.id || `event_${Date.now()}`,
       title: this.formatEventTitle(rawData.distance, rawData.stroke),
@@ -51,22 +51,22 @@ export class SwimmingDataAdapter implements PerformanceDataAdapter<SwimmingEvent
   }
 
   /**
-   * Transform raw data into detailed swimming event view
+   * Transform raw data into detailed swimming performance view
    */
-  transformEventDetail(rawData: any): SwimmingEventDetail {
-    const eventCard = this.transformEventCard(rawData);
+  transformPerformanceDetail(rawData: any): SwimmingPerformanceDetail {
+    const performanceCard = this.transformPerformanceCard(rawData);
     
     return {
-      event: {
-        title: eventCard.title,
-        distance: eventCard.distance,
-        stroke: eventCard.stroke,
-        poolSize: eventCard.poolSize,
+      performance: {
+        title: performanceCard.title,
+        distance: performanceCard.distance,
+        stroke: performanceCard.stroke,
+        poolSize: performanceCard.poolSize,
       },
       bestTime: {
-        time: eventCard.bestTime,
-        timeInSeconds: eventCard.bestTimeInSeconds,
-        date: rawData.bestTimeDate || eventCard.lastSwam,
+        time: performanceCard.bestTime,
+        timeInSeconds: performanceCard.bestTimeInSeconds,
+        date: rawData.bestTimeDate || performanceCard.lastSwam,
         venue: rawData.bestTimeVenue || 'Academy Pool',
       },
       clubRecord: rawData.clubRecord ? {

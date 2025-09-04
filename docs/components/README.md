@@ -127,6 +127,23 @@ Comprehensive calendar and scheduling system:
 - **[ClassroomCalendar](./calendar/ClassroomCalendar.md)** - Classroom scheduling
 - **[StudentProfileCalendar](./calendar/StudentProfileCalendar.md)** - Student-specific calendar
 
+### 🏢 Booking & Scheduling Components ⭐ **NEW**
+Comprehensive booking and facility schedule management:
+
+- **[BookingCard](./booking/BookingCard.md)** ⭐ **UNIFIED** - Single component with variants for both personal bookings and facility schedules
+- **[ParticipantManagementBottomSheet](./booking/ParticipantManagementBottomSheet.md)** - Participant add/remove interface
+- **[BookingsScreen](./booking/BookingsScreen.md)** - Dual schedule system (My Schedules vs Facility Schedules) with day-based filtering
+
+**Unified BookingCard Features:**
+- **Dual Variants**: `variant="booking"` for personal bookings, `variant="facility-schedule"` for facility schedules
+- **Smart Conditional Rendering**: Automatically shows relevant sections based on variant
+- **Availability Tracking**: Progress bars and capacity management for facility schedules
+- **Participant Management**: Add/remove family members for personal bookings
+- **Status Management**: Status badges and actions for personal bookings
+- **Join Actions**: Join/View Details actions for facility schedules
+- **Interactive Design**: Touch feedback, animations, and Academy theming
+- **DRY Architecture**: Single maintainable component instead of separate components
+
 ### 📱 Navigation & Settings Components
 Navigation, layout, and settings management components:
 

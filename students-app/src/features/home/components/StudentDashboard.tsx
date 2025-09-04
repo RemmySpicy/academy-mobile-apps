@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import React, { useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { 
   useTheme, 
@@ -78,6 +78,294 @@ interface StudentDashboardProps {
   maxActivitiesShown?: number;
 }
 
+const useDashboardStyles = createThemedStyles((theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+    },
+
+    contentContainer: {
+      padding: theme.spacing.md,
+      paddingBottom: theme.spacing['3xl'],
+    },
+
+    programHeader: {
+      marginBottom: theme.spacing.lg,
+      alignItems: 'center',
+    },
+
+    programName: {
+      ...theme.typography.heading.h2,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      textAlign: 'center',
+    },
+
+    programSubtitle: {
+      ...theme.typography.body.base,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.xs,
+    },
+
+    section: {
+      marginBottom: theme.spacing.lg,
+    },
+
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing.md,
+    },
+
+    sectionTitle: {
+      ...theme.typography.heading.h4,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+
+    viewAllText: {
+      ...theme.typography.body.sm,
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    // Metrics Grid
+    metricsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      gap: theme.spacing.sm,
+    },
+
+    metricCard: {
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      flex: 1,
+      minWidth: '45%',
+      minHeight: 100,
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+
+    metricHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing.sm,
+    },
+
+    metricTitle: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.secondary,
+      marginLeft: theme.spacing.sm,
+      flex: 1,
+    },
+
+    metricContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+    },
+
+    metricValue: {
+      ...theme.typography.heading.h3,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
+
+    changeIndicator: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: 2,
+      borderRadius: theme.borderRadius.sm,
+      gap: 2,
+      marginTop: theme.spacing.xs / 2,
+    },
+
+    changeText: {
+      ...theme.typography.caption.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+
+    // Quick Actions
+    quickActionsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      gap: theme.spacing.sm,
+    },
+
+    quickActionCard: {
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      flex: 1,
+      minWidth: '45%',
+      minHeight: 100,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...theme.elevation.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+
+    quickActionIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: theme.spacing.xs,
+    },
+
+    quickActionTitle: {
+      ...theme.typography.body.sm,
+      color: theme.colors.text.primary,
+      textAlign: 'center',
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    // Course Cards
+    courseCard: {
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      ...theme.elevation.sm,
+    },
+
+    courseHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: theme.spacing.sm,
+    },
+
+    courseInfo: {
+      flex: 1,
+    },
+
+    courseTitle: {
+      ...theme.typography.heading.h5,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      marginBottom: theme.spacing.xs / 2,
+    },
+
+    courseLevel: {
+      ...theme.typography.body.sm,
+      color: theme.colors.text.secondary,
+      marginBottom: theme.spacing.xs / 2,
+    },
+
+    courseInstructor: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.tertiary,
+    },
+
+    statusBadge: {
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs / 2,
+      borderRadius: theme.borderRadius.sm,
+      marginLeft: theme.spacing.sm,
+    },
+
+    statusText: {
+      ...theme.typography.caption.base,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    progressContainer: {
+      marginTop: theme.spacing.sm,
+    },
+
+    progressInfo: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing.xs,
+    },
+
+    progressLabel: {
+      ...theme.typography.body.sm,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+
+    nextSession: {
+      ...theme.typography.caption.base,
+      color: theme.colors.interactive.primary,
+    },
+
+    progressBar: {
+      height: 6,
+      backgroundColor: theme.colors.background.tertiary,
+      borderRadius: theme.borderRadius.sm,
+      overflow: 'hidden',
+    },
+
+    progressFill: {
+      height: '100%',
+      borderRadius: theme.borderRadius.sm,
+    },
+
+    // Activities
+    activityItem: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      padding: theme.spacing.md,
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.lg,
+      marginBottom: theme.spacing.sm,
+      gap: theme.spacing.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+    },
+
+    activityIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+
+    activityContent: {
+      flex: 1,
+    },
+
+    activityMessage: {
+      ...theme.typography.body.sm,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing.xs,
+      lineHeight: theme.fontSizes.sm * 1.3,
+    },
+
+    courseName: {
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.interactive.primary,
+    },
+
+    activityTime: {
+      ...theme.typography.caption.base,
+      color: theme.colors.text.tertiary,
+    },
+
+    priorityIndicator: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: theme.spacing.xs,
+    },
+  })
+);
+
 const StudentDashboard: React.FC<StudentDashboardProps> = ({
   metrics = [],
   chartData,
@@ -96,9 +384,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 }) => {
   const { theme } = useTheme();
   const { currentProgram } = useProgramContext();
-  const { width: screenWidth } = useWindowDimensions();
-  const useThemedStyles = useMemo(() => createResponsiveStyles(screenWidth), [screenWidth]);
-  const styles = useThemedStyles();
+  const styles = useDashboardStyles();
 
   // Memoize default data for student-specific metrics
   const defaultMetrics = useMemo((): DashboardMetric[] => [
@@ -512,295 +798,5 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
   );
 };
 
-const createResponsiveStyles = (screenWidth: number) => createThemedStyles((theme) => {
-  const containerPadding = theme.spacing.md;
-  const availableWidth = screenWidth - containerPadding * 2;
-  const cardGap = theme.spacing.sm;
-  const cardWidth = (availableWidth - cardGap) / 2;
-
-  return StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background.primary,
-    },
-
-    contentContainer: {
-      padding: containerPadding,
-      paddingBottom: theme.spacing['3xl'],
-    },
-
-    programHeader: {
-      marginBottom: theme.spacing.lg,
-      alignItems: 'center',
-    },
-
-    programName: {
-      ...theme.typography.heading.h2,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontConfig.fontWeight.bold,
-      textAlign: 'center',
-    },
-
-    programSubtitle: {
-      ...theme.typography.body.base,
-      color: theme.colors.text.secondary,
-      marginTop: theme.spacing.xs,
-    },
-
-    section: {
-      marginBottom: theme.spacing.lg,
-    },
-
-    sectionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: theme.spacing.md,
-    },
-
-    sectionTitle: {
-      ...theme.typography.heading.h4,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-    },
-
-    viewAllText: {
-      ...theme.typography.body.sm,
-      color: theme.colors.interactive.primary,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-
-    // Metrics Grid
-    metricsGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      gap: cardGap,
-    },
-
-    metricCard: {
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.xl,
-      padding: theme.spacing.md,
-      width: cardWidth,
-      minHeight: 100,
-      ...theme.elevation.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.border.primary,
-    },
-
-    metricHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: theme.spacing.sm,
-    },
-
-    metricTitle: {
-      ...theme.typography.caption.base,
-      color: theme.colors.text.secondary,
-      marginLeft: theme.spacing.sm,
-      flex: 1,
-    },
-
-    metricContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      flexWrap: 'wrap',
-    },
-
-    metricValue: {
-      ...theme.typography.heading.h3,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontConfig.fontWeight.bold,
-    },
-
-    changeIndicator: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: theme.spacing.xs,
-      paddingVertical: 2,
-      borderRadius: theme.borderRadius.sm,
-      gap: 2,
-      marginTop: theme.spacing.xs / 2,
-    },
-
-    changeText: {
-      ...theme.typography.caption.base,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-    },
-
-    // Quick Actions
-    quickActionsGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      gap: cardGap,
-    },
-
-    quickActionCard: {
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.xl,
-      padding: theme.spacing.md,
-      width: cardWidth,
-      minHeight: 100,
-      alignItems: 'center',
-      justifyContent: 'center',
-      ...theme.elevation.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.border.primary,
-    },
-
-    quickActionIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: theme.spacing.xs,
-    },
-
-    quickActionTitle: {
-      ...theme.typography.body.sm,
-      color: theme.colors.text.primary,
-      textAlign: 'center',
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-
-    // Course Cards
-    courseCard: {
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.md,
-      marginBottom: theme.spacing.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.border.primary,
-      ...theme.elevation.sm,
-    },
-
-    courseHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: theme.spacing.sm,
-    },
-
-    courseInfo: {
-      flex: 1,
-    },
-
-    courseTitle: {
-      ...theme.typography.heading.h5,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-      marginBottom: theme.spacing.xs / 2,
-    },
-
-    courseLevel: {
-      ...theme.typography.body.sm,
-      color: theme.colors.text.secondary,
-      marginBottom: theme.spacing.xs / 2,
-    },
-
-    courseInstructor: {
-      ...theme.typography.caption.base,
-      color: theme.colors.text.tertiary,
-    },
-
-    statusBadge: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs / 2,
-      borderRadius: theme.borderRadius.sm,
-      marginLeft: theme.spacing.sm,
-    },
-
-    statusText: {
-      ...theme.typography.caption.base,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-
-    progressContainer: {
-      marginTop: theme.spacing.sm,
-    },
-
-    progressInfo: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: theme.spacing.xs,
-    },
-
-    progressLabel: {
-      ...theme.typography.body.sm,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-    },
-
-    nextSession: {
-      ...theme.typography.caption.base,
-      color: theme.colors.interactive.primary,
-    },
-
-    progressBar: {
-      height: 6,
-      backgroundColor: theme.colors.background.tertiary,
-      borderRadius: theme.borderRadius.sm,
-      overflow: 'hidden',
-    },
-
-    progressFill: {
-      height: '100%',
-      borderRadius: theme.borderRadius.sm,
-    },
-
-    // Activities
-    activityItem: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      padding: theme.spacing.md,
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.lg,
-      marginBottom: theme.spacing.sm,
-      gap: theme.spacing.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.border.primary,
-    },
-
-    activityIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    activityContent: {
-      flex: 1,
-    },
-
-    activityMessage: {
-      ...theme.typography.body.sm,
-      color: theme.colors.text.primary,
-      marginBottom: theme.spacing.xs,
-      lineHeight: theme.fontSizes.sm * 1.3,
-    },
-
-    courseName: {
-      fontWeight: theme.fontConfig.fontWeight.semibold,
-      color: theme.colors.interactive.primary,
-    },
-
-    activityTime: {
-      ...theme.typography.caption.base,
-      color: theme.colors.text.tertiary,
-    },
-
-    priorityIndicator: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginLeft: theme.spacing.xs,
-    },
-  });
-});
 
 export default StudentDashboard;

@@ -172,6 +172,7 @@ The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT a
 ### Advanced Features:
 - **🏆 [Achievement System](./docs/features/achievements/README.md)** - Multi-program achievement system with dynamic generation
 - **📊 [Performance System](./docs/features/PERFORMANCE_SYSTEM.md)** - Comprehensive performance tracking with modern UI, charts, and multi-program support
+- **📚 [Course Curriculum System](./docs/features/COURSE_CURRICULUM_SYSTEM.md)** - Advanced curriculum with dynamic difficulty support and hierarchical progress tracking
 - **🎯 [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md)** - Program switching system
 - **🎨 [Multi-Program Achievements](./docs/features/achievements/MULTI_PROGRAM_SUPPORT.md)** - Program-specific achievement templates and theming
 - **🚀 [Achievements API](./docs/api/ACHIEVEMENTS_API.md)** - Program-aware achievement API integration
@@ -214,22 +215,32 @@ The Academy Apps feature a modern, interactive profile card system with advanced
 **📖 Full Documentation**: See **[Profile System Documentation](./docs/features/PROFILE_SYSTEM.md)** for comprehensive technical details, implementation examples, and UI patterns.
 
 ### Booking System Implementation
-The Academy Apps feature a comprehensive booking and session management system with enhanced UI components and term progress tracking.
+The Academy Apps feature a comprehensive booking and session management system with enhanced UI components, facility schedules, and day-based filtering.
 
 **Key Features:**
-- **Enhanced BookingCard Component**: Displays participant info with improved status badges and outline-style action buttons ⭐ **UPDATED**
-- **Custom Schedule Type Selector**: Toggle between "My Schedules" and "Facility Schedules" with clean tab design ⭐ **NEW**
+- **Unified BookingCard Component**: Single component with variants for both personal bookings and facility schedules ⭐ **UNIFIED**
+- **Dual Schedule System**: Switch between "My Schedules" and "Facility Schedules" with custom tab selector ⭐ **NEW**
+- **Day-Based Filtering**: Sunday through Saturday filtering with current day highlighting for facility schedules ⭐ **NEW**
+- **Availability Tracking**: Real-time capacity management with progress bars for facility schedules ⭐ **NEW**
 - **Term Progress System**: 8-session term tracking with visual progress indicators
 - **Participant Management**: Bottom sheet interface for add/remove family members
 - **Multi-Program Support**: Works across all academy programs
 - **Schedule Flexibility**: One-time and recurring sessions with multi-instructor support
 
+**Component Architecture:**
+- **BookingCard Variants**: `variant="booking"` (personal bookings) and `variant="facility-schedule"` (available schedules)
+- **Smart Conditional Rendering**: Automatically shows relevant sections based on variant type
+- **DRY Principle**: Single maintainable component instead of separate components
+
 **Recent Enhancements:**
+- **Component Consolidation**: Merged BookingCard and FacilityScheduleCard into unified component ⭐ **NEW**
+- **Facility Schedule Browsing**: Complete schedule discovery system with availability indicators ⭐ **NEW**
+- **Current Day Detection**: Automatic highlighting of today's day in filter tabs ⭐ **NEW**
 - **Status Badge Styling**: Rounded background badges with proper padding and capitalization
-- **Action Button Design**: Outline-style Add/Remove button with people icon for better visual hierarchy
+- **Action Button Design**: Context-aware actions (Join/View Details for facilities, Add/Remove for bookings)
 - **Custom Segmented Control**: Academy-themed tab selector inspired by Course Curriculum design patterns
 
-**Implementation**: Home → Bookings → Enhanced BookingCard with custom schedule selector
+**Implementation**: Home → Bookings → Unified BookingCard with dual schedule system and day-based filtering
 
 **📖 Full Documentation**: See **[Booking System Documentation](./docs/features/BOOKING_SYSTEM.md)** for comprehensive technical details, API reference, and implementation examples.
 
@@ -258,6 +269,28 @@ The Academy Apps feature a comprehensive course catalog and detail system with m
 **Implementation**: Menu → Our Courses → Course Detail → Enrollment Flow
 
 **📖 Full Documentation**: See **[Course System Documentation](./docs/features/COURSE_SYSTEM.md)** for comprehensive technical details, pricing systems, and curriculum features.
+
+### Course Curriculum System Implementation
+The Academy Apps feature an advanced course curriculum system with dynamic difficulty support, hierarchical lesson structure, and multi-level progress tracking.
+
+**Key Features:**
+- **Dynamic Difficulty System**: Flexible difficulty labeling that adapts to any curriculum data terminology ⭐ **NEW**
+- **Level-Based Organization**: Multi-level structure with comprehensive progress tracking
+- **Hierarchical Lesson Structure**: Lessons → Sections → Modules → Levels architecture
+- **Star-Based Progress**: 3-star instructor grading system with visual indicators
+- **Interactive UI**: Expandable modules, level filter navigation, and smooth animations
+- **Multi-Program Support**: Works across all academy programs with custom difficulty terminology
+
+**Dynamic Difficulty Features:**
+- **Intelligent Color Mapping**: Automatic categorization (Beginner/Basic → Green, Advanced/Expert → Red)
+- **Keyword-Based Fallbacks**: Smart pattern recognition for unknown difficulty terms
+- **Academy Theme Integration**: Consistent theming with status colors and purple fallback
+- **Case-Insensitive**: Handles any casing variation of difficulty strings
+- **Extensible Design**: Easy to add new difficulty categories and mappings
+
+**Implementation**: Progress → Course Curriculum → Level Selection → Module Expansion → Lesson Details
+
+**📖 Full Documentation**: See **[Course Curriculum System Documentation](./docs/features/COURSE_CURRICULUM_SYSTEM.md)** for comprehensive technical details, difficulty mapping system, and implementation examples.
 
 ### Development Commands
 ```bash

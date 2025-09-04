@@ -50,6 +50,28 @@ interface Booking {
   recurringDay?: string;
 }
 
+interface FacilitySchedule {
+  id: string;
+  scheduleTitle: string;
+  scheduleType: string;
+  instructor: string;
+  date: string;
+  time: string;
+  location: string;
+  price: number;
+  totalSessions: number;
+  color: string;
+  currentParticipants: number;
+  maxParticipants: number;
+  isRecurring?: boolean;
+  recurringDay?: string;
+  description?: string;
+  availableSpots: number;
+  ageRange?: string;
+  skillLevel?: string;
+  dayOfWeek: string; // Day of the week this schedule runs on
+}
+
 
 
 
@@ -192,6 +214,7 @@ const useScreenStyles = createThemedStyles((theme) =>
     },
     segmentedControlContainer: {
       paddingHorizontal: theme.spacing.md,
+      marginTop: theme.spacing.md,
       marginBottom: theme.spacing.md,
     },
     scheduleTypeTabs: {
@@ -218,6 +241,15 @@ const useScreenStyles = createThemedStyles((theme) =>
     activeScheduleTypeTabText: {
       color: 'white',
     },
+    currentDayFilter: {
+      backgroundColor: theme.colors.interactive.primary + '30', // Semi-transparent
+      borderColor: theme.colors.interactive.primary,
+      borderWidth: 2,
+    },
+    currentDayFilterText: {
+      color: theme.colors.interactive.primary,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+    },
   })
 );
 
@@ -238,8 +270,18 @@ export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
+  const [facilityFilter, setFacilityFilter] = useState<'all' | 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'>('all');
   const [notificationCount, setNotificationCount] = useState(3);
   const [scheduleType, setScheduleType] = useState<'my-schedules' | 'facility-schedules'>('my-schedules');
+
+  // Get current day of the week
+  const getCurrentDay = () => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date();
+    return days[today.getDay()];
+  };
+
+  const currentDay = getCurrentDay();
 
   // Segmented control options
   const scheduleOptions = [
@@ -605,6 +647,178 @@ export const BookingsScreen: React.FC = () => {
     },
   ]);
 
+  // Mock facility schedules data
+  const [facilitySchedules] = useState<FacilitySchedule[]>([
+    {
+      id: 'fs1',
+      scheduleTitle: 'Beginner Adult Swimming',
+      scheduleType: 'Adults • Group • Beginner',
+      instructor: 'Sarah Johnson',
+      date: 'Mondays',
+      time: '6:00 PM - 7:00 PM',
+      location: 'Pool A',
+      price: 120000,
+      totalSessions: 8,
+      color: theme.colors.interactive.primary,
+      currentParticipants: 4,
+      maxParticipants: 8,
+      availableSpots: 4,
+      isRecurring: true,
+      recurringDay: 'Monday',
+      dayOfWeek: 'monday',
+      description: 'Perfect for adults who are new to swimming or want to improve basic techniques.',
+      ageRange: '18+',
+      skillLevel: 'Beginner',
+    },
+    {
+      id: 'fs2',
+      scheduleTitle: 'Kids Water Safety',
+      scheduleType: 'Kids • Group • Safety',
+      instructor: 'Mike Wilson',
+      date: 'Tuesdays',
+      time: '4:00 PM - 4:45 PM',
+      location: 'Pool B',
+      price: 80000,
+      totalSessions: 6,
+      color: theme.colors.interactive.accent,
+      currentParticipants: 6,
+      maxParticipants: 8,
+      availableSpots: 2,
+      isRecurring: true,
+      recurringDay: 'Tuesday',
+      dayOfWeek: 'tuesday',
+      description: 'Essential water safety skills for children aged 5-12.',
+      ageRange: '5-12 years',
+      skillLevel: 'All Levels',
+    },
+    {
+      id: 'fs3',
+      scheduleTitle: 'Advanced Competitive Swimming',
+      scheduleType: 'Teens • Group • Advanced',
+      instructor: 'David Smith & Lisa Chen',
+      date: 'Wednesdays',
+      time: '5:30 PM - 7:00 PM',
+      location: 'Competition Pool',
+      price: 200000,
+      totalSessions: 12,
+      color: theme.colors.status.success,
+      currentParticipants: 12,
+      maxParticipants: 12,
+      availableSpots: 0,
+      isRecurring: true,
+      recurringDay: 'Wednesday & Friday',
+      dayOfWeek: 'wednesday',
+      description: 'High-performance training for competitive swimmers.',
+      ageRange: '13-18 years',
+      skillLevel: 'Advanced',
+    },
+    {
+      id: 'fs4',
+      scheduleTitle: 'Family Swimming Fun',
+      scheduleType: 'All Ages • Group • All Levels',
+      instructor: 'Sarah Johnson & Mike Wilson',
+      date: 'Saturdays',
+      time: '10:00 AM - 11:30 AM',
+      location: 'Family Pool',
+      price: 0,
+      totalSessions: 4,
+      color: theme.colors.status.info || theme.colors.interactive.accent,
+      currentParticipants: 8,
+      maxParticipants: 15,
+      availableSpots: 7,
+      isRecurring: true,
+      recurringDay: 'Saturday',
+      dayOfWeek: 'saturday',
+      description: 'Fun swimming activities for the whole family to enjoy together.',
+      ageRange: 'All Ages',
+      skillLevel: 'All Levels',
+    },
+    {
+      id: 'fs5',
+      scheduleTitle: 'Adult Lap Swimming',
+      scheduleType: 'Adults • Open • Intermediate',
+      instructor: 'Open Session',
+      date: 'Thursdays',
+      time: '6:00 AM - 8:00 AM',
+      location: 'Lap Pool',
+      price: 15000,
+      totalSessions: 1,
+      color: theme.colors.interactive.purple,
+      currentParticipants: 3,
+      maxParticipants: 20,
+      availableSpots: 17,
+      isRecurring: true,
+      recurringDay: 'Thursday',
+      dayOfWeek: 'thursday',
+      description: 'Open lap swimming for fitness and training.',
+      ageRange: '18+',
+      skillLevel: 'Intermediate+',
+    },
+    {
+      id: 'fs6',
+      scheduleTitle: 'Water Aerobics Plus',
+      scheduleType: 'Adults • Group • Beginner & Intermediate',
+      instructor: 'Maria Garcia',
+      date: 'Fridays',
+      time: '7:00 PM - 8:00 PM',
+      location: 'Therapy Pool',
+      price: 90000,
+      totalSessions: 8,
+      color: theme.colors.status.warning,
+      currentParticipants: 10,
+      maxParticipants: 12,
+      availableSpots: 2,
+      isRecurring: true,
+      recurringDay: 'Friday',
+      dayOfWeek: 'friday',
+      description: 'Low-impact water exercises perfect for all fitness levels.',
+      ageRange: '25+',
+      skillLevel: 'Beginner',
+    },
+    {
+      id: 'fs7',
+      scheduleTitle: 'Teen Swimming Technique',
+      scheduleType: 'Teens • Semi-Private • Intermediate',
+      instructor: 'Lisa Chen',
+      date: 'Sundays',
+      time: '3:30 PM - 4:30 PM',
+      location: 'Pool C',
+      price: 150000,
+      totalSessions: 10,
+      color: theme.colors.interactive.primary,
+      currentParticipants: 3,
+      maxParticipants: 4,
+      availableSpots: 1,
+      isRecurring: true,
+      recurringDay: 'Sunday',
+      dayOfWeek: 'sunday',
+      description: 'Focused technique improvement for teenage swimmers.',
+      ageRange: '13-17 years',
+      skillLevel: 'Intermediate',
+    },
+    {
+      id: 'fs8',
+      scheduleTitle: 'Open Water Prep',
+      scheduleType: 'Adults • Group • Advanced',
+      instructor: 'David Smith',
+      date: 'Saturdays',
+      time: '8:00 AM - 10:00 AM',
+      location: 'Outdoor Pool',
+      price: 180000,
+      totalSessions: 6,
+      color: theme.colors.status.success,
+      currentParticipants: 5,
+      maxParticipants: 8,
+      availableSpots: 3,
+      isRecurring: true,
+      recurringDay: 'Saturday',
+      dayOfWeek: 'saturday',
+      description: 'Prepare for open water swimming challenges and competitions.',
+      ageRange: '18+',
+      skillLevel: 'Advanced',
+    },
+  ]);
+
   const filters = [
     { key: 'all' as const, label: 'All', count: bookings.length },
     { key: 'upcoming' as const, label: 'Upcoming', count: bookings.filter(b => b.status === 'upcoming').length },
@@ -615,6 +829,23 @@ export const BookingsScreen: React.FC = () => {
   const filteredBookings = bookings.filter(booking => {
     if (selectedFilter === 'all') return true;
     return booking.status === selectedFilter;
+  });
+
+  // Facility schedules filters - Days of the week
+  const facilityFilters = [
+    { key: 'all' as const, label: 'All', count: facilitySchedules.length },
+    { key: 'sunday' as const, label: 'Sun', count: facilitySchedules.filter(s => s.dayOfWeek === 'sunday').length },
+    { key: 'monday' as const, label: 'Mon', count: facilitySchedules.filter(s => s.dayOfWeek === 'monday').length },
+    { key: 'tuesday' as const, label: 'Tue', count: facilitySchedules.filter(s => s.dayOfWeek === 'tuesday').length },
+    { key: 'wednesday' as const, label: 'Wed', count: facilitySchedules.filter(s => s.dayOfWeek === 'wednesday').length },
+    { key: 'thursday' as const, label: 'Thu', count: facilitySchedules.filter(s => s.dayOfWeek === 'thursday').length },
+    { key: 'friday' as const, label: 'Fri', count: facilitySchedules.filter(s => s.dayOfWeek === 'friday').length },
+    { key: 'saturday' as const, label: 'Sat', count: facilitySchedules.filter(s => s.dayOfWeek === 'saturday').length },
+  ];
+
+  const filteredFacilitySchedules = facilitySchedules.filter(schedule => {
+    if (facilityFilter === 'all') return true;
+    return schedule.dayOfWeek === facilityFilter;
   });
 
   // Calculate term progress statistics
@@ -686,6 +917,24 @@ export const BookingsScreen: React.FC = () => {
   const handleManageParticipants = (bookingId: string) => {
     console.log('Manage participants for booking:', bookingId);
     // TODO: This could trigger a refresh of booking data or update state
+  };
+
+  const handleJoinSchedule = (schedule: FacilitySchedule) => {
+    console.log('Join schedule:', schedule.id);
+    // TODO: Implement join schedule logic - navigate to enrollment flow
+  };
+
+  const handleViewScheduleDetails = (schedule: FacilitySchedule) => {
+    console.log('View schedule details:', schedule.id);
+    // TODO: Navigate to schedule detail screen
+  };
+
+  const handleNewBooking = () => {
+    console.log('Navigate to new booking');
+    // TODO: Navigate to booking creation or facility schedules tab
+    if (scheduleType === 'my-schedules') {
+      setScheduleType('facility-schedules');
+    }
   };
 
   return (
@@ -783,7 +1032,7 @@ export const BookingsScreen: React.FC = () => {
         </View>
       </Animated.View>
 
-      {/* Filter Tabs */}
+      {/* Filter Tabs - Different filters for each tab */}
       <Animated.View
         entering={FadeInDown.delay(300).springify()}
         style={styles.filtersContainer}
@@ -793,79 +1042,153 @@ export const BookingsScreen: React.FC = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: theme.spacing.md }}
         >
-          {filters.map(filter => (
-            <Pressable
-              key={filter.key}
-              onPress={() => setSelectedFilter(filter.key)}
-              style={[
-                styles.filterButton,
-                selectedFilter === filter.key
-                  ? styles.activeFilter
-                  : styles.inactiveFilter
-              ]}
-            >
-              <Text
-                style={[
-                  selectedFilter === filter.key
-                    ? styles.activeFilterText
-                    : styles.inactiveFilterText
-                ]}
-              >
-                {filter.label} ({filter.count})
-              </Text>
-            </Pressable>
-          ))}
+          {scheduleType === 'my-schedules' 
+            ? filters.map(filter => (
+                <Pressable
+                  key={filter.key}
+                  onPress={() => setSelectedFilter(filter.key)}
+                  style={[
+                    styles.filterButton,
+                    selectedFilter === filter.key
+                      ? styles.activeFilter
+                      : styles.inactiveFilter
+                  ]}
+                >
+                  <Text
+                    style={[
+                      selectedFilter === filter.key
+                        ? styles.activeFilterText
+                        : styles.inactiveFilterText
+                    ]}
+                  >
+                    {filter.label} ({filter.count})
+                  </Text>
+                </Pressable>
+              ))
+            : facilityFilters.map(filter => {
+                const isCurrentDay = filter.key === currentDay;
+                const isSelected = facilityFilter === filter.key;
+                return (
+                  <Pressable
+                    key={filter.key}
+                    onPress={() => setFacilityFilter(filter.key)}
+                    style={[
+                      styles.filterButton,
+                      isSelected
+                        ? styles.activeFilter
+                        : isCurrentDay
+                        ? styles.currentDayFilter
+                        : styles.inactiveFilter
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        isSelected
+                          ? styles.activeFilterText
+                          : isCurrentDay
+                          ? styles.currentDayFilterText
+                          : styles.inactiveFilterText
+                      ]}
+                    >
+                      {filter.label} ({filter.count})
+                      {isCurrentDay && !isSelected && (
+                        <Text style={{ fontSize: theme.fontSizes.xs }}> •</Text>
+                      )}
+                    </Text>
+                  </Pressable>
+                );
+              })
+          }
         </ScrollView>
       </Animated.View>
 
-      {/* Bookings List */}
-      <FlatList
-        data={filteredBookings}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => {
-          return (
-            <BookingCard
-              booking={{
-                ...item,
-                participants: item.participants || []
-              }}
-              index={index}
-              onPress={handleBookingPress}
-              onManageParticipants={handleManageParticipants}
-            />
-          );
-        }}
-        contentContainerStyle={{
-          paddingBottom: theme.spacing['3xl'], // Space for tab bar
-        }}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={() => (
-          <Animated.View
-            entering={FadeInDown.delay(400).springify()}
-            style={styles.emptyContainer}
-          >
-            <Ionicons name="calendar-outline" size={64} color={theme.colors.text.tertiary} />
-            <Text style={styles.emptyTitle}>
-              No bookings found
-            </Text>
-            <Text style={styles.emptySubtitle}>
-              {selectedFilter === 'all' 
-                ? "You haven't made any bookings yet"
-                : `No ${selectedFilter} bookings to show`
-              }
-            </Text>
-            <CustomButton
-              title="Book Your First Session"
-              onPress={handleNewBooking}
-              variant="primary"
-              size="md"
-            />
-          </Animated.View>
-        )}
-      />
+      {/* Content - Conditional based on schedule type */}
+      {scheduleType === 'my-schedules' ? (
+        <FlatList
+          data={filteredBookings}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => {
+            return (
+              <BookingCard
+                booking={{
+                  ...item,
+                  participants: item.participants || []
+                }}
+                index={index}
+                onPress={handleBookingPress}
+                onManageParticipants={handleManageParticipants}
+              />
+            );
+          }}
+          contentContainerStyle={{
+            paddingBottom: theme.spacing['3xl'], // Space for tab bar
+          }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={() => (
+            <Animated.View
+              entering={FadeInDown.delay(400).springify()}
+              style={styles.emptyContainer}
+            >
+              <Ionicons name="calendar-outline" size={64} color={theme.colors.text.tertiary} />
+              <Text style={styles.emptyTitle}>
+                No bookings found
+              </Text>
+              <Text style={styles.emptySubtitle}>
+                {selectedFilter === 'all' 
+                  ? "You haven't made any bookings yet"
+                  : `No ${selectedFilter} bookings to show`
+                }
+              </Text>
+              <CustomButton
+                title="Browse Available Schedules"
+                onPress={handleNewBooking}
+                variant="primary"
+                size="md"
+              />
+            </Animated.View>
+          )}
+        />
+      ) : (
+        <FlatList
+          data={filteredFacilitySchedules}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => {
+            return (
+              <BookingCard
+                booking={item}
+                index={index}
+                variant="facility-schedule"
+                onJoinSchedule={handleJoinSchedule}
+                onViewDetails={handleViewScheduleDetails}
+              />
+            );
+          }}
+          contentContainerStyle={{
+            paddingBottom: theme.spacing['3xl'], // Space for tab bar
+          }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={() => (
+            <Animated.View
+              entering={FadeInDown.delay(400).springify()}
+              style={styles.emptyContainer}
+            >
+              <Ionicons name="water-outline" size={64} color={theme.colors.text.tertiary} />
+              <Text style={styles.emptyTitle}>
+                No schedules available
+              </Text>
+              <Text style={styles.emptySubtitle}>
+                Check back later for new schedules or contact us for custom arrangements.
+              </Text>
+            </Animated.View>
+          )}
+        />
+      )}
     </View>
   );
 };

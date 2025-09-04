@@ -7,7 +7,10 @@ The Academy Apps feature a comprehensive booking and session management system t
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Dual Schedule System](#dual-schedule-system)
 - [Booking Card System](#booking-card-system)
+- [Facility Schedule System](#facility-schedule-system)
+- [Day-Based Filtering](#day-based-filtering)
 - [Term Progress System](#term-progress-system)
 - [Participant Management](#participant-management)
 - [Schedule Types](#schedule-types)
@@ -20,11 +23,37 @@ The Academy Apps feature a comprehensive booking and session management system t
 The booking system provides students and parents with comprehensive session management capabilities:
 
 - **Session Booking & Management**: Book, reschedule, and cancel sessions
+- **Facility Schedule Browsing**: Discover and join available facility schedules ⭐ **NEW**
+- **Day-Based Filtering**: Browse schedules by day of the week with current day highlighting ⭐ **NEW**
 - **Term Progress Tracking**: Visual progress indicators for 8-session terms
 - **Participant Management**: Add/remove family members from sessions
 - **Multi-Program Support**: Works across all academy programs (swimming, music, etc.)
 - **Schedule Flexibility**: Supports one-time and recurring sessions
 - **Payment Integration**: Price display and payment status tracking
+
+## 🔄 Dual Schedule System ⭐ **NEW**
+
+The Academy Apps feature a comprehensive dual schedule system that allows users to switch between personal bookings and facility-wide schedule browsing.
+
+### **My Schedules Tab**
+- **Personal Bookings**: Display user's booked sessions and family member enrollments
+- **Status-Based Filtering**: All, Upcoming, Completed, Cancelled filter options
+- **Enhanced BookingCard**: Participant management with add/remove functionality
+- **Term Progress Tracking**: Visual progress indicators for ongoing terms
+- **Action Capabilities**: Reschedule, cancel, and review completed sessions
+
+### **Facility Schedules Tab** 
+- **Available Schedule Browsing**: Discover open sessions across all programs
+- **Day-Based Filtering**: Sunday through Saturday with current day highlighting
+- **Availability Indicators**: Real-time capacity and spots available
+- **Join Functionality**: One-tap enrollment for available schedules
+- **Detailed Information**: Instructor, price, session count, and descriptions
+
+### **Custom Tab Selector**
+- **Academy Design**: Purple active state with clean visual hierarchy
+- **Smooth Transitions**: Instant switching between schedule types
+- **Mobile-Optimized**: Touch-friendly design with proper spacing
+- **Consistent Theming**: Matches Course Curriculum section tab patterns
 
 ## 🏷️ Booking Card System
 
@@ -51,6 +80,73 @@ The Academy Apps use a unified **BookingCard** component that displays participa
   - **Rescheduled**: Orange (`theme.colors.status.warning`)
 - **Mobile-Optimized Layout**: Card-based design with proper spacing
 - **Interactive Elements**: Touch feedback and smooth animations
+
+## 🏢 Facility Schedule System ⭐ **NEW**
+
+The Academy Apps feature a comprehensive facility schedule browsing system that allows users to discover and join available sessions.
+
+### **FacilityScheduleCard Component**
+- **Availability Progress Bar**: Visual representation of current capacity
+- **Real-Time Spot Tracking**: Shows current participants vs. maximum capacity  
+- **Color-Coded Status**: Green (available), orange (limited), red (full)
+- **Full Badge Indicator**: Clear "FULL" badge for unavailable sessions
+- **Price Display**: Session pricing with total session count
+- **Join/View Actions**: Quick access to enrollment and detailed information
+
+### **Schedule Information Display**
+- **Program Details**: Age group, session type, and skill level
+- **Instructor Information**: Single or multiple instructor display
+- **Schedule Pattern**: Day-based recurring schedule information
+- **Location Details**: Specific pool or facility area
+- **Capacity Management**: Current enrollment and available spots
+
+### **Visual Design Features**
+- **Academy Purple Theming**: Consistent color scheme with brand colors
+- **Progress Visualization**: Animated progress bars for availability
+- **Card-Based Layout**: Mobile-optimized card design with proper spacing
+- **Status Indicators**: Clear visual feedback for schedule availability
+- **Touch Interactions**: Smooth animations and haptic feedback
+
+### **User Actions**
+- **Join Schedule**: One-tap enrollment for available sessions
+- **View Details**: Comprehensive schedule information modal
+- **Availability Check**: Real-time capacity verification
+- **Price Information**: Transparent pricing display
+
+## 📅 Day-Based Filtering ⭐ **NEW**
+
+The Academy Apps implement intelligent day-based filtering for facility schedules with current day highlighting.
+
+### **Filter Design**
+- **Weekly Layout**: Sunday through Saturday abbreviated labels (Sun, Mon, Tue, etc.)
+- **Schedule Counts**: Each day shows number of available schedules
+- **Current Day Highlighting**: Automatic detection and visual emphasis
+- **Mobile-Optimized**: Horizontal scrollable filter tabs
+
+### **Visual States**
+- **Selected Day**: Purple background with white text (`theme.colors.interactive.primary`)
+- **Current Day** (unselected): Semi-transparent purple background with purple border
+- **Regular Days**: Light background with secondary text
+- **Current Day Indicator**: Small dot (•) indicator when not selected
+
+### **Smart Behavior**
+- **Automatic Detection**: Uses JavaScript `Date.getDay()` for current day
+- **Dynamic Filtering**: Shows only schedules for selected day
+- **Count Accuracy**: Real-time schedule count for each day
+- **All Option**: View all schedules regardless of day
+
+### **Implementation Details**
+```typescript
+// Current day detection
+const getCurrentDay = () => {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return days[new Date().getDay()];
+};
+
+// Filter styling with current day emphasis
+const isCurrentDay = filter.key === currentDay;
+const filterStyle = isCurrentDay ? styles.currentDayFilter : styles.inactiveFilter;
+```
 
 ## 📊 Term Progress System ⭐ **NEW**
 
@@ -169,21 +265,30 @@ const scheduleTypeTab = {
 ```
 BookingsScreen
 ├── Header (Program Switcher + Notifications)
-├── Add Booking Button Row
 ├── Stats Cards (Next Session + Term Progress)
 ├── Custom Schedule Type Selector ⭐ NEW
 │   ├── My Schedules Tab
 │   └── Facility Schedules Tab
-├── Filter Tabs (All/Upcoming/Completed/Cancelled)
-└── BookingCard List
-    ├── BookingCard Component (Enhanced Status Badges)
-    └── ParticipantManagementBottomSheet
+├── Dynamic Filter Tabs ⭐ ENHANCED
+│   ├── My Schedules: All/Upcoming/Completed/Cancelled
+│   └── Facility Schedules: All/Sun/Mon/Tue/Wed/Thu/Fri/Sat ⭐ NEW
+└── Conditional Content Display ⭐ NEW
+    ├── My Schedules: BookingCard List (variant="booking")
+    │   ├── Unified BookingCard Component ⭐ UNIFIED
+    │   ├── Participant Management Features
+    │   ├── Status Badges & Actions
+    │   └── ParticipantManagementBottomSheet
+    └── Facility Schedules: BookingCard List (variant="facility-schedule") ⭐ UNIFIED
+        ├── Unified BookingCard Component ⭐ UNIFIED
+        ├── Availability Progress Bars
+        ├── Join Schedule Actions
+        └── Price & Capacity Display
 ```
 
 ### **Key Components**
 
-- **`BookingsScreen`**: Main screen with stats and booking list
-- **`BookingCard`**: Individual booking display component
+- **`BookingsScreen`**: Main screen with dual schedule system and stats
+- **`BookingCard`**: ⭐ **UNIFIED** - Single component with variants for both booking types (`booking` | `facility-schedule`)
 - **`ParticipantManagementBottomSheet`**: Participant management interface
 - **`TermProgressCalculator`**: Smart progress calculation logic
 
@@ -192,19 +297,39 @@ BookingsScreen
 ```typescript
 interface BookingState {
   bookings: Booking[];
+  facilitySchedules: FacilitySchedule[]; // ⭐ NEW
   selectedFilter: FilterType;
+  facilityFilter: DayFilterType; // ⭐ NEW
   scheduleType: 'my-schedules' | 'facility-schedules';
   termStats: TermStats;
+  currentDay: string; // ⭐ NEW
+}
+
+interface FacilitySchedule {
+  id: string;
+  scheduleTitle: string;
+  scheduleType: string;
+  instructor: string;
+  dayOfWeek: string; // ⭐ NEW
+  time: string;
+  location: string;
+  price: number;
+  currentParticipants: number;
+  maxParticipants: number;
+  availableSpots: number;
+  // ... other properties
 }
 ```
 
 ### **Data Flow**
 
-1. **Fetch Bookings**: Load user's booking data
-2. **Calculate Progress**: Compute term statistics
-3. **Filter & Display**: Show filtered booking cards
-4. **Manage Participants**: Handle add/remove operations
-5. **Update Progress**: Recalculate on booking changes
+1. **Fetch Bookings**: Load user's booking data and facility schedules ⭐ **ENHANCED**
+2. **Detect Current Day**: Automatically determine today's day of the week ⭐ **NEW**
+3. **Calculate Progress**: Compute term statistics
+4. **Filter & Display**: Show filtered content based on selected tab and filters ⭐ **ENHANCED**
+5. **Manage Participants**: Handle add/remove operations (My Schedules)
+6. **Join Schedules**: Handle facility schedule enrollment (Facility Schedules) ⭐ **NEW**
+7. **Update Progress**: Recalculate on booking changes
 
 ## 💻 Usage Examples
 
@@ -227,6 +352,116 @@ interface BookingState {
   onPress={handleBookingPress}
   onManageParticipants={handleManageParticipants}
 />
+```
+
+### **Unified BookingCard - Facility Schedule Variant** ⭐ **NEW**
+
+```typescript
+// Facility schedule variant - shows availability and join actions
+<BookingCard
+  booking={{
+    id: 'fs1',
+    scheduleTitle: 'Beginner Adult Swimming',
+    scheduleType: 'Adults • Group • Beginner',
+    instructor: 'Sarah Johnson',
+    dayOfWeek: 'monday',
+    time: '6:00 PM - 7:00 PM',
+    location: 'Pool A',
+    price: 120000,
+    totalSessions: 8,
+    currentParticipants: 4,
+    maxParticipants: 8,
+    availableSpots: 4,
+    color: theme.colors.interactive.primary
+  }}
+  variant="facility-schedule"
+  onJoinSchedule={handleJoinSchedule}
+  onViewDetails={handleViewDetails}
+/>
+
+// Personal booking variant - shows participants and status
+<BookingCard
+  booking={{
+    id: '1',
+    scheduleTitle: 'Learn to Swim',
+    scheduleType: 'Kids • Private • Beginner',
+    instructor: 'Sarah Johnson',
+    status: 'upcoming',
+    participants: familyMembers,
+    maxParticipants: 6,
+    sessionNumber: 3,
+    totalSessions: 8
+  }}
+  variant="booking" // default variant
+  onPress={handleBookingPress}
+  onManageParticipants={handleManageParticipants}
+/>
+```
+
+### **Day-Based Filtering** ⭐ **NEW**
+
+```typescript
+// Current day detection
+const getCurrentDay = () => {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return days[new Date().getDay()];
+};
+
+// Filter configuration
+const facilityFilters = [
+  { key: 'all', label: 'All', count: facilitySchedules.length },
+  { key: 'sunday', label: 'Sun', count: schedules.filter(s => s.dayOfWeek === 'sunday').length },
+  { key: 'monday', label: 'Mon', count: schedules.filter(s => s.dayOfWeek === 'monday').length },
+  // ... other days
+];
+
+// Filter rendering with current day highlighting
+{facilityFilters.map(filter => {
+  const isCurrentDay = filter.key === currentDay;
+  const isSelected = facilityFilter === filter.key;
+  return (
+    <FilterButton
+      isSelected={isSelected}
+      isCurrentDay={isCurrentDay}
+      label={filter.label}
+      count={filter.count}
+    />
+  );
+})}
+```
+
+### **Dual Schedule System** ⭐ **NEW**
+
+```typescript
+// Schedule type state management
+const [scheduleType, setScheduleType] = useState<'my-schedules' | 'facility-schedules'>('my-schedules');
+
+// Conditional content rendering with unified BookingCard
+{scheduleType === 'my-schedules' ? (
+  <FlatList
+    data={filteredBookings}
+    renderItem={({ item }) => (
+      <BookingCard 
+        booking={item} 
+        variant="booking"
+        onPress={handleBookingPress}
+        onManageParticipants={handleManageParticipants}
+      />
+    )}
+  />
+) : (
+  <FlatList
+    data={filteredFacilitySchedules}
+    renderItem={({ item }) => (
+      <BookingCard 
+        booking={item} 
+        variant="facility-schedule"
+        onJoinSchedule={handleJoinSchedule}
+        onViewDetails={handleViewDetails}
+      />
+    )}
+  />
+)}
 ```
 
 ### **Term Progress Display**

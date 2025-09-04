@@ -33,22 +33,31 @@ interface Booking {
   date: string;
   time: string;
   location: string;
-  status: 'upcoming' | 'completed' | 'cancelled' | 'rescheduled';
+  status?: 'upcoming' | 'completed' | 'cancelled' | 'rescheduled';
   price: number;
-  sessionNumber: number;
+  sessionNumber?: number;
   totalSessions: number;
   color: string;
-  participants: Participant[];
+  participants?: Participant[];
   maxParticipants?: number;
+  currentParticipants?: number;
+  availableSpots?: number;
   isRecurring?: boolean;
   recurringDay?: string;
+  dayOfWeek?: string;
+  description?: string;
+  ageRange?: string;
+  skillLevel?: string;
 }
 
 interface BookingCardProps {
   booking: Booking;
   index: number;
-  onPress: (booking: Booking) => void;
-  onManageParticipants: (bookingId: string) => void;
+  variant?: 'booking' | 'facility-schedule';
+  onPress?: (booking: Booking) => void;
+  onManageParticipants?: (bookingId: string) => void;
+  onJoinSchedule?: (booking: Booking) => void;
+  onViewDetails?: (booking: Booking) => void;
 }
 
 const useCardStyles = createThemedStyles((theme) =>
@@ -81,6 +90,20 @@ const useCardStyles = createThemedStyles((theme) =>
     level: {
       color: theme.colors.text.secondary,
       fontSize: theme.fontSizes.sm,
+    },
+    levelRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+    },
+    levelItem: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+    },
+    levelSeparator: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.sm,
+      marginHorizontal: theme.spacing.sm,
     },
     instructor: {
       color: theme.colors.text.tertiary,
@@ -234,14 +257,103 @@ const useCardStyles = createThemedStyles((theme) =>
       fontSize: theme.fontSizes.sm,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
+
+    // Facility Schedule Specific Styles
+    availabilityContainer: {
+      marginBottom: theme.spacing.sm,
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.md,
+      padding: theme.spacing.sm,
+    },
+    availabilityRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.xs,
+    },
+    availabilityLabel: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    spotsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.xs,
+    },
+    spotsText: {
+      color: theme.colors.text.secondary,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    spotsIcon: {
+      padding: theme.spacing.xs / 2,
+    },
+    progressBar: {
+      height: 6,
+      backgroundColor: theme.colors.background.tertiary,
+      borderRadius: theme.borderRadius.full,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: theme.borderRadius.full,
+    },
+    priceText: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    detailsButton: {
+      paddingVertical: theme.spacing.xs,
+      paddingHorizontal: theme.spacing.sm,
+    },
+    detailsButtonText: {
+      color: theme.colors.interactive.primary,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    joinButton: {
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      borderRadius: theme.borderRadius.md,
+      backgroundColor: theme.colors.interactive.primary,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.xs,
+    },
+    joinButtonDisabled: {
+      backgroundColor: theme.colors.text.tertiary,
+    },
+    joinButtonText: {
+      color: 'white',
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    fullBadge: {
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs / 2,
+      backgroundColor: theme.colors.status.error + '20',
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+      borderColor: theme.colors.status.error,
+    },
+    fullBadgeText: {
+      color: theme.colors.status.error,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
   })
 );
 
 export const BookingCard: React.FC<BookingCardProps> = ({
   booking,
   index,
+  variant = 'booking',
   onPress,
   onManageParticipants,
+  onJoinSchedule,
+  onViewDetails,
 }) => {
   const { theme } = useTheme();
   const styles = useCardStyles();
@@ -328,17 +440,34 @@ export const BookingCard: React.FC<BookingCardProps> = ({
 
   const maxParticipants = booking.maxParticipants || 6;
 
+  // Facility schedule specific variables
+  const isFullyBooked = variant === 'facility-schedule' && booking.availableSpots === 0;
+  const progressPercentage = variant === 'facility-schedule' 
+    ? ((booking.currentParticipants || 0) / maxParticipants) * 100 
+    : 0;
+
+  const getProgressColor = () => {
+    if (progressPercentage >= 90) return theme.colors.status.error;
+    if (progressPercentage >= 70) return theme.colors.status.warning;
+    return theme.colors.status.success;
+  };
+
+  const formatPrice = (price: number) => {
+    if (price === 0) return 'Free';
+    return `₦${price.toLocaleString()}`;
+  };
+
   // Handler functions for participant management
   const handleAddParticipant = (participantId: string) => {
     console.log('Add participant:', participantId, 'to booking:', booking.id);
     // TODO: Implement add participant logic
-    onManageParticipants(booking.id);
+    onManageParticipants?.(booking.id);
   };
 
   const handleRemoveParticipant = (participantId: string, reason: string) => {
     console.log('Remove participant:', participantId, 'from booking:', booking.id, 'reason:', reason);
     // TODO: Implement remove participant logic
-    onManageParticipants(booking.id);
+    onManageParticipants?.(booking.id);
   };
 
   return (
@@ -348,7 +477,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       style={animatedStyle}
     >
       <Pressable
-        onPress={() => onPress(booking)}
+        onPress={() => onPress?.(booking)}
         onPressIn={() => {
           scale.value = withSpring(0.98);
         }}
@@ -363,7 +492,16 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             <Text style={styles.title}>
               {booking.scheduleTitle}
             </Text>
-            <Text style={styles.level}>{booking.scheduleType}</Text>
+            <View style={styles.levelRow}>
+              {booking.scheduleType.split('•').map((item, index, array) => (
+                <React.Fragment key={index}>
+                  <Text style={styles.levelItem}>{item.trim()}</Text>
+                  {index < array.length - 1 && (
+                    <Text style={styles.levelSeparator}>•</Text>
+                  )}
+                </React.Fragment>
+              ))}
+            </View>
             <Text style={styles.instructor}>
               with {booking.instructor}
             </Text>
@@ -379,53 +517,89 @@ export const BookingCard: React.FC<BookingCardProps> = ({
           </View>
         </View>
 
-        {/* Participants Section */}
-        <View style={styles.participantsContainer}>
-          <View style={styles.participantsHeader}>
-            <Text style={styles.participantsLabel}>Participants</Text>
-            <Text style={styles.participantsCount}>
-              {booking.participants.length}/{maxParticipants}
-            </Text>
-          </View>
-          
-          <View style={styles.participantsRow}>
-            <View style={styles.participantsList}>
-              {booking.participants.slice(0, 5).map((participant, index) => 
-                renderParticipantAvatar(participant, index)
-              )}
-              {booking.participants.length > 5 && (
-                <View style={[styles.participantAvatar, styles.overflowIndicator, styles.participantAvatarOverlap]}>
-                  <Text style={styles.overflowText}>
-                    +{booking.participants.length - 5}
+        {/* Conditional Section - Participants or Availability */}
+        {variant === 'booking' ? (
+          <View style={styles.participantsContainer}>
+            <View style={styles.participantsHeader}>
+              <Text style={styles.participantsLabel}>Participants</Text>
+              <Text style={styles.participantsCount}>
+                {(booking.participants || []).length}/{maxParticipants}
+              </Text>
+            </View>
+            
+            <View style={styles.participantsRow}>
+              <View style={styles.participantsList}>
+                {(booking.participants || []).slice(0, 5).map((participant, index) => 
+                  renderParticipantAvatar(participant, index)
+                )}
+                {(booking.participants || []).length > 5 && (
+                  <View style={[styles.participantAvatar, styles.overflowIndicator, styles.participantAvatarOverlap]}>
+                    <Text style={styles.overflowText}>
+                      +{(booking.participants || []).length - 5}
+                    </Text>
+                  </View>
+                )}
+                {(booking.participants || []).length === 0 && (
+                  <Text style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.fontSizes.sm,
+                    fontStyle: 'italic'
+                  }}>
+                    No participants yet
                   </Text>
-                </View>
-              )}
-              {booking.participants.length === 0 && (
-                <Text style={{
-                  color: theme.colors.text.tertiary,
-                  fontSize: theme.fontSizes.sm,
-                  fontStyle: 'italic'
-                }}>
-                  No participants yet
-                </Text>
-              )}
-            </View>
+                )}
+              </View>
 
-            <View style={styles.participantActions}>
-              <Pressable
-                style={[styles.actionButton, styles.addButton]}
-                onPress={() => setShowParticipantSheet(true)}
-              >
-                <Ionicons 
-                  name="people-outline" 
-                  size={14} 
-                  color={theme.colors.interactive.primary} 
-                />
-                <Text style={styles.addButtonText}>Add/Remove</Text>
-              </Pressable>
+              <View style={styles.participantActions}>
+                <Pressable
+                  style={[styles.actionButton, styles.addButton]}
+                  onPress={() => setShowParticipantSheet(true)}
+                >
+                  <Ionicons 
+                    name="people-outline" 
+                    size={14} 
+                    color={theme.colors.interactive.primary} 
+                  />
+                  <Text style={styles.addButtonText}>Add/Remove</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
-        </View>
+        ) : (
+          <View style={styles.availabilityContainer}>
+            <View style={styles.availabilityRow}>
+              <Text style={styles.availabilityLabel}>Availability</Text>
+              <View style={styles.spotsContainer}>
+                <Ionicons 
+                  name="people" 
+                  size={16} 
+                  color={theme.colors.text.secondary}
+                  style={styles.spotsIcon}
+                />
+                <Text style={styles.spotsText}>
+                  {booking.currentParticipants || 0}/{maxParticipants}
+                </Text>
+                {isFullyBooked && (
+                  <View style={styles.fullBadge}>
+                    <Text style={styles.fullBadgeText}>FULL</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+            
+            <View style={styles.progressBar}>
+              <View 
+                style={[
+                  styles.progressFill,
+                  { 
+                    width: `${progressPercentage}%`,
+                    backgroundColor: getProgressColor()
+                  }
+                ]} 
+              />
+            </View>
+          </View>
+        )}
 
         {/* Date and Time */}
         <View style={styles.detailRow}>
@@ -443,65 +617,108 @@ export const BookingCard: React.FC<BookingCardProps> = ({
           </View>
         </View>
 
-        {/* Location */}
+        {/* Location and Price */}
         <View style={styles.detailRow}>
           <View style={styles.detailItem}>
             <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
             <Text style={styles.detailText}>{booking.location}</Text>
           </View>
+          {variant === 'facility-schedule' && (
+            <Text style={styles.priceText}>
+              {formatPrice(booking.price)}
+              {booking.totalSessions > 1 && (
+                <Text style={[styles.detailText, { marginLeft: theme.spacing.xs / 2 }]}>
+                  /{booking.totalSessions} sessions
+                </Text>
+              )}
+            </Text>
+          )}
         </View>
 
         {/* Status and Actions */}
         <View style={styles.statusRow}>
-          <View style={[
-            styles.statusItem,
-            { backgroundColor: getStatusColor(booking.status) + '20' }
-          ]}>
-            <Ionicons 
-              name={getStatusIcon(booking.status) as any} 
-              size={16} 
-              color={getStatusColor(booking.status)} 
-            />
-            <Text
-              style={[
-                styles.statusText,
-                { color: getStatusColor(booking.status) }
-              ]}
-            >
-              {getStatusText(booking.status)}
-            </Text>
-          </View>
-          
-          <View style={styles.actionsRow}>
-            {booking.status === 'upcoming' && (
-              <>
-                <Pressable style={styles.actionTextButton}>
-                  <Text style={styles.rescheduleText}>Reschedule</Text>
-                </Pressable>
-                <Pressable>
-                  <Text style={styles.cancelText}>Cancel</Text>
-                </Pressable>
-              </>
-            )}
-            {booking.status === 'completed' && (
-              <Pressable>
-                <Text style={styles.reviewText}>Review</Text>
+          {variant === 'booking' ? (
+            <>
+              <View style={[
+                styles.statusItem,
+                { backgroundColor: getStatusColor(booking.status) + '20' }
+              ]}>
+                <Ionicons 
+                  name={getStatusIcon(booking.status) as any} 
+                  size={16} 
+                  color={getStatusColor(booking.status)} 
+                />
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: getStatusColor(booking.status) }
+                  ]}
+                >
+                  {getStatusText(booking.status)}
+                </Text>
+              </View>
+              
+              <View style={styles.actionsRow}>
+                {booking.status === 'upcoming' && (
+                  <>
+                    <Pressable style={styles.actionTextButton}>
+                      <Text style={styles.rescheduleText}>Reschedule</Text>
+                    </Pressable>
+                    <Pressable>
+                      <Text style={styles.cancelText}>Cancel</Text>
+                    </Pressable>
+                  </>
+                )}
+                {booking.status === 'completed' && (
+                  <Pressable>
+                    <Text style={styles.reviewText}>Review</Text>
+                  </Pressable>
+                )}
+              </View>
+            </>
+          ) : (
+            <>
+              <Pressable 
+                style={styles.detailsButton}
+                onPress={() => onViewDetails?.(booking)}
+              >
+                <Text style={styles.detailsButtonText}>View Details</Text>
               </Pressable>
-            )}
-          </View>
+              
+              <Pressable
+                style={[
+                  styles.joinButton,
+                  isFullyBooked && styles.joinButtonDisabled
+                ]}
+                onPress={() => !isFullyBooked && onJoinSchedule?.(booking)}
+                disabled={isFullyBooked}
+              >
+                <Ionicons 
+                  name={isFullyBooked ? "close-circle" : "add-circle"} 
+                  size={16} 
+                  color="white" 
+                />
+                <Text style={styles.joinButtonText}>
+                  {isFullyBooked ? 'Full' : 'Join Schedule'}
+                </Text>
+              </Pressable>
+            </>
+          )}
         </View>
       </Pressable>
 
-      {/* Participant Management Bottom Sheet */}
-      <ParticipantManagementBottomSheet
-        visible={showParticipantSheet}
-        onClose={() => setShowParticipantSheet(false)}
-        bookingTitle={booking.scheduleTitle}
-        currentParticipants={booking.participants}
-        maxParticipants={maxParticipants}
-        onAddParticipant={handleAddParticipant}
-        onRemoveParticipant={handleRemoveParticipant}
-      />
+      {/* Participant Management Bottom Sheet - Only for booking variant */}
+      {variant === 'booking' && (
+        <ParticipantManagementBottomSheet
+          visible={showParticipantSheet}
+          onClose={() => setShowParticipantSheet(false)}
+          bookingTitle={booking.scheduleTitle}
+          currentParticipants={booking.participants || []}
+          maxParticipants={maxParticipants}
+          onAddParticipant={handleAddParticipant}
+          onRemoveParticipant={handleRemoveParticipant}
+        />
+      )}
     </Animated.View>
   );
 };

@@ -88,6 +88,7 @@ interface CourseLevel {
   title: string;
   shortTitle: string; // For filter tabs (e.g., "Level 1", "Level 2")
   description: string;
+  difficulty: string; // Level difficulty - dynamic based on curriculum data
   totalModules: number;
   completedModules: number;
   progress: number; // 0-100
@@ -213,6 +214,17 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     fontWeight: theme.fontConfig.fontWeight.normal,
     color: theme.colors.text.tertiary,
   },
+  // Level Difficulty Badge
+  difficultyBadge: {
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs / 2,
+    borderRadius: theme.borderRadius.full,
+    marginLeft: theme.spacing.sm,
+  },
+  difficultyBadgeText: {
+    fontSize: theme.fontSizes.xs,
+    fontWeight: theme.fontConfig.fontWeight.medium,
+  },
   activeLevelFilterText: {
     color: 'white',
   },
@@ -263,34 +275,6 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     color: theme.colors.text.tertiary,
     fontSize: theme.fontSizes.xs,
     marginLeft: theme.spacing.xs / 2,
-  },
-  difficultyBadge: {
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs / 2,
-    borderRadius: theme.borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  beginnerBadge: {
-    backgroundColor: `${theme.colors.status.success}15`,
-  },
-  intermediateBadge: {
-    backgroundColor: `${theme.colors.status.warning}15`,
-  },
-  advancedBadge: {
-    backgroundColor: `${theme.colors.status.error}15`,
-  },
-  difficultyText: {
-    fontSize: theme.fontSizes.xs,
-    fontWeight: theme.fontConfig.fontWeight.medium,
-  },
-  beginnerText: {
-    color: theme.colors.status.success,
-  },
-  intermediateText: {
-    color: theme.colors.status.warning,
-  },
-  advancedText: {
-    color: theme.colors.status.error,
   },
   expandButton: {
     padding: theme.spacing.xs,
@@ -559,29 +543,80 @@ const getLessonTypeColor = (type: Lesson['type'], theme: any) => {
   }
 };
 
-const getDifficultyStyles = (difficulty: Module['difficulty'], styles: any) => {
-  switch (difficulty) {
-    case 'Beginner':
-      return {
-        badge: styles.beginnerBadge,
-        text: styles.beginnerText,
-      };
-    case 'Intermediate':
-      return {
-        badge: styles.intermediateBadge,
-        text: styles.intermediateText,
-      };
-    case 'Advanced':
-      return {
-        badge: styles.advancedBadge,
-        text: styles.advancedText,
-      };
-    default:
-      return {
-        badge: styles.beginnerBadge,
-        text: styles.beginnerText,
-      };
+// Difficulty Color Helper - Dynamic difficulty support
+const getDifficultyColor = (difficulty: string, theme: any) => {
+  // Normalize the difficulty string for comparison (case-insensitive, trim whitespace)
+  const normalizedDifficulty = difficulty.toLowerCase().trim();
+  
+  // Common difficulty mappings (extensible)
+  const difficultyColorMap: Record<string, string> = {
+    // Beginner variations
+    'beginner': theme.colors.status.success,
+    'basic': theme.colors.status.success,
+    'starter': theme.colors.status.success,
+    'foundation': theme.colors.status.success,
+    'intro': theme.colors.status.success,
+    'level 1': theme.colors.status.success,
+    
+    // Intermediate variations
+    'intermediate': theme.colors.status.warning,
+    'middle': theme.colors.status.warning,
+    'developing': theme.colors.status.warning,
+    'progressing': theme.colors.status.warning,
+    'level 2': theme.colors.status.warning,
+    'level 3': theme.colors.status.warning,
+    'level 4': theme.colors.status.warning,
+    
+    // Advanced variations
+    'advanced': theme.colors.status.error,
+    'expert': theme.colors.status.error,
+    'mastery': theme.colors.status.error,
+    'professional': theme.colors.status.error,
+    'competitive': theme.colors.status.error,
+    'level 5': theme.colors.status.error,
+    'level 6': theme.colors.status.error,
+    'level 7': theme.colors.status.error,
+  };
+  
+  // Check if we have a direct match
+  if (difficultyColorMap[normalizedDifficulty]) {
+    return difficultyColorMap[normalizedDifficulty];
   }
+  
+  // Intelligent fallback based on keywords
+  if (normalizedDifficulty.includes('begin') || normalizedDifficulty.includes('basic') || 
+      normalizedDifficulty.includes('start') || normalizedDifficulty.includes('intro') ||
+      normalizedDifficulty.includes('foundation')) {
+    return theme.colors.status.success; // Green for beginner-like
+  }
+  
+  if (normalizedDifficulty.includes('advanc') || normalizedDifficulty.includes('expert') || 
+      normalizedDifficulty.includes('master') || normalizedDifficulty.includes('profession') ||
+      normalizedDifficulty.includes('competitive')) {
+    return theme.colors.status.error; // Red for advanced-like
+  }
+  
+  if (normalizedDifficulty.includes('intermedi') || normalizedDifficulty.includes('middle') || 
+      normalizedDifficulty.includes('develop') || normalizedDifficulty.includes('progress')) {
+    return theme.colors.status.warning; // Orange for intermediate-like
+  }
+  
+  // Default fallback for completely unknown difficulties
+  return theme.colors.interactive.primary; // Academy purple as neutral fallback
+};
+
+// Level Difficulty Badge Helpers
+const getDifficultyBadgeStyle = (difficulty: string, theme: any) => {
+  const baseColor = getDifficultyColor(difficulty, theme);
+  return {
+    backgroundColor: `${baseColor}15`,
+  };
+};
+
+const getDifficultyTextStyle = (difficulty: string, theme: any) => {
+  return {
+    color: getDifficultyColor(difficulty, theme),
+  };
 };
 
 // Star Rating Component
@@ -667,6 +702,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         title: 'Level 1: Water Familiarization',
         shortTitle: 'Level 1',
         description: 'Getting comfortable in water and basic safety skills',
+        difficulty: 'Beginner',
         totalModules: 5,
         completedModules: 5,
         progress: 100,
@@ -1410,6 +1446,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         title: 'Level 2: Basic Swimming Skills',
         shortTitle: 'Level 2',
         description: 'Learning fundamental swimming strokes and techniques',
+        difficulty: 'Intermediate',
         totalModules: 5,
         completedModules: 2,
         progress: 65,
@@ -2153,6 +2190,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         title: 'Level 3: Advanced Techniques',
         shortTitle: 'Level 3',
         description: 'Mastering advanced swimming skills and stroke refinement',
+        difficulty: 'Intermediate',
         totalModules: 5,
         completedModules: 0,
         progress: 0,
@@ -2167,6 +2205,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         title: 'Level 4: Competitive Strokes',
         shortTitle: 'Level 4',
         description: 'Learning competitive swimming techniques and turns',
+        difficulty: 'Intermediate',
         totalModules: 5,
         completedModules: 0,
         progress: 0,
@@ -2181,6 +2220,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         title: 'Level 5: Speed & Endurance',
         shortTitle: 'Level 5',
         description: 'Building swimming speed, endurance, and training techniques',
+        difficulty: 'Advanced',
         totalModules: 5,
         completedModules: 0,
         progress: 0,
@@ -2195,6 +2235,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         title: 'Level 6: Advanced Training',
         shortTitle: 'Level 6',
         description: 'Advanced training methods and performance optimization',
+        difficulty: 'Advanced',
         totalModules: 5,
         completedModules: 0,
         progress: 0,
@@ -2209,6 +2250,7 @@ const getMockCurriculumData = (courseId: string): CourseCurriculum => {
         title: 'Level 7: Expert Mastery',
         shortTitle: 'Level 7',
         description: 'Expert level techniques and coaching fundamentals',
+        difficulty: 'Advanced',
         totalModules: 5,
         completedModules: 0,
         progress: 0,
@@ -2312,7 +2354,6 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
   const rotation = useSharedValue(0);
   const [activeSection, setActiveSection] = useState(module.sections[0]?.id || '');
 
-  const difficultyStyles = getDifficultyStyles(module.difficulty, styles);
 
   const animatedIconStyle = useAnimatedStyle(() => {
     rotation.value = withSpring(isExpanded ? 180 : 0);
@@ -2340,11 +2381,6 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
             <View style={styles.metricItem}>
               <Ionicons name="star" size={12} color={theme.colors.status.warning} />
               <Text style={styles.metricText}>{module.earnedStars}/{module.totalStars} stars</Text>
-            </View>
-            <View style={[styles.difficultyBadge, difficultyStyles.badge]}>
-              <Text style={[styles.difficultyText, difficultyStyles.text]}>
-                {module.difficulty}
-              </Text>
             </View>
             {module.progress > 0 && (
               <View style={styles.metricItem}>
@@ -2556,7 +2592,14 @@ export const CourseCurriculumScreen: React.FC = () => {
         {/* Current Level Info */}
         {currentLevel && (
           <Animated.View entering={FadeInDown.delay(400)}>
-            <Text style={styles.sectionTitle}>{currentLevel.title}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.xs }}>
+              <Text style={styles.sectionTitle}>{currentLevel.title}</Text>
+              <View style={[styles.difficultyBadge, getDifficultyBadgeStyle(currentLevel.difficulty, theme)]}>
+                <Text style={[styles.difficultyBadgeText, getDifficultyTextStyle(currentLevel.difficulty, theme)]}>
+                  {currentLevel.difficulty}
+                </Text>
+              </View>
+            </View>
             <Text style={[styles.courseSubtitle, { marginBottom: theme.spacing.lg }]}>
               {currentLevel.description} • {currentLevel.completedModules}/{currentLevel.totalModules} modules completed
             </Text>

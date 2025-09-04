@@ -124,7 +124,6 @@ const mockEventDetail: SwimmingEventDetail = {
       { label: '05 Mar', value: 26.62, formattedValue: '00:26.62' },
       { label: '10 Mar', value: 26.46, formattedValue: '00:26.46' },
       { label: '15 Mar', value: 26.30, formattedValue: '00:26.30' }, // Current PB
-      { label: 'Goal', value: 25.50, formattedValue: '00:25.50' },   // Target goal - lowest point
     ],
     goalLine: 25.50,
     personalBestLine: 26.30,

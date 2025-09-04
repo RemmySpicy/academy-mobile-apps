@@ -5,119 +5,201 @@ import {
   ScrollView,
   StyleSheet,
   Pressable,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { 
-  useTheme, 
-  createThemedStyles, 
-  Header,
-  FilterBar,
-  CustomButton,
-} from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, Header, SegmentedControl } from '@academy/mobile-shared';
+import type { PerformanceStackParamList } from '../navigation/PerformanceNavigator';
 
-import { PerformanceMetricCard } from '../components/shared/PerformanceMetricCard';
-import { PerformanceChart } from '../components/charts/PerformanceChart';
 import { SwimmingPerformanceAdapter } from '../programs/swimming/SwimmingPerformanceAdapter';
 
 import {
   ProgramType,
   TimePeriod,
-  BasePerformanceMetric,
-  PerformanceChartData,
-  PerformanceAnalytics,
-  PerformanceFilters,
 } from '../types';
 
-// Mock data - in real app, this would come from the performance service
-const mockSwimmingMetrics: BasePerformanceMetric[] = [
+import {
+  SwimmingStroke,
+  PoolSize,
+  PoolConfig,
+  SwimmingEventCard,
+  SwimmingStrokeCard,
+  SwimmingPerformanceFilters,
+  PerformanceViewMode,
+  STROKE_LABELS,
+} from '../programs/swimming/types';
+
+
+// Mock swimming event cards (Times view) - based on screenshot design
+const mockSwimmingEventCards: SwimmingEventCard[] = [
   {
-    id: '1',
-    title: '50m Freestyle',
-    value: 45.23,
-    unit: 'seconds',
-    type: 'time',
-    trend: { direction: 'up', percentage: 2.1, period: 'vs last month' },
-    icon: 'timer',
-    color: '#0EA5E9',
-    category: 'Sprint',
-    lastUpdated: new Date(),
-    goal: 43.0,
-    personalBest: 44.82,
+    id: '17m_freestyle',
+    title: '17m',
+    distance: 17,
+    stroke: 'freestyle',
+    poolSize: '17m',
+    currentTime: '00:26.30',
+    currentTimeInSeconds: 26.30,
+    personalBest: '00:26.30',
+    personalBestInSeconds: 26.30,
+    improvement: {
+      percentage: 0.8,
+      timeChange: '-0.23',
+      period: 'vs last month'
+    },
+    totalRaces: 12,
+    lastRaceDate: '10 Feb 2025',
+    trend: 'improving',
   },
   {
-    id: '2',
-    title: 'Training Distance',
-    value: 2400,
-    unit: 'm',
-    type: 'distance',
-    trend: { direction: 'up', percentage: 15.3, period: 'vs last week' },
-    icon: 'trending-up',
-    color: '#10B981',
-    category: 'Volume',
-    lastUpdated: new Date(),
-    goal: 3000,
+    id: '34m_freestyle',
+    title: '34m', 
+    distance: 34,
+    stroke: 'freestyle',
+    poolSize: '17m',
+    currentTime: '00:26.30',
+    currentTimeInSeconds: 26.30,
+    personalBest: '00:26.15',
+    personalBestInSeconds: 26.15,
+    improvement: {
+      percentage: 1.2,
+      timeChange: '-0.31',
+      period: 'vs last month'
+    },
+    totalRaces: 8,
+    lastRaceDate: '08 Feb 2025',
+    trend: 'improving',
   },
   {
-    id: '3',
-    title: 'Technique Score',
-    value: 85,
-    unit: '%',
-    type: 'percentage',
-    trend: { direction: 'up', percentage: 5.2, period: 'vs last session' },
-    icon: 'analytics',
-    color: '#8B5CF6',
-    category: 'Technique',
-    lastUpdated: new Date(),
-    goal: 90,
+    id: '51m_freestyle',
+    title: '51m',
+    distance: 51,
+    stroke: 'freestyle',
+    poolSize: '17m',
+    currentTime: '00:26.30',
+    currentTimeInSeconds: 26.30,
+    personalBest: '00:26.10',
+    personalBestInSeconds: 26.10,
+    improvement: {
+      percentage: 0.5,
+      timeChange: '-0.12',
+      period: 'vs last month'
+    },
+    totalRaces: 6,
+    lastRaceDate: '05 Feb 2025',
+    trend: 'stable',
   },
   {
-    id: '4',
-    title: 'Sessions This Week',
-    value: 4,
-    type: 'count',
-    trend: { direction: 'neutral', percentage: 0, period: 'on target' },
-    icon: 'calendar',
-    color: '#F59E0B',
-    category: 'Consistency',
-    lastUpdated: new Date(),
-    goal: 4,
+    id: '68m_freestyle',
+    title: '68m',
+    distance: 68,
+    stroke: 'freestyle',
+    poolSize: '17m',
+    currentTime: '00:26.30',
+    currentTimeInSeconds: 26.30,
+    personalBest: '00:26.20',
+    personalBestInSeconds: 26.20,
+    improvement: {
+      percentage: 0.9,
+      timeChange: '-0.25',
+      period: 'vs last month'
+    },
+    totalRaces: 4,
+    lastRaceDate: '03 Feb 2025',
+    trend: 'improving',
+  },
+  {
+    id: '85m_freestyle',
+    title: '85m',
+    distance: 85,
+    stroke: 'freestyle',
+    poolSize: '17m',
+    currentTime: '00:26.30',
+    currentTimeInSeconds: 26.30,
+    personalBest: '00:26.25',
+    personalBestInSeconds: 26.25,
+    improvement: {
+      percentage: 0.3,
+      timeChange: '-0.08',
+      period: 'vs last month'
+    },
+    totalRaces: 3,
+    lastRaceDate: '01 Feb 2025',
+    trend: 'stable',
   },
 ];
 
-const mockChartData: PerformanceChartData[] = [
+// Mock swimming stroke cards (Stroke view) - based on screenshot design
+const mockSwimmingStrokeCards: SwimmingStrokeCard[] = [
   {
-    id: 'times_progress',
-    title: 'Swimming Times Progress',
-    type: 'line',
-    data: [
-      { label: 'Jan', value: 48.2 },
-      { label: 'Feb', value: 47.1 },
-      { label: 'Mar', value: 46.5 },
-      { label: 'Apr', value: 45.9 },
-      { label: 'May', value: 45.2 },
-    ],
-    xAxisLabel: 'Month',
-    yAxisLabel: '50m Freestyle Time (sec)',
-    color: '#0EA5E9',
-    period: 'month',
+    id: 'single_arm_free_r',
+    title: 'Single Arm Free: R',
+    stroke: 'freestyle',
+    distance: 17,
+    poolSize: '17m',
+    value: 26,
+    unit: '',
+    date: '10 Feb 2025',
+    description: 'Right arm single arm freestyle drill',
   },
   {
-    id: 'distance_weekly',
-    title: 'Weekly Training Distance',
-    type: 'bar',
-    data: [
-      { label: 'W1', value: 8500 },
-      { label: 'W2', value: 9200 },
-      { label: 'W3', value: 8800 },
-      { label: 'W4', value: 9600 },
-      { label: 'W5', value: 10200 },
-    ],
-    xAxisLabel: 'Week',
-    yAxisLabel: 'Distance (m)',
-    color: '#10B981',
-    period: 'week',
+    id: 'single_arm_free_l',
+    title: 'Single Arm Free: L', 
+    stroke: 'freestyle',
+    distance: 17,
+    poolSize: '17m',
+    value: 30,
+    unit: '',
+    date: '10 Feb 2025',
+    description: 'Left arm single arm freestyle drill',
+  },
+  {
+    id: 'both_arms_free',
+    title: 'Both Arms Free',
+    stroke: 'freestyle',
+    distance: 17,
+    poolSize: '17m',
+    value: 23,
+    unit: '',
+    date: '10 Feb 2025',
+    description: 'Both arms freestyle technique',
+  },
+  {
+    id: 'frog_kick',
+    title: 'Frog Kick',
+    stroke: 'breaststroke',
+    distance: 17,
+    poolSize: '17m',
+    value: 63,
+    unit: '',
+    date: '10 Feb 2025',
+    description: 'Breaststroke kick technique',
+  },
+  {
+    id: 'breast_pull',
+    title: 'Breast Pull',
+    stroke: 'breaststroke',
+    distance: 17,
+    poolSize: '17m',
+    value: 32,
+    unit: '',
+    date: '10 Feb 2025',
+    description: 'Breaststroke pull technique',
+  },
+  {
+    id: 'single_arm_back_r',
+    title: 'Single Arm Back: R',
+    stroke: 'backstroke',
+    distance: 17,
+    poolSize: '17m',
+    value: 32,
+    unit: '',
+    date: '10 Feb 2025',
+    description: 'Right arm backstroke drill',
   },
 ];
 
@@ -125,120 +207,180 @@ export const PerformanceScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NavigationProp<PerformanceStackParamList>>();
   
-  const [selectedProgram, setSelectedProgram] = useState<ProgramType>('swimming');
-  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('month');
-  const [metrics, setMetrics] = useState<BasePerformanceMetric[]>(mockSwimmingMetrics);
-  const [charts, setCharts] = useState<PerformanceChartData[]>(mockChartData);
-  const [analytics, setAnalytics] = useState<PerformanceAnalytics | null>(null);
+  // Swimming-focused state (program context already selected)
+  const [viewMode, setViewMode] = useState<PerformanceViewMode>('times');
+  const [selectedPoolSize, setSelectedPoolSize] = useState<PoolSize>('17m');
+  const [selectedStrokes, setSelectedStrokes] = useState<SwimmingStroke[]>(['freestyle']);
+  const [eventCards, setEventCards] = useState<SwimmingEventCard[]>(mockSwimmingEventCards);
+  const [strokeCards, setStrokeCards] = useState<SwimmingStrokeCard[]>(mockSwimmingStrokeCards);
   const [isLoading, setIsLoading] = useState(false);
 
   const swimmingAdapter = new SwimmingPerformanceAdapter();
 
-  const programs = [
-    { id: 'swimming', label: 'Swimming', icon: 'water', color: '#0EA5E9' },
-    { id: 'basketball', label: 'Basketball', icon: 'basketball', color: '#F97316' },
-    { id: 'football', label: 'Football', icon: 'football', color: '#22C55E' },
-    { id: 'music', label: 'Music', icon: 'musical-notes', color: '#A855F7' },
-    { id: 'coding', label: 'Coding', icon: 'code-slash', color: '#3B82F6' },
+  // Pool configurations (matching screenshot)
+  const poolConfigurations: PoolConfig[] = [
+    { size: '17m', location: 'My Location', isUserLocation: true },
+    { size: '25m' },
+    { size: '50m' },
   ];
 
-  const filterGroups = [
-    {
-      id: 'period',
-      title: 'Time Period',
-      options: [
-        { id: 'week', label: 'Week', value: 'week' },
-        { id: 'month', label: 'Month', value: 'month' },
-        { id: 'quarter', label: 'Quarter', value: 'quarter' },
-        { id: 'semester', label: 'Semester', value: 'semester' },
-        { id: 'year', label: 'Year', value: 'year' },
-      ],
-      multiSelect: false,
-    },
-  ];
+  // Available strokes for filtering
+  const availableStrokes: SwimmingStroke[] = ['freestyle', 'breaststroke', 'backstroke', 'butterfly', 'individual_medley'];
 
-  const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({
-    period: [selectedPeriod]
-  });
+  // Available stroke filters for UI
+  const strokeOptions = availableStrokes.map(stroke => ({
+    id: stroke,
+    label: STROKE_LABELS[stroke],
+    selected: selectedStrokes.includes(stroke),
+  }));
 
   useEffect(() => {
     loadPerformanceData();
-  }, [selectedProgram, selectedPeriod]);
+  }, [viewMode, selectedPoolSize, selectedStrokes]);
 
   const loadPerformanceData = async () => {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
-      // In real app, this would fetch data based on selectedProgram and selectedPeriod
+      // In real app, this would fetch data based on viewMode, poolSize, and selectedStrokes
+      // Filter data based on current selections
+      const filteredEventCards = mockSwimmingEventCards.filter(card => 
+        selectedStrokes.includes(card.stroke) && card.poolSize === selectedPoolSize
+      );
+      const filteredStrokeCards = mockSwimmingStrokeCards.filter(card =>
+        selectedStrokes.includes(card.stroke) && card.poolSize === selectedPoolSize
+      );
+      
+      setEventCards(filteredEventCards);
+      setStrokeCards(filteredStrokeCards);
       setIsLoading(false);
-    }, 1000);
+    }, 500);
   };
 
-  const handleFilterChange = (groupId: string, optionId: string, selected: boolean) => {
-    setSelectedFilters(prev => {
-      const group = filterGroups.find(g => g.id === groupId);
-      if (!group) return prev;
-
-      if (group.multiSelect) {
-        const currentSelections = prev[groupId] || [];
-        if (selected) {
-          return { ...prev, [groupId]: [...currentSelections, optionId] };
-        } else {
-          return { ...prev, [groupId]: currentSelections.filter(id => id !== optionId) };
-        }
+  const handleStrokeToggle = (stroke: SwimmingStroke) => {
+    setSelectedStrokes(prev => {
+      if (prev.includes(stroke)) {
+        // Don't allow removing all strokes
+        if (prev.length === 1) return prev;
+        return prev.filter(s => s !== stroke);
       } else {
-        setSelectedPeriod(optionId as TimePeriod);
-        return { ...prev, [groupId]: [optionId] };
+        return [...prev, stroke];
       }
     });
   };
 
-  const handleProgramSelect = (program: ProgramType) => {
-    setSelectedProgram(program);
+  const handleViewModeChange = (mode: PerformanceViewMode) => {
+    setViewMode(mode);
   };
 
-  const handleExportData = () => {
-    // TODO: Implement export functionality
-    console.log('Export performance data');
+  const handlePoolSizeChange = (poolSize: PoolSize) => {
+    setSelectedPoolSize(poolSize);
   };
 
-  const handleSetGoals = () => {
-    // TODO: Navigate to goals screen
-    console.log('Navigate to goals screen');
+  const handleEventCardPress = (eventCard: SwimmingEventCard) => {
+    navigation.navigate('SwimmingEventDetail', { eventId: eventCard.id });
   };
 
-  const renderProgramSelector = () => (
+  const handleStrokeCardPress = (strokeCard: SwimmingStrokeCard) => {
+    // TODO: Navigate to detailed stroke analysis screen
+    console.log('Navigate to stroke detail:', strokeCard.title);
+  };
+
+  // Use Academy Header Component
+  const renderHeader = () => (
+    <Header
+      title="Performance"
+      showProgramSwitcher={false}
+      showNotifications={false}
+      style={{ paddingTop: insets.top }}
+    />
+  );
+
+  // Times/Stroke view mode selector
+  const renderViewModeSelector = () => (
     <Animated.View
       entering={FadeInDown.delay(100).springify()}
-      style={styles.programSelectorSection}
+      style={styles.viewModeSelectorSection}
     >
-      <Text style={styles.sectionTitle}>Select Program</Text>
+      <Text style={styles.sectionTitle}>Metric View</Text>
+      <SegmentedControl
+        options={['times', 'stroke']}
+        selectedValue={viewMode}
+        onChange={(value) => handleViewModeChange(value as PerformanceViewMode)}
+        variant="compact"
+        size="sm"
+        style={styles.viewModeControl}
+        selectedOptionStyle={styles.viewModeSelectedOption}
+      />
+    </Animated.View>
+  );
+
+  // Pool size selector (compact design)
+  const renderPoolSizeSelector = () => (
+    <Animated.View
+      entering={FadeInDown.delay(150).springify()}
+      style={styles.poolSizeSelectorSection}
+    >
+      <Text style={styles.sectionTitle}>Pool Size</Text>
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.programSelectorContainer}
+        style={styles.poolSizeScrollView}
+        contentContainerStyle={styles.poolSizeContainer}
       >
-        {programs.map((program) => (
+        {poolConfigurations.map((pool) => (
           <Pressable
-            key={program.id}
+            key={pool.size}
             style={[
-              styles.programButton,
-              selectedProgram === program.id && styles.programButtonActive,
-              { backgroundColor: selectedProgram === program.id ? program.color : theme.colors.background.secondary }
+              styles.poolSizeButtonCompact,
+              selectedPoolSize === pool.size && styles.poolSizeButtonCompactActive,
             ]}
-            onPress={() => handleProgramSelect(program.id as ProgramType)}
+            onPress={() => handlePoolSizeChange(pool.size)}
           >
-            <Ionicons 
-              name={program.icon as keyof typeof Ionicons.glyphMap} 
-              size={24} 
-              color={selectedProgram === program.id ? 'white' : program.color}
-            />
             <Text style={[
-              styles.programButtonText,
-              selectedProgram === program.id && styles.programButtonTextActive
+              styles.poolSizeTextCompact,
+              selectedPoolSize === pool.size && styles.poolSizeTextCompactActive,
             ]}>
-              {program.label}
+              {pool.size}
+            </Text>
+            {pool.isUserLocation && (
+              <View style={styles.userLocationDot} />
+            )}
+          </Pressable>
+        ))}
+      </ScrollView>
+    </Animated.View>
+  );
+
+  // Stroke filter using native components
+  const renderStrokeFilter = () => (
+    <Animated.View
+      entering={FadeInDown.delay(200).springify()}
+      style={styles.filtersSection}
+    >
+      <Text style={styles.sectionTitle}>Stroke Filter</Text>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        style={styles.strokeFilterScrollView}
+        contentContainerStyle={styles.strokeFilterContainer}
+      >
+        {strokeOptions.map((option) => (
+          <Pressable
+            key={option.id}
+            style={[
+              styles.strokeFilterButton,
+              option.selected && styles.strokeFilterButtonActive,
+            ]}
+            onPress={() => handleStrokeToggle(option.id)}
+          >
+            <Text style={[
+              styles.strokeFilterButtonText,
+              option.selected && styles.strokeFilterButtonTextActive,
+            ]}>
+              {option.label}
             </Text>
           </Pressable>
         ))}
@@ -246,147 +388,111 @@ export const PerformanceScreen: React.FC = () => {
     </Animated.View>
   );
 
-  const renderMetrics = () => (
+  // Render swimming event cards (Times view)
+  const renderEventCards = () => (
     <Animated.View
-      entering={FadeInDown.delay(200).springify()}
-      style={styles.metricsSection}
+      entering={FadeInDown.delay(300).springify()}
+      style={styles.cardsSection}
     >
-      <Text style={styles.sectionTitle}>Key Performance Metrics</Text>
-      <View style={styles.metricsGrid}>
-        {metrics.map((metric, index) => (
-          <View key={metric.id} style={styles.metricCardContainer}>
-            <PerformanceMetricCard
-              metric={metric}
-              index={index}
-              variant="default"
-              showTrend={true}
-              showGoal={true}
-            />
-          </View>
+      <Text style={styles.sectionTitle}>Swimming Times</Text>
+      <View style={styles.cardsContainer}>
+        {eventCards.map((eventCard, index) => (
+          <Animated.View
+            key={eventCard.id}
+            entering={FadeInRight.delay(index * 50).springify()}
+          >
+            <Pressable
+              style={({ pressed }) => [
+                styles.eventCard,
+                pressed && styles.cardPressed,
+              ]}
+              onPress={() => handleEventCardPress(eventCard)}
+            >
+              <View style={styles.eventCardContent}>
+                <View style={styles.eventCardDistance}>
+                  <Text style={styles.eventCardTitle}>{eventCard.title}</Text>
+                  <Ionicons 
+                    name="chevron-forward" 
+                    size={20} 
+                    color={theme.colors.text.secondary}
+                  />
+                </View>
+                <Text style={styles.eventCardTime}>{eventCard.currentTime}</Text>
+                <Text style={styles.eventCardDate}>{eventCard.lastRaceDate}</Text>
+              </View>
+            </Pressable>
+          </Animated.View>
         ))}
       </View>
     </Animated.View>
   );
 
-  const renderCharts = () => (
+  // Render swimming stroke cards (Stroke view)
+  const renderStrokeCards = () => (
     <Animated.View
       entering={FadeInDown.delay(300).springify()}
-      style={styles.chartsSection}
+      style={styles.cardsSection}
     >
-      <Text style={styles.sectionTitle}>Performance Analysis</Text>
-      {charts.map((chartData, index) => (
-        <PerformanceChart
-          key={chartData.id}
-          chartData={chartData}
-          showPeriodSelector={false}
-          onDataPointPress={(dataPoint, index) => {
-            console.log('Chart data point pressed:', dataPoint, index);
-          }}
-          style={{ marginBottom: theme.spacing.md }}
-        />
-      ))}
-    </Animated.View>
-  );
-
-  const renderRecommendations = () => {
-    const recommendations = swimmingAdapter.getRecommendations(analytics || {} as any);
-    
-    return (
-      <Animated.View
-        entering={FadeInDown.delay(400).springify()}
-        style={styles.recommendationsSection}
-      >
-        <Text style={styles.sectionTitle}>Recommendations</Text>
-        <View style={styles.recommendationsContainer}>
-          {recommendations.map((recommendation, index) => (
-            <View key={index} style={styles.recommendationCard}>
-              <Ionicons 
-                name="bulb" 
-                size={20} 
-                color={theme.colors.status.warning} 
-                style={styles.recommendationIcon}
-              />
-              <Text style={styles.recommendationText}>{recommendation}</Text>
-            </View>
-          ))}
-        </View>
-      </Animated.View>
-    );
-  };
-
-  const renderQuickActions = () => (
-    <Animated.View
-      entering={FadeInDown.delay(500).springify()}
-      style={styles.quickActionsSection}
-    >
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
-      <View style={styles.quickActionsContainer}>
-        <CustomButton
-          title="Set Goals"
-          variant="secondary"
-          size="md"
-          onPress={handleSetGoals}
-          style={styles.actionButton}
-          leftIcon="flag"
-        />
-        <CustomButton
-          title="Export Data"
-          variant="outline"
-          size="md"
-          onPress={handleExportData}
-          style={styles.actionButton}
-          leftIcon="download"
-        />
+      <Text style={styles.sectionTitle}>Stroke Analysis</Text>
+      <View style={styles.cardsContainer}>
+        {strokeCards.map((strokeCard, index) => (
+          <Animated.View
+            key={strokeCard.id}
+            entering={FadeInRight.delay(index * 50).springify()}
+          >
+            <Pressable
+              style={({ pressed }) => [
+                styles.strokeCard,
+                pressed && styles.cardPressed,
+              ]}
+              onPress={() => handleStrokeCardPress(strokeCard)}
+            >
+              <View style={styles.strokeCardContent}>
+                <View style={styles.strokeCardHeader}>
+                  <Text style={styles.strokeCardTitle}>{strokeCard.title}</Text>
+                  <Ionicons 
+                    name="chevron-forward" 
+                    size={20} 
+                    color={theme.colors.text.secondary}
+                  />
+                </View>
+                <Text style={styles.strokeCardValue}>{strokeCard.value}</Text>
+                <Text style={styles.strokeCardDate}>{strokeCard.date}</Text>
+              </View>
+            </Pressable>
+          </Animated.View>
+        ))}
       </View>
     </Animated.View>
   );
 
   return (
     <View style={styles.container}>
-      <Header
-        title="Performance"
-        showProgramSwitcher={false}
-        showNotifications={false}
-        style={{ paddingTop: insets.top }}
-      />
+      {renderHeader()}
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Program Selector */}
-        {renderProgramSelector()}
+        {/* Times/Stroke View Mode Selector */}
+        {renderViewModeSelector()}
 
-        {/* Time Period Filter */}
-        <Animated.View
-          entering={FadeInDown.delay(150).springify()}
-          style={styles.filtersSection}
-        >
-          <FilterBar
-            filters={filterGroups}
-            selectedFilters={selectedFilters}
-            onFilterChange={handleFilterChange}
-            variant="horizontal"
-            scrollable={true}
-            showCounts={false}
-            showIcons={false}
-            showClearAll={false}
-            compactMode={true}
-          />
-        </Animated.View>
+        {/* Pool Size Selector */}
+        {renderPoolSizeSelector()}
 
-        {/* Performance Metrics */}
-        {renderMetrics()}
+        {/* Stroke Filter */}
+        {renderStrokeFilter()}
 
-        {/* Performance Charts */}
-        {renderCharts()}
+        {/* Main Content - Event Cards or Stroke Cards */}
+        {viewMode === 'times' ? renderEventCards() : renderStrokeCards()}
 
-        {/* Recommendations */}
-        {renderRecommendations()}
-
-        {/* Quick Actions */}
-        {renderQuickActions()}
+        {/* Loading State */}
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Loading performance data...</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -398,6 +504,8 @@ const useThemedStyles = createThemedStyles((theme) =>
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
     },
+    
+    // Scroll View
     scrollView: {
       flex: 1,
     },
@@ -405,99 +513,243 @@ const useThemedStyles = createThemedStyles((theme) =>
       paddingTop: theme.spacing.lg,
       paddingBottom: theme.spacing['3xl'],
     },
-    programSelectorSection: {
-      paddingHorizontal: theme.spacing.md,
-      marginBottom: theme.spacing.lg,
-    },
-    programSelectorContainer: {
-      paddingRight: theme.spacing.md,
-    },
-    programButton: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-      borderRadius: theme.borderRadius.lg,
-      marginRight: theme.spacing.sm,
-      minWidth: 80,
-      borderWidth: 1,
-      borderColor: theme.colors.border.primary,
-    },
-    programButtonActive: {
-      borderColor: 'transparent',
-    },
-    programButtonText: {
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontConfig.fontWeight.medium,
-      color: theme.colors.text.secondary,
-      marginTop: theme.spacing.xs,
-    },
-    programButtonTextActive: {
-      color: 'white',
-    },
-    filtersSection: {
-      marginBottom: theme.spacing.lg,
-    },
+    
+    // Section Titles
     sectionTitle: {
       fontSize: theme.fontSizes.lg,
       fontWeight: theme.fontConfig.fontWeight.semibold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.md,
     },
-    metricsSection: {
+    
+    // View Mode Selector (Times/Stroke segmented control)
+    viewModeSelectorSection: {
       paddingHorizontal: theme.spacing.md,
-      marginBottom: theme.spacing.lg,
-    },
-    metricsGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-    },
-    metricCardContainer: {
-      width: '48%',
       marginBottom: theme.spacing.sm,
     },
-    chartsSection: {
+    viewModeControl: {
+      flex: 1,
+      height: 36, // Match stroke filter button height
+    },
+    viewModeSelectedOption: {
+      borderRadius: theme.borderRadius.lg, // More rounded than default sm
+    },
+    
+    // Pool Size Selector
+    poolSizeSelectorSection: {
       paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
-    recommendationsSection: {
-      paddingHorizontal: theme.spacing.md,
-      marginBottom: theme.spacing.lg,
+    poolSizeScrollView: {
+      flexGrow: 0,
     },
-    recommendationsContainer: {
+    poolSizeContainer: {
+      paddingHorizontal: theme.spacing.md,
+      gap: theme.spacing.md,
+    },
+    poolSizeButton: {
+      borderRadius: theme.borderRadius.lg,
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      minHeight: theme.safeArea.minTouchTarget.height,
+      justifyContent: 'center',
+      alignItems: 'center',
+      minWidth: 80,
+      borderWidth: theme.borderWidth.sm,
+      borderColor: theme.colors.border.primary,
+      backgroundColor: theme.colors.background.primary,
+      ...theme.elevation.sm,
+    },
+    poolSizeButtonActive: {
+      backgroundColor: theme.colors.interactive.primary,
+      borderColor: theme.colors.interactive.primary,
+    },
+    poolSizeButtonPrimary: {
+      borderColor: theme.colors.interactive.primary,
+      backgroundColor: theme.colors.interactive.faded,
+    },
+    userLocationContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
       gap: theme.spacing.sm,
     },
-    recommendationCard: {
+    userLocationLabel: {
+      fontSize: theme.fontSizes.caption,
+      color: theme.colors.text.secondary,
+    },
+    poolSizeText: {
+      fontSize: theme.fontSizes.body,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.interactive.primary,
+      textAlign: 'center',
+    },
+    
+    // Compact Pool Size Buttons
+    poolSizeButtonCompact: {
+      borderRadius: theme.borderRadius.full,
+      paddingVertical: theme.spacing.xs,
+      paddingHorizontal: theme.spacing.md,
+      minHeight: 32,
+      minWidth: 60,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
       backgroundColor: theme.colors.background.primary,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.md,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      borderWidth: 1,
+      borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
     },
-    recommendationIcon: {
-      marginRight: theme.spacing.sm,
-      marginTop: 2,
+    poolSizeButtonCompactActive: {
+      backgroundColor: theme.colors.interactive.primary,
+      borderColor: theme.colors.interactive.primary,
     },
-    recommendationText: {
-      flex: 1,
-      fontSize: theme.fontSizes.base,
+    poolSizeTextCompact: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
       color: theme.colors.text.primary,
-      lineHeight: 22,
+      textAlign: 'center',
     },
-    quickActionsSection: {
+    poolSizeTextCompactActive: {
+      color: theme.colors.text.inverse,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    userLocationDot: {
+      position: 'absolute',
+      top: -2,
+      right: -2,
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: theme.colors.status.success,
+    },
+    
+    // Stroke Filter
+    filtersSection: {
       paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
-    quickActionsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+    strokeFilterScrollView: {
+      flexGrow: 0,
+    },
+    strokeFilterContainer: {
+      paddingHorizontal: theme.spacing.md,
+      gap: theme.spacing.md,
+    },
+    strokeFilterButton: {
+      borderRadius: theme.borderRadius.full,
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.lg,
+      minHeight: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: theme.borderWidth.sm,
+      borderColor: theme.colors.border.primary,
+      backgroundColor: theme.colors.background.primary,
+      ...theme.elevation.sm,
+    },
+    strokeFilterButtonActive: {
+      backgroundColor: theme.colors.interactive.primary,
+      borderColor: theme.colors.interactive.primary,
+    },
+    strokeFilterButtonText: {
+      fontSize: theme.fontSizes.body,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.text.secondary,
+    },
+    strokeFilterButtonTextActive: {
+      color: theme.colors.text.inverse,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+    },
+    
+    // Swimming Cards Section
+    cardsSection: {
+      paddingHorizontal: theme.spacing.md,
+      marginBottom: theme.spacing.lg,
+    },
+    cardsContainer: {
       gap: theme.spacing.sm,
     },
-    actionButton: {
-      flex: 1,
+    
+    // Event Cards (Times view)
+    eventCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      borderWidth: theme.borderWidth.sm,
+      borderColor: theme.colors.border.primary,
+      ...theme.elevation.sm,
+    },
+    eventCardContent: {
+      gap: theme.spacing.sm,
+    },
+    eventCardDistance: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    eventCardTitle: {
+      fontSize: theme.fontSizes.body,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+    },
+    eventCardTime: {
+      fontSize: theme.fontSizes.h3,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.interactive.primary,
+      marginVertical: theme.spacing.xs,
+    },
+    eventCardDate: {
+      fontSize: theme.fontSizes.caption,
+      color: theme.colors.text.secondary,
+    },
+    
+    // Stroke Cards (Stroke view) - Updated to match event cards
+    strokeCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing.md,
+      borderWidth: theme.borderWidth.sm,
+      borderColor: theme.colors.border.primary,
+      ...theme.elevation.sm,
+    },
+    strokeCardContent: {
+      gap: theme.spacing.sm,
+    },
+    strokeCardHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    strokeCardTitle: {
+      fontSize: theme.fontSizes.body,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+    },
+    strokeCardValue: {
+      fontSize: theme.fontSizes.h3,
+      fontWeight: theme.fontConfig.fontWeight.bold,
+      color: theme.colors.interactive.primary,
+      marginVertical: theme.spacing.xs,
+    },
+    strokeCardDate: {
+      fontSize: theme.fontSizes.caption,
+      color: theme.colors.text.secondary,
+    },
+    
+    // General card styles
+    cardPressed: {
+      opacity: 0.8,
+      transform: [{ scale: 0.98 }],
+    },
+    
+    // Loading state
+    loadingContainer: {
+      padding: theme.spacing.xl,
+      alignItems: 'center',
+    },
+    loadingText: {
+      fontSize: theme.fontSizes.body,
+      color: theme.colors.text.secondary,
+      fontStyle: 'italic',
     },
   })
 );

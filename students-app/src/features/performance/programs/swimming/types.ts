@@ -2,6 +2,7 @@
  * Swimming-Specific Performance Types
  * 
  * Defines swimming-specific metrics, strokes, distances, and performance indicators
+ * Extended with UI-focused types for modern performance tracking interface
  */
 
 import { BasePerformanceMetric, PerformanceSession, ProgramType } from '../../types';
@@ -161,6 +162,196 @@ export interface SwimmingTrainingZones {
   threshold: { min: number; max: number };
   vo2max: { min: number; max: number };
   neuromuscular: { min: number; max: number };
+}
+
+// ===== MODERN UI-FOCUSED TYPES (Based on Screenshot Design) =====
+
+/**
+ * Pool size options for UI filtering (matches screenshot)
+ */
+export type PoolSize = '17m' | '25m' | '50m';
+
+/**
+ * Human-readable stroke labels for UI display
+ */
+export const STROKE_LABELS: Record<SwimmingStroke, string> = {
+  freestyle: 'Free',
+  backstroke: 'Back', 
+  breaststroke: 'Breast',
+  butterfly: 'Fly',
+  individual_medley: 'IM',
+};
+
+/**
+ * Pool configuration with location context
+ */
+export interface PoolConfig {
+  size: PoolSize;
+  location?: string;
+  isUserLocation?: boolean;
+}
+
+/**
+ * Performance event card data (for main performance screen cards)
+ */
+export interface SwimmingEventCard {
+  id: string;
+  title: string; // e.g., "50m Freestyle", "100m Breaststroke"
+  distance: number;
+  stroke: SwimmingStroke;
+  poolSize: PoolSize;
+  currentTime: string; // formatted time (e.g., "00:26.30")
+  currentTimeInSeconds: number;
+  personalBest: string;
+  personalBestInSeconds: number;
+  improvement: {
+    percentage: number;
+    timeChange: string; // e.g., "-0.23" or "+0.15"
+    period: string; // e.g., "vs last month"
+  };
+  totalRaces: number;
+  lastRaceDate: string;
+  trend: 'improving' | 'stable' | 'declining';
+}
+
+/**
+ * Stroke technique card data (for stroke analysis view)
+ */
+export interface SwimmingStrokeCard {
+  id: string;
+  title: string; // e.g., "Single Arm Free: R", "Breast Pull"
+  stroke: SwimmingStroke;
+  distance: number;
+  poolSize: PoolSize;
+  value: number; // main metric value (stroke count, rate, etc.)
+  unit: string; // e.g., "strokes", "spm", "%"
+  date: string;
+  description: string; // technique description
+  improvement?: {
+    value: number;
+    period: string;
+  };
+}
+
+/**
+ * Detailed time record for progression screen
+ */
+export interface SwimmingTimeDetail {
+  id: string;
+  time: string; // formatted time
+  timeInSeconds: number;
+  date: string; // formatted date
+  venue?: string;
+  competition?: string;
+  heat?: string;
+  lane?: number;
+  splits?: string[]; // formatted split times
+  points?: number;
+  isPB: boolean;
+  isSeasonBest?: boolean;
+  isClubRecord?: boolean;
+  notes?: string;
+}
+
+/**
+ * Performance goal for detailed view
+ */
+export interface SwimmingPerformanceGoal {
+  id: string;
+  targetTime: string; // formatted time
+  targetTimeInSeconds: number;
+  label: string; // e.g., "Club Record", "Season Goal"
+  type: 'personal' | 'club' | 'national' | 'season';
+  achieved: boolean;
+  achievedDate?: string;
+  deadline?: string;
+}
+
+/**
+ * Comprehensive event details for detailed progression screen
+ */
+export interface SwimmingEventDetail {
+  event: {
+    title: string; // e.g., "50m Breaststroke"
+    distance: number;
+    stroke: SwimmingStroke;
+    poolSize: PoolSize;
+  };
+  bestTime: {
+    time: string;
+    timeInSeconds: number;
+    date: string;
+    venue?: string;
+  };
+  clubRecord?: {
+    time: string;
+    timeInSeconds: number;
+    holder: string;
+    date: string;
+  };
+  goals: SwimmingPerformanceGoal[];
+  allTimes: SwimmingTimeDetail[];
+  chartData: {
+    data: Array<{
+      label: string; // date
+      value: number; // time in seconds for chart
+      formattedValue: string; // formatted time for display
+    }>;
+    goalLine?: number; // goal time in seconds
+    personalBestLine?: number; // PB line
+  };
+  statistics: {
+    totalRaces: number;
+    averageTime: string;
+    averageTimeInSeconds: number;
+    improvement: {
+      percentage: number;
+      timeChange: string;
+      period: string;
+    };
+    consistency: number; // variance percentage
+  };
+}
+
+/**
+ * Performance view mode (Times or Stroke analysis)
+ */
+export type PerformanceViewMode = 'times' | 'stroke';
+
+/**
+ * Filters for the performance screen
+ */
+export interface SwimmingPerformanceFilters {
+  viewMode: PerformanceViewMode;
+  selectedStrokes: SwimmingStroke[];
+  selectedPoolSize: PoolSize;
+  timePeriod: 'week' | 'month' | 'quarter' | 'season' | 'year' | 'all';
+  sortBy: 'date' | 'time' | 'event';
+  sortOrder: 'asc' | 'desc';
+}
+
+/**
+ * Main data structure for swimming performance screen
+ */
+export interface SwimmingPerformanceScreenData {
+  // For Times tab
+  eventCards: SwimmingEventCard[];
+  
+  // For Stroke analysis tab  
+  strokeCards: SwimmingStrokeCard[];
+  
+  // Available filter options
+  availableStrokes: SwimmingStroke[];
+  availablePoolSizes: PoolConfig[];
+  
+  // Summary statistics
+  overview: {
+    totalRaces: number;
+    personalBests: number;
+    recentImprovement: string;
+    favoriteStroke: SwimmingStroke;
+    averageSessionsPerWeek: number;
+  };
 }
 
 /**

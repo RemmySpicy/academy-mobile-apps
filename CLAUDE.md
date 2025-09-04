@@ -142,6 +142,7 @@ The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT a
 
 ### Advanced Features:
 - **🏆 [Achievement System](./docs/features/achievements/README.md)** - Multi-program achievement system with dynamic generation
+- **📊 [Performance System](./docs/features/PERFORMANCE_SYSTEM.md)** - Comprehensive performance tracking with modern UI, charts, and multi-program support
 - **🎯 [Multi-Program Context](./docs/architecture/MULTI_PROGRAM_CONTEXT.md)** - Program switching system
 - **🎨 [Multi-Program Achievements](./docs/features/achievements/MULTI_PROGRAM_SUPPORT.md)** - Program-specific achievement templates and theming
 - **🚀 [Achievements API](./docs/api/ACHIEVEMENTS_API.md)** - Program-aware achievement API integration

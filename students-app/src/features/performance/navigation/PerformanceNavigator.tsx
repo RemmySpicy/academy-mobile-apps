@@ -3,9 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, NavigationHeader } from '@academy/mobile-shared';
 import { PerformanceScreen } from '../screens/PerformanceScreen';
+import { SwimmingEventDetailScreen } from '../screens/SwimmingEventDetailScreen';
 
 export type PerformanceStackParamList = {
   PerformanceMain: undefined;
+  SwimmingEventDetail: { eventId: string };
   PerformanceGoals: undefined;
   PerformanceHistory: undefined;
   PerformanceCompare: undefined;
@@ -38,6 +40,13 @@ export const PerformanceNavigator: React.FC = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen 
+        name="SwimmingEventDetail" 
+        component={SwimmingEventDetailScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -45,6 +54,7 @@ export const PerformanceNavigator: React.FC = () => {
 function getScreenTitle(routeName: keyof PerformanceStackParamList): string {
   const titleMap: Record<keyof PerformanceStackParamList, string> = {
     PerformanceMain: 'Performance',
+    SwimmingEventDetail: 'Event Detail',
     PerformanceGoals: 'Goals',
     PerformanceHistory: 'History',
     PerformanceCompare: 'Compare',

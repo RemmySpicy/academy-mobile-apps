@@ -51,10 +51,17 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
       dataPointText: point.value.toString(),
     }));
 
+    // Format y-axis values with leading zeros for consistency  
+    const formatYAxisValue = (value: any) => {
+      const numValue = typeof value === 'number' ? value : parseFloat(value);
+      if (isNaN(numValue)) return value.toString();
+      return numValue.toFixed(2).padStart(5, '0');
+    };
+
     return (
       <LineChart
         data={data}
-        width={screenWidth - 64}
+        width={Math.min(screenWidth - 80, screenWidth * 0.9)}
         height={height - 60}
         color={chartData.color || theme.colors.interactive.primary}
         thickness={3}
@@ -72,6 +79,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
         yAxisColor={theme.colors.border.primary}
         yAxisTextStyle={{ color: theme.colors.text.secondary, fontSize: 12 }}
         xAxisLabelTextStyle={{ color: theme.colors.text.secondary, fontSize: 10 }}
+        formatYLabel={formatYAxisValue}
         showDataPointOnPress
         pressEnabled
         showTextOnPress
@@ -100,7 +108,7 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({
     return (
       <BarChart
         data={data}
-        width={screenWidth - 64}
+        width={Math.min(screenWidth - 80, screenWidth * 0.9)}
         height={height - 60}
         barWidth={Math.max(20, (screenWidth - 120) / data.length - 10)}
         spacing={Math.max(10, (screenWidth - 120) / data.length / 4)}
@@ -322,6 +330,7 @@ const useThemedStyles = createThemedStyles((theme) =>
     chartContainer: {
       alignItems: 'center',
       justifyContent: 'center',
+      overflow: 'hidden',
     },
     noDataContainer: {
       alignItems: 'center',

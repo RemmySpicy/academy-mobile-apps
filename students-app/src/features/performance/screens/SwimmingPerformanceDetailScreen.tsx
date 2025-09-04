@@ -25,7 +25,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Mock detailed swimming performance data (based on third screenshot)
 const mockPerformanceDetail: SwimmingPerformanceDetail = {
-  event: {
+  performance: {
     title: '50m Breaststroke',
     distance: 50,
     stroke: 'breaststroke',
@@ -233,6 +233,7 @@ export const SwimmingPerformanceDetailScreen: React.FC = () => {
       </View>
     </View>
   );
+
 
   // Best time section with modern card design
   const renderBestTimeSection = () => (

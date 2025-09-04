@@ -170,6 +170,9 @@ export const MenuNavigator: React.FC = () => {
       <Stack.Screen 
         name="Performance" 
         component={PerformanceNavigator}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen 
         name="OurFacilities" 

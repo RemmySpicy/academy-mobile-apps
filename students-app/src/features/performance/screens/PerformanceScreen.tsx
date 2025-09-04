@@ -5,14 +5,12 @@ import {
   ScrollView,
   StyleSheet,
   Pressable,
-  StatusBar,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import { useTheme, createThemedStyles, Header, SegmentedControl } from '@academy/mobile-shared';
+import { useTheme, createThemedStyles, SegmentedControl } from '@academy/mobile-shared';
 import type { PerformanceStackParamList } from '../navigation/PerformanceNavigator';
 
 import { SwimmingPerformanceAdapter } from '../programs/swimming/SwimmingPerformanceAdapter';
@@ -288,15 +286,6 @@ export const PerformanceScreen: React.FC = () => {
     console.log('Navigate to stroke detail:', strokeCard.title);
   };
 
-  // Use Academy Header Component
-  const renderHeader = () => (
-    <Header
-      title="Performance"
-      showProgramSwitcher={false}
-      showNotifications={false}
-      style={{ paddingTop: insets.top }}
-    />
-  );
 
   // Times/Stroke view mode selector
   const renderViewModeSelector = () => (
@@ -398,27 +387,27 @@ export const PerformanceScreen: React.FC = () => {
       <View style={styles.cardsContainer}>
         {performanceCards.map((performanceCard, index) => (
           <Animated.View
-            key={eventCard.id}
+            key={performanceCard.id}
             entering={FadeInRight.delay(index * 50).springify()}
           >
             <Pressable
               style={({ pressed }) => [
-                styles.eventCard,
+                styles.performanceCard,
                 pressed && styles.cardPressed,
               ]}
               onPress={() => handlePerformanceCardPress(performanceCard)}
             >
-              <View style={styles.eventCardContent}>
-                <View style={styles.eventCardDistance}>
-                  <Text style={styles.eventCardTitle}>{eventCard.title}</Text>
+              <View style={styles.performanceCardContent}>
+                <View style={styles.performanceCardDistance}>
+                  <Text style={styles.performanceCardTitle}>{performanceCard.title}</Text>
                   <Ionicons 
                     name="chevron-forward" 
                     size={20} 
                     color={theme.colors.text.secondary}
                   />
                 </View>
-                <Text style={styles.eventCardTime}>{eventCard.currentTime}</Text>
-                <Text style={styles.eventCardDate}>{eventCard.lastRaceDate}</Text>
+                <Text style={styles.performanceCardTime}>{performanceCard.currentTime}</Text>
+                <Text style={styles.performanceCardDate}>{performanceCard.lastRaceDate}</Text>
               </View>
             </Pressable>
           </Animated.View>
@@ -468,8 +457,6 @@ export const PerformanceScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {renderHeader()}
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -669,35 +656,35 @@ const useThemedStyles = createThemedStyles((theme) =>
       gap: theme.spacing.sm,
     },
     
-    // Event Cards (Times view)
-    eventCard: {
+    // Performance Cards (Times view)
+    performanceCard: {
       backgroundColor: theme.colors.background.primary,
       borderRadius: theme.borderRadius.xl,
       padding: theme.spacing.md,
       borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
-      ...theme.elevation.sm,
+      ...theme.elevation.md,
     },
-    eventCardContent: {
+    performanceCardContent: {
       gap: theme.spacing.sm,
     },
-    eventCardDistance: {
+    performanceCardDistance: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
     },
-    eventCardTitle: {
+    performanceCardTitle: {
       fontSize: theme.fontSizes.body,
       fontWeight: theme.fontConfig.fontWeight.semibold,
       color: theme.colors.text.primary,
     },
-    eventCardTime: {
+    performanceCardTime: {
       fontSize: theme.fontSizes.h3,
       fontWeight: theme.fontConfig.fontWeight.bold,
       color: theme.colors.interactive.primary,
       marginVertical: theme.spacing.xs,
     },
-    eventCardDate: {
+    performanceCardDate: {
       fontSize: theme.fontSizes.caption,
       color: theme.colors.text.secondary,
     },
@@ -709,7 +696,7 @@ const useThemedStyles = createThemedStyles((theme) =>
       padding: theme.spacing.md,
       borderWidth: theme.borderWidth.sm,
       borderColor: theme.colors.border.primary,
-      ...theme.elevation.sm,
+      ...theme.elevation.md,
     },
     strokeCardContent: {
       gap: theme.spacing.sm,

@@ -130,6 +130,35 @@ Both apps use a feature-based architecture with:
 
 > **📝 Recent Change**: Courses moved from primary tab navigation to menu system for cleaner UX
 
+#### **Navigation Header Configuration**
+
+**Header Management Strategy:**
+- **Menu Screens**: Inherit headers from MenuNavigator with screen titles
+- **Detail Screens**: Use custom headers with contextual information (e.g., "50m Breaststroke")
+- **Nested Navigators**: Configure `headerShown: false` in parent navigator to prevent duplicates
+
+**Implementation Pattern:**
+```typescript
+// Parent navigator - hide header for nested navigators
+<Stack.Screen 
+  name="Performance" 
+  component={PerformanceNavigator}
+  options={{ headerShown: false }}
+/>
+
+// Child navigator - handle own headers
+<Stack.Screen 
+  name="SwimmingPerformanceDetail" 
+  component={SwimmingPerformanceDetailScreen}
+  options={{ headerShown: false }} // Uses custom header
+/>
+```
+
+**Key Rules:**
+- Set `headerShown: false` for nested navigators in MenuNavigator
+- Detail screens with custom headers should manage their own header display
+- Avoid duplicate headers by properly configuring navigation hierarchy
+
 The apps connect to a FastAPI backend (from ../academy-admin/backend) with JWT authentication and role-based access control.
 
 ## 📖 Documentation Structure

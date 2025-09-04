@@ -22,6 +22,47 @@ Comprehensive form system with React Hook Form integration and advanced selectio
 - **[FormDropdown](./ui/FormDropdown.md)** - Traditional modal dropdown with search capability
 - **[CustomDropdown](./forms/CustomDropdown.md)** - Legacy dropdown selector (use FormDropdown for new implementations)
 
+#### **Selection Component Usage Guidelines** ⭐ RECOMMENDED
+
+**SelectOptions** - Grid-based visual selection:
+```typescript
+import { SelectOptions } from '@academy/mobile-shared';
+
+// For skill levels, program types, visual option grids (2-8 options)
+<SelectOptions
+  title="Swimming Level"
+  options={['Beginner', 'Intermediate', 'Advanced']}
+  value={selectedLevel}
+  onSelectionChange={setSelectedLevel}
+  multiSelect={false}
+  size="md"
+  variant="filled"
+/>
+```
+
+**FormDropdown** - Traditional dropdown with search:
+```typescript
+import { FormDropdown } from '@academy/mobile-shared';
+
+// For form fields, large option sets (10+ options), instructor selection
+<FormDropdown
+  label="Assign Instructor"
+  options={instructorList}
+  value={selectedInstructor}
+  onSelectionChange={setSelectedInstructor}
+  placeholder="Select instructor"
+  searchable={true}
+  required
+/>
+```
+
+**Usage Rules:**
+- **SelectOptions**: Visual grids, skill levels, program selection (2-8 options)
+- **FormDropdown**: Forms, large option sets (10+ options), searchable lists
+- **Always provide titles/labels** for accessibility and user clarity
+- **Use search capability** for option sets larger than 10 items
+- **Follow Academy theming** with `theme.colors.interactive.primary` for selections
+
 ### 🎓 Academy-Specific Components
 Educational institution focused components:
 

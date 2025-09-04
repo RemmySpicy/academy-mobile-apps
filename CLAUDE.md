@@ -192,47 +192,10 @@ The apps support multiple academy programs (swimming, football, basketball, musi
 ### Component Usage
 All shared components and utilities are exported from `@academy/mobile-shared`. Use Academy-themed components with proper TypeScript interfaces.
 
-### Selection Component Guidelines
-The Academy Apps provide comprehensive selection components for different use cases:
+### Component Usage
+All shared components and utilities are exported from `@academy/mobile-shared`. Use Academy-themed components with proper TypeScript interfaces.
 
-#### **SelectOptions** - Grid-based selection
-```typescript
-import { SelectOptions } from '@academy/mobile-shared';
-
-// For skill levels, program types, visual option grids
-<SelectOptions
-  title="Swimming Level"
-  options={['Beginner', 'Intermediate', 'Advanced']}
-  value={selectedLevel}
-  onSelectionChange={setSelectedLevel}
-  multiSelect={false}
-  size="md"
-  variant="filled"
-/>
-```
-
-#### **FormDropdown** - Traditional dropdown
-```typescript
-import { FormDropdown } from '@academy/mobile-shared';
-
-// For form fields, large option sets, instructor selection
-<FormDropdown
-  label="Assign Instructor"
-  options={instructorList}
-  value={selectedInstructor}
-  onSelectionChange={setSelectedInstructor}
-  placeholder="Select instructor"
-  searchable={true}
-  required
-/>
-```
-
-**Selection Component Usage Rules:**
-- **SelectOptions**: Use for visual grids (2-8 options), skill levels, program selection
-- **FormDropdown**: Use for forms, large option sets (10+ options), instructor/student selection
-- **Always provide titles/labels** for accessibility and user clarity
-- **Use search capability** for option sets larger than 10 items
-- **Follow Academy theming** with `theme.colors.interactive.primary` for selections
+**📖 Full Documentation**: See **[Component Library Documentation](./docs/components/README.md)** for comprehensive component reference, including selection components, form utilities, and Academy-specific components.
 
 #### Available Utilities
 - **Date Utilities**: `getDateRange`, `formatDate`, `isToday`, `getStartOfWeek`, `getMonthBoundaries`, `isDateInRange`
@@ -240,208 +203,55 @@ import { FormDropdown } from '@academy/mobile-shared';
 - **Type Definitions**: All utility functions include comprehensive TypeScript interfaces
 
 ### Enhanced Profile Card System
-The Academy Apps feature a modern, interactive profile card system with advanced UI patterns:
-
-#### **Profile Card Features**
-- **Cover Photo with Expansion**: Clickable cover image that expands to full-screen modal
-- **Overlapping Profile Picture**: Large profile avatar (84px) that overlaps the cover photo
-- **Expandable Profile Picture**: Profile picture expands to 200px with enhanced details
-- **Profile Switcher Integration**: Quick access to switch between multiple profiles
-- **Academic Progress Display**: Level, class, and achievement progress indicators
-- **Performance Metrics Access**: Direct link to detailed performance analytics
-
-#### **Profile Switching System**
-- **Multi-Profile Support**: Parents can manage multiple child profiles
-- **Bottom Sheet Interface**: Smooth bottom sheet with profile selection
-- **Visual Profile Cards**: Each profile shows name, level, program, and active status
-- **Create Child Profile**: Easy access to add new student profiles
-- **Academy Theming**: Consistent with Academy purple brand colors
-
-#### **Image Expansion Modal**
-- **Full-Screen Experience**: Dark overlay with centered image display
-- **Touch Interactions**: Tap anywhere to close, dedicated close button
-- **Safe Area Handling**: Proper insets for notched devices
-- **Responsive Sizing**: Images scale appropriately for different screen sizes
-- **Contextual Information**: Shows relevant details (cover photo context, student name)
-
-### Booking Card System
-The Academy Apps use a unified **BookingCard** component that displays participant information for all booking types:
-
-#### **BookingCard Features**
-- **Overlapping participant avatars** (first 5 visible)
-- **Overflow indicator** ("+N" for additional participants)  
-- **Capacity counter** (e.g., "10/15 participants")
-- **Single "Add/Remove Participant" management button**
-- **Price display** for paid bookings
-- **Reschedule/Cancel actions** for upcoming sessions
-
-#### **Schedule Types**
-- **One-time Schedules**: Show specific dates (e.g., "Friday, Jan 12", "Tomorrow")
-- **Recurring Schedules**: Show recurring patterns (e.g., "Every Friday", "Every Tuesday")
-- **Special Events**: Specific dates for swim meets, workshops, competitions
-
-#### **Participant Management**
-- **Bottom Sheet Interface**: Comprehensive participant management using shared `BottomSheet` component
-- **Family Member Support**: Add/remove self, children, spouse with relationship labels
-- **Enrollment Status**: Clear indication of who's already enrolled
-- **Capacity Management**: Visual feedback when sessions are full
-- **One-tap Access**: Single button opens full management interface
-
-#### **Multiple Instructor Support**
-- **Flexible Display**: Supports single or multiple instructors per session
-- **Natural Formatting**: Uses "&" and "," for multiple instructor names
-- **Co-teaching Scenarios**: Two instructors working together
-- **Large Events**: Multiple instructors for community events and competitions
-- **Team Coordination**: Different instructor combinations for variety
-
-#### **Term Progress System** ⭐ NEW
-The Academy Apps feature intelligent term progress tracking in the bookings screen:
-
-- **Term-Based Analytics**: Displays progress for 8-session terms (industry standard)
-- **Smart Session Categorization**: Automatically categorizes sessions as completed, scheduled, or remaining
-- **Visual Progress Indicators**: Color-coded progress with Academy brand colors
-  - **Completed Sessions**: Green (`theme.colors.status.success`)
-  - **Scheduled Sessions**: Academy purple (`theme.colors.interactive.primary`)
-  - **Remaining Sessions**: Gray (`theme.colors.text.tertiary`)
-- **Responsive Layout**: Optimized card layout with 60/140 width ratio for mobile
-- **Real-time Updates**: Dynamically calculates progress based on current booking statuses
-
-**Implementation**: Bookings Screen → Stats Cards → "This Term" card shows detailed progress breakdown
-
-#### **Usage Examples**
-```typescript
-// Unified booking card for all session types
-<BookingCard
-  booking={{
-    participants: familyMembers,
-    maxParticipants: 6,
-    instructor: 'Mike Wilson & Sarah Johnson',
-    price: 14000,
-    isRecurring: true,
-    recurringDay: 'Friday',
-  }}
-  onPress={handleBookingPress}
-  onManageParticipants={handleManageParticipants}
-/>
-
-// Term progress calculation example
-const termStats = {
-  completed: 3,    // Sessions already completed
-  scheduled: 2,    // Sessions booked/upcoming  
-  remaining: 3,    // Sessions left in term
-  total: 8         // Standard term size
-};
-```
-
-### Menu System Implementation
-The Academy Apps feature comprehensive menu systems with production-ready screens, tailored for each user type:
-
-#### **Student App Menu Features**
-- **Enhanced Profile Card**: Modern card with cover photo, profile switching, and expansion modals
-- **Settings Screens**: Notification settings, privacy settings, about screen
-- **Academy Features**: Courses, services, achievements, store, transactions, referrals
-- **Quick Access**: Schedule, achievements, store with visual cards
-- **Profile Management**: Advanced profile switching, profile editing, multi-user support
-
-#### **Instructor App Menu Features**
-- **Instructor Tools**: Class management, student reports, attendance tracker, grade book
-- **Professional Features**: Lesson plans, communication tools, analytics, resources
-- **Quick Access**: Today's classes, take attendance, grade book
-- **Professional Development**: Training resources and certification programs
-- **Profile Management**: Instructor/coordinator role display, professional credentials
-
-All screens are built with:
-- Academy design system compliance
-- Full TypeScript interfaces
-- Accessibility support
-- Mobile-first responsive design
-- Interactive components and state management
-- Modern UI patterns (expandable images, bottom sheets, smooth animations)
-
-### Course System Implementation
-The Academy Apps feature a comprehensive course catalog and detail system with modern enrollment tracking:
-
-#### **Course Catalog Features**
-- **Course Listing**: Comprehensive catalog with search and filtering
-- **Age-Based Pricing Tiers**: Multiple pricing options per course (e.g., Youth 5-17 years: ₦16,000, Adult 18-30 years: ₦20,000)
-- **Term-Based Pricing**: Pricing shown per term/package (8 sessions) rather than per session
-- **Unlimited Enrollment Tracking**: Shows total students who have ever enrolled (e.g., "1,247 students")
-- **Interactive Course Cards**: Modern design with enrollment stats, pricing, and course details
-- **Category Filtering**: Filter by skill level, age group, and course type
-
-#### **Course Detail System**
-- **Comprehensive Course Information**: Full descriptions, instructor profiles, schedules
-- **Interactive Pricing Selection**: Users can select their age-appropriate pricing tier
-- **Dynamic Price Updates**: Real-time price display based on selected tier
-- **Tabbed Interface**: Overview, Curriculum, and Schedule tabs for organized content
-- **Enhanced Curriculum Screen**: Detailed course progression with levels, modules, lessons, and assessments
-- **Enrollment Integration**: "Enroll Now" button with pricing tier data passed to enrollment flow
-
-#### **Course Curriculum Features** ⭐ NEW
-- **3-Star Instructor Grading System**: Each lesson rated 0-3 stars by instructor based on student performance
-- **Hierarchical Structure**: Course levels → Modules → Section tabs → Individual lessons
-- **Swipeable Level Filter**: Horizontal scrollable filter bar supporting 5+ course levels
-- **Module Organization**: "Module X: [Title]" format with progress tracking and difficulty indicators
-- **Comprehensive Assessments**: Level-based assessments with 6-10 items, each with star ratings
-- **Visual Progress Tracking**: Star ratings, completion status, and progress percentages throughout
-- **Interactive Lesson Cards**: Expandable modules with tabbed sections and detailed lesson information
-- **Mobile-Optimized Navigation**: Smooth animations, touch-friendly interactions, swipeable filters
-
-#### **Pricing System Examples**
-```typescript
-// Course with multiple pricing tiers
-{
-  id: '2',
-  title: 'Swimming Club',
-  price: 16000, // Starting price for display
-  pricingTiers: [
-    {
-      id: 'youth',
-      ageRange: '5-17 years',
-      price: 16000,
-      description: 'Youth competitive training program'
-    },
-    {
-      id: 'adult',
-      ageRange: '18-30 years', 
-      price: 20000,
-      description: 'Adult competitive training program'
-    }
-  ],
-  totalEnrolled: 892,
-  sessions: 12
-}
-```
-
-#### **Navigation Flow**
-- **Menu** → **Our Courses** (course catalog with header)
-- **Course Card Press** → **Course Detail** (custom header with back button)
-- **Progress Screen** → **Course Progress Card Press** → **Course Curriculum** (detailed lesson progression)
-- **Enroll Now** → **Enrollment Flow** (with selected pricing tier data)
-
-#### **Course System Implementation**
-The Academy Apps feature a comprehensive course catalog and detail system with modern enrollment tracking:
+The Academy Apps feature a modern, interactive profile card system with advanced UI patterns including cover photo expansion, profile switching, and multi-profile management.
 
 **Key Features:**
-- **Enhanced Course Detail Screen**: Video introductions, comprehensive pricing options, location availability
-- **Age-Based Pricing Tiers**: Multiple pricing options per course (e.g., Youth 5-17 years: ₦16,000, Adult 18-30 years: ₦20,000)
-- **Term-Based Pricing**: Pricing shown per term/package (8 sessions) rather than per session
-- **Unlimited Enrollment Tracking**: Shows total students who have ever enrolled (e.g., "1,247 students")
-- **Location Options**: Both facility-based and mobile instruction availability
-- **Multiple Lesson Types**: Group, private, and semi-private options with dynamic pricing
+- **Interactive Profile Cards**: Cover photo expansion and overlapping profile pictures
+- **Profile Switching System**: Multi-profile support with bottom sheet interface
+- **Image Expansion Modal**: Full-screen image viewing with touch interactions
+- **Academy Integration**: Performance metrics and achievement progress display
 
-**Navigation Flow:**
-- **Menu** → **Our Courses** (course catalog with header)
-- **Course Card Press** → **Course Detail** (comprehensive course information)
-- **Enroll Now** → **Enrollment Flow** (with selected pricing tier data)
+**📖 Full Documentation**: See **[Profile System Documentation](./docs/features/PROFILE_SYSTEM.md)** for comprehensive technical details, implementation examples, and UI patterns.
 
-**Implementation Notes:**
-- Course-specific location availability (some courses facility-only)
-- Universal "From ₦X" pricing format for all courses (shows lowest available price)
-- Social proof integration with enrollment numbers on course cards
-- Nigerian locale formatting for prices and enrollment numbers
-- Mobile-optimized design with touch-friendly interactions
-- See `/docs/features/COURSE_SYSTEM.md` for detailed technical documentation
+### Booking System Implementation
+The Academy Apps feature a comprehensive booking and session management system with term progress tracking.
+
+**Key Features:**
+- **Unified BookingCard Component**: Displays participant info for all booking types
+- **Term Progress System**: 8-session term tracking with visual progress indicators ⭐ NEW
+- **Participant Management**: Bottom sheet interface for add/remove family members
+- **Multi-Program Support**: Works across all academy programs
+- **Schedule Flexibility**: One-time and recurring sessions with multi-instructor support
+
+**Implementation**: Home → Bookings → BookingCard with term progress stats
+
+**📖 Full Documentation**: See **[Booking System Documentation](./docs/features/BOOKING_SYSTEM.md)** for comprehensive technical details, API reference, and implementation examples.
+
+### Menu System Implementation
+The Academy Apps feature comprehensive menu systems with production-ready screens, tailored for each user type.
+
+**Key Features:**
+- **Enhanced Profile Cards**: Modern cards with cover photo, profile switching, and expansion modals
+- **Settings Screens**: Notification settings, privacy settings, about screen
+- **Academy Features**: Courses, services, achievements, store, transactions, referrals
+- **Professional Tools**: Class management, student reports, attendance tracker (Instructors)
+- **Mobile-Optimized**: Modern UI patterns with expandable images, bottom sheets, smooth animations
+
+**📖 Full Documentation**: See **[Menu System Documentation](./docs/features/MENU_SYSTEM.md)** for comprehensive screen details and implementation patterns.
+
+### Course System Implementation
+The Academy Apps feature a comprehensive course catalog and detail system with modern enrollment tracking and enhanced curriculum features.
+
+**Key Features:**
+- **Course Catalog**: Comprehensive listing with search, filtering, and age-based pricing tiers
+- **Course Detail System**: Video introductions, interactive pricing selection, tabbed interface
+- **Enhanced Curriculum**: 3-star instructor grading system with hierarchical lesson structure ⭐ NEW
+- **Enrollment Integration**: Streamlined enrollment flow with pricing tier data
+- **Mobile-Optimized**: Touch-friendly interactions with swipeable filters and smooth animations
+
+**Implementation**: Menu → Our Courses → Course Detail → Enrollment Flow
+
+**📖 Full Documentation**: See **[Course System Documentation](./docs/features/COURSE_SYSTEM.md)** for comprehensive technical details, pricing systems, and curriculum features.
 
 ### Development Commands
 ```bash

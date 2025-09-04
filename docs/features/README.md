@@ -4,6 +4,35 @@ This directory contains comprehensive documentation for all major features imple
 
 ## 📋 Available Features
 
+### 📅 [Booking System](./BOOKING_SYSTEM.md)
+**Status**: ✅ **COMPLETE & PRODUCTION READY**
+
+A comprehensive booking and session management system with intelligent term progress tracking for all academy programs.
+
+**Key Features**:
+- Unified booking card component with participant management
+- 8-session term progress tracking with visual indicators
+- Multi-program support (swimming, music, sports, coding)
+- Bottom sheet participant management with family member support
+- Schedule flexibility (one-time, recurring, special events)
+- Multi-instructor support and payment integration
+
+**Integration**: Home → Bookings → BookingCard with term progress stats
+
+### 👤 [Profile System](./PROFILE_SYSTEM.md)
+**Status**: ✅ **COMPLETE & PRODUCTION READY**
+
+A modern, interactive profile card system with advanced UI patterns for enhanced user experience and multi-profile management.
+
+**Key Features**:
+- Interactive profile cards with cover photo expansion and overlapping profile pictures
+- Multi-profile management with bottom sheet interface for family member switching
+- Image expansion modals with full-screen viewing and touch interactions
+- Academy integration with performance metrics and achievement progress display
+- Mobile-optimized design with smooth animations and touch-friendly interactions
+
+**Integration**: Menu → Profile Card → Profile Switcher → Individual Profile Management
+
 ### 🏆 [Achievement System](./achievements/)
 **Status**: ✅ **COMPLETE & PRODUCTION READY**
 
@@ -63,6 +92,8 @@ Complete help and support system with FAQ, contact forms, and live chat integrat
 
 | Feature | Students App | Instructors App | Shared Components | Documentation |
 |---------|--------------|-----------------|-------------------|---------------|
+| Booking System | ✅ Complete | ➡️ Ready for integration | ✅ Complete | ✅ Complete |
+| Profile System | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete |
 | Achievement System | ✅ Complete | ➡️ Ready for integration | ✅ Complete | ✅ Complete |
 | Course System | ✅ Complete | ➡️ Ready for integration | ✅ Complete | ✅ Complete |
 | Menu System | ✅ Complete | ✅ Complete | ✅ Complete | ✅ Complete |
@@ -73,6 +104,8 @@ Complete help and support system with FAQ, contact forms, and live chat integrat
 ```
 docs/features/
 ├── README.md                           # This file
+├── BOOKING_SYSTEM.md                   # Booking and session management system
+├── PROFILE_SYSTEM.md                   # Profile card system and multi-profile management
 ├── achievements/
 │   ├── README.md                       # Achievement system overview
 │   ├── IMPLEMENTATION.md               # Technical implementation guide

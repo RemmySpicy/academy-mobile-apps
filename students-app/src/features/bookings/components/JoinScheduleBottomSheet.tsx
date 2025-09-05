@@ -511,8 +511,12 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
   // Helper functions - memoized to prevent recreating on every render
   const getDayOfWeekNumber = useCallback((dayName: string): number => {
     if (!dayName || typeof dayName !== 'string') return -1;
+    
+    // Normalize to lowercase and then capitalize first letter for consistent matching
+    const normalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase();
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days.indexOf(dayName);
+    
+    return days.indexOf(normalizedDay);
   }, []);
   
   const formatSessionDate = useCallback((date: Date): string => {

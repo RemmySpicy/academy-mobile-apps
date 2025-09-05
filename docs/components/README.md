@@ -132,6 +132,7 @@ Comprehensive booking and facility schedule management:
 
 - **[BookingCard](./booking/BookingCard.md)** ⭐ **UNIFIED** - Single component with variants for both personal bookings and facility schedules
 - **[ParticipantManagementBottomSheet](./booking/ParticipantManagementBottomSheet.md)** - Participant add/remove interface
+- **[JoinScheduleBottomSheet](./booking/JoinScheduleBottomSheet.md)** ⭐ **ENHANCED** - Advanced session scheduling with individual date selection and multi-participant credit management
 - **[BookingsScreen](./booking/BookingsScreen.md)** - Dual schedule system (My Schedules vs Facility Schedules) with day-based filtering
 
 **Unified BookingCard Features:**
@@ -150,7 +151,7 @@ Navigation, layout, and settings management components:
 - **[Header](./navigation/Header.md)** - Academy header component with program switching and notifications
 - **[MenuList](./navigation/MenuList.md)** - Grid-based navigation menus with customizable cards
 - **[NavigationHeader](./navigation/NavigationHeader.md)** - Stack navigation headers
-- **[BottomSheet](./navigation/BottomSheet.md)** - Bottom sheet interface
+- **[BottomSheet](./navigation/BottomSheet.md)** ⭐ **ENHANCED** - Advanced bottom sheet with snap points ('large', 'full'), gesture handling, and Academy theming
 - **[SettingCard](./settings/SettingCard.md)** - Settings interface component
 - **[CustomSwitch](./settings/CustomSwitch.md)** - Toggle switches for settings
 

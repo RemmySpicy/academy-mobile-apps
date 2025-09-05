@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -41,6 +41,15 @@ interface Participant {
   firstName: string;
   lastName: string;
   relationship: 'self' | 'child' | 'spouse';
+  isSelected: boolean;
+  sessionCredits: number;
+}
+
+interface SessionDate {
+  id: string;
+  date: Date;
+  dayOfWeek: string;
+  formattedDate: string;
   isSelected: boolean;
 }
 
@@ -245,6 +254,14 @@ const useStyles = createThemedStyles((theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.sm,
+      borderRadius: theme.borderRadius.md,
+      marginBottom: theme.spacing.xs / 2,
+    },
+    participantItemSelected: {
+      backgroundColor: theme.colors.interactive.primary + '08',
+      borderWidth: 1,
+      borderColor: theme.colors.interactive.primary + '20',
     },
     checkbox: {
       width: 20,
@@ -272,6 +289,108 @@ const useStyles = createThemedStyles((theme) =>
       fontSize: theme.fontSizes.sm,
       color: theme.colors.text.secondary,
       marginTop: theme.spacing.xs / 2,
+    },
+    participantCredits: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.interactive.primary,
+    },
+    participantWarning: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing.xs / 2,
+      padding: theme.spacing.xs,
+      backgroundColor: theme.colors.status.warning + '15',
+      borderRadius: theme.borderRadius.sm,
+      gap: theme.spacing.xs / 2,
+      borderWidth: 1,
+      borderColor: theme.colors.status.warning + '30',
+    },
+    warningText: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.status.warning,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      flex: 1,
+    },
+    creditsRightColumn: {
+      alignItems: 'flex-end',
+      minWidth: 80,
+    },
+    sessionScheduleContainer: {
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.md,
+      marginTop: theme.spacing.sm,
+    },
+    sessionScheduleTitle: {
+      fontSize: theme.fontSizes.base,
+      fontWeight: theme.fontConfig.fontWeight.semibold,
+      color: theme.colors.text.primary,
+      marginBottom: theme.spacing.sm,
+    },
+    sessionGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.xs,
+    },
+    sessionItem: {
+      paddingVertical: theme.spacing.xs,
+      paddingHorizontal: theme.spacing.sm,
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+      borderColor: theme.colors.border.primary,
+      backgroundColor: theme.colors.background.tertiary,
+      minWidth: '31%',
+      alignItems: 'center',
+    },
+    sessionItemSelected: {
+      backgroundColor: theme.colors.interactive.primary + '15',
+      borderColor: theme.colors.interactive.primary,
+    },
+    sessionItemDeselected: {
+      backgroundColor: theme.colors.status.error + '10',
+      borderColor: theme.colors.status.error + '40',
+    },
+    sessionDate: {
+      fontSize: theme.fontSizes.xs,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+    },
+    sessionDateSelected: {
+      color: theme.colors.interactive.primary,
+    },
+    sessionDateDeselected: {
+      color: theme.colors.status.error,
+    },
+    sessionDay: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      marginTop: theme.spacing.xs / 2,
+    },
+    sessionDaySelected: {
+      color: theme.colors.interactive.primary,
+    },
+    sessionDayDeselected: {
+      color: theme.colors.status.error,
+    },
+    sessionScheduleInfo: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: theme.spacing.sm,
+      paddingTop: theme.spacing.sm,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border.primary,
+    },
+    sessionScheduleInfoText: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    sessionScheduleCount: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.interactive.primary,
     },
     creditsContainer: {
       backgroundColor: theme.colors.interactive.primary + '10',
@@ -323,6 +442,32 @@ const useStyles = createThemedStyles((theme) =>
       fontSize: theme.fontSizes.sm,
       color: theme.colors.text.secondary,
     },
+    participantBreakdownContainer: {
+      marginTop: theme.spacing.sm,
+      paddingTop: theme.spacing.sm,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border.primary,
+    },
+    participantBreakdownItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: theme.spacing.xs / 2,
+    },
+    participantBreakdownName: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+    },
+    participantBreakdownCredits: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.text.primary,
+    },
+    participantBreakdownWarning: {
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontConfig.fontWeight.medium,
+      color: theme.colors.status.warning,
+    },
     joinButton: {
       backgroundColor: theme.colors.interactive.primary,
       borderRadius: theme.borderRadius.lg,
@@ -355,12 +500,82 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
   const styles = useStyles();
   
   const [selectedSessionCount, setSelectedSessionCount] = useState(1);
+  const [customSessions, setCustomSessions] = useState<SessionDate[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([
-    { id: 'self', firstName: 'John', lastName: 'Parent', relationship: 'self', isSelected: true },
-    { id: 'child1', firstName: 'Emma', lastName: 'Parent', relationship: 'child', isSelected: false },
-    { id: 'child2', firstName: 'Noah', lastName: 'Parent', relationship: 'child', isSelected: false },
-    { id: 'spouse', firstName: 'Jane', lastName: 'Parent', relationship: 'spouse', isSelected: false },
+    { id: 'self', firstName: 'John', lastName: 'Parent', relationship: 'self', isSelected: true, sessionCredits: 12 },
+    { id: 'child1', firstName: 'Emma', lastName: 'Parent', relationship: 'child', isSelected: false, sessionCredits: 8 },
+    { id: 'child2', firstName: 'Noah', lastName: 'Parent', relationship: 'child', isSelected: false, sessionCredits: 15 },
+    { id: 'spouse', firstName: 'Jane', lastName: 'Parent', relationship: 'spouse', isSelected: false, sessionCredits: 5 },
   ]);
+
+  // Helper functions - memoized to prevent recreating on every render
+  const getDayOfWeekNumber = useCallback((dayName: string): number => {
+    if (!dayName || typeof dayName !== 'string') return -1;
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days.indexOf(dayName);
+  }, []);
+  
+  const formatSessionDate = useCallback((date: Date): string => {
+    try {
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.warn('Error formatting date:', error);
+      return 'Invalid Date';
+    }
+  }, []);
+
+  // Generate session dates based on selected count and schedule day
+  useEffect(() => {
+    if (!schedule) {
+      setCustomSessions([]);
+      return;
+    }
+    
+    const dates: SessionDate[] = [];
+    const today = new Date();
+    const targetDay = getDayOfWeekNumber(schedule.dayOfWeek);
+    
+    // Safety check for valid day
+    if (targetDay === -1) {
+      console.warn('Invalid day of week:', schedule.dayOfWeek);
+      setCustomSessions([]);
+      return;
+    }
+    
+    // Find next occurrence of the target day
+    let currentDate = new Date(today);
+    let daysAdded = 0;
+    while (currentDate.getDay() !== targetDay && daysAdded < 7) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      daysAdded++;
+    }
+    
+    // Safety check to prevent infinite loops
+    if (daysAdded >= 7) {
+      console.warn('Could not find target day within a week');
+      setCustomSessions([]);
+      return;
+    }
+    
+    // Generate dates for the specified number of sessions
+    for (let i = 0; i < selectedSessionCount && i < 52; i++) { // Max 52 weeks
+      const sessionDate = new Date(currentDate);
+      sessionDate.setDate(currentDate.getDate() + (i * 7)); // Weekly sessions
+      
+      dates.push({
+        id: `session-${i}`,
+        date: new Date(sessionDate), // Create new date object to prevent mutation
+        dayOfWeek: schedule.dayOfWeek,
+        formattedDate: formatSessionDate(sessionDate),
+        isSelected: true,
+      });
+    }
+    
+    setCustomSessions(dates);
+  }, [schedule?.dayOfWeek, schedule?.id, selectedSessionCount]); // More specific dependencies
 
   if (!schedule) return null;
 
@@ -373,14 +588,26 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
     }
   };
 
-  const maxSessionCount = Math.min(userSessionCredits, schedule.totalSessions || 8);
+  // Calculate max session count based on highest available credits among selected participants
   const selectedParticipants = participants.filter(p => p.isSelected);
-  const totalCreditsNeeded = selectedSessionCount * selectedParticipants.length;
+  const maxCreditsInGroup = selectedParticipants.length > 0 
+    ? Math.max(...selectedParticipants.map(p => p.sessionCredits))
+    : userSessionCredits;
+  const maxSessionCount = Math.min(maxCreditsInGroup, schedule.totalSessions || 8);
+  
+  // Calculate selected sessions count and credits needed
+  const selectedSessionsCount = customSessions.filter(s => s.isSelected).length;
+  const participantsWithWarnings = selectedParticipants.filter(p => p.sessionCredits < selectedSessionsCount);
+  const totalCreditsNeeded = selectedParticipants.reduce((total, participant) => {
+    const sessionsForParticipant = Math.min(selectedSessionsCount, participant.sessionCredits);
+    return total + sessionsForParticipant;
+  }, 0);
+  
   const availabilityPercentage = (schedule.currentParticipants / schedule.maxParticipants) * 100;
 
   const canJoin = selectedSessionCount > 0 && selectedParticipants.length > 0 && 
                  (schedule.currentParticipants + selectedParticipants.length <= schedule.maxParticipants) &&
-                 totalCreditsNeeded <= userSessionCredits;
+                 totalCreditsNeeded > 0; // Allow joining even with partial participation
 
   const handleSessionCountChange = (delta: number) => {
     const newCount = selectedSessionCount + delta;
@@ -394,23 +621,62 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
       p.id === participantId ? { ...p, isSelected: !p.isSelected } : p
     ));
   };
+  
+  const toggleSessionDate = (sessionId: string) => {
+    setCustomSessions(prev => prev.map(session => 
+      session.id === sessionId ? { ...session, isSelected: !session.isSelected } : session
+    ));
+  };
 
   const handleJoinSchedule = () => {
     if (!canJoin) {
-      if (totalCreditsNeeded > userSessionCredits) {
-        Alert.alert('Insufficient Credits', `You need ${totalCreditsNeeded} session credits but only have ${userSessionCredits} available.`);
+      if (selectedParticipants.length === 0) {
+        Alert.alert('No Participants Selected', 'Please select at least one participant to join the schedule.');
+      } else if (schedule.currentParticipants + selectedParticipants.length > schedule.maxParticipants) {
+        Alert.alert('Schedule Full', 'There are not enough spots available for all selected participants.');
       } else {
         Alert.alert('Unable to Join', 'Please select at least one participant and ensure there are available spots.');
       }
       return;
     }
 
-    const participantIds = selectedParticipants.map(p => p.id);
-    onJoinSchedule(schedule.id, selectedSessionCount, participantIds);
+    // Show confirmation if some participants will have partial enrollment
+    if (participantsWithWarnings.length > 0) {
+      const warningMessage = participantsWithWarnings.map(p => 
+        `${p.firstName} ${p.lastName} will only be enrolled in ${p.sessionCredits} session${p.sessionCredits !== 1 ? 's' : ''} (has ${p.sessionCredits} credit${p.sessionCredits !== 1 ? 's' : ''})`
+      ).join('\n\n');
+      
+      Alert.alert(
+        'Partial Enrollment Notice',
+        `Some participants will be enrolled in fewer sessions due to insufficient credits:\n\n${warningMessage}\n\nDo you want to continue?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Continue', 
+            onPress: () => {
+              const participantIds = selectedParticipants.map(p => p.id);
+              const selectedDates = customSessions.filter(s => s.isSelected).map(s => s.date);
+              onJoinSchedule(schedule.id, selectedSessionsCount, participantIds);
+            }
+          },
+        ]
+      );
+    } else {
+      const participantIds = selectedParticipants.map(p => p.id);
+      const selectedDates = customSessions.filter(s => s.isSelected).map(s => s.date);
+      onJoinSchedule(schedule.id, selectedSessionsCount, participantIds);
+    }
   };
 
   return (
-    <BottomSheet visible={visible} onClose={onClose}>
+    <BottomSheet 
+      visible={visible} 
+      onClose={onClose}
+      snapPoints={['large', 'full']}
+      initialSnapPoint="large"
+      showDragHandle={true}
+      enablePanDownToClose={true}
+    >
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{ flex: 1 }}>
@@ -483,64 +749,6 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
             </View>
           </View>
 
-          {/* Session Frequency */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>How many sessions?</Text>
-            <View style={styles.frequencyContainer}>
-              <View style={styles.frequencyHeader}>
-                <Text style={styles.frequencyTitle}>Sessions to book</Text>
-                <Text style={styles.remainingSessionsText}>
-                  {userSessionCredits} credits available
-                </Text>
-              </View>
-              
-              <View style={styles.frequencyControls}>
-                <Pressable
-                  style={[
-                    styles.frequencyButton,
-                    selectedSessionCount <= 1 && styles.frequencyButtonDisabled,
-                  ]}
-                  onPress={() => handleSessionCountChange(-1)}
-                  disabled={selectedSessionCount <= 1}
-                >
-                  <Text
-                    style={[
-                      styles.frequencyButtonText,
-                      selectedSessionCount <= 1 && styles.frequencyButtonTextDisabled,
-                    ]}
-                  >
-                    −
-                  </Text>
-                </Pressable>
-
-                <View style={styles.frequencyDisplay}>
-                  <Text style={styles.frequencyValue}>{selectedSessionCount}</Text>
-                  <Text style={styles.frequencyLabel}>
-                    {selectedSessionCount === 1 ? 'session' : 'sessions'}
-                  </Text>
-                </View>
-
-                <Pressable
-                  style={[
-                    styles.frequencyButton,
-                    selectedSessionCount >= maxSessionCount && styles.frequencyButtonDisabled,
-                  ]}
-                  onPress={() => handleSessionCountChange(1)}
-                  disabled={selectedSessionCount >= maxSessionCount}
-                >
-                  <Text
-                    style={[
-                      styles.frequencyButtonText,
-                      selectedSessionCount >= maxSessionCount && styles.frequencyButtonTextDisabled,
-                    ]}
-                  >
-                    +
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-
           {/* Participant Selection */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Who's joining?</Text>
@@ -548,7 +756,10 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
               {participants.map((participant) => (
                 <Pressable
                   key={participant.id}
-                  style={styles.participantItem}
+                  style={[
+                    styles.participantItem,
+                    participant.isSelected && styles.participantItemSelected
+                  ]}
                   onPress={() => toggleParticipant(participant.id)}
                 >
                   <View style={[
@@ -571,9 +782,131 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
                     <Text style={styles.participantRelation}>
                       {getRelationshipLabel(participant.relationship)}
                     </Text>
+                    {participant.isSelected && selectedSessionsCount > participant.sessionCredits && (
+                      <View style={styles.participantWarning}>
+                        <Ionicons
+                          name="warning"
+                          size={12}
+                          color={theme.colors.status.warning}
+                        />
+                        <Text style={styles.warningText}>
+                          Only {participant.sessionCredits} of {selectedSessionsCount} session{selectedSessionsCount !== 1 ? 's' : ''} available
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  
+                  <View style={styles.creditsRightColumn}>
+                    <Text style={styles.participantCredits}>
+                      {participant.sessionCredits} credit{participant.sessionCredits !== 1 ? 's' : ''}
+                    </Text>
                   </View>
                 </Pressable>
               ))}
+            </View>
+          </View>
+
+          {/* Session Frequency */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>How many sessions?</Text>
+            <View style={styles.frequencyContainer}>
+              <View style={styles.frequencyHeader}>
+                <Text style={styles.frequencyTitle}>Sessions to book</Text>
+                <Text style={styles.remainingSessionsText}>
+                  {selectedParticipants.length > 0 ? `Up to ${maxSessionCount} sessions available` : 'Select participants first'}
+                </Text>
+              </View>
+              
+              <View style={styles.frequencyControls}>
+                <Pressable
+                  style={[
+                    styles.frequencyButton,
+                    (selectedSessionCount <= 1 || selectedParticipants.length === 0) && styles.frequencyButtonDisabled,
+                  ]}
+                  onPress={() => handleSessionCountChange(-1)}
+                  disabled={selectedSessionCount <= 1 || selectedParticipants.length === 0}
+                >
+                  <Text
+                    style={[
+                      styles.frequencyButtonText,
+                      (selectedSessionCount <= 1 || selectedParticipants.length === 0) && styles.frequencyButtonTextDisabled,
+                    ]}
+                  >
+                    −
+                  </Text>
+                </Pressable>
+
+                <View style={styles.frequencyDisplay}>
+                  <Text style={styles.frequencyValue}>{selectedSessionCount}</Text>
+                  <Text style={styles.frequencyLabel}>
+                    {selectedSessionCount === 1 ? 'session' : 'sessions'}
+                  </Text>
+                </View>
+
+                <Pressable
+                  style={[
+                    styles.frequencyButton,
+                    (selectedSessionCount >= maxSessionCount || selectedParticipants.length === 0) && styles.frequencyButtonDisabled,
+                  ]}
+                  onPress={() => handleSessionCountChange(1)}
+                  disabled={selectedSessionCount >= maxSessionCount || selectedParticipants.length === 0}
+                >
+                  <Text
+                    style={[
+                      styles.frequencyButtonText,
+                      (selectedSessionCount >= maxSessionCount || selectedParticipants.length === 0) && styles.frequencyButtonTextDisabled,
+                    ]}
+                  >
+                    +
+                  </Text>
+                </Pressable>
+              </View>
+              
+              {/* Session Schedule Display */}
+              {customSessions.length > 0 && (
+                <View style={styles.sessionScheduleContainer}>
+                  <Text style={styles.sessionScheduleTitle}>Session Schedule</Text>
+                  <View style={styles.sessionGrid}>
+                    {customSessions.map((session) => (
+                      <Pressable
+                        key={session.id}
+                        style={[
+                          styles.sessionItem,
+                          session.isSelected 
+                            ? styles.sessionItemSelected 
+                            : styles.sessionItemDeselected
+                        ]}
+                        onPress={() => toggleSessionDate(session.id)}
+                      >
+                        <Text style={[
+                          styles.sessionDate,
+                          session.isSelected 
+                            ? styles.sessionDateSelected 
+                            : styles.sessionDateDeselected
+                        ]}>
+                          {session.formattedDate}
+                        </Text>
+                        <Text style={[
+                          styles.sessionDay,
+                          session.isSelected 
+                            ? styles.sessionDaySelected 
+                            : styles.sessionDayDeselected
+                        ]}>
+                          {session.dayOfWeek}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                  <View style={styles.sessionScheduleInfo}>
+                    <Text style={styles.sessionScheduleInfoText}>
+                      Tap sessions to include/exclude from enrollment
+                    </Text>
+                    <Text style={styles.sessionScheduleCount}>
+                      {selectedSessionsCount} of {customSessions.length} selected
+                    </Text>
+                  </View>
+                </View>
+              )}
             </View>
           </View>
 
@@ -585,24 +918,53 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
             </View>
             <View style={styles.creditsBreakdown}>
               <Text style={styles.breakdownText}>
-                {selectedSessionCount} session{selectedSessionCount !== 1 ? 's' : ''}
+                {selectedSessionsCount} session{selectedSessionsCount !== 1 ? 's' : ''}
               </Text>
               <Text style={styles.breakdownText}>
                 {selectedParticipants.length} participant{selectedParticipants.length !== 1 ? 's' : ''}
               </Text>
             </View>
             
+            {/* Individual Participant Breakdown */}
+            {selectedParticipants.length > 0 && (
+              <View style={styles.participantBreakdownContainer}>
+                {selectedParticipants.map((participant) => {
+                  const sessionsForParticipant = Math.min(selectedSessionsCount, participant.sessionCredits);
+                  const isPartialEnrollment = sessionsForParticipant < selectedSessionsCount;
+                  
+                  return (
+                    <View key={participant.id} style={styles.participantBreakdownItem}>
+                      <Text style={styles.participantBreakdownName}>
+                        {participant.firstName} {participant.lastName}
+                      </Text>
+                      <Text style={[
+                        isPartialEnrollment ? styles.participantBreakdownWarning : styles.participantBreakdownCredits
+                      ]}>
+                        {sessionsForParticipant} credit{sessionsForParticipant !== 1 ? 's' : ''}
+                        {isPartialEnrollment && ` (only ${sessionsForParticipant}/${selectedSessionsCount})`}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            )}
+            
             <View style={styles.remainingCreditsRow}>
-              <Text style={styles.remainingCreditsLabel}>Remaining after booking</Text>
+              <Text style={styles.remainingCreditsLabel}>
+                {participantsWithWarnings.length > 0 
+                  ? 'Total credits from individual limits'
+                  : 'Credits used for full enrollment'
+                }
+              </Text>
               <Text style={[
                 styles.remainingCreditsValue,
                 { 
-                  color: userSessionCredits - totalCreditsNeeded >= 0 
-                    ? theme.colors.status.success 
-                    : theme.colors.status.error 
+                  color: participantsWithWarnings.length > 0 
+                    ? theme.colors.status.warning
+                    : theme.colors.interactive.primary
                 }
               ]}>
-                {userSessionCredits - totalCreditsNeeded} credits
+                {totalCreditsNeeded} credit{totalCreditsNeeded !== 1 ? 's' : ''}
               </Text>
             </View>
           </View>
@@ -615,8 +977,14 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
           disabled={!canJoin}
         >
           <Text style={[styles.joinButtonText, !canJoin && styles.joinButtonTextDisabled]}>
-            {canJoin ? `Join Schedule - ${totalCreditsNeeded} Credits` : 
-             totalCreditsNeeded > userSessionCredits ? 'Insufficient Credits' : 'Cannot Join Schedule'}
+            {canJoin 
+              ? participantsWithWarnings.length > 0 
+                ? `Join Schedule - ${totalCreditsNeeded} Credits (Partial Enrollment)`
+                : `Join Schedule - ${totalCreditsNeeded} Credits`
+              : selectedParticipants.length === 0
+                ? 'Select Participants'
+                : 'Cannot Join Schedule'
+            }
           </Text>
         </Pressable>
       </View>

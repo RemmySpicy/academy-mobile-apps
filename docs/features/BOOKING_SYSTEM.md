@@ -86,13 +86,20 @@ The Academy Apps use a unified **BookingCard** component that displays participa
 
 The Academy Apps feature a comprehensive facility schedule browsing system that allows users to discover and join available sessions.
 
-### **FacilityScheduleCard Component**
-- **Availability Progress Bar**: Visual representation of current capacity
-- **Real-Time Spot Tracking**: Shows current participants vs. maximum capacity  
-- **Color-Coded Status**: Green (available), orange (limited), red (full)
-- **Full Badge Indicator**: Clear "FULL" badge for unavailable sessions
-- **Price Display**: Session pricing with total session count
-- **Join/View Actions**: Quick access to enrollment and detailed information
+### **Enhanced Join Schedule System** ⭐ **NEW**
+- **Smart Session Credits Management**: Individual participant credit tracking with warnings ⭐ **NEW**
+- **Interactive Session Schedule**: Visual calendar showing specific session dates ⭐ **NEW**
+- **Individual Session Selection**: Allow users to select/deselect specific session dates ⭐ **NEW**
+- **Partial Enrollment Support**: Handle participants with varying credit balances ⭐ **NEW**
+- **Performance-Optimized**: Efficient date generation preventing app freezing ⭐ **NEW**
+- **Large Bottom Sheet**: 75% screen height for comprehensive session management ⭐ **NEW**
+
+### **Advanced Credit Management** ⭐ **NEW**
+- **Individual Credit Display**: Shows available credits next to each participant name
+- **Smart Session Count Limits**: Adjusts max sessions based on highest credit balance in group
+- **Visual Warning System**: Amber warnings for participants with insufficient credits
+- **Partial Participation Logic**: Calculates credits based on individual limits
+- **Detailed Credit Breakdown**: Per-participant credit allocation with warnings
 
 ### **Schedule Information Display**
 - **Program Details**: Age group, session type, and skill level
@@ -108,11 +115,12 @@ The Academy Apps feature a comprehensive facility schedule browsing system that 
 - **Status Indicators**: Clear visual feedback for schedule availability
 - **Touch Interactions**: Smooth animations and haptic feedback
 
-### **User Actions**
-- **Join Schedule**: One-tap enrollment for available sessions
-- **View Details**: Comprehensive schedule information modal
-- **Availability Check**: Real-time capacity verification
-- **Price Information**: Transparent pricing display
+### **Enhanced User Actions** ⭐ **UPDATED**
+- **Smart Join Schedule**: Multi-participant enrollment with credit management ⭐ **NEW**
+- **Session Date Management**: Visual session calendar with individual date selection ⭐ **NEW**
+- **Flexible Scheduling**: Remove specific conflicting dates from enrollment ⭐ **NEW**
+- **Partial Enrollment Confirmations**: Clear warnings and confirmation for mixed credit scenarios ⭐ **NEW**
+- **Real-Time Validation**: Dynamic credit calculation and availability checking ⭐ **NEW**
 
 ## 📅 Day-Based Filtering ⭐ **NEW**
 
@@ -187,37 +195,156 @@ const termStats = {
 };
 ```
 
-## 💳 Session Credits System ⭐ **NEW**
+## 💳 Enhanced Session Credits System ⭐ **UPGRADED**
 
-The Academy Apps implement a credit-based booking system for facility schedules, separating course enrollment (payment) from schedule booking (credit usage).
+The Academy Apps implement an advanced credit-based booking system with individual participant tracking and flexible session management.
 
-### **How It Works**
-1. **Course Enrollment**: Users purchase courses and receive session credits
-2. **Schedule Booking**: Users spend session credits to join facility schedules  
-3. **No Additional Payment**: Facility schedule booking uses pre-paid credits
+### **Advanced Credit Features** ⭐ **NEW**
+1. **Individual Credit Tracking**: Each participant has their own credit balance
+2. **Smart Session Management**: Visual session calendar with date-specific selection
+3. **Partial Enrollment Support**: Handle mixed credit scenarios gracefully
+4. **Performance Optimization**: Efficient date generation and rendering
 
-### **Credit Management**
-- **Real-Time Tracking**: Shows available credits and remaining after booking
-- **Smart Validation**: Prevents booking when insufficient credits available
-- **Flexible Usage**: Use credits for any compatible facility schedule
-- **Multi-Participant Support**: Credits calculated per participant (sessions × participants)
+### **Individual Participant Credits** ⭐ **NEW**
+- **Credit Display**: Shows available credits next to each participant name (e.g., "12 credits")
+- **Smart Limits**: Session count adjusts to highest credit balance in selected group
+- **Visual Warnings**: Amber alerts for participants with insufficient credits
+- **Partial Participation**: Automatically calculates individual session limits
 
-### **User Experience**
-- **Clear Messaging**: "1 credit per session" instead of pricing
-- **Credit Calculator**: Shows total credits needed and remaining balance
-- **Insufficient Credits Warning**: Clear error messages when credits are low
-- **Success Confirmation**: Confirms credit deduction and booking completion
+### **Interactive Session Selection** ⭐ **NEW**
+- **Visual Calendar**: Shows specific session dates based on schedule day
+- **Individual Selection**: Tap sessions to include/exclude from enrollment
+- **Flexible Scheduling**: Remove conflicting dates while keeping others
+- **Real-Time Updates**: Credit calculations update as sessions are selected/deselected
 
-### **Implementation**
+### **Enhanced User Experience** ⭐ **NEW**
+- **Detailed Breakdown**: Per-participant credit allocation with warnings
+- **Smart Confirmations**: Clear dialogs explaining partial enrollment scenarios
+- **Large Interface**: 75% screen height bottom sheet for comprehensive management
+- **Performance Optimized**: Prevents app freezing with efficient date logic
+
+### **Implementation** ⭐ **UPDATED**
 ```typescript
-// Credit calculation
-const creditsNeeded = sessionCount * participants.length;
+// Individual participant credits
+interface Participant {
+  id: string;
+  firstName: string;
+  lastName: string;
+  sessionCredits: number; // Individual credit balance
+  isSelected: boolean;
+}
 
-// Validation
-const canBook = creditsNeeded <= userSessionCredits && availableSpots >= participants.length;
+// Session date management
+interface SessionDate {
+  id: string;
+  date: Date;
+  formattedDate: string;
+  isSelected: boolean;
+}
 
-// Credit deduction
-setUserSessionCredits(prev => prev - creditsNeeded);
+// Smart credit calculation
+const selectedSessionsCount = customSessions.filter(s => s.isSelected).length;
+const totalCreditsNeeded = selectedParticipants.reduce((total, participant) => {
+  const sessionsForParticipant = Math.min(selectedSessionsCount, participant.sessionCredits);
+  return total + sessionsForParticipant;
+}, 0);
+
+// Partial enrollment detection
+const participantsWithWarnings = selectedParticipants.filter(p => 
+  p.sessionCredits < selectedSessionsCount
+);
+```
+
+## 📅 Interactive Session Schedule System ⭐ **NEW**
+
+The Academy Apps feature an advanced session schedule management system that allows users to view and customize their enrollment on a session-by-session basis.
+
+### **Dynamic Date Generation**
+- **Weekly Scheduling**: Automatically generates dates based on schedule's day of the week
+- **Smart Start Date**: Finds next occurrence of target day from current date
+- **Performance Optimized**: Efficient date calculation with safety limits (max 52 sessions)
+- **Error Handling**: Graceful handling of invalid days and date edge cases
+
+### **Visual Session Calendar**
+- **Grid Layout**: 3-column responsive grid showing session dates
+- **Date Formatting**: Clean "Dec 15" format with day name display
+- **Interactive Selection**: Tap any session to include/exclude from enrollment
+- **Visual States**:
+  - **Selected**: Purple background with purple text (`theme.colors.interactive.primary`)
+  - **Deselected**: Red tinted background with red text (`theme.colors.status.error`)
+  - **Clear Labeling**: Date and day of week for each session
+
+### **Flexible Session Management**
+- **Custom Selection**: Users can deselect specific conflicting dates
+- **Real-Time Counting**: "X of Y selected" counter updates dynamically
+- **Helper Text**: "Tap sessions to include/exclude from enrollment"
+- **Credit Recalculation**: Credits update automatically based on selected sessions
+
+### **User Flow Integration**
+1. **Select Participants**: Choose family members with their individual credit balances
+2. **Set Base Session Count**: Use slider to set desired number of sessions
+3. **View Generated Schedule**: See specific dates for that day of the week
+4. **Customize Schedule**: Tap to remove conflicting dates
+5. **Review Credits**: See per-participant allocation and warnings
+6. **Confirm Enrollment**: Join with customized session selection
+
+### **Performance Optimizations** ⭐ **CRITICAL**
+- **useCallback Memoization**: Helper functions cached to prevent recreation
+- **Efficient useEffect**: Direct state updates instead of circular dependencies
+- **Safety Limits**: Maximum iteration counts to prevent infinite loops
+- **Error Boundaries**: Try-catch blocks for date operations
+- **Optimized Dependencies**: Specific property watching instead of full objects
+
+### **Implementation Example**
+```typescript
+// Session date generation with safety checks
+useEffect(() => {
+  if (!schedule) {
+    setCustomSessions([]);
+    return;
+  }
+  
+  const dates: SessionDate[] = [];
+  const today = new Date();
+  const targetDay = getDayOfWeekNumber(schedule.dayOfWeek);
+  
+  // Safety check for valid day
+  if (targetDay === -1) {
+    console.warn('Invalid day of week:', schedule.dayOfWeek);
+    return;
+  }
+  
+  // Find next occurrence with loop protection
+  let currentDate = new Date(today);
+  let daysAdded = 0;
+  while (currentDate.getDay() !== targetDay && daysAdded < 7) {
+    currentDate.setDate(currentDate.getDate() + 1);
+    daysAdded++;
+  }
+  
+  // Generate weekly sessions
+  for (let i = 0; i < selectedSessionCount && i < 52; i++) {
+    const sessionDate = new Date(currentDate);
+    sessionDate.setDate(currentDate.getDate() + (i * 7));
+    
+    dates.push({
+      id: `session-${i}`,
+      date: new Date(sessionDate),
+      dayOfWeek: schedule.dayOfWeek,
+      formattedDate: formatSessionDate(sessionDate),
+      isSelected: true,
+    });
+  }
+  
+  setCustomSessions(dates);
+}, [schedule?.dayOfWeek, schedule?.id, selectedSessionCount]);
+
+// Session selection toggle
+const toggleSessionDate = useCallback((sessionId: string) => {
+  setCustomSessions(prev => prev.map(session => 
+    session.id === sessionId ? { ...session, isSelected: !session.isSelected } : session
+  ));
+}, []);
 ```
 
 ## 👥 Participant Management
@@ -325,7 +452,7 @@ BookingsScreen
 - **`BookingsScreen`**: Main screen with dual schedule system and stats
 - **`BookingCard`**: ⭐ **UNIFIED** - Single component with variants for both booking types (`booking` | `facility-schedule`)
 - **`ParticipantManagementBottomSheet`**: Participant management interface  
-- **`JoinScheduleBottomSheet`**: ⭐ **NEW** - Credit-based schedule joining interface
+- **`JoinScheduleBottomSheet`**: ⭐ **ENHANCED** - Advanced session management with individual date selection, multi-participant credit tracking, and partial enrollment support
 - **`TermProgressCalculator`**: Smart progress calculation logic
 
 ### **State Management**

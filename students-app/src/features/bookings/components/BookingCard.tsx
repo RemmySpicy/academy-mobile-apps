@@ -16,6 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme, createThemedStyles } from '@academy/mobile-shared';
 import { ParticipantManagementBottomSheet } from './ParticipantManagementBottomSheet';
+import { JoinScheduleBottomSheet } from './JoinScheduleBottomSheet';
 
 interface Participant {
   id: string;
@@ -56,8 +57,9 @@ interface BookingCardProps {
   variant?: 'booking' | 'facility-schedule';
   onPress?: (booking: Booking) => void;
   onManageParticipants?: (bookingId: string) => void;
-  onJoinSchedule?: (booking: Booking) => void;
+  onJoinSchedule?: (scheduleId: string, sessionCount: number, participants: string[]) => void;
   onViewDetails?: (booking: Booking) => void;
+  userSessionCredits?: number;
 }
 
 const useCardStyles = createThemedStyles((theme) =>
@@ -354,11 +356,13 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   onManageParticipants,
   onJoinSchedule,
   onViewDetails,
+  userSessionCredits = 8,
 }) => {
   const { theme } = useTheme();
   const styles = useCardStyles();
   const scale = useSharedValue(1);
   const [showParticipantSheet, setShowParticipantSheet] = useState(false);
+  const [showJoinScheduleSheet, setShowJoinScheduleSheet] = useState(false);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -468,6 +472,13 @@ export const BookingCard: React.FC<BookingCardProps> = ({
     console.log('Remove participant:', participantId, 'from booking:', booking.id, 'reason:', reason);
     // TODO: Implement remove participant logic
     onManageParticipants?.(booking.id);
+  };
+
+  // Handler function for joining schedule
+  const handleJoinSchedule = (scheduleId: string, sessionCount: number, participants: string[]) => {
+    console.log('Join schedule:', scheduleId, 'sessions:', sessionCount, 'participants:', participants);
+    onJoinSchedule?.(scheduleId, sessionCount, participants);
+    setShowJoinScheduleSheet(false);
   };
 
   return (
@@ -617,21 +628,24 @@ export const BookingCard: React.FC<BookingCardProps> = ({
           </View>
         </View>
 
-        {/* Location and Price */}
+        {/* Location and Credits */}
         <View style={styles.detailRow}>
           <View style={styles.detailItem}>
             <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
             <Text style={styles.detailText}>{booking.location}</Text>
           </View>
           {variant === 'facility-schedule' && (
-            <Text style={styles.priceText}>
-              {formatPrice(booking.price)}
-              {booking.totalSessions > 1 && (
-                <Text style={[styles.detailText, { marginLeft: theme.spacing.xs / 2 }]}>
-                  /{booking.totalSessions} sessions
-                </Text>
-              )}
-            </Text>
+            <View style={styles.detailItem}>
+              <Ionicons name="card-outline" size={16} color={theme.colors.text.tertiary} />
+              <Text style={styles.detailText}>
+                1 credit per session
+                {booking.totalSessions > 1 && (
+                  <Text style={styles.detailText}>
+                    • {booking.totalSessions} sessions available
+                  </Text>
+                )}
+              </Text>
+            </View>
           )}
         </View>
 
@@ -690,7 +704,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
                   styles.joinButton,
                   isFullyBooked && styles.joinButtonDisabled
                 ]}
-                onPress={() => !isFullyBooked && onJoinSchedule?.(booking)}
+                onPress={() => !isFullyBooked && setShowJoinScheduleSheet(true)}
                 disabled={isFullyBooked}
               >
                 <Ionicons 
@@ -717,6 +731,32 @@ export const BookingCard: React.FC<BookingCardProps> = ({
           maxParticipants={maxParticipants}
           onAddParticipant={handleAddParticipant}
           onRemoveParticipant={handleRemoveParticipant}
+        />
+      )}
+
+      {/* Join Schedule Bottom Sheet - Only for facility-schedule variant */}
+      {variant === 'facility-schedule' && (
+        <JoinScheduleBottomSheet
+          visible={showJoinScheduleSheet}
+          onClose={() => setShowJoinScheduleSheet(false)}
+          schedule={{
+            id: booking.id,
+            scheduleTitle: booking.scheduleTitle,
+            scheduleType: booking.scheduleType,
+            instructor: booking.instructor,
+            dayOfWeek: booking.dayOfWeek || 'Monday',
+            time: booking.time,
+            location: booking.location,
+            totalSessions: booking.totalSessions,
+            currentParticipants: booking.currentParticipants || 0,
+            maxParticipants: maxParticipants,
+            availableSpots: booking.availableSpots || 0,
+            description: booking.description,
+            ageGroup: booking.ageRange,
+            skillLevel: booking.skillLevel,
+          }}
+          userSessionCredits={userSessionCredits}
+          onJoinSchedule={handleJoinSchedule}
         />
       )}
     </Animated.View>

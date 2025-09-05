@@ -58,7 +58,6 @@ interface FacilitySchedule {
   date: string;
   time: string;
   location: string;
-  price: number;
   totalSessions: number;
   color: string;
   currentParticipants: number;
@@ -273,6 +272,9 @@ export const BookingsScreen: React.FC = () => {
   const [facilityFilter, setFacilityFilter] = useState<'all' | 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'>('all');
   const [notificationCount, setNotificationCount] = useState(3);
   const [scheduleType, setScheduleType] = useState<'my-schedules' | 'facility-schedules'>('my-schedules');
+  
+  // Mock user session credits (in real app, this would come from user profile/API)
+  const [userSessionCredits, setUserSessionCredits] = useState(12);
 
   // Get current day of the week
   const getCurrentDay = () => {
@@ -597,7 +599,6 @@ export const BookingsScreen: React.FC = () => {
       time: '7:00 AM - 8:00 AM',
       location: 'Pool C',
       status: 'upcoming',
-      price: 15000,
       sessionNumber: 6,
       totalSessions: 12,
       color: theme.colors.interactive.primary,
@@ -657,7 +658,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Mondays',
       time: '6:00 PM - 7:00 PM',
       location: 'Pool A',
-      price: 120000,
       totalSessions: 8,
       color: theme.colors.interactive.primary,
       currentParticipants: 4,
@@ -678,7 +678,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Tuesdays',
       time: '4:00 PM - 4:45 PM',
       location: 'Pool B',
-      price: 80000,
       totalSessions: 6,
       color: theme.colors.interactive.accent,
       currentParticipants: 6,
@@ -699,7 +698,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Wednesdays',
       time: '5:30 PM - 7:00 PM',
       location: 'Competition Pool',
-      price: 200000,
       totalSessions: 12,
       color: theme.colors.status.success,
       currentParticipants: 12,
@@ -720,7 +718,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Saturdays',
       time: '10:00 AM - 11:30 AM',
       location: 'Family Pool',
-      price: 0,
       totalSessions: 4,
       color: theme.colors.status.info || theme.colors.interactive.accent,
       currentParticipants: 8,
@@ -741,7 +738,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Thursdays',
       time: '6:00 AM - 8:00 AM',
       location: 'Lap Pool',
-      price: 15000,
       totalSessions: 1,
       color: theme.colors.interactive.purple,
       currentParticipants: 3,
@@ -762,7 +758,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Fridays',
       time: '7:00 PM - 8:00 PM',
       location: 'Therapy Pool',
-      price: 90000,
       totalSessions: 8,
       color: theme.colors.status.warning,
       currentParticipants: 10,
@@ -783,7 +778,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Sundays',
       time: '3:30 PM - 4:30 PM',
       location: 'Pool C',
-      price: 150000,
       totalSessions: 10,
       color: theme.colors.interactive.primary,
       currentParticipants: 3,
@@ -804,7 +798,6 @@ export const BookingsScreen: React.FC = () => {
       date: 'Saturdays',
       time: '8:00 AM - 10:00 AM',
       location: 'Outdoor Pool',
-      price: 180000,
       totalSessions: 6,
       color: theme.colors.status.success,
       currentParticipants: 5,
@@ -919,9 +912,22 @@ export const BookingsScreen: React.FC = () => {
     // TODO: This could trigger a refresh of booking data or update state
   };
 
-  const handleJoinSchedule = (schedule: FacilitySchedule) => {
-    console.log('Join schedule:', schedule.id);
-    // TODO: Implement join schedule logic - navigate to enrollment flow
+  const handleJoinSchedule = (scheduleId: string, sessionCount: number, participants: string[]) => {
+    const creditsNeeded = sessionCount * participants.length;
+    console.log('Join schedule:', scheduleId, 'sessions:', sessionCount, 'participants:', participants, 'credits needed:', creditsNeeded);
+    
+    // Deduct credits from user account
+    setUserSessionCredits(prev => prev - creditsNeeded);
+    
+    // TODO: Implement complete join schedule logic
+    // This should:
+    // 1. ✅ Deduct sessionCount * participants.length credits from user account (done above)
+    // 2. Create booking entries for the selected sessions (API call)
+    // 3. Update UI to reflect new bookings (refresh bookings data)
+    // 4. Show success confirmation (toast notification)
+    
+    // For now, show a simple success message
+    console.log(`Successfully joined schedule! ${creditsNeeded} credits deducted. Remaining: ${userSessionCredits - creditsNeeded}`);
   };
 
   const handleViewScheduleDetails = (schedule: FacilitySchedule) => {
@@ -1163,6 +1169,7 @@ export const BookingsScreen: React.FC = () => {
                 variant="facility-schedule"
                 onJoinSchedule={handleJoinSchedule}
                 onViewDetails={handleViewScheduleDetails}
+                userSessionCredits={userSessionCredits}
               />
             );
           }}

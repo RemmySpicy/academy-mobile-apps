@@ -29,7 +29,8 @@ The booking system provides students and parents with comprehensive session mana
 - **Participant Management**: Add/remove family members from sessions
 - **Multi-Program Support**: Works across all academy programs (swimming, music, etc.)
 - **Schedule Flexibility**: Supports one-time and recurring sessions
-- **Payment Integration**: Price display and payment status tracking
+- **Session Credits System**: Credit-based booking for facility schedules ⭐ **NEW**
+- **Payment Integration**: Price display for personal bookings (already paid)
 
 ## 🔄 Dual Schedule System ⭐ **NEW**
 
@@ -46,8 +47,8 @@ The Academy Apps feature a comprehensive dual schedule system that allows users 
 - **Available Schedule Browsing**: Discover open sessions across all programs
 - **Day-Based Filtering**: Sunday through Saturday with current day highlighting
 - **Availability Indicators**: Real-time capacity and spots available
-- **Join Functionality**: One-tap enrollment for available schedules
-- **Detailed Information**: Instructor, price, session count, and descriptions
+- **Join Functionality**: Credit-based enrollment for available schedules ⭐ **NEW**
+- **Detailed Information**: Instructor, session credits required, session count, and descriptions ⭐ **UPDATED**
 
 ### **Custom Tab Selector**
 - **Academy Design**: Purple active state with clean visual hierarchy
@@ -186,6 +187,39 @@ const termStats = {
 };
 ```
 
+## 💳 Session Credits System ⭐ **NEW**
+
+The Academy Apps implement a credit-based booking system for facility schedules, separating course enrollment (payment) from schedule booking (credit usage).
+
+### **How It Works**
+1. **Course Enrollment**: Users purchase courses and receive session credits
+2. **Schedule Booking**: Users spend session credits to join facility schedules  
+3. **No Additional Payment**: Facility schedule booking uses pre-paid credits
+
+### **Credit Management**
+- **Real-Time Tracking**: Shows available credits and remaining after booking
+- **Smart Validation**: Prevents booking when insufficient credits available
+- **Flexible Usage**: Use credits for any compatible facility schedule
+- **Multi-Participant Support**: Credits calculated per participant (sessions × participants)
+
+### **User Experience**
+- **Clear Messaging**: "1 credit per session" instead of pricing
+- **Credit Calculator**: Shows total credits needed and remaining balance
+- **Insufficient Credits Warning**: Clear error messages when credits are low
+- **Success Confirmation**: Confirms credit deduction and booking completion
+
+### **Implementation**
+```typescript
+// Credit calculation
+const creditsNeeded = sessionCount * participants.length;
+
+// Validation
+const canBook = creditsNeeded <= userSessionCredits && availableSpots >= participants.length;
+
+// Credit deduction
+setUserSessionCredits(prev => prev - creditsNeeded);
+```
+
 ## 👥 Participant Management
 
 ### **Bottom Sheet Interface**
@@ -282,14 +316,16 @@ BookingsScreen
         ├── Unified BookingCard Component ⭐ UNIFIED
         ├── Availability Progress Bars
         ├── Join Schedule Actions
-        └── Price & Capacity Display
+        ├── Session Credits Display ⭐ **NEW**
+        └── JoinScheduleBottomSheet ⭐ **NEW**
 ```
 
 ### **Key Components**
 
 - **`BookingsScreen`**: Main screen with dual schedule system and stats
 - **`BookingCard`**: ⭐ **UNIFIED** - Single component with variants for both booking types (`booking` | `facility-schedule`)
-- **`ParticipantManagementBottomSheet`**: Participant management interface
+- **`ParticipantManagementBottomSheet`**: Participant management interface  
+- **`JoinScheduleBottomSheet`**: ⭐ **NEW** - Credit-based schedule joining interface
 - **`TermProgressCalculator`**: Smart progress calculation logic
 
 ### **State Management**
@@ -303,6 +339,7 @@ interface BookingState {
   scheduleType: 'my-schedules' | 'facility-schedules';
   termStats: TermStats;
   currentDay: string; // ⭐ NEW
+  userSessionCredits: number; // ⭐ NEW
 }
 
 interface FacilitySchedule {
@@ -313,7 +350,8 @@ interface FacilitySchedule {
   dayOfWeek: string; // ⭐ NEW
   time: string;
   location: string;
-  price: number;
+  // No price field - uses session credits ⭐ **UPDATED**
+  totalSessions: number;
   currentParticipants: number;
   maxParticipants: number;
   availableSpots: number;
@@ -367,7 +405,7 @@ interface FacilitySchedule {
     dayOfWeek: 'monday',
     time: '6:00 PM - 7:00 PM',
     location: 'Pool A',
-    price: 120000,
+    // No price field - uses session credits
     totalSessions: 8,
     currentParticipants: 4,
     maxParticipants: 8,
@@ -377,6 +415,7 @@ interface FacilitySchedule {
   variant="facility-schedule"
   onJoinSchedule={handleJoinSchedule}
   onViewDetails={handleViewDetails}
+  userSessionCredits={userSessionCredits}
 />
 
 // Personal booking variant - shows participants and status

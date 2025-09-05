@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 // Scheduling Components
-import { ScheduleInput, ScheduleList, Schedules, ScheduleTypeSelector, FilterBar as ScheduleFilterBar, BookingCard } from '../../../components/scheduling';
+import { ScheduleInput, ScheduleList, Schedules, ScheduleTypeSelector, FilterBar as ScheduleFilterBar } from '../../../components/scheduling';
 
 // Types
 import { ShowcaseSectionProps } from '../types/showcaseTypes';
@@ -43,6 +43,7 @@ const SchedulingSection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) =>
         ScheduleFilterBar (Compact) - Space-efficient filter variant for narrow layouts
       </Text>
       
+      {/* BookingCard showcase removed - using app-specific implementations
       <Text style={styles.subsectionTitle}>BookingCard</Text>
       <BookingCard
         booking={{
@@ -110,6 +111,7 @@ const SchedulingSection: React.FC<ShowcaseSectionProps> = ({ theme, styles }) =>
       <Text style={styles.cardContent}>
         BookingCard variants showing different status states (completed, cancelled) with compact display
       </Text>
+      */}
 
       <Text style={styles.subsectionTitle}>ScheduleInput</Text>
       <ScheduleInput

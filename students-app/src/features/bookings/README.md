@@ -17,7 +17,8 @@ Unified booking card component with participant management capabilities.
 - Single "Add/Remove Participant" management button
 - Bottom sheet interface for participant management
 - Support for multiple instructors
-- Price display for paid bookings
+- Session credit display for facility schedules
+- Price display for personal bookings (already paid)
 - Reschedule/Cancel actions
 - Support for recurring schedules
 

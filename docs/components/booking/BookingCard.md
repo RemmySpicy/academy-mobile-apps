@@ -7,8 +7,8 @@ A unified React Native component for displaying both personal bookings and facil
 ## 🎯 Overview
 
 The BookingCard is a versatile, unified component that handles two distinct use cases:
-- **Personal Bookings** (`variant="booking"`): User's booked sessions with participant management
-- **Facility Schedules** (`variant="facility-schedule"`): Available schedules for joining
+- **Personal Bookings** (`variant="booking"`): User's **already booked** facility schedules with participant management ⭐ **UPDATED**
+- **Facility Schedules** (`variant="facility-schedule"`): **Available** schedules for joining using session credits
 
 ## 📱 Usage
 
@@ -17,20 +17,21 @@ The BookingCard is a versatile, unified component that handles two distinct use 
 ```typescript
 import { BookingCard } from '@academy/mobile-shared';
 
-// Personal booking variant (default)
+// Personal bookings variant (user's booked schedules)
 <BookingCard
-  booking={personalBooking}
+  booking={bookedSchedule}
   variant="booking" // default
   onPress={handleBookingPress}
   onManageParticipants={handleManageParticipants}
 />
 
-// Facility schedule variant
+// Available facility schedule variant
 <BookingCard
-  booking={facilitySchedule}
+  booking={availableSchedule}
   variant="facility-schedule"
   onJoinSchedule={handleJoinSchedule}
   onViewDetails={handleViewDetails}
+  userSessionCredits={userSessionCredits}
 />
 ```
 
@@ -43,8 +44,9 @@ interface BookingCardProps {
   variant?: 'booking' | 'facility-schedule';
   onPress?: (booking: Booking) => void;
   onManageParticipants?: (bookingId: string) => void;
-  onJoinSchedule?: (booking: Booking) => void;
+  onJoinSchedule?: (scheduleId: string, sessionCount: number, participants: string[]) => void;
   onViewDetails?: (booking: Booking) => void;
+  userSessionCredits?: number; // Required for facility-schedule variant
 }
 
 interface Booking {
@@ -55,8 +57,7 @@ interface Booking {
   date: string;
   time: string;
   location: string;
-  status?: 'upcoming' | 'completed' | 'cancelled' | 'rescheduled';
-  price: number;
+  status?: 'upcoming' | 'completed' | 'cancelled' | 'rescheduled'; // Only for booking variant
   sessionNumber?: number;
   totalSessions: number;
   color: string;
@@ -75,34 +76,41 @@ interface Booking {
 
 ## 🎨 Variant Features
 
-### Booking Variant (`variant="booking"`)
+### Booking Variant (`variant="booking"`) ⭐ **UPDATED**
+
+**Purpose**: Displays user's **already booked** facility schedules (sessions they've enrolled in using credits)
 
 **Visual Elements:**
-- Participant avatars with overflow indicators
+- Participant avatars with overflow indicators  
 - Status badges (upcoming, completed, cancelled, rescheduled)
 - Add/Remove participant button
 - Reschedule/Cancel actions
+- **No pricing display** (already paid with session credits)
 
 **Key Features:**
 - Participant management with bottom sheet interface
-- Status-based action buttons
+- Status-based action buttons  
 - Session progress tracking
 - Family member management
+- **Credit-neutral display** (no payment information)
 
-### Facility Schedule Variant (`variant="facility-schedule"`)
+### Facility Schedule Variant (`variant="facility-schedule"`) ⭐ **UPDATED**
+
+**Purpose**: Displays **available** facility schedules that users can join using session credits
 
 **Visual Elements:**
 - Availability progress bar with color coding
 - Current participants counter
-- Price display with session count
-- Join/View Details actions
+- **Session credits display** ("1 credit per session") ⭐ **NEW**
+- Join/View Details actions with **JoinScheduleBottomSheet** ⭐ **NEW**
 - "FULL" badge when no spots available
 
 **Key Features:**
 - Real-time capacity tracking
 - Color-coded availability (green/orange/red)
-- One-tap enrollment functionality
-- Pricing transparency
+- **Credit-based enrollment** functionality ⭐ **NEW**
+- **Session credits transparency** (no pricing) ⭐ **NEW**
+- **Multi-participant credit calculation** ⭐ **NEW**
 
 ## 🎨 Visual Design
 
@@ -119,7 +127,7 @@ interface Booking {
 
 ## 💻 Implementation Examples
 
-### Personal Booking Usage
+### Personal Booking Usage ⭐ **UPDATED**
 
 ```typescript
 const handleBookingPress = (booking: Booking) => {
@@ -134,13 +142,14 @@ const handleManageParticipants = (bookingId: string) => {
 <BookingCard
   booking={{
     id: '1',
-    scheduleTitle: 'Learn to Swim',
-    scheduleType: 'Kids • Private • Beginner',
+    scheduleTitle: 'Beginner Adult Swimming', // User's booked schedule
+    scheduleType: 'Adults • Group • Beginner',
     instructor: 'Sarah Johnson',
-    status: 'upcoming',
+    status: 'upcoming', // Only booking variant has status
     participants: familyMembers,
     sessionNumber: 3,
     totalSessions: 8,
+    // No price field - already paid with session credits
     // ... other properties
   }}
   variant="booking"
@@ -149,12 +158,16 @@ const handleManageParticipants = (bookingId: string) => {
 />
 ```
 
-### Facility Schedule Usage
+### Facility Schedule Usage ⭐ **UPDATED**
 
 ```typescript
-const handleJoinSchedule = (schedule: Booking) => {
-  // Navigate to enrollment flow
-  navigation.navigate('ScheduleEnrollment', { scheduleId: schedule.id });
+const handleJoinSchedule = (scheduleId: string, sessionCount: number, participants: string[]) => {
+  const creditsNeeded = sessionCount * participants.length;
+  console.log('Joining schedule:', scheduleId, 'Credits needed:', creditsNeeded);
+  
+  // Deduct session credits and create booking
+  setUserSessionCredits(prev => prev - creditsNeeded);
+  // API call to create booking entries
 };
 
 const handleViewDetails = (schedule: Booking) => {
@@ -166,19 +179,21 @@ const handleViewDetails = (schedule: Booking) => {
 <BookingCard
   booking={{
     id: 'fs1',
-    scheduleTitle: 'Beginner Adult Swimming',
+    scheduleTitle: 'Beginner Adult Swimming', // Available schedule
     scheduleType: 'Adults • Group • Beginner',
     instructor: 'Sarah Johnson',
     currentParticipants: 4,
     maxParticipants: 8,
     availableSpots: 4,
-    price: 120000,
     totalSessions: 8,
+    dayOfWeek: 'monday',
+    // No price field - uses session credits instead
     // ... other properties
   }}
   variant="facility-schedule"
   onJoinSchedule={handleJoinSchedule}
   onViewDetails={handleViewDetails}
+  userSessionCredits={userSessionCredits} // Required for credit validation
 />
 ```
 

@@ -634,16 +634,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
             <Text style={styles.detailText}>{booking.location}</Text>
           </View>
-          {variant === 'facility-schedule' && (
+          {variant === 'facility-schedule' && booking.totalSessions > 1 && (
             <View style={styles.detailItem}>
-              <Ionicons name="card-outline" size={16} color={theme.colors.text.tertiary} />
+              <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
               <Text style={styles.detailText}>
-                1 credit per session
-                {booking.totalSessions > 1 && (
-                  <Text style={styles.detailText}>
-                    • {booking.totalSessions} sessions available
-                  </Text>
-                )}
+                {booking.totalSessions} sessions available
               </Text>
             </View>
           )}

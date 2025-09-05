@@ -53,7 +53,6 @@ export const useTheme = () => {
     theme: context,
     themeMode: 'light',
     isDark: false,
-    isNight: false,
     setThemeMode: () => {},
     toggleTheme: () => {},
     systemColorScheme: 'light'

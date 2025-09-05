@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 // Theme
-import { useTheme, ExtendedThemeMode } from '../theme/ThemeProvider';
+import { useTheme, ThemeMode } from '../theme/ThemeProvider';
 
 // Components
 import { CustomInput } from '../components/forms/CustomInput';
@@ -37,10 +37,9 @@ const DesignSystemShowcase: React.FC = () => {
   });
   const [currentSection, setCurrentSection] = useState<'buttons' | 'inputs' | 'modals' | 'alerts' | 'loaders'>('buttons');
 
-  const themeOptions: { label: string; value: ExtendedThemeMode }[] = [
+  const themeOptions: { label: string; value: ThemeMode }[] = [
     { label: 'Light', value: 'light' },
     { label: 'Dark', value: 'dark' },
-    { label: 'Night', value: 'night' },
     { label: 'System', value: 'system' },
   ];
 

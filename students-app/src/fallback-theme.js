@@ -304,7 +304,6 @@ export const useTheme = () => {
     theme: context,
     themeMode: 'light',
     isDark: false,
-    isNight: false,
     screenDimensions: {
       width: 375,
       height: 667,

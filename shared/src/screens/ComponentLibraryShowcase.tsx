@@ -189,12 +189,12 @@ const ComponentLibraryShowcase: React.FC = () => {
           </View>
           <View style={styles.themeSelector}>
             <CustomButton
-              title={themeMode === 'system' ? '🌓' : themeMode === 'dark' ? '🌙' : themeMode === 'night' ? '🌚' : '☀️'}
+              title={themeMode === 'system' ? '🌓' : themeMode === 'dark' ? '🌙' : '☀️'}
               variant="outline"
               size="sm"
               onPress={toggleTheme}
               accessibilityLabel={`Current theme: ${themeMode}. Tap to cycle themes`}
-              accessibilityHint="Cycles between light, dark, and night themes"
+              accessibilityHint="Cycles between light and dark themes"
               style={styles.themeSelectorButton}
             />
           </View>

@@ -118,12 +118,14 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: theme.spacing.md,
+    // No padding here - individual sections handle their own padding
   },
   courseHeader: {
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.xl,
     padding: theme.spacing.lg,
+    marginHorizontal: theme.spacing.md,
+    marginTop: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
     ...theme.elevation.sm,
     borderWidth: 1,
@@ -177,7 +179,8 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
     marginBottom: theme.spacing.lg,
   },
   levelFilterScrollView: {
-    paddingHorizontal: theme.spacing.md,
+    paddingLeft: theme.spacing.md,
+    paddingRight: theme.spacing.md,
   },
   levelFilterTab: {
     marginRight: theme.spacing.sm,
@@ -232,6 +235,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
   moduleCard: {
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.xl,
+    marginHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.md,
     borderWidth: 1,
     borderColor: theme.colors.border.primary,
@@ -428,6 +432,7 @@ const useScreenStyles = createThemedStyles((theme) => StyleSheet.create({
   assessmentCard: {
     backgroundColor: theme.colors.background.primary,
     borderRadius: theme.borderRadius.xl,
+    marginHorizontal: theme.spacing.md,
     marginTop: theme.spacing.xl,
     marginBottom: theme.spacing.md,
     borderWidth: 1,
@@ -2591,7 +2596,7 @@ export const CourseCurriculumScreen: React.FC = () => {
 
         {/* Current Level Info */}
         {currentLevel && (
-          <Animated.View entering={FadeInDown.delay(400)}>
+          <Animated.View entering={FadeInDown.delay(400)} style={{ marginHorizontal: theme.spacing.md }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.xs }}>
               <Text style={styles.sectionTitle}>{currentLevel.title}</Text>
               <View style={[styles.difficultyBadge, getDifficultyBadgeStyle(currentLevel.difficulty, theme)]}>

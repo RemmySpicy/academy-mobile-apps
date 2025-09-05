@@ -6,7 +6,7 @@ A comprehensive design system for the Academy Mobile Apps with consistent colors
 
 The Academy Design System provides:
 
-- **🌈 Theme System** - Light, Dark, and Night modes with seamless switching
+- **🌈 Theme System** - Light, Dark, and System modes with seamless switching
 - **🎯 Academy Branding** - Consistent purple (#4F2EC9) brand colors across all themes
 - **📝 Typography Scale** - Consistent text styles with accessibility considerations
 - **📏 Spacing System** - Harmonious spacing based on 4px grid system
@@ -77,8 +77,8 @@ function ThemeToggle() {
       <TouchableOpacity onPress={() => setThemeMode('dark')}>
         <Text>Dark Mode</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => setThemeMode('night')}>
-        <Text>Night Mode</Text>
+      <TouchableOpacity onPress={() => setThemeMode('system')}>
+        <Text>System Mode</Text>
       </TouchableOpacity>
     </View>
   );
@@ -348,7 +348,7 @@ import { useTheme } from '@academy/mobile-shared';
 function AdaptiveComponent() {
   const { theme, themeMode } = useTheme();
   
-  const isDark = themeMode === 'dark' || themeMode === 'night';
+  const isDark = theme.isDark;
   
   return (
     <View style={[

@@ -94,140 +94,16 @@ const darkTheme: Theme = {
   isDark: true,
 };
 
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 // Export the theme objects
 export { lightTheme, darkTheme };
 
-// Night mode - enhanced dark theme with deeper blacks and reduced blue light
-const createNightTheme = (): Theme => ({
-  ...darkTheme,
-  colors: {
-    ...darkTheme.colors,
-    background: {
-      primary: '#000000',        // Pure black for OLED
-      secondary: '#0A0A0A',      // Very dark gray
-      tertiary: '#121212',       // Slightly lighter
-      elevated: '#0F0F0F',       // Elevated surfaces
-      accent: '#1A1A2E',         // Night mode accent
-      overlay: 'rgba(0, 0, 0, 0.8)',
-      backdrop: 'rgba(0, 0, 0, 0.6)',
-    },
-    text: {
-      primary: '#E8E8E8',        // Softer white to reduce eye strain
-      secondary: '#B8B8B8',      // Muted secondary text
-      tertiary: '#888888',       // Even more muted
-      disabled: '#555555',       // Darker disabled text
-      inverse: '#000000',
-      link: '#7C9AFF',           // Softer blue for night mode
-      linkHover: '#9BB0FF',
-    },
-    border: {
-      primary: '#2A2A2A',        // Darker borders
-      secondary: '#1F1F1F',      // Even darker
-      focused: '#7C9AFF',        // Softer focus color
-      error: '#CC4444',          // Muted error color
-      success: '#44AA44',        // Muted success color
-      warning: '#BB8844',        // Muted warning color
-      teal: '#5A8A8A',           // Night mode teal border
-    },
-    interactive: {
-      primary: '#7C9AFF',        // Softer primary for night
-      primaryHover: '#9BB0FF',
-      primaryPressed: '#6B87E6',
-      primaryDisabled: '#444444',
-      primaryHighContrast: '#9BB0FF',  // High contrast for night mode
-      primarySunlight: '#B3C7FF',      // Maximum contrast for night mode
-      
-      secondary: '#1A1A1A',
-      secondaryHover: '#2A2A2A',
-      secondaryPressed: '#333333',
-      secondaryBorder: '#333333',
-      
-      tertiary: 'transparent',
-      tertiaryHover: '#1A1A1A',
-      tertiaryPressed: '#2A2A2A',
-      
-      faded: '#1A1A1A',
-      fadedHover: '#2A2A2A',
-      
-      orange: '#BB8844',
-      orangeHover: '#AA7733',
-      
-      teal: '#5A8A8A',
-      tealHover: '#6A9A9A',
-      tealPressed: '#4A7A7A',
-      
-      destructive: '#CC4444',
-      destructiveHover: '#BB3333',
-      destructivePressed: '#DD5555',
-      
-      themeBlack: '#E8E8E8',
-      danger: '#CC4444',
-      cancel: '#7C9AFF',
-      gray: '#1A1A1A',
-      lightGray: '#0A0A0A',
-      accent: '#7C9AFF',              // Night mode accent blue
-      accentHover: '#9BB0FF',         // Night mode accent blue hover
-      purple: '#9A7BFF',              // Softer purple for night mode
-    },
-    status: {
-      success: '#44AA44',
-      successBackground: '#001100',
-      successBorder: '#223322',
-      successHighContrast: '#55BB55',  // High contrast for night mode
-      
-      warning: '#BB8844',
-      warningBackground: '#110800',
-      warningBorder: '#332211',
-      warningHighContrast: '#CC9955',  // High contrast for night mode
-      
-      error: '#CC4444',
-      errorBackground: '#110000',
-      errorBorder: '#332222',
-      errorHighContrast: '#DD5555',    // High contrast for night mode
-      
-      info: '#7C9AFF',
-      infoBackground: '#000011',
-      infoBorder: '#222233',
-      infoHighContrast: '#8DAAFF',     // High contrast for night mode
-    },
-    icon: {
-      primary: '#B8B8B8',               // Night mode icon colors
-      secondary: '#888888',
-      tertiary: '#666666',
-      disabled: '#444444',
-      accent: '#7C9AFF',                // Night mode accent blue icons
-      success: '#44AA44',               // Night mode success green icons
-      warning: '#BB8844',               // Night mode warning orange icons
-      error: '#CC4444',                 // Night mode error red icons
-      purple: '#9A7BFF',                // Night mode purple accent icons
-      interactive: '#7C9AFF',           // Night mode brand icons
-    },
-    overlay: {
-      light: 'rgba(0, 0, 0, 0.6)',
-      medium: 'rgba(0, 0, 0, 0.8)',
-      dark: 'rgba(0, 0, 0, 0.9)',
-      heavy: 'rgba(0, 0, 0, 0.95)',
-    },
-    shadow: {
-      default: 'rgba(0, 0, 0, 0.5)',
-      light: 'rgba(0, 0, 0, 0.4)',
-      medium: 'rgba(0, 0, 0, 0.5)',
-      heavy: 'rgba(0, 0, 0, 0.7)',
-      colored: 'rgba(124, 154, 255, 0.3)',
-    },
-  },
-});
-
-export type ExtendedThemeMode = 'light' | 'dark' | 'night' | 'system';
-
 export interface ThemeContextValue {
   theme: Theme;
-  themeMode: ExtendedThemeMode;
+  themeMode: ThemeMode;
   isDark: boolean;
-  isNight: boolean;
-  setThemeMode: (mode: ExtendedThemeMode) => void;
+  setThemeMode: (mode: ThemeMode) => void;
   toggleTheme: () => void;
   systemColorScheme: ColorSchemeName;
   screenDimensions: {
@@ -258,11 +134,11 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export interface ThemeProviderProps {
   children: ReactNode;
-  initialTheme?: ExtendedThemeMode;
+  initialTheme?: ThemeMode;
   enableSystemTheme?: boolean;
   enableTransitions?: boolean;
   persistTheme?: boolean;
-  onThemeChange?: (theme: Theme, mode: ExtendedThemeMode) => void;
+  onThemeChange?: (theme: Theme, mode: ThemeMode) => void;
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
@@ -273,7 +149,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   persistTheme = true,
   onThemeChange,
 }) => {
-  const [themeMode, setThemeModeState] = useState<ExtendedThemeMode>(initialTheme);
+  const [themeMode, setThemeModeState] = useState<ThemeMode>(initialTheme);
   const [systemColorScheme, setSystemColorScheme] = useState<ColorSchemeName>(
     Appearance.getColorScheme()
   );
@@ -322,14 +198,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, [windowDimensions]);
 
   // Get the actual theme based on mode and system preference
-  const getTheme = useCallback((mode: ExtendedThemeMode, systemScheme: ColorSchemeName): Theme => {
+  const getTheme = useCallback((mode: ThemeMode, systemScheme: ColorSchemeName): Theme => {
     switch (mode) {
       case 'light':
         return lightTheme;
       case 'dark':
         return darkTheme;
-      case 'night':
-        return createNightTheme();
       case 'system':
       default:
         if (systemScheme === 'dark') {
@@ -345,11 +219,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   );
 
   const isDark = useMemo(() => 
-    themeMode === 'dark' || themeMode === 'night' || (themeMode === 'system' && systemColorScheme === 'dark'),
+    themeMode === 'dark' || (themeMode === 'system' && systemColorScheme === 'dark'),
     [themeMode, systemColorScheme]
   );
-
-  const isNight = useMemo(() => themeMode === 'night', [themeMode]);
 
   // Load persisted theme on mount
   useEffect(() => {
@@ -363,9 +235,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       try {
         console.log('🔄 Loading persisted theme...');
         const savedTheme = await AsyncStorage.getItem(STORAGE_KEYS.THEME);
-        if (savedTheme && ['light', 'dark', 'night', 'system'].includes(savedTheme)) {
+        if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
           console.log('✅ Loaded theme:', savedTheme);
-          setThemeModeState(savedTheme as ExtendedThemeMode);
+          setThemeModeState(savedTheme as ThemeMode);
         } else {
           console.log('ℹ️ No saved theme found, using default');
         }
@@ -416,7 +288,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, [isDark, transitionValue, enableTransitions]);
 
   // Persist theme changes
-  const setThemeMode = useCallback(async (mode: ExtendedThemeMode) => {
+  const setThemeMode = useCallback(async (mode: ThemeMode) => {
     setThemeModeState(mode);
     
     if (persistTheme) {
@@ -434,7 +306,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   // Toggle between themes
   const toggleTheme = useCallback(() => {
-    const themeSequence: ExtendedThemeMode[] = ['light', 'dark', 'night'];
+    const themeSequence: ThemeMode[] = ['light', 'dark'];
     const currentIndex = themeSequence.indexOf(themeMode === 'system' ? 'light' : themeMode);
     const nextIndex = (currentIndex + 1) % themeSequence.length;
     setThemeMode(themeSequence[nextIndex]);
@@ -456,7 +328,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     theme: isLoading ? lightTheme : currentTheme, // Use fallback theme while loading
     themeMode: isLoading ? 'light' : themeMode,
     isDark: isLoading ? false : isDark,
-    isNight: isLoading ? false : isNight,
     setThemeMode: isLoading ? (() => {}) : setThemeMode, // No-op while loading
     toggleTheme: isLoading ? (() => {}) : toggleTheme, // No-op while loading
     systemColorScheme,
@@ -497,13 +368,12 @@ export const useThemeTypography = () => {
 };
 
 export const useThemeMode = () => {
-  const { themeMode, setThemeMode, toggleTheme, isDark, isNight } = useTheme();
+  const { themeMode, setThemeMode, toggleTheme, isDark } = useTheme();
   return {
     mode: themeMode,
     setMode: setThemeMode,
     toggle: toggleTheme,
     isDark,
-    isNight,
   };
 };
 
@@ -533,19 +403,19 @@ export const createThemedStyles = <T extends Record<string, any>>(
 
 // Theme mode selector component
 export interface ThemeModeSelectorProps {
-  modes?: ExtendedThemeMode[];
+  modes?: ThemeMode[];
   showLabels?: boolean;
-  onModeChange?: (mode: ExtendedThemeMode) => void;
+  onModeChange?: (mode: ThemeMode) => void;
 }
 
 export const ThemeModeSelector: React.FC<ThemeModeSelectorProps> = ({
-  modes = ['light', 'dark', 'night', 'system'],
+  modes = ['light', 'dark', 'system'],
   showLabels = true,
   onModeChange,
 }) => {
   const { themeMode, setThemeMode } = useTheme();
 
-  const handleModeChange = useCallback((mode: ExtendedThemeMode) => {
+  const handleModeChange = useCallback((mode: ThemeMode) => {
     setThemeMode(mode);
     onModeChange?.(mode);
   }, [setThemeMode, onModeChange]);
@@ -583,13 +453,8 @@ export const themeHelpers = {
   createResponsiveStyles: <T extends Record<string, any>>(
     theme: Theme,
     baseStyles: T,
-    darkOverrides?: Partial<T>,
-    nightOverrides?: Partial<T>
+    darkOverrides?: Partial<T>
   ): T => {
-    if (theme.isDark && theme.colors.background.primary === '#000000' && nightOverrides) {
-      // Night theme check (pure black background)
-      return { ...baseStyles, ...nightOverrides };
-    }
     if (theme.isDark && darkOverrides) {
       return { ...baseStyles, ...darkOverrides };
     }
@@ -599,8 +464,7 @@ export const themeHelpers = {
   /**
    * Get theme mode from theme object
    */
-  getThemeMode: (theme: Theme): ExtendedThemeMode => {
-    if (theme.isDark && theme.colors.background.primary === '#000000') return 'night';
+  getThemeMode: (theme: Theme): ThemeMode => {
     if (theme.isDark) return 'dark';
     return 'light';
   },

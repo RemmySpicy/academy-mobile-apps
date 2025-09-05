@@ -391,7 +391,7 @@ export {
   themeHelpers,
   type ThemeContextValue,
   type ThemeProviderProps,
-  type ExtendedThemeMode,
+  type ThemeMode,
 } from './ThemeProvider';
 
 // Export theme types

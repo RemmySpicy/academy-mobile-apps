@@ -689,7 +689,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             <>
               <Pressable 
                 style={styles.detailsButton}
-                onPress={() => onViewDetails?.(booking)}
+                onPress={() => setShowJoinScheduleSheet(true)}
               >
                 <Text style={styles.detailsButtonText}>View Details</Text>
               </Pressable>

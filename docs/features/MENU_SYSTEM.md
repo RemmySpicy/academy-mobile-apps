@@ -31,7 +31,7 @@ The Academy Mobile Apps feature a comprehensive menu system with production-read
 #### **Settings & Preferences**
 - **Notifications** → `NotificationSettingsScreen` - Notification preferences
 - **Privacy & Security** → `PrivacySettingsScreen` - Privacy controls
-- **App Settings** → `SettingsScreen` - General app configuration
+- **App Settings** → `SettingsScreen` - Comprehensive app configuration and preferences
 
 #### **Support & Information**
 - **Help & Support** → `HelpScreen` - Comprehensive support system
@@ -176,6 +176,63 @@ const handleDataDownload = () => {
 };
 ```
 
+#### SettingsScreen (App Settings)
+**Location**: `students-app/src/features/settings/screens/SettingsScreen.tsx`
+
+**Features:**
+- **Comprehensive Settings Categories**: Notifications, Security & Privacy, Data & Storage, Preferences, Support & About, Advanced
+- **Interactive Components**: Toggle switches, selection modals, action buttons with proper feedback
+- **Mobile-First Design**: Bottom sheet modals for selections, touch-friendly interactions
+- **Multi-Language Support**: Language selection with local options (English, Yoruba, Hausa, Igbo, French)
+- **Theme Management**: Light/Dark/System theme selection
+- **Currency & Format Settings**: Multiple currencies and date/time format options
+- **Advanced Options**: Cache management, settings reset, data export functionality
+
+**Setting Categories:**
+1. **Notifications**: Push, email, SMS notification toggles
+2. **Security & Privacy**: Biometric auth, password change, two-factor authentication
+3. **Data & Storage**: Auto-sync, offline mode, image quality, video autoplay settings
+4. **Preferences**: Language, theme, currency, time/date format selection
+5. **Support & About**: Contact support, feedback, app rating, version information
+6. **Advanced**: Clear cache, reset settings, export data
+
+**Key Components:**
+```typescript
+interface SettingItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  type: 'switch' | 'select' | 'action' | 'info';
+  value?: boolean | string;
+  onPress?: () => void;
+  onValueChange?: (value: boolean | string) => void;
+  color?: string;
+}
+
+// Selection modal for preferences
+const SelectModal: React.FC<{
+  visible: boolean;
+  title: string;
+  options: string[];
+  currentValue: string;
+  onSelect: (value: string) => void;
+  onClose: () => void;
+}> = ({ visible, title, options, currentValue, onSelect, onClose }) => (
+  <Modal visible={visible} transparent animationType="slide">
+    <BottomSheetContent>
+      {options.map(option => (
+        <SelectOption 
+          key={option}
+          selected={option === currentValue}
+          onPress={() => onSelect(option)}
+        />
+      ))}
+    </BottomSheetContent>
+  </Modal>
+);
+```
+
 #### AboutScreen
 **Location**: `students-app/src/features/settings/screens/AboutScreen.tsx`
 
@@ -254,6 +311,7 @@ export type MenuStackParamList = {
   MenuMain: undefined;
   NotificationSettings: undefined;
   PrivacySettings: undefined;
+  Settings: undefined;
   About: undefined;
   ProgressReport: undefined;
   // ...additional routes

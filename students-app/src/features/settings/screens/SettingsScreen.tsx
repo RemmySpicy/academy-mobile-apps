@@ -46,10 +46,11 @@ const SettingItemComponent: React.FC<{ item: SettingItem; index: number }> = ({
             value={item.value as boolean}
             onValueChange={item.onValueChange as (value: boolean) => void}
             trackColor={{
-              false: theme.colors.border.secondary,
+              false: theme.colors.background.secondary,
               true: theme.colors.interactive.primary,
             }}
-            thumbColor={item.value ? 'white' : (theme.isDark ? '#ffffff' : '#f4f3f4')}
+            thumbColor={item.value ? 'white' : '#f4f3f4'}
+            ios_backgroundColor={theme.colors.background.secondary}
           />
         );
       

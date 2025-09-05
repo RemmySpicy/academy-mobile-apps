@@ -440,7 +440,7 @@ export const PrivacySettingsScreen: React.FC = () => {
             </View>
             <CustomButton
               title="Delete Account"
-              variant="error"
+              variant="danger"
               size="sm"
               onPress={handleDataDeletion}
               style={{ width: '100%' }}

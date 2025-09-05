@@ -49,7 +49,7 @@ const SettingItemComponent: React.FC<{ item: SettingItem; index: number }> = ({
               false: theme.colors.border.secondary,
               true: theme.colors.interactive.primary,
             }}
-            thumbColor={theme.colors.background.primary}
+            thumbColor={item.value ? 'white' : (theme.isDark ? '#ffffff' : '#f4f3f4')}
           />
         );
       

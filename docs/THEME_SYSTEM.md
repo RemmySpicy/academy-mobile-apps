@@ -391,6 +391,24 @@ theme.colors.interactive.primaryHighContrast  // Light: darker, Dark: lighter
 theme.colors.interactive.primarySunlight      // Maximum contrast for both modes
 ```
 
+### **Enhanced Dark Mode Backgrounds (2025 Update)**
+
+Dark mode now uses softer, less harsh background colors for improved eye comfort:
+
+```typescript
+// 🌙 Dark mode backgrounds - optimized for comfort
+theme.colors.background.primary    // #212121 (13% brightness - softer than pure black)
+theme.colors.background.secondary  // #2C2C2C (17% brightness - elevated surfaces)
+theme.colors.background.tertiary   // #383838 (22% brightness - highest elevation)
+theme.colors.background.elevated   // #292929 (16% brightness - cards, modals)
+```
+
+**Key Improvements:**
+- **Reduced Eye Strain**: Moved away from harsh near-black colors (`#1A1A1A`) to warmer, softer dark tones
+- **Better Contrast**: Improved contrast ratios between UI elements and backgrounds
+- **Elevated Hierarchy**: Clear visual hierarchy between different background levels
+- **Comfort-First**: Optimized for extended viewing sessions
+
 ## 📱 Mobile-First Usage Examples
 
 ### **High Contrast for Outdoor Use**

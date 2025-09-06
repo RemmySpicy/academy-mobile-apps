@@ -349,10 +349,10 @@ export const darkColors = {
   },
 
   background: {
-    primary: '#1A1A1A',                   // Warmer dark background
-    secondary: '#2A2A2A',                 // Elevated surfaces
-    tertiary: '#333333',                  // Even more elevated
-    elevated: '#242424',                  // Cards, modals
+    primary: '#212121',                   // Softer dark background (13% brightness)
+    secondary: '#2C2C2C',                 // Elevated surfaces (17% brightness)
+    tertiary: '#383838',                  // Even more elevated (22% brightness)
+    elevated: '#292929',                  // Cards, modals (16% brightness)
     accent: baseColors.academy.purple[950],      // Dark accent for dark mode
     overlay: 'rgba(0, 0, 0, 0.85)',      // Enhanced modal overlays for dark mode
     backdrop: 'rgba(0, 0, 0, 0.7)',      // Enhanced backdrop for dark mode

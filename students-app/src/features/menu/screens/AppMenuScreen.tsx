@@ -268,11 +268,11 @@ export const AppMenuScreen: React.FC = () => {
     }] : []),
   ];
 
-  const settingsMenuItems: MenuItem[] = [
+  const preferencesMenuItems: MenuItem[] = [
     {
       id: 'notifications',
       title: 'Notifications',
-      subtitle: 'Customize your alerts',
+      subtitle: 'Customize alerts and quiet hours',
       icon: 'notifications-outline',
       color: theme.colors.status.warning,
       onPress: () => navigation.navigate('NotificationSettings'),
@@ -280,35 +280,35 @@ export const AppMenuScreen: React.FC = () => {
     },
     {
       id: 'privacy',
-      title: 'Privacy & Security',
-      subtitle: 'Control your data and security',
+      title: 'Privacy & Data',
+      subtitle: 'Control your data and permissions',
       icon: 'shield-outline',
       color: theme.colors.status.error,
       onPress: () => navigation.navigate('PrivacySettings'),
     },
     {
-      id: 'settings',
-      title: 'App Settings',
-      subtitle: 'Language, theme, and more',
+      id: 'app-preferences',
+      title: 'App Preferences',
+      subtitle: 'Language, theme, currency',
       icon: 'settings-outline',
       color: theme.colors.icon.secondary,
-      onPress: () => navigation.navigate('Settings'),
+      onPress: () => navigation.navigate('AppPreferences'),
     },
   ];
 
   const supportMenuItems: MenuItem[] = [
     {
-      id: 'help',
+      id: 'help-support',
       title: 'Help & Support',
-      subtitle: 'Get help or contact us',
+      subtitle: 'Get help or contact our team',
       icon: 'help-circle-outline',
       color: theme.colors.interactive.purple,
       onPress: () => navigation.navigate('HelpAndSupport'),
     },
     {
       id: 'about',
-      title: 'About Elitesgen Academy',
-      subtitle: 'App version and information',
+      title: 'About & Legal',
+      subtitle: 'App info, terms, and privacy policy',
       icon: 'information-circle-outline',
       color: theme.colors.icon.secondary,
       onPress: () => navigation.navigate('About'),
@@ -958,7 +958,7 @@ export const AppMenuScreen: React.FC = () => {
             Preferences
           </Animated.Text>
           
-          {settingsMenuItems.map((item, index) => (
+          {preferencesMenuItems.map((item, index) => (
             <MenuItemComponent
               key={item.id}
               item={item}
@@ -967,7 +967,7 @@ export const AppMenuScreen: React.FC = () => {
           ))}
         </View>
 
-        {/* Support Section */}
+        {/* Support & Information Section */}
         <View style={{ paddingHorizontal: theme.spacing.md, marginBottom: theme.spacing.xl }}>
           <Animated.Text
             entering={FadeInDown.delay(700).springify()}
@@ -978,7 +978,7 @@ export const AppMenuScreen: React.FC = () => {
               marginBottom: theme.spacing.md,
             }}
           >
-            Support
+            Support & Information
           </Animated.Text>
           
           {supportMenuItems.map((item, index) => (

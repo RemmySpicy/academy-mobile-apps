@@ -6,6 +6,7 @@ import { useTheme, NavigationHeader } from '@academy/mobile-shared';
 import { AppMenuScreen } from '../screens/AppMenuScreen';
 import { EditProfileScreen } from '../../profile/screens/EditProfileScreen';
 import { SettingsScreen } from '../../settings/screens/SettingsScreen';
+import { AppPreferencesScreen } from '../../settings/screens/AppPreferencesScreen';
 import { PaymentMethodsScreen } from '../../payments/screens/PaymentMethodsScreen';
 
 // Import screens from existing features
@@ -34,6 +35,7 @@ export type MenuStackParamList = {
   MenuMain: undefined;
   EditProfile: undefined;
   Settings: undefined;
+  AppPreferences: undefined;
   PaymentMethods: undefined;
   NotificationSettings: undefined;
   PrivacySettings: undefined;
@@ -62,6 +64,7 @@ function getScreenTitle(routeName: keyof MenuStackParamList): string {
     MenuMain: 'Menu',
     EditProfile: 'Edit Profile',
     Settings: 'Settings',
+    AppPreferences: 'App Preferences',
     PaymentMethods: 'Payment Methods',
     NotificationSettings: 'Notifications',
     PrivacySettings: 'Privacy',
@@ -116,6 +119,10 @@ export const MenuNavigator: React.FC = () => {
       <Stack.Screen 
         name="Settings" 
         component={SettingsScreen}
+      />
+      <Stack.Screen 
+        name="AppPreferences" 
+        component={AppPreferencesScreen}
       />
       <Stack.Screen 
         name="PaymentMethods" 

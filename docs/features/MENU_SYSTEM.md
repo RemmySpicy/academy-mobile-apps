@@ -28,14 +28,14 @@ The Academy Mobile Apps feature a comprehensive menu system with production-read
 - **Payment Methods** → `PaymentMethodsScreen` - Payment card management
 - **Manage Children** → Parent-specific child profile management with creation workflow
 
-#### **Settings & Preferences**
-- **Notifications** → `NotificationSettingsScreen` - Notification preferences
-- **Privacy & Security** → `PrivacySettingsScreen` - Privacy controls
-- **App Settings** → `SettingsScreen` - Comprehensive app configuration and preferences
+#### **Preferences** (Streamlined Structure ⭐ UPDATED)
+- **Notifications** → `NotificationSettingsScreen` - Direct access to notification preferences and quiet hours
+- **Privacy & Data** → `PrivacySettingsScreen` - Data control and permissions management
+- **App Preferences** → `AppPreferencesScreen` - Language, theme, currency, text size, and performance settings
 
-#### **Support & Information**
-- **Help & Support** → `HelpScreen` - Comprehensive support system
-- **About Academy** → `AboutScreen` - App information and legal
+#### **Support & Information** (Consolidated ⭐ UPDATED)
+- **Help & Support** → `HelpScreen` - Comprehensive support system and contact options
+- **About & Legal** → `AboutScreen` - App information, terms, privacy policy, and legal documents
 
 ## Screen Implementations
 
@@ -176,25 +176,25 @@ const handleDataDownload = () => {
 };
 ```
 
-#### SettingsScreen (App Settings)
-**Location**: `students-app/src/features/settings/screens/SettingsScreen.tsx`
+#### AppPreferencesScreen ⭐ NEW CONSOLIDATED SCREEN
+**Location**: `students-app/src/features/settings/screens/AppPreferencesScreen.tsx` | `instructors-app/src/features/settings/screens/AppPreferencesScreen.tsx`
 
 **Features:**
-- **Comprehensive Settings Categories**: Notifications, Security & Privacy, Data & Storage, Preferences, Support & About, Advanced
+- **Streamlined Settings Categories**: Display & Format, Data & Performance, Advanced
+- **Instructor-Specific Tools**: Grade entry reminders, auto-backup grades (instructors app only)
+- **Enhanced Text Size Control**: Small, Medium, Large, Extra Large options for accessibility
 - **Interactive Components**: Toggle switches, selection modals, action buttons with proper feedback
 - **Mobile-First Design**: Bottom sheet modals for selections, touch-friendly interactions
 - **Multi-Language Support**: Language selection with local options (English, Yoruba, Hausa, Igbo, French)
 - **Theme Management**: Light/Dark/System theme selection
 - **Currency & Format Settings**: Multiple currencies and date/time format options
-- **Advanced Options**: Cache management, settings reset, data export functionality
+- **Advanced Options**: Cache management, settings reset
 
-**Setting Categories:**
-1. **Notifications**: Push, email, SMS notification toggles
-2. **Security & Privacy**: Biometric auth, password change, two-factor authentication
-3. **Data & Storage**: Auto-sync, offline mode, image quality, video autoplay settings
-4. **Preferences**: Language, theme, currency, time/date format selection
-5. **Support & About**: Contact support, feedback, app rating, version information
-6. **Advanced**: Clear cache, reset settings, export data
+**Consolidated Setting Categories:**
+1. **Display & Format**: Language, theme, currency, time/date format, text size selection
+2. **Instructor Tools** (Instructors only): Grade notifications, auto-backup grades, manual backup
+3. **Data & Performance**: Auto-sync, offline mode, image quality, video autoplay settings
+4. **Advanced**: Clear cache, reset preferences
 
 **Key Components:**
 ```typescript
@@ -291,32 +291,51 @@ const performanceMetrics: PerformanceMetric[] = [
 
 ## Navigation Integration
 
-### MenuNavigator Configuration
-**Location**: `students-app/src/features/menu/navigation/MenuNavigator.tsx`
+### MenuNavigator Configuration ⭐ UPDATED
+**Location**: `students-app/src/features/menu/navigation/MenuNavigator.tsx` | `instructors-app/src/features/menu/navigation/MenuNavigator.tsx`
 
-**Screen Routes:**
+**Streamlined Screen Routes:**
 ```typescript
-// Settings screens
+// Preference screens - direct access
 <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
 <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} />
+<Stack.Screen name="AppPreferences" component={AppPreferencesScreen} />
+
+// Support & information screens
+<Stack.Screen name="HelpAndSupport" component={HelpAndSupportScreen} />
 <Stack.Screen name="About" component={AboutScreen} />
 
 // Analytics screen
 <Stack.Screen name="ProgressReport" component={ProgressReportScreen} />
 ```
 
-**Type Definitions:**
+**Updated Type Definitions:**
 ```typescript
 export type MenuStackParamList = {
   MenuMain: undefined;
   NotificationSettings: undefined;
   PrivacySettings: undefined;
-  Settings: undefined;
+  AppPreferences: undefined; // NEW: Consolidated preferences
+  HelpAndSupport: undefined;
   About: undefined;
   ProgressReport: undefined;
   // ...additional routes
 };
 ```
+
+### Navigation Improvements ⭐ KEY BENEFITS
+
+**Before (3+ Taps):**
+- Menu → Preferences → App Settings → Language/Theme/Currency
+
+**After (2 Taps):**
+- Menu → App Preferences → Language/Theme/Currency
+
+**Eliminated Redundancy:**
+- Notifications: Direct access instead of nested navigation
+- Privacy & Data: Single consolidated entry point
+- Support: Combined with app information
+- Settings: Streamlined into focused preferences
 
 ## Design System Integration
 

@@ -248,15 +248,23 @@ The Academy Apps feature a comprehensive booking and session management system w
 
 **📖 Full Documentation**: See **[Booking System Documentation](./docs/features/BOOKING_SYSTEM.md)** for comprehensive technical details, API reference, and implementation examples.
 
-### Menu System Implementation
-The Academy Apps feature comprehensive menu systems with production-ready screens, tailored for each user type.
+### Menu System Implementation ⭐ POLISHED & STREAMLINED
+The Academy Apps feature comprehensive menu systems with production-ready screens, tailored for each user type. **Recently updated with streamlined navigation and eliminated redundancies.**
 
-**Key Features:**
+**✅ Key Features:**
 - **Enhanced Profile Cards**: Modern cards with cover photo, profile switching, and expansion modals
-- **Settings Screens**: Notification settings, privacy settings, about screen
+- **Streamlined Preferences**: Direct access to notifications, privacy & data, and app preferences
+- **Consolidated Settings**: New `AppPreferencesScreen` with text size control and instructor-specific tools
+- **Support & Information**: Combined help and legal information for cleaner organization
 - **Academy Features**: Courses, services, achievements, store, transactions, referrals
 - **Professional Tools**: Class management, student reports, attendance tracker (Instructors)
 - **Mobile-Optimized**: Modern UI patterns with expandable images, bottom sheets, smooth animations
+
+**✅ Navigation Improvements:**
+- **Reduced Navigation Layers**: From 3+ taps to 2 taps for common settings
+- **Eliminated Redundancy**: Removed duplicate notification, privacy, and support options across screens
+- **Direct Access**: Preferences section provides immediate access to key settings
+- **Text Size Control**: Added user-requested text size options (Small, Medium, Large, Extra Large)
 
 **📖 Full Documentation**: See **[Menu System Documentation](./docs/features/MENU_SYSTEM.md)** for comprehensive screen details and implementation patterns.
 

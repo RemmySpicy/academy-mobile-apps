@@ -2,6 +2,7 @@ export type MenuStackParamList = {
   MenuMain: undefined;
   EditProfile: undefined;
   Settings: undefined;
+  AppPreferences: undefined;
   PaymentMethods: undefined;
   NotificationSettings: undefined;
   PrivacySettings: undefined;

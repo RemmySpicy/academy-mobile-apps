@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, NavigationHeader } from '@academy/mobile-shared';
 import { AppMenuScreen } from '../screens/AppMenuScreen';
 import { MenuStackParamList } from '../types';
+import { AppPreferencesScreen } from '../../settings/screens/AppPreferencesScreen';
 
 // Import placeholder screens - these would be implemented later
 const EditProfileScreen = () => {
@@ -170,6 +171,7 @@ function getScreenTitle(routeName: keyof MenuStackParamList): string {
     MenuMain: 'Menu',
     EditProfile: 'Edit Profile',
     Settings: 'Settings',
+    AppPreferences: 'App Preferences',
     PaymentMethods: 'Payment Methods',
     NotificationSettings: 'Notifications',
     PrivacySettings: 'Privacy',
@@ -223,6 +225,10 @@ export const MenuNavigator: React.FC = () => {
       <Stack.Screen 
         name="Settings" 
         component={SettingsScreen}
+      />
+      <Stack.Screen 
+        name="AppPreferences" 
+        component={AppPreferencesScreen}
       />
       <Stack.Screen 
         name="PaymentMethods" 

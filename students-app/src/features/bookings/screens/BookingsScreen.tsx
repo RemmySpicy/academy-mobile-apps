@@ -296,10 +296,22 @@ export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<AppStackParamList>>();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
-  const [facilityFilter, setFacilityFilter] = useState<'all' | 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'>('all');
+  const [facilityFilter, setFacilityFilter] = useState<'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'>('monday'); // Will be set to current day after initialization
   const [notificationCount, setNotificationCount] = useState(3);
   const [scheduleType, setScheduleType] = useState<'my-schedules' | 'facility-schedules'>('my-schedules');
   
+  // Mock enrollment data - represents user's course enrollment
+  const currentEnrollment: Enrollment = {
+    id: 'enrollment-1',
+    courseName: 'Learn to Swim - Beginner',
+    enrollmentDate: '2024-12-15', // Enrolled on Dec 15th
+    firstSessionDate: '2025-01-01', // Started first session on Jan 1st (term starts counting)
+    termDurationWeeks: 6, // 6-week term
+    totalSessions: 8,
+    usedSessions: 1, // Used 1 session so far (matches 1 completed booking)
+    facilityId: 'facility-main', // User's designated facility
+  };
+
   // User session credits come from enrollment (pooled credits for family)
   const userSessionCredits = currentEnrollment.totalSessions - currentEnrollment.usedSessions;
   const [enrollmentCredits, setEnrollmentCredits] = useState(userSessionCredits);
@@ -313,23 +325,16 @@ export const BookingsScreen: React.FC = () => {
 
   const currentDay = getCurrentDay();
 
+  // Set facility filter to current day on mount
+  React.useEffect(() => {
+    setFacilityFilter(currentDay as 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday');
+  }, [currentDay]);
+
   // Segmented control options
   const scheduleOptions = [
     { value: 'my-schedules', label: 'My Schedules' },
     { value: 'facility-schedules', label: 'Facility Schedules' },
   ];
-
-  // Mock enrollment data - represents user's course enrollment
-  const currentEnrollment: Enrollment = {
-    id: 'enrollment-1',
-    courseName: 'Learn to Swim - Beginner',
-    enrollmentDate: '2024-12-15', // Enrolled on Dec 15th
-    firstSessionDate: '2025-01-01', // Started first session on Jan 1st (term starts counting)
-    termDurationWeeks: 6, // 6-week term
-    totalSessions: 8,
-    usedSessions: 3, // Used 3 sessions so far
-    facilityId: 'facility-main', // User's designated facility
-  };
 
   // Mock bookings data
   const [bookings] = useState<Booking[]>([
@@ -338,7 +343,7 @@ export const BookingsScreen: React.FC = () => {
       scheduleTitle: 'Learn to Swim',
       scheduleType: 'Kids • Private • Beginner',
       instructor: 'Sarah Johnson',
-      date: 'Tomorrow',
+      date: 'Monday, Jan 13 (Tomorrow)',
       time: '3:00 PM - 3:45 PM',
       location: 'Pool A',
       status: 'upcoming',
@@ -362,13 +367,11 @@ export const BookingsScreen: React.FC = () => {
       scheduleTitle: 'Family Swimming Session',
       scheduleType: 'Adults • Group • Intermediate',
       instructor: 'Mike Wilson & Sarah Johnson',
-      date: 'Friday, Jan 12', // Will show "Every Friday"
+      date: 'Friday, Jan 17',
       time: '4:00 PM - 5:00 PM',
       location: 'Pool B',
       status: 'upcoming',
       price: 0, // No price display for schedule cards
-      isRecurring: true,
-      recurringDay: 'Friday',
       sessionNumber: 2,
       totalSessions: 12,
       color: theme.colors.status.success,
@@ -461,13 +464,11 @@ export const BookingsScreen: React.FC = () => {
       scheduleTitle: 'Kids Swimming Lessons',
       scheduleType: 'Kids • Group • Beginner',
       instructor: 'Sarah Johnson',
-      date: 'Wednesday, Jan 10', // Will show "Every Wednesday"
+      date: 'Wednesday, Jan 15',
       time: '2:00 PM - 2:45 PM',
       location: 'Pool A',
       status: 'upcoming',
       price: 12000,
-      isRecurring: true,
-      recurringDay: 'Wednesday',
       sessionNumber: 1,
       totalSessions: 8,
       color: theme.colors.interactive.accent,
@@ -588,13 +589,11 @@ export const BookingsScreen: React.FC = () => {
       scheduleTitle: 'Water Aerobics Class',
       scheduleType: 'Adults • Group • Beginner & Intermediate',
       instructor: 'Lisa Chen & Maria Garcia',
-      date: 'Thursday, Jan 11', // Will show "Every Thursday"
+      date: 'Thursday, Jan 16',
       time: '6:00 PM - 7:00 PM',
       location: 'Therapy Pool',
       status: 'upcoming',
       price: 0, // No price display for schedule cards
-      isRecurring: true,
-      recurringDay: 'Thursday',
       sessionNumber: 4,
       totalSessions: 8,
       color: theme.colors.status.info || theme.colors.interactive.accent,
@@ -635,15 +634,13 @@ export const BookingsScreen: React.FC = () => {
       scheduleTitle: 'Morning Swim Training',
       scheduleType: 'Adults • Private • Intermediate',
       instructor: 'David Smith',
-      date: 'Tuesday, Jan 9', // Will show "Every Tuesday"
+      date: 'Tuesday, Jan 14',
       time: '7:00 AM - 8:00 AM',
       location: 'Pool C',
       status: 'upcoming',
       sessionNumber: 6,
       totalSessions: 12,
       color: theme.colors.interactive.primary,
-      isRecurring: true,
-      recurringDay: 'Tuesday',
       maxParticipants: 1,
       participants: [
         {
@@ -832,6 +829,7 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Sunday',
       dayOfWeek: 'sunday',
+      facilityId: 'facility-main', // User's facility
       description: 'Focused technique improvement for teenage swimmers.',
       ageRange: '13-17 years',
       skillLevel: 'Intermediate',
@@ -852,11 +850,17 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Saturday',
       dayOfWeek: 'saturday',
+      facilityId: 'facility-west', // Different facility - user won't see this
       description: 'Prepare for open water swimming challenges and competitions.',
       ageRange: '18+',
       skillLevel: 'Advanced',
     },
   ]);
+
+  // Filter schedules to only show ones from user's designated facility
+  const facilitySchedules = allFacilitySchedules.filter(schedule => 
+    schedule.facilityId === currentEnrollment.facilityId
+  );
 
   const filters = [
     { key: 'all' as const, label: 'All', count: bookings.length },
@@ -870,9 +874,8 @@ export const BookingsScreen: React.FC = () => {
     return booking.status === selectedFilter;
   });
 
-  // Facility schedules filters - Days of the week
+  // Facility schedules filters - Days of the week only
   const facilityFilters = [
-    { key: 'all' as const, label: 'All', count: facilitySchedules.length },
     { key: 'sunday' as const, label: 'Sun', count: facilitySchedules.filter(s => s.dayOfWeek === 'sunday').length },
     { key: 'monday' as const, label: 'Mon', count: facilitySchedules.filter(s => s.dayOfWeek === 'monday').length },
     { key: 'tuesday' as const, label: 'Tue', count: facilitySchedules.filter(s => s.dayOfWeek === 'tuesday').length },
@@ -883,7 +886,6 @@ export const BookingsScreen: React.FC = () => {
   ];
 
   const filteredFacilitySchedules = facilitySchedules.filter(schedule => {
-    if (facilityFilter === 'all') return true;
     return schedule.dayOfWeek === facilityFilter;
   });
 
@@ -936,25 +938,25 @@ export const BookingsScreen: React.FC = () => {
 
   const handleManageParticipants = (bookingId: string) => {
     console.log('Manage participants for booking:', bookingId);
-    // TODO: This could trigger a refresh of booking data or update state
+    // TODO: This could trigger a refresh of schedule data or update state
   };
 
   const handleJoinSchedule = (scheduleId: string, sessionCount: number, participants: string[]) => {
     const creditsNeeded = sessionCount * participants.length;
     console.log('Join schedule:', scheduleId, 'sessions:', sessionCount, 'participants:', participants, 'credits needed:', creditsNeeded);
     
-    // Deduct credits from user account
-    setUserSessionCredits(prev => prev - creditsNeeded);
+    // Deduct credits from enrollment account
+    setEnrollmentCredits(prev => prev - creditsNeeded);
     
     // TODO: Implement complete join schedule logic
     // This should:
-    // 1. ✅ Deduct sessionCount * participants.length credits from user account (done above)
+    // 1. ✅ Deduct sessionCount * participants.length credits from enrollment (done above)
     // 2. Create booking entries for the selected sessions (API call)
     // 3. Update UI to reflect new bookings (refresh bookings data)
     // 4. Show success confirmation (toast notification)
     
     // For now, show a simple success message
-    console.log(`Successfully joined schedule! ${creditsNeeded} credits deducted. Remaining: ${userSessionCredits - creditsNeeded}`);
+    console.log(`Successfully joined schedule! ${creditsNeeded} credits deducted. Remaining: ${enrollmentCredits - creditsNeeded}`);
   };
 
   const handleViewScheduleDetails = (schedule: FacilitySchedule) => {
@@ -962,9 +964,9 @@ export const BookingsScreen: React.FC = () => {
     // TODO: Navigate to schedule detail screen
   };
 
-  const handleNewBooking = () => {
-    console.log('Navigate to new booking');
-    // TODO: Navigate to booking creation or facility schedules tab
+  const handleBrowseFacilitySchedules = () => {
+    console.log('Browse facility schedules');
+    // TODO: Navigate to facility schedules tab
     if (scheduleType === 'my-schedules') {
       setScheduleType('facility-schedules');
     }
@@ -1184,7 +1186,7 @@ export const BookingsScreen: React.FC = () => {
               </Text>
               <CustomButton
                 title="Browse Available Schedules"
-                onPress={handleNewBooking}
+                onPress={handleBrowseFacilitySchedules}
                 variant="primary"
                 size="md"
               />
@@ -1203,7 +1205,7 @@ export const BookingsScreen: React.FC = () => {
                 variant="facility-schedule"
                 onJoinSchedule={handleJoinSchedule}
                 onViewDetails={handleViewScheduleDetails}
-                userSessionCredits={userSessionCredits}
+                userSessionCredits={enrollmentCredits}
               />
             );
           }}

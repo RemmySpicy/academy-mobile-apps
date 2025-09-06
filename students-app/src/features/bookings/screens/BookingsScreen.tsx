@@ -50,6 +50,16 @@ interface Booking {
   recurringDay?: string;
 }
 
+interface Enrollment {
+  id: string;
+  courseName: string;
+  enrollmentDate: string; // YYYY-MM-DD format (when they enrolled)
+  firstSessionDate?: string; // YYYY-MM-DD format (when term starts counting)
+  termDurationWeeks: number; // 6 or 8 weeks
+  totalSessions: number;
+  usedSessions: number;
+}
+
 interface FacilitySchedule {
   id: string;
   scheduleTitle: string;
@@ -73,6 +83,21 @@ interface FacilitySchedule {
 
 
 
+
+// Utility functions for term calculations
+const calculateTermEndDate = (startDate: string, durationWeeks: number): Date => {
+  const start = new Date(startDate);
+  const endDate = new Date(start);
+  endDate.setDate(start.getDate() + (durationWeeks * 7) - 1);
+  return endDate;
+};
+
+const formatTermDateRange = (startDate: string, endDate: Date): string => {
+  const start = new Date(startDate);
+  const startFormatted = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const endFormatted = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${startFormatted} - ${endFormatted}`;
+};
 
 const useScreenStyles = createThemedStyles((theme) =>
   StyleSheet.create({
@@ -290,6 +315,17 @@ export const BookingsScreen: React.FC = () => {
     { value: 'my-schedules', label: 'My Schedules' },
     { value: 'facility-schedules', label: 'Facility Schedules' },
   ];
+
+  // Mock enrollment data - represents user's course enrollment
+  const currentEnrollment: Enrollment = {
+    id: 'enrollment-1',
+    courseName: 'Learn to Swim - Beginner',
+    enrollmentDate: '2024-12-15', // Enrolled on Dec 15th
+    firstSessionDate: '2025-01-01', // Started first session on Jan 1st (term starts counting)
+    termDurationWeeks: 6, // 6-week term
+    totalSessions: 8,
+    usedSessions: 3, // Used 3 sessions so far
+  };
 
   // Mock bookings data
   const [bookings] = useState<Booking[]>([
@@ -843,44 +879,25 @@ export const BookingsScreen: React.FC = () => {
 
   // Calculate term progress statistics
   const termStats = useMemo(() => {
-    // Assuming a standard term of 8 sessions as mentioned in the requirements
-    const STANDARD_TERM_SESSIONS = 8;
+    // Use enrollment data for term statistics
+    const completedSessions = currentEnrollment.usedSessions;
     
-    // Get all unique bookings (not individual sessions)
-    const uniqueBookings = bookings.filter(booking => booking.totalSessions > 0);
+    // Count upcoming bookings as scheduled sessions
+    const scheduledSessions = bookings.filter(booking => booking.status === 'upcoming').length;
     
-    let completedSessions = 0;
-    let scheduledSessions = 0;
-    let totalTermSessions = 0;
+    // Total sessions available in the term
+    const totalTermSessions = currentEnrollment.totalSessions;
     
-    uniqueBookings.forEach(booking => {
-      if (booking.status === 'completed') {
-        completedSessions += 1;
-      } else if (booking.status === 'upcoming') {
-        scheduledSessions += 1;
-      }
-      // Use the minimum of totalSessions and standard term to avoid overcount
-      totalTermSessions += Math.min(booking.totalSessions, STANDARD_TERM_SESSIONS);
-    });
-    
-    // For demo purposes, let's simulate term progress more realistically
-    // Assuming current active bookings represent ongoing terms
-    const activeBookings = uniqueBookings.filter(b => b.status === 'upcoming' || b.status === 'completed');
-    const avgProgress = activeBookings.length > 0 
-      ? activeBookings.reduce((sum, b) => sum + (b.sessionNumber / b.totalSessions), 0) / activeBookings.length 
-      : 0;
-    
-    const estimatedCompletedInTerm = Math.round(avgProgress * STANDARD_TERM_SESSIONS);
-    const estimatedScheduledInTerm = Math.max(1, Math.min(3, STANDARD_TERM_SESSIONS - estimatedCompletedInTerm)); // 1-3 upcoming
-    const remainingSessions = Math.max(0, STANDARD_TERM_SESSIONS - estimatedCompletedInTerm - estimatedScheduledInTerm);
+    // Calculate remaining sessions
+    const remainingSessions = Math.max(0, totalTermSessions - completedSessions - scheduledSessions);
     
     return {
-      completed: estimatedCompletedInTerm,
-      scheduled: estimatedScheduledInTerm, 
+      completed: completedSessions,
+      scheduled: scheduledSessions, 
       remaining: remainingSessions,
-      total: STANDARD_TERM_SESSIONS
+      total: totalTermSessions
     };
-  }, [bookings]);
+  }, [bookings, currentEnrollment]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -1000,7 +1017,14 @@ export const BookingsScreen: React.FC = () => {
           
           <View style={[styles.statCard, styles.statCardRight]}>
             <View style={styles.statHeader}>
-              <Text style={styles.statLabel}>This Term</Text>
+              <Text style={styles.statLabel}>
+                This Term ({currentEnrollment.firstSessionDate 
+                  ? formatTermDateRange(
+                      currentEnrollment.firstSessionDate, 
+                      calculateTermEndDate(currentEnrollment.firstSessionDate, currentEnrollment.termDurationWeeks)
+                    )
+                  : 'Not Started'})
+              </Text>
               <Ionicons name="calendar" size={16} color={theme.colors.status.success} />
             </View>
             <View style={styles.termProgressContainer}>

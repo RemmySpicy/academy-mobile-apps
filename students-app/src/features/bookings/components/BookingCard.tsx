@@ -345,8 +345,10 @@ const useCardStyles = createThemedStyles((theme) =>
       fontSize: theme.fontSizes.xs,
       fontWeight: theme.fontConfig.fontWeight.medium,
     },
+
   })
 );
+
 
 export const BookingCard: React.FC<BookingCardProps> = ({
   booking,
@@ -450,6 +452,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
     ? ((booking.currentParticipants || 0) / maxParticipants) * 100 
     : 0;
 
+
   const getProgressColor = () => {
     if (progressPercentage >= 90) return theme.colors.status.error;
     if (progressPercentage >= 70) return theme.colors.status.warning;
@@ -527,6 +530,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             <Ionicons name="water" size={24} color={booking.color} />
           </View>
         </View>
+
 
         {/* Conditional Section - Participants or Availability */}
         {variant === 'booking' ? (

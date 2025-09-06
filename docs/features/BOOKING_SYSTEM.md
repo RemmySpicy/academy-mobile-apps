@@ -157,14 +157,16 @@ const isCurrentDay = filter.key === currentDay;
 const filterStyle = isCurrentDay ? styles.currentDayFilter : styles.inactiveFilter;
 ```
 
-## 📊 Term Progress System ⭐ **NEW**
+## 📊 Term Progress System with Expiry Tracking ⭐ **NEW**
 
-The Academy Apps feature intelligent term progress tracking in the bookings screen.
+The Academy Apps feature intelligent term progress tracking with automatic expiry calculation based on enrollment and first session dates.
 
 ### **Key Features**
 
-- **8-Session Term Standard**: Industry-standard term length
-- **Smart Progress Calculation**: Automatically categorizes sessions
+- **Term Expiry Display**: Shows term date range in header (e.g., "This Term (Jan 1 - Feb 11)")
+- **Enrollment-Based Logic**: Distinguishes between enrollment date and term start date
+- **First Session Tracking**: Term countdown begins from first attended session, not enrollment
+- **Smart Progress Calculation**: Automatically categorizes sessions based on enrollment data
 - **Real-Time Updates**: Dynamic progress based on booking statuses
 - **Visual Progress Indicators**: Color-coded progress display
 - **Mobile-Optimized Layout**: Responsive card design
@@ -177,22 +179,70 @@ The Academy Apps feature intelligent term progress tracking in the bookings scre
 | **Scheduled** | Academy Purple (`theme.colors.interactive.primary`) | Upcoming booked sessions |
 | **Remaining** | Gray (`theme.colors.text.tertiary`) | Sessions left in term |
 
+### **Term Expiry Logic**
+
+The system uses a two-phase approach:
+
+1. **Enrollment Phase**: User enrolls in course and gets session credits (term not started)
+2. **Active Term Phase**: User attends first session, term expiry countdown begins
+
+```typescript
+interface Enrollment {
+  id: string;
+  courseName: string;
+  enrollmentDate: string;        // When user enrolled (e.g., "2024-12-15")
+  firstSessionDate?: string;     // When term starts counting (e.g., "2025-01-01")
+  termDurationWeeks: number;     // 6 or 8 weeks depending on course
+  totalSessions: number;         // Available session credits (typically 8)
+  usedSessions: number;          // Sessions completed so far
+}
+```
+
+### **Term Date Calculation**
+
+```typescript
+// Calculate term end date from first session
+const calculateTermEndDate = (startDate: string, durationWeeks: number): Date => {
+  const start = new Date(startDate);
+  const endDate = new Date(start);
+  endDate.setDate(start.getDate() + (durationWeeks * 7) - 1);
+  return endDate;
+};
+
+// Format date range for display
+const formatTermDateRange = (startDate: string, endDate: Date): string => {
+  const start = new Date(startDate);
+  const startFormatted = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const endFormatted = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${startFormatted} - ${endFormatted}`;
+};
+```
+
 ### **Display Format**
 
 The term progress card shows:
+- **Term Date Range**: "This Term (Jan 1 - Feb 11)" or "This Term (Not Started)"
 - **Individual counters** for each category (Completed: 3, Scheduled: 2, Remaining: 3)
-- **Overall progress** (5/8 sessions)
+- **Overall progress** (5/8 sessions based on enrollment)
 - **Responsive layout** with 60/140 width ratio for optimal mobile display
 
-### **Calculation Logic**
+### **Enhanced Calculation Logic**
 
 ```typescript
-const termStats = {
-  completed: 3,    // Sessions with 'completed' status
-  scheduled: 2,    // Sessions with 'upcoming' status  
-  remaining: 3,    // Calculated: 8 - (completed + scheduled)
-  total: 8         // Standard term size
-};
+const termStats = useMemo(() => {
+  // Use enrollment data for accurate term statistics
+  const completedSessions = currentEnrollment.usedSessions;
+  const scheduledSessions = bookings.filter(booking => booking.status === 'upcoming').length;
+  const totalTermSessions = currentEnrollment.totalSessions;
+  const remainingSessions = Math.max(0, totalTermSessions - completedSessions - scheduledSessions);
+  
+  return {
+    completed: completedSessions,    // From enrollment data
+    scheduled: scheduledSessions,    // Upcoming bookings
+    remaining: remainingSessions,    // Calculated credits left
+    total: totalTermSessions         // From enrollment (8 sessions)
+  };
+}, [bookings, currentEnrollment]);
 ```
 
 ## 💳 Enhanced Session Credits System ⭐ **UPGRADED**
@@ -461,12 +511,23 @@ BookingsScreen
 interface BookingState {
   bookings: Booking[];
   facilitySchedules: FacilitySchedule[]; // ⭐ NEW
+  currentEnrollment: Enrollment; // ⭐ NEW - Term expiry tracking
   selectedFilter: FilterType;
   facilityFilter: DayFilterType; // ⭐ NEW
   scheduleType: 'my-schedules' | 'facility-schedules';
   termStats: TermStats;
   currentDay: string; // ⭐ NEW
   userSessionCredits: number; // ⭐ NEW
+}
+
+interface Enrollment {
+  id: string;
+  courseName: string;
+  enrollmentDate: string;        // When user enrolled
+  firstSessionDate?: string;     // When term starts counting ⭐ NEW
+  termDurationWeeks: number;     // 6 or 8 weeks
+  totalSessions: number;         // Available session credits
+  usedSessions: number;          // Sessions completed
 }
 
 interface FacilitySchedule {
@@ -488,13 +549,15 @@ interface FacilitySchedule {
 
 ### **Data Flow**
 
-1. **Fetch Bookings**: Load user's booking data and facility schedules ⭐ **ENHANCED**
-2. **Detect Current Day**: Automatically determine today's day of the week ⭐ **NEW**
-3. **Calculate Progress**: Compute term statistics
-4. **Filter & Display**: Show filtered content based on selected tab and filters ⭐ **ENHANCED**
-5. **Manage Participants**: Handle add/remove operations (My Schedules)
-6. **Join Schedules**: Handle facility schedule enrollment (Facility Schedules) ⭐ **NEW**
-7. **Update Progress**: Recalculate on booking changes
+1. **Fetch Enrollment**: Load user's enrollment data with term information ⭐ **NEW**
+2. **Fetch Bookings**: Load user's booking data and facility schedules ⭐ **ENHANCED**
+3. **Calculate Term Dates**: Compute term expiry from first session date ⭐ **NEW**
+4. **Detect Current Day**: Automatically determine today's day of the week ⭐ **NEW**
+5. **Calculate Progress**: Compute term statistics from enrollment data ⭐ **ENHANCED**
+6. **Filter & Display**: Show filtered content based on selected tab and filters ⭐ **ENHANCED**
+7. **Manage Participants**: Handle add/remove operations (My Schedules)
+8. **Join Schedules**: Handle facility schedule enrollment (Facility Schedules) ⭐ **NEW**
+9. **Update Progress**: Recalculate on booking changes and enrollment updates ⭐ **ENHANCED**
 
 ## 💻 Usage Examples
 

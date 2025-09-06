@@ -222,7 +222,7 @@ The Academy Apps feature a comprehensive booking and session management system w
 - **Dual Schedule System**: Switch between "My Schedules" and "Facility Schedules" with custom tab selector ⭐ **NEW**
 - **Day-Based Filtering**: Sunday through Saturday filtering with current day highlighting for facility schedules ⭐ **NEW**
 - **Availability Tracking**: Real-time capacity management with progress bars for facility schedules ⭐ **NEW**
-- **Term Progress System**: 8-session term tracking with visual progress indicators
+- **Term Progress System with Expiry Tracking**: 8-session term tracking with visual progress indicators and term date ranges (e.g., "This Term (Jan 1 - Feb 11)") ⭐ **ENHANCED**
 - **Participant Management**: Bottom sheet interface for add/remove family members
 - **Multi-Program Support**: Works across all academy programs
 - **Schedule Flexibility**: One-time and recurring sessions with multi-instructor support
@@ -235,6 +235,8 @@ The Academy Apps feature a comprehensive booking and session management system w
 **Recent Enhancements:**
 - **Component Consolidation**: Merged BookingCard and FacilityScheduleCard into unified component ⭐ **NEW**
 - **Facility Schedule Browsing**: Complete schedule discovery system with availability indicators ⭐ **NEW**
+- **Term Expiry Tracking**: Header displays term date ranges with enrollment-based logic ⭐ **NEW**
+- **First Session Logic**: Term countdown starts from first attended session, not enrollment ⭐ **NEW**
 - **Current Day Detection**: Automatic highlighting of today's day in filter tabs ⭐ **NEW**
 - **Status Badge Styling**: Rounded background badges with proper padding and capitalization
 - **Action Button Design**: Context-aware actions (Join/View Details for facilities, Add/Remove for bookings)

@@ -86,6 +86,7 @@ interface Booking {
 - Add/Remove participant button
 - Reschedule/Cancel actions
 - **No pricing display** (already paid with session credits)
+- **No term expiry display** (term dates shown in screen header) ⭐ **UPDATED**
 
 **Key Features:**
 - Participant management with bottom sheet interface
@@ -93,6 +94,7 @@ interface Booking {
 - Session progress tracking
 - Family member management
 - **Credit-neutral display** (no payment information)
+- **Clean card design** without term expiry clutter ⭐ **UPDATED**
 
 ### Facility Schedule Variant (`variant="facility-schedule"`) ⭐ **UPDATED**
 
@@ -198,6 +200,30 @@ const handleViewDetails = (schedule: Booking) => {
 ```
 
 ## 🏗️ Technical Architecture
+
+### Term Expiry Design Decision ⭐ **NEW**
+
+**Key Design Principle**: Individual booking cards no longer display term expiry information. This follows the correct logical separation:
+
+- **BookingCard**: Represents individual booked sessions from an enrollment
+- **BookingsScreen Header**: Shows overall enrollment term dates (e.g., "This Term (Jan 1 - Feb 11)")
+- **Enrollment Logic**: Term expiry based on first session date, not enrollment date
+
+```typescript
+// ❌ OLD: Term expiry on each booking card
+interface Booking {
+  termStartDate?: string;
+  termDurationWeeks?: number;
+  // ... other properties
+}
+
+// ✅ NEW: Enrollment-based term tracking
+interface Enrollment {
+  enrollmentDate: string;        // When user enrolled
+  firstSessionDate?: string;     // When term expiry starts counting
+  termDurationWeeks: number;     // 6 or 8 weeks from first session
+}
+```
 
 ### Conditional Rendering Logic
 

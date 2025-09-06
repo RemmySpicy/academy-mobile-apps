@@ -727,6 +727,7 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Tuesday',
       dayOfWeek: 'tuesday',
+      facilityId: 'facility-main', // User's facility
       description: 'Essential water safety skills for children aged 5-12.',
       ageRange: '5-12 years',
       skillLevel: 'All Levels',
@@ -747,6 +748,7 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Wednesday & Friday',
       dayOfWeek: 'wednesday',
+      facilityId: 'facility-north', // Different facility - user won't see this
       description: 'High-performance training for competitive swimmers.',
       ageRange: '13-18 years',
       skillLevel: 'Advanced',
@@ -767,6 +769,7 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Saturday',
       dayOfWeek: 'saturday',
+      facilityId: 'facility-main', // User's facility
       description: 'Fun swimming activities for the whole family to enjoy together.',
       ageRange: 'All Ages',
       skillLevel: 'All Levels',
@@ -787,6 +790,7 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Thursday',
       dayOfWeek: 'thursday',
+      facilityId: 'facility-south', // Different facility - user won't see this
       description: 'Open lap swimming for fitness and training.',
       ageRange: '18+',
       skillLevel: 'Intermediate+',
@@ -807,6 +811,7 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Friday',
       dayOfWeek: 'friday',
+      facilityId: 'facility-main', // User's facility
       description: 'Low-impact water exercises perfect for all fitness levels.',
       ageRange: '25+',
       skillLevel: 'Beginner',

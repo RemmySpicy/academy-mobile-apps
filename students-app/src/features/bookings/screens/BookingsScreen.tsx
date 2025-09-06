@@ -58,6 +58,7 @@ interface Enrollment {
   termDurationWeeks: number; // 6 or 8 weeks
   totalSessions: number;
   usedSessions: number;
+  facilityId: string; // User's designated facility - only see schedules from this facility
 }
 
 interface FacilitySchedule {
@@ -79,6 +80,7 @@ interface FacilitySchedule {
   ageRange?: string;
   skillLevel?: string;
   dayOfWeek: string; // Day of the week this schedule runs on
+  facilityId: string; // Which facility this schedule belongs to
 }
 
 
@@ -298,8 +300,9 @@ export const BookingsScreen: React.FC = () => {
   const [notificationCount, setNotificationCount] = useState(3);
   const [scheduleType, setScheduleType] = useState<'my-schedules' | 'facility-schedules'>('my-schedules');
   
-  // Mock user session credits (in real app, this would come from user profile/API)
-  const [userSessionCredits, setUserSessionCredits] = useState(12);
+  // User session credits come from enrollment (pooled credits for family)
+  const userSessionCredits = currentEnrollment.totalSessions - currentEnrollment.usedSessions;
+  const [enrollmentCredits, setEnrollmentCredits] = useState(userSessionCredits);
 
   // Get current day of the week
   const getCurrentDay = () => {
@@ -325,6 +328,7 @@ export const BookingsScreen: React.FC = () => {
     termDurationWeeks: 6, // 6-week term
     totalSessions: 8,
     usedSessions: 3, // Used 3 sessions so far
+    facilityId: 'facility-main', // User's designated facility
   };
 
   // Mock bookings data
@@ -684,8 +688,8 @@ export const BookingsScreen: React.FC = () => {
     },
   ]);
 
-  // Mock facility schedules data
-  const [facilitySchedules] = useState<FacilitySchedule[]>([
+  // Mock facility schedules data - in real app would be filtered by user's facilityId
+  const [allFacilitySchedules] = useState<FacilitySchedule[]>([
     {
       id: 'fs1',
       scheduleTitle: 'Beginner Adult Swimming',
@@ -702,6 +706,7 @@ export const BookingsScreen: React.FC = () => {
       isRecurring: true,
       recurringDay: 'Monday',
       dayOfWeek: 'monday',
+      facilityId: 'facility-main', // User's facility
       description: 'Perfect for adults who are new to swimming or want to improve basic techniques.',
       ageRange: '18+',
       skillLevel: 'Beginner',

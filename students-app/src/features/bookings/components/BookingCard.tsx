@@ -54,7 +54,7 @@ interface Booking {
 interface BookingCardProps {
   booking: Booking;
   index: number;
-  variant?: 'booking' | 'facility-schedule';
+  variant?: 'my-schedule' | 'facility-schedule';
   onPress?: (booking: Booking) => void;
   onManageParticipants?: (bookingId: string) => void;
   onJoinSchedule?: (scheduleId: string, sessionCount: number, participants: string[]) => void;
@@ -353,7 +353,7 @@ const useCardStyles = createThemedStyles((theme) =>
 export const BookingCard: React.FC<BookingCardProps> = ({
   booking,
   index,
-  variant = 'booking',
+  variant = 'my-schedule',
   onPress,
   onManageParticipants,
   onJoinSchedule,
@@ -533,7 +533,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
 
 
         {/* Conditional Section - Participants or Availability */}
-        {variant === 'booking' ? (
+        {variant === 'my-schedule' ? (
           <View style={styles.participantsContainer}>
             <View style={styles.participantsHeader}>
               <Text style={styles.participantsLabel}>Participants</Text>
@@ -638,19 +638,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             <Ionicons name="location-outline" size={16} color={theme.colors.text.tertiary} />
             <Text style={styles.detailText}>{booking.location}</Text>
           </View>
-          {variant === 'facility-schedule' && booking.totalSessions > 1 && (
-            <View style={styles.detailItem}>
-              <Ionicons name="calendar-outline" size={16} color={theme.colors.text.tertiary} />
-              <Text style={styles.detailText}>
-                {booking.totalSessions} sessions available
-              </Text>
-            </View>
-          )}
         </View>
 
         {/* Status and Actions */}
         <View style={styles.statusRow}>
-          {variant === 'booking' ? (
+          {variant === 'my-schedule' ? (
             <>
               <View style={[
                 styles.statusItem,
@@ -720,8 +712,8 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         </View>
       </Pressable>
 
-      {/* Participant Management Bottom Sheet - Only for booking variant */}
-      {variant === 'booking' && (
+      {/* Participant Management Bottom Sheet - Only for my-schedule variant */}
+      {variant === 'my-schedule' && (
         <ParticipantManagementBottomSheet
           visible={showParticipantSheet}
           onClose={() => setShowParticipantSheet(false)}

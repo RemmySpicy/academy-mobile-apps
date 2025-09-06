@@ -216,7 +216,7 @@ export const AppMenuScreen: React.FC = () => {
     },
     {
       id: 'about',
-      title: 'About Academy',
+      title: 'About Elitesgen Academy',
       subtitle: 'App version and information',
       icon: 'information-circle-outline',
       color: theme.colors.icon.secondary,
@@ -802,7 +802,7 @@ export const AppMenuScreen: React.FC = () => {
             textAlign: 'center',
             fontSize: theme.fontSizes.sm,
           }}>
-            Academy Instructors App v1.0.0
+            Elitesgen Academy Instructors App v1.0.0
           </Text>
         </Animated.View>
       </ScrollView>

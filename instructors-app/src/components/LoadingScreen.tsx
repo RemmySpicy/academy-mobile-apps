@@ -13,7 +13,7 @@ export const LoadingScreen: React.FC = () => {
         color={theme.colors.interactive.primary} 
       />
       <Text style={styles.text}>
-        Loading Academy Instructors...
+        Loading Elitesgen Academy Instructors...
       </Text>
     </View>
   );

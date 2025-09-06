@@ -307,7 +307,7 @@ export const AppMenuScreen: React.FC = () => {
     },
     {
       id: 'about',
-      title: 'About Academy',
+      title: 'About Elitesgen Academy',
       subtitle: 'App version and information',
       icon: 'information-circle-outline',
       color: theme.colors.icon.secondary,
@@ -676,7 +676,7 @@ export const AppMenuScreen: React.FC = () => {
               paddingHorizontal: theme.spacing.md,
             }}
           >
-            Academy Features
+            Elitesgen Academy Features
           </Animated.Text>
 
           <View style={{ paddingHorizontal: theme.spacing.md }}>
@@ -1023,7 +1023,7 @@ export const AppMenuScreen: React.FC = () => {
             opacity: 0.9,
             marginBottom: theme.spacing.lg,
           }}>
-            Share your referral code and earn rewards when friends join Academy
+            Share your referral code and earn rewards when friends join Elitesgen Academy
           </Text>
           <Pressable
             onPress={() => navigation.navigate('Referrals')}
@@ -1093,7 +1093,7 @@ export const AppMenuScreen: React.FC = () => {
             textAlign: 'center',
             fontSize: theme.fontSizes.sm,
           }}>
-            Academy Students App v1.0.0
+            Elitesgen Academy Students App v1.0.0
           </Text>
         </Animated.View>
       </ScrollView>
@@ -1195,7 +1195,7 @@ export const AppMenuScreen: React.FC = () => {
                 textAlign: 'center',
                 marginTop: 4,
               }}>
-                Swimming Academy Students
+                Elitesgen Swimming Academy Students
               </Text>
             )}
           </View>

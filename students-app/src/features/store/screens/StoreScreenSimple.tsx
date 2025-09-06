@@ -31,7 +31,7 @@ export const StoreScreenSimple: React.FC = () => {
           textAlign: 'center',
           marginBottom: theme.spacing.md,
         }}>
-          Academy Store
+          Elitesgen Academy Store
         </Text>
         
         <Text style={{

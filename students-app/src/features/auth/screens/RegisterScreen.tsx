@@ -243,7 +243,7 @@ export const RegisterScreen: React.FC<AuthNavigationProps<'Register'>> = ({
                 <Ionicons name="person-add" size={32} color="white" />
               </View>
               <Text style={styles.headerTitle}>
-                Join Academy
+                Join Elitesgen Academy
               </Text>
               <Text style={styles.headerSubtitle}>
                 Start your swimming journey today

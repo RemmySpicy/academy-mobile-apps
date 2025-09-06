@@ -22,11 +22,15 @@ The Academy Apps feature a comprehensive booking and session management system t
 
 The booking system provides students and parents with comprehensive session management capabilities:
 
-- **Session Booking & Management**: Book, reschedule, and cancel sessions
-- **Facility Schedule Browsing**: Discover and join available facility schedules ⭐ **NEW**
-- **Day-Based Filtering**: Browse schedules by day of the week with current day highlighting ⭐ **NEW**
-- **Term Progress Tracking**: Visual progress indicators for 8-session terms
-- **Participant Management**: Add/remove family members from sessions
+- **Session Booking & Management**: Book, reschedule, and cancel sessions with specific dates
+- **Facility Designation**: Users only see schedules from their enrolled facility ⭐ **SECURITY**  
+- **Enrollment-Based Credits**: Session credits tracked at enrollment level for family use ⭐ **NEW**
+- **Facility Schedule Browsing**: Discover and join available facility schedules with credit validation
+- **Day-Based Filtering**: Browse schedules by day (Sun-Sat) with current day auto-selection ⭐ **ENHANCED**
+- **Accurate Data Display**: Term progress matches actual booking counts ⭐ **CRITICAL**
+- **Specific Session Dates**: Shows exact dates ("Monday, Jan 13") not recurring patterns ⭐ **UX**
+- **Term Progress Tracking**: Visual progress indicators with real-time accuracy
+- **Participant Management**: Add/remove family members from sessions  
 - **Multi-Program Support**: Works across all academy programs (swimming, music, etc.)
 - **Schedule Flexibility**: Supports one-time and recurring sessions
 - **Session Credits System**: Credit-based booking for facility schedules ⭐ **NEW**

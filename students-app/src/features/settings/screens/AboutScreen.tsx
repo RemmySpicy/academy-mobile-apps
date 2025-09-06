@@ -122,7 +122,7 @@ export const AboutScreen: React.FC = () => {
     {
       id: 'website',
       title: 'Visit Our Website',
-      subtitle: 'Learn more about Academy',
+      subtitle: 'Learn more about Elitesgen Academy',
       value: 'www.academy.com',
       icon: 'globe',
       onPress: () => Linking.openURL('https://www.academy.com'),
@@ -219,7 +219,7 @@ export const AboutScreen: React.FC = () => {
             fontWeight: theme.fontConfig.fontWeight.bold,
             marginBottom: theme.spacing.sm,
           }}>
-            Academy Students
+            Elitesgen Academy Students
           </Text>
           
           <Text style={{
@@ -361,7 +361,7 @@ export const AboutScreen: React.FC = () => {
 
           <View style={{ marginBottom: theme.spacing.md }}>
             {[
-              'Enhanced user interface with Academy design system',
+              'Enhanced user interface with Elitesgen Academy design system',
               'Improved performance and stability',
               'New achievement tracking system',
               'Better notification management',
@@ -416,7 +416,7 @@ export const AboutScreen: React.FC = () => {
             textAlign: 'center',
             marginBottom: theme.spacing.sm,
           }}>
-            Enjoying Academy?
+            Enjoying Elitesgen Academy?
           </Text>
           <Text style={{
             color: 'white',
@@ -429,7 +429,7 @@ export const AboutScreen: React.FC = () => {
             Rate us on the App Store and let us know what you think!
           </Text>
           <CustomButton
-            title="Rate Academy"
+            title="Rate Elitesgen Academy"
             variant="secondary"
             size="md"
             onPress={() => console.log('Open app store for rating')}
@@ -457,7 +457,7 @@ export const AboutScreen: React.FC = () => {
             textAlign: 'center',
             lineHeight: 20,
           }}>
-            © 2024 Academy. All rights reserved.
+            © 2024 Elitesgen Academy. All rights reserved.
           </Text>
           <Text style={{
             color: theme.colors.text.tertiary,
@@ -465,7 +465,7 @@ export const AboutScreen: React.FC = () => {
             textAlign: 'center',
             marginTop: theme.spacing.xs,
           }}>
-            Made with ❤️ for our Academy community
+            Made with ❤️ for our Elitesgen Academy community
           </Text>
         </Animated.View>
       </ScrollView>

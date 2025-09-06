@@ -42,7 +42,6 @@ interface Participant {
   lastName: string;
   relationship: 'self' | 'child' | 'spouse';
   isSelected: boolean;
-  sessionCredits: number;
 }
 
 interface SessionDate {
@@ -502,10 +501,10 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
   const [selectedSessionCount, setSelectedSessionCount] = useState(1);
   const [customSessions, setCustomSessions] = useState<SessionDate[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([
-    { id: 'self', firstName: 'John', lastName: 'Parent', relationship: 'self', isSelected: true, sessionCredits: 12 },
-    { id: 'child1', firstName: 'Emma', lastName: 'Parent', relationship: 'child', isSelected: false, sessionCredits: 8 },
-    { id: 'child2', firstName: 'Noah', lastName: 'Parent', relationship: 'child', isSelected: false, sessionCredits: 15 },
-    { id: 'spouse', firstName: 'Jane', lastName: 'Parent', relationship: 'spouse', isSelected: false, sessionCredits: 5 },
+    { id: 'self', firstName: 'John', lastName: 'Parent', relationship: 'self', isSelected: true },
+    { id: 'child1', firstName: 'Emma', lastName: 'Parent', relationship: 'child', isSelected: false },
+    { id: 'child2', firstName: 'Noah', lastName: 'Parent', relationship: 'child', isSelected: false },
+    { id: 'spouse', firstName: 'Jane', lastName: 'Parent', relationship: 'spouse', isSelected: false },
   ]);
 
   // Helper functions - memoized to prevent recreating on every render
@@ -592,26 +591,20 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
     }
   };
 
-  // Calculate max session count based on highest available credits among selected participants
+  // Calculate max session count based on enrollment credits
   const selectedParticipants = participants.filter(p => p.isSelected);
-  const maxCreditsInGroup = selectedParticipants.length > 0 
-    ? Math.max(...selectedParticipants.map(p => p.sessionCredits))
-    : userSessionCredits;
-  const maxSessionCount = Math.min(maxCreditsInGroup, schedule.totalSessions || 8);
+  const maxSessionCount = Math.min(userSessionCredits, schedule.totalSessions || 8);
   
   // Calculate selected sessions count and credits needed
   const selectedSessionsCount = customSessions.filter(s => s.isSelected).length;
-  const participantsWithWarnings = selectedParticipants.filter(p => p.sessionCredits < selectedSessionsCount);
-  const totalCreditsNeeded = selectedParticipants.reduce((total, participant) => {
-    const sessionsForParticipant = Math.min(selectedSessionsCount, participant.sessionCredits);
-    return total + sessionsForParticipant;
-  }, 0);
+  const totalCreditsNeeded = selectedSessionsCount * selectedParticipants.length;
+  const hasInsufficientCredits = totalCreditsNeeded > userSessionCredits;
   
   const availabilityPercentage = (schedule.currentParticipants / schedule.maxParticipants) * 100;
 
   const canJoin = selectedSessionCount > 0 && selectedParticipants.length > 0 && 
                  (schedule.currentParticipants + selectedParticipants.length <= schedule.maxParticipants) &&
-                 totalCreditsNeeded > 0; // Allow joining even with partial participation
+                 !hasInsufficientCredits; // Must have enough credits
 
   const handleSessionCountChange = (delta: number) => {
     const newCount = selectedSessionCount + delta;
@@ -644,32 +637,10 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
       return;
     }
 
-    // Show confirmation if some participants will have partial enrollment
-    if (participantsWithWarnings.length > 0) {
-      const warningMessage = participantsWithWarnings.map(p => 
-        `${p.firstName} ${p.lastName} will only be enrolled in ${p.sessionCredits} session${p.sessionCredits !== 1 ? 's' : ''} (has ${p.sessionCredits} credit${p.sessionCredits !== 1 ? 's' : ''})`
-      ).join('\n\n');
-      
-      Alert.alert(
-        'Partial Enrollment Notice',
-        `Some participants will be enrolled in fewer sessions due to insufficient credits:\n\n${warningMessage}\n\nDo you want to continue?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { 
-            text: 'Continue', 
-            onPress: () => {
-              const participantIds = selectedParticipants.map(p => p.id);
-              const selectedDates = customSessions.filter(s => s.isSelected).map(s => s.date);
-              onJoinSchedule(schedule.id, selectedSessionsCount, participantIds);
-            }
-          },
-        ]
-      );
-    } else {
-      const participantIds = selectedParticipants.map(p => p.id);
-      const selectedDates = customSessions.filter(s => s.isSelected).map(s => s.date);
-      onJoinSchedule(schedule.id, selectedSessionsCount, participantIds);
-    }
+    // Proceed with enrollment
+    const participantIds = selectedParticipants.map(p => p.id);
+    const selectedDates = customSessions.filter(s => s.isSelected).map(s => s.date);
+    onJoinSchedule(schedule.id, selectedSessionsCount, participantIds);
   };
 
   return (
@@ -785,24 +756,6 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
                     </Text>
                     <Text style={styles.participantRelation}>
                       {getRelationshipLabel(participant.relationship)}
-                    </Text>
-                    {participant.isSelected && selectedSessionsCount > participant.sessionCredits && (
-                      <View style={styles.participantWarning}>
-                        <Ionicons
-                          name="warning"
-                          size={12}
-                          color={theme.colors.status.warning}
-                        />
-                        <Text style={styles.warningText}>
-                          Only {participant.sessionCredits} of {selectedSessionsCount} session{selectedSessionsCount !== 1 ? 's' : ''} available
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                  
-                  <View style={styles.creditsRightColumn}>
-                    <Text style={styles.participantCredits}>
-                      {participant.sessionCredits} credit{participant.sessionCredits !== 1 ? 's' : ''}
                     </Text>
                   </View>
                 </Pressable>
@@ -929,46 +882,44 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
               </Text>
             </View>
             
-            {/* Individual Participant Breakdown */}
+            {/* Participant Breakdown */}
             {selectedParticipants.length > 0 && (
               <View style={styles.participantBreakdownContainer}>
-                {selectedParticipants.map((participant) => {
-                  const sessionsForParticipant = Math.min(selectedSessionsCount, participant.sessionCredits);
-                  const isPartialEnrollment = sessionsForParticipant < selectedSessionsCount;
-                  
-                  return (
-                    <View key={participant.id} style={styles.participantBreakdownItem}>
-                      <Text style={styles.participantBreakdownName}>
-                        {participant.firstName} {participant.lastName}
-                      </Text>
-                      <Text style={[
-                        isPartialEnrollment ? styles.participantBreakdownWarning : styles.participantBreakdownCredits
-                      ]}>
-                        {sessionsForParticipant} credit{sessionsForParticipant !== 1 ? 's' : ''}
-                        {isPartialEnrollment && ` (only ${sessionsForParticipant}/${selectedSessionsCount})`}
-                      </Text>
-                    </View>
-                  );
-                })}
+                {selectedParticipants.map((participant) => (
+                  <View key={participant.id} style={styles.participantBreakdownItem}>
+                    <Text style={styles.participantBreakdownName}>
+                      {participant.firstName} {participant.lastName}
+                    </Text>
+                    <Text style={styles.participantBreakdownCredits}>
+                      {selectedSessionsCount} session{selectedSessionsCount !== 1 ? 's' : ''}
+                    </Text>
+                  </View>
+                ))}
               </View>
             )}
             
             <View style={styles.remainingCreditsRow}>
               <Text style={styles.remainingCreditsLabel}>
-                {participantsWithWarnings.length > 0 
-                  ? 'Total credits from individual limits'
-                  : 'Credits used for full enrollment'
-                }
+                Total credits needed
               </Text>
               <Text style={[
                 styles.remainingCreditsValue,
                 { 
-                  color: participantsWithWarnings.length > 0 
-                    ? theme.colors.status.warning
+                  color: hasInsufficientCredits 
+                    ? theme.colors.status.error
                     : theme.colors.interactive.primary
                 }
               ]}>
                 {totalCreditsNeeded} credit{totalCreditsNeeded !== 1 ? 's' : ''}
+              </Text>
+            </View>
+            
+            <View style={styles.remainingCreditsRow}>
+              <Text style={styles.remainingCreditsLabel}>
+                Available credits
+              </Text>
+              <Text style={styles.remainingCreditsValue}>
+                {userSessionCredits} credit{userSessionCredits !== 1 ? 's' : ''}
               </Text>
             </View>
           </View>
@@ -982,12 +933,12 @@ export const JoinScheduleBottomSheet: React.FC<JoinScheduleBottomSheetProps> = (
         >
           <Text style={[styles.joinButtonText, !canJoin && styles.joinButtonTextDisabled]}>
             {canJoin 
-              ? participantsWithWarnings.length > 0 
-                ? `Join Schedule - ${totalCreditsNeeded} Credits (Partial Enrollment)`
-                : `Join Schedule - ${totalCreditsNeeded} Credits`
+              ? `Join Schedule - ${totalCreditsNeeded} Credits`
               : selectedParticipants.length === 0
                 ? 'Select Participants'
-                : 'Cannot Join Schedule'
+                : hasInsufficientCredits
+                  ? `Insufficient Credits (Need ${totalCreditsNeeded})`
+                  : 'Cannot Join Schedule'
             }
           </Text>
         </Pressable>

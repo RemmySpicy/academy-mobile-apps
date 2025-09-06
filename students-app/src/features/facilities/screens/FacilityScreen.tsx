@@ -399,8 +399,8 @@ export const FacilityScreen: React.FC = () => {
   const facilities: Facility[] = [
     {
       id: 'loc-001',
-      name: 'Academy Main Campus',
-      address: '123 Academy Drive',
+      name: 'Elitesgen Academy Main Campus',
+      address: '123 Elitesgen Academy Drive',
       city: 'Downtown, CA 90210',
       phone: '(555) 123-4567',
       email: 'main@academy.com',
@@ -423,7 +423,7 @@ export const FacilityScreen: React.FC = () => {
     },
     {
       id: 'loc-002',
-      name: 'Academy North Branch',
+      name: 'Elitesgen Academy North Branch',
       address: '456 North Street',
       city: 'Northside, CA 90211',
       phone: '(555) 234-5678',
@@ -446,7 +446,7 @@ export const FacilityScreen: React.FC = () => {
     },
     {
       id: 'loc-003',
-      name: 'Academy Westside',
+      name: 'Elitesgen Academy Westside',
       address: '789 West Boulevard',
       city: 'Westside, CA 90212',
       phone: '(555) 345-6789',

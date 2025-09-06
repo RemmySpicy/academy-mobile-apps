@@ -282,7 +282,7 @@ export const PaymentMethodsScreen: React.FC = () => {
             textAlign: 'center',
             lineHeight: 24,
           }}>
-            Manage your payment methods for Academy services and purchases
+            Manage your payment methods for Elitesgen Academy services and purchases
           </Text>
         </Animated.View>
 
@@ -365,7 +365,7 @@ export const PaymentMethodsScreen: React.FC = () => {
             fontSize: theme.fontSizes.sm,
             lineHeight: 20,
           }}>
-            All payment information is encrypted and stored securely. Academy never stores your full card details on our servers.
+            All payment information is encrypted and stored securely. Elitesgen Academy never stores your full card details on our servers.
           </Text>
         </Animated.View>
       </ScrollView>

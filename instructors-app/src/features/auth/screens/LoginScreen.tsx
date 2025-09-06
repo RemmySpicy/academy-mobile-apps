@@ -51,7 +51,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
                 <Ionicons name="school" size={32} color="white" />
               </View>
               <Text style={styles.headerTitle}>
-                Academy Instructors
+                Elitesgen Academy Instructors
               </Text>
               <Text style={styles.headerSubtitle}>
                 Sign in to manage your classes and students

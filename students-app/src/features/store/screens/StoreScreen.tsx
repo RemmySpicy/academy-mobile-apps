@@ -221,8 +221,8 @@ export const StoreScreen: React.FC = () => {
     },
     {
       id: 'academy-shirt',
-      name: 'Academy T-Shirt',
-      description: 'Official Academy branded t-shirt made from premium cotton',
+      name: 'Elitesgen Academy T-Shirt',
+      description: 'Official Elitesgen Academy branded t-shirt made from premium cotton',
       price: 9999,
       category: 'apparel',
       image: '',

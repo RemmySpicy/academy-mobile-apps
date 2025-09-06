@@ -1,7 +1,7 @@
 {
   "name": "@academy/mobile-shared",
   "version": "1.0.0",
-  "description": "Shared mobile components and utilities for Academy Management System",
+  "description": "Shared mobile components and utilities for Elitesgen Academy Management System",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "module": "src/index.ts",
@@ -46,7 +46,7 @@
     "shared",
     "components"
   ],
-  "author": "Academy Team",
+  "author": "Elitesgen Academy Team",
   "license": "MIT",
   "peerDependencies": {
     "react": "19.0.0",

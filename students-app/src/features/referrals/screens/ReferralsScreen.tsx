@@ -240,7 +240,7 @@ export const ReferralsScreen: React.FC = () => {
   const handleShareCode = async () => {
     try {
       await Share.share({
-        message: `Join Academy with my referral code ${referralCode} and we both get ₦20,000! Download the app and start your fitness journey today.`,
+        message: `Join Elitesgen Academy with my referral code ${referralCode} and we both get ₦20,000! Download the app and start your fitness journey today.`,
         url: 'https://academyapp.com/referral/' + referralCode,
       });
     } catch (error) {
@@ -302,7 +302,7 @@ export const ReferralsScreen: React.FC = () => {
             marginBottom: theme.spacing.lg,
             lineHeight: 22,
           }}>
-            Share your referral code and earn rewards when your friends join Academy
+            Share your referral code and earn rewards when your friends join Elitesgen Academy
           </Text>
           
           <View style={{

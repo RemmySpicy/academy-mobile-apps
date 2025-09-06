@@ -218,29 +218,31 @@ The Academy Apps feature a modern, interactive profile card system with advanced
 The Academy Apps feature a comprehensive booking and session management system with enhanced UI components, facility schedules, and day-based filtering.
 
 **Key Features:**
-- **Unified BookingCard Component**: Single component with variants for both personal bookings and facility schedules ⭐ **UNIFIED**
+- **Unified BookingCard Component**: Single component with variants for both personal schedules and facility schedules ⭐ **UNIFIED**
 - **Dual Schedule System**: Switch between "My Schedules" and "Facility Schedules" with custom tab selector ⭐ **NEW**
-- **Day-Based Filtering**: Sunday through Saturday filtering with current day highlighting for facility schedules ⭐ **NEW**
-- **Availability Tracking**: Real-time capacity management with progress bars for facility schedules ⭐ **NEW**
-- **Term Progress System with Expiry Tracking**: 8-session term tracking with visual progress indicators and term date ranges (e.g., "This Term (Jan 1 - Feb 11)") ⭐ **ENHANCED**
+- **Day-Based Filtering**: Day-specific filtering (Sun-Sat) with current day auto-selection for facility schedules ⭐ **NEW**
+- **Facility Designation Logic**: Users only see schedules from their enrolled facility ⭐ **SECURITY**
+- **Enrollment-Based Credits**: Session credits tracked at enrollment level for family use ⭐ **NEW**
+- **Specific Session Dates**: Each booking card shows exact session dates, not recurring patterns ⭐ **UX**
+- **Term Progress Accuracy**: Real-time progress matching actual booking statuses ⭐ **ENHANCED**
+- **Availability Tracking**: Real-time capacity management with progress bars for facility schedules
 - **Participant Management**: Bottom sheet interface for add/remove family members
 - **Multi-Program Support**: Works across all academy programs
-- **Schedule Flexibility**: One-time and recurring sessions with multi-instructor support
 
 **Component Architecture:**
-- **BookingCard Variants**: `variant="booking"` (personal bookings) and `variant="facility-schedule"` (available schedules)
+- **BookingCard Variants**: `variant="my-schedule"` (personal schedules) and `variant="facility-schedule"` (available schedules)
+- **Consistent Naming**: Card variants match tab names for logical consistency
 - **Smart Conditional Rendering**: Automatically shows relevant sections based on variant type
 - **DRY Principle**: Single maintainable component instead of separate components
 
 **Recent Enhancements:**
-- **Component Consolidation**: Merged BookingCard and FacilityScheduleCard into unified component ⭐ **NEW**
-- **Facility Schedule Browsing**: Complete schedule discovery system with availability indicators ⭐ **NEW**
-- **Term Expiry Tracking**: Header displays term date ranges with enrollment-based logic ⭐ **NEW**
-- **First Session Logic**: Term countdown starts from first attended session, not enrollment ⭐ **NEW**
-- **Current Day Detection**: Automatic highlighting of today's day in filter tabs ⭐ **NEW**
-- **Status Badge Styling**: Rounded background badges with proper padding and capitalization
-- **Action Button Design**: Context-aware actions (Join/View Details for facilities, Add/Remove for bookings)
-- **Custom Segmented Control**: Academy-themed tab selector inspired by Course Curriculum design patterns
+- **Facility Access Control**: Only show schedules from user's designated facility ⭐ **CRITICAL**
+- **Data Accuracy Updates**: Term progress now accurately reflects booking card counts ⭐ **NEW**
+- **Specific Date Display**: "Monday, Jan 13 (Tomorrow)" instead of "Every Monday" ⭐ **UX**
+- **Naming Consistency**: Updated all variants and terminology for logical consistency ⭐ **NEW**
+- **Streamlined Filters**: Removed "All" tab from facility schedules, defaults to current day ⭐ **NEW**
+- **User-Friendly Language**: "Browse Available Schedules" emphasizes availability over source ⭐ **UX**
+- **Credit Validation**: Proper credit checking prevents over-booking ⭐ **BUSINESS LOGIC**
 
 **Implementation**: Home → Bookings → Unified BookingCard with dual schedule system and day-based filtering
 

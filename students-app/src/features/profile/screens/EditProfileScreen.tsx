@@ -848,7 +848,7 @@ export const EditProfileScreen: React.FC = () => {
               fontWeight: theme.fontConfig.fontWeight.bold,
               flex: 1,
             }}>
-              Academy Information
+              Elitesgen Academy Information
             </Text>
             <Ionicons 
               name="school-outline" 

@@ -51,7 +51,7 @@ export const LoginScreen: React.FC<AuthNavigationProps<'Login'>> = ({
                 <Ionicons name="water" size={32} color="white" />
               </View>
               <Text style={styles.headerTitle}>
-                Academy Students
+                Elitesgen Academy Students
               </Text>
               <Text style={styles.headerSubtitle}>
                 Welcome back to your swimming journey

@@ -64,7 +64,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = () => {
     {
       id: '5',
       title: 'System Maintenance',
-      message: 'The Academy system will undergo maintenance this Sunday from 2:00 AM to 6:00 AM. Plan accordingly.',
+      message: 'The Elitesgen Academy system will undergo maintenance this Sunday from 2:00 AM to 6:00 AM. Plan accordingly.',
       timestamp: '3 days ago',
       isRead: true,
       type: 'alert',

@@ -1,8 +1,8 @@
-# Booking Cards - Academy Mobile Apps
+# Booking System - Academy Mobile Apps
 
 ## Overview
 
-The Academy Apps use a unified **BookingCard** component that displays participant information for all booking types, providing a consistent experience focused on showing who's enrolled in each session.
+The Academy Apps feature a comprehensive booking system with facility designation, enrollment-based credits, and dual schedule management. The system uses a unified **BookingCard** component with variants for personal schedules and facility schedules, ensuring users only see schedules from their designated facility.
 
 ## Components
 
@@ -22,13 +22,29 @@ Unified booking card component with participant management capabilities.
 - Reschedule/Cancel actions
 - Support for recurring schedules
 
+**Variants:**
+- `variant="my-schedule"` - Personal bookings with participant management
+- `variant="facility-schedule"` - Available schedules with join functionality
+
 **Usage:**
 ```typescript
+// Personal Schedule
 <BookingCard
   booking={bookingData}
+  variant="my-schedule"
   index={index}
   onPress={handleBookingPress}
   onManageParticipants={handleManageParticipants}
+/>
+
+// Facility Schedule
+<BookingCard
+  booking={scheduleData}
+  variant="facility-schedule"
+  index={index}
+  onJoinSchedule={handleJoinSchedule}
+  onViewDetails={handleViewDetails}
+  userSessionCredits={availableCredits}
 />
 ```
 

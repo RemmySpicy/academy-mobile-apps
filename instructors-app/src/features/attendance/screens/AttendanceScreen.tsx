@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Animated, {
   FadeInDown,
   FadeInRight,
@@ -20,12 +21,17 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme, createThemedStyles, Badge, Header } from '@academy/mobile-shared';
 import type { MainStackParamList } from '../../../navigation/MainNavigator';
+import type { AttendanceStackParamList } from '../navigation/AttendanceNavigator';
 
 interface Student {
   id: string;
   name: string;
   avatar: string;
   status: 'present' | 'absent' | 'late' | 'not_marked';
+  profileImage?: string;
+  parentName?: string;
+  parentPhone?: string;
+  notes?: string;
 }
 
 interface AttendanceClass {
@@ -33,9 +39,12 @@ interface AttendanceClass {
   name: string;
   level: string;
   time: string;
+  date: string;
+  location: string;
   studentsCount: number;
   attendanceMarked: boolean;
   students: Student[];
+  instructorId: string;
 }
 
 interface ClassCardProps {
@@ -109,6 +118,10 @@ const ClassCard: React.FC<ClassCardProps> = ({ classInfo, index, onPress }) => {
 
         {/* Action Button */}
         <Pressable 
+          onPress={(e) => {
+            e.stopPropagation();
+            onPress(classInfo);
+          }}
           style={[
             styles.actionButton,
             classInfo.attendanceMarked ? styles.viewAttendanceButton : styles.markAttendanceButton
@@ -146,7 +159,7 @@ export const AttendanceScreen: React.FC = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NavigationProp<MainStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AttendanceStackParamList>>();
   const [notificationCount, setNotificationCount] = useState(2);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -157,17 +170,20 @@ export const AttendanceScreen: React.FC = () => {
       name: 'Swimming Level 1',
       level: 'Beginner Group A',
       time: '10:00 AM - 11:00 AM',
+      date: 'Today, January 15',
+      location: 'Pool A - Lane 1-4',
       studentsCount: 8,
       attendanceMarked: true,
+      instructorId: 'instructor-1',
       students: [
-        { id: '1', name: 'Emma Johnson', avatar: 'EJ', status: 'present' },
-        { id: '2', name: 'Liam Smith', avatar: 'LS', status: 'present' },
-        { id: '3', name: 'Olivia Davis', avatar: 'OD', status: 'absent' },
-        { id: '4', name: 'Noah Wilson', avatar: 'NW', status: 'present' },
-        { id: '5', name: 'Ava Brown', avatar: 'AB', status: 'present' },
-        { id: '6', name: 'William Jones', avatar: 'WJ', status: 'present' },
-        { id: '7', name: 'Sophia Garcia', avatar: 'SG', status: 'present' },
-        { id: '8', name: 'James Miller', avatar: 'JM', status: 'present' },
+        { id: '1', name: 'Emma Johnson', avatar: 'EJ', status: 'present', parentName: 'Sarah Johnson', parentPhone: '(555) 123-4567' },
+        { id: '2', name: 'Liam Smith', avatar: 'LS', status: 'present', parentName: 'Michael Smith', parentPhone: '(555) 234-5678' },
+        { id: '3', name: 'Olivia Davis', avatar: 'OD', status: 'absent', parentName: 'Jennifer Davis', parentPhone: '(555) 345-6789', notes: 'Called in sick' },
+        { id: '4', name: 'Noah Wilson', avatar: 'NW', status: 'present', parentName: 'David Wilson', parentPhone: '(555) 456-7890' },
+        { id: '5', name: 'Ava Brown', avatar: 'AB', status: 'present', parentName: 'Lisa Brown', parentPhone: '(555) 567-8901' },
+        { id: '6', name: 'William Jones', avatar: 'WJ', status: 'present', parentName: 'Robert Jones', parentPhone: '(555) 678-9012' },
+        { id: '7', name: 'Sophia Garcia', avatar: 'SG', status: 'present', parentName: 'Maria Garcia', parentPhone: '(555) 789-0123' },
+        { id: '8', name: 'James Miller', avatar: 'JM', status: 'present', parentName: 'Thomas Miller', parentPhone: '(555) 890-1234' },
       ],
     },
     {
@@ -175,12 +191,24 @@ export const AttendanceScreen: React.FC = () => {
       name: 'Swimming Level 2',
       level: 'Intermediate Group B',
       time: '2:00 PM - 3:00 PM',
+      date: 'Today, January 15',
+      location: 'Pool B - Lane 1-6',
       studentsCount: 12,
       attendanceMarked: false,
+      instructorId: 'instructor-1',
       students: [
-        { id: '9', name: 'Isabella Anderson', avatar: 'IA', status: 'not_marked' },
-        { id: '10', name: 'Mason Taylor', avatar: 'MT', status: 'not_marked' },
-        // ... more students
+        { id: '9', name: 'Isabella Anderson', avatar: 'IA', status: 'not_marked', parentName: 'Amanda Anderson', parentPhone: '(555) 901-2345' },
+        { id: '10', name: 'Mason Taylor', avatar: 'MT', status: 'not_marked', parentName: 'Chris Taylor', parentPhone: '(555) 012-3456' },
+        { id: '11', name: 'Harper Wilson', avatar: 'HW', status: 'not_marked', parentName: 'Jessica Wilson', parentPhone: '(555) 123-4567' },
+        { id: '12', name: 'Ethan Thompson', avatar: 'ET', status: 'not_marked', parentName: 'Mark Thompson', parentPhone: '(555) 234-5678' },
+        { id: '13', name: 'Abigail White', avatar: 'AW', status: 'not_marked', parentName: 'Rachel White', parentPhone: '(555) 345-6789' },
+        { id: '14', name: 'Alexander Lee', avatar: 'AL', status: 'not_marked', parentName: 'Kevin Lee', parentPhone: '(555) 456-7890' },
+        { id: '15', name: 'Emily Clark', avatar: 'EC', status: 'not_marked', parentName: 'Michelle Clark', parentPhone: '(555) 567-8901' },
+        { id: '16', name: 'Benjamin Hall', avatar: 'BH', status: 'not_marked', parentName: 'Steven Hall', parentPhone: '(555) 678-9012' },
+        { id: '17', name: 'Madison Young', avatar: 'MY', status: 'not_marked', parentName: 'Nicole Young', parentPhone: '(555) 789-0123' },
+        { id: '18', name: 'Jacob King', avatar: 'JK', status: 'not_marked', parentName: 'Daniel King', parentPhone: '(555) 890-1234' },
+        { id: '19', name: 'Grace Wright', avatar: 'GW', status: 'not_marked', parentName: 'Laura Wright', parentPhone: '(555) 901-2345' },
+        { id: '20', name: 'Logan Lewis', avatar: 'LL', status: 'not_marked', parentName: 'Paul Lewis', parentPhone: '(555) 012-3456' },
       ],
     },
     {
@@ -188,22 +216,27 @@ export const AttendanceScreen: React.FC = () => {
       name: 'Advanced Swimming',
       level: 'Advanced Group A',
       time: '4:30 PM - 5:30 PM',
+      date: 'Today, January 15',
+      location: 'Pool A - Lane 5-8',
       studentsCount: 6,
       attendanceMarked: false,
+      instructorId: 'instructor-1',
       students: [
-        { id: '13', name: 'Charlotte Thomas', avatar: 'CT', status: 'not_marked' },
-        { id: '14', name: 'Lucas Jackson', avatar: 'LJ', status: 'not_marked' },
-        // ... more students
+        { id: '21', name: 'Charlotte Thomas', avatar: 'CT', status: 'not_marked', parentName: 'Karen Thomas', parentPhone: '(555) 123-4567' },
+        { id: '22', name: 'Lucas Jackson', avatar: 'LJ', status: 'not_marked', parentName: 'Brian Jackson', parentPhone: '(555) 234-5678' },
+        { id: '23', name: 'Aria Martinez', avatar: 'AM', status: 'not_marked', parentName: 'Elena Martinez', parentPhone: '(555) 345-6789' },
+        { id: '24', name: 'Owen Rodriguez', avatar: 'OR', status: 'not_marked', parentName: 'Carlos Rodriguez', parentPhone: '(555) 456-7890' },
+        { id: '25', name: 'Zoe Adams', avatar: 'ZA', status: 'not_marked', parentName: 'Susan Adams', parentPhone: '(555) 567-8901' },
+        { id: '26', name: 'Isaiah Baker', avatar: 'IB', status: 'not_marked', parentName: 'Anthony Baker', parentPhone: '(555) 678-9012' },
       ],
     },
   ]);
 
   const handleClassPress = (classInfo: AttendanceClass) => {
-    if (classInfo.attendanceMarked) {
-      console.log('View attendance for:', classInfo.id);
-    } else {
-      console.log('Mark attendance for:', classInfo.id);
-    }
+    navigation.navigate('AttendanceMarking', {
+      classId: classInfo.id,
+      classData: classInfo,
+    });
   };
 
   const handleSearch = () => {
@@ -217,7 +250,8 @@ export const AttendanceScreen: React.FC = () => {
   const handleNotifications = () => {
     console.log('Notifications pressed');
     setNotificationCount(0);
-    navigation.navigate('Notifications');
+    // TODO: Navigate to notifications - this requires different navigator
+    // navigation.navigate('Notifications');
   };
 
   const completedCount = classes.filter(c => c.attendanceMarked).length;

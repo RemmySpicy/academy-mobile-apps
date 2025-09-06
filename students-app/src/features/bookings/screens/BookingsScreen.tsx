@@ -59,6 +59,7 @@ interface Enrollment {
   totalSessions: number;
   usedSessions: number;
   facilityId: string; // User's designated facility - only see schedules from this facility
+  facilityName: string; // User's designated facility name
 }
 
 interface FacilitySchedule {
@@ -310,6 +311,7 @@ export const BookingsScreen: React.FC = () => {
     totalSessions: 8,
     usedSessions: 1, // Used 1 session so far (matches 1 completed booking)
     facilityId: 'facility-main', // User's designated facility
+    facilityName: 'Downtown Swimming Academy', // User's designated facility name
   };
 
   // User session credits come from enrollment (pooled credits for family)
@@ -694,7 +696,7 @@ export const BookingsScreen: React.FC = () => {
       instructor: 'Sarah Johnson',
       date: 'Mondays',
       time: '6:00 PM - 7:00 PM',
-      location: 'Pool A',
+      location: currentEnrollment.facilityName,
       totalSessions: 8,
       color: theme.colors.interactive.primary,
       currentParticipants: 4,
@@ -715,7 +717,7 @@ export const BookingsScreen: React.FC = () => {
       instructor: 'Mike Wilson',
       date: 'Tuesdays',
       time: '4:00 PM - 4:45 PM',
-      location: 'Pool B',
+      location: currentEnrollment.facilityName,
       totalSessions: 6,
       color: theme.colors.interactive.accent,
       currentParticipants: 6,
@@ -757,7 +759,7 @@ export const BookingsScreen: React.FC = () => {
       instructor: 'Sarah Johnson & Mike Wilson',
       date: 'Saturdays',
       time: '10:00 AM - 11:30 AM',
-      location: 'Family Pool',
+      location: currentEnrollment.facilityName,
       totalSessions: 4,
       color: theme.colors.status.info || theme.colors.interactive.accent,
       currentParticipants: 8,
@@ -799,7 +801,7 @@ export const BookingsScreen: React.FC = () => {
       instructor: 'Maria Garcia',
       date: 'Fridays',
       time: '7:00 PM - 8:00 PM',
-      location: 'Therapy Pool',
+      location: currentEnrollment.facilityName,
       totalSessions: 8,
       color: theme.colors.status.warning,
       currentParticipants: 10,
@@ -820,7 +822,7 @@ export const BookingsScreen: React.FC = () => {
       instructor: 'Lisa Chen',
       date: 'Sundays',
       time: '3:30 PM - 4:30 PM',
-      location: 'Pool C',
+      location: currentEnrollment.facilityName,
       totalSessions: 10,
       color: theme.colors.interactive.primary,
       currentParticipants: 3,
